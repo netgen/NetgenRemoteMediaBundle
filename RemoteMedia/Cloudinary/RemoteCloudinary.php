@@ -32,12 +32,14 @@ class RemoteCloudinary implements RemoteMediaInterface
         $this->cloudinaryUploader = new Uploader();
     }
 
-    public function upload($fileUri, $options)
+    public function upload(VersionInfo $versionInfo, Field $field)
     {
-        return $this->cloudinaryUploader->upload($fileUri, $options);
+        $options = $this->getUploadOptions($versionInfo, $field);
+
+        return $this->cloudinaryUploader->upload($field->value->externalData, $options);
     }
 
-    public function getUploadOptions(VersionInfo $versionInfo, Field $field)
+    protected function getUploadOptions(VersionInfo $versionInfo, Field $field)
     {
         $fileUri = $field->value->externalData;
         $folder = $versionInfo->contentInfo->id . '/' . $versionInfo->id;

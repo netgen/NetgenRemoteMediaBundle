@@ -20,11 +20,9 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
     public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
     {
         if (is_string( $field->value->externalData)) {
-            $options = $this->uploader->getUploadOptions($versionInfo, $field);
-
             $response = $this->uploader->upload(
-                $field->value->externalData,
-                $options
+                $versionInfo,
+                $field
             );
 
             $field->value->data = $response;
