@@ -189,6 +189,22 @@ class Type extends FieldType
     }
 
     /**
+     * Returns if the given $value is considered empty by the field type
+     *
+     * Default implementation, which performs a "==" check with the value
+     * returned by {@link getEmptyValue()}. Overwrite in the specific field
+     * type, if necessary.
+     *
+     * @param \eZ\Publish\Core\FieldType\Value $value
+     *
+     * @return boolean
+     */
+    public function isEmptyValue(SPIValue $value)
+    {
+        return $value === null || $value == $this->getEmptyValue() || ($value->url === null && $value->secure_url === null);
+    }
+
+    /**
      * Returns whether the field type is searchable
      *
      * @return boolean
