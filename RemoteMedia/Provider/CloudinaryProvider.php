@@ -1,14 +1,14 @@
 <?php
 
-namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Cloudinary;
+namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider;
 
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use \Cloudinary;
 use \Cloudinary\Uploader;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 
-class RemoteCloudinary implements RemoteMediaInterface
+class CloudinaryProvider implements RemoteMediaProviderInterface
 {
     protected $cloudinary;
 

@@ -7,7 +7,7 @@ use eZ\Publish\SPI\FieldType\FieldStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 
 class RemoteMediaStorage implements FieldStorage
 {
@@ -17,7 +17,7 @@ class RemoteMediaStorage implements FieldStorage
     protected $contentService;
 
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaInterface
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
      */
     protected $uploader;
 
@@ -25,11 +25,11 @@ class RemoteMediaStorage implements FieldStorage
      * Constructor
 
      * @param \eZ\Publish\API\Repository\ContentService $contentService
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaInterface
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
      */
     public function __construct(
         ContentService $contentService,
-        RemoteMediaInterface $uploader
+        RemoteMediaProviderInterface $uploader
     )
     {
         $this->contentService = $contentService;
