@@ -39,6 +39,14 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return $this->cloudinaryUploader->upload($field->value->externalData, $options);
     }
 
+    // Examples
+    // cl_image_tag("israel.png", array("width"=>100, "height"=>100, "alt"=>"hello") # W/H are not sent to cloudinary
+    // cl_image_tag("israel.png", array("width"=>100, "height"=>100, "alt"=>"hello", "crop"=>"fit") # W/H are sent to cloudinary
+    public function getFormattedUrl($source, $options = array())
+    {
+        return cloudinary_url_internal($source, $options);
+    }
+
     protected function getUploadOptions(VersionInfo $versionInfo, Field $field)
     {
         $fileUri = $field->value->externalData;

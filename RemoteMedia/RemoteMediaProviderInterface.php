@@ -8,4 +8,6 @@ use eZ\Publish\SPI\Persistence\Content\Field;
 interface RemoteMediaProviderInterface
 {
     public function upload(VersionInfo $versionInfo, Field $field);
+
+    public function getFormattedUrl($source, $options = array());
 }

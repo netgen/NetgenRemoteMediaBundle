@@ -1,0 +1,12 @@
+parameters:
+    eztags.templating.twig.extension.class: Netgen\TagsBundle\Templating\Twig\Extension\NetgenTagsExtension
+    eztags.templating.converter.tag.class: Netgen\TagsBundle\Templating\Converter\TagConverter
+
+services:
+    netgen_remote_media.templating.twig.extension:
+        class: Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension\NetgenRemoteMediaExtension
+        arguments:
+            - "@netgen_remote_media.remote_media.provider"
+            - "@ezpublish.translation_helper"
+        tags:
+            - { name: twig.extension }
