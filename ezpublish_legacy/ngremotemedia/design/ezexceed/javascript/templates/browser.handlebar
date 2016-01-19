@@ -1,0 +1,14 @@
+<form onsubmit="javascript: return false;" class="form-search">
+    <input type="text" class="q input-long" placeholder="{{translate "Search for media"}}">
+    <img style="margin: -1px 8px 0 -27px;" class="icon-16 hide loader" src="/extension/ezexceed/design/ezexceed/images/loader.gif" />
+    <span class="upload-container" id="remotemedia-browser-local-file-container-{{id}}">
+        <button type="button" class="btn upload" id="remotemedia-browser-local-file-{{id}}">
+            {{translate "Upload new media"}}
+        </button>
+    </span>
+</form>
+<div class="remotemedia-thumbs"></div>
+<button class="btn btn-large btn-block load-more" type="button">
+    {{translate "Load more"}}
+    <img class="icon-16 hide loader" src="/extension/ezexceed/design/ezexceed/images/loader.gif" />
+</button>

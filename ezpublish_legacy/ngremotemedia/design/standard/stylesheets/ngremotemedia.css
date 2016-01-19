@@ -1,0 +1,383 @@
+.remotemedia-buttons .upload-progress.hid {
+    display: none;
+}
+.image-wrap {
+    float: left;
+    margin: 0 15px 10px 0;
+}
+
+.image-meta {
+    float: left;
+}
+
+    .image-meta ul {
+        margin: 0;
+        list-style-type: none
+    }
+
+    .tagger {
+        overflow: auto;
+        width: 100%;
+    }
+
+        .tagger h4 {
+            font-size: 14px;
+        }
+
+        .tagger ul {
+            margin-top: 10px;
+        }
+
+        .tagger li {
+            background: rgb(86,115,165);
+            text-decoration: none;
+            border-radius: 4px;
+            color: #fff;
+            display: block;
+            float: left;
+            font-size: 12px;
+            font-weight: normal;
+            height: 12px;
+            margin: 0 8px 5px 0;
+            padding: 3px 0 4px 6px;
+        }
+
+        .tagger li .remove a{
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 11px;
+            height: 14px;
+            margin: -2px -1px 0 5px;
+            padding: 2px 7px 0 5px;
+            text-align: center;
+        }
+
+.remotemedia-buttons {
+    clear: both;
+}
+
+
+#remotemedia-modal {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 1000;
+}
+
+.remotemedia-local-file-container {
+    display: inline
+}
+
+.remotemedia-buttons .upload-progress {
+    height: 5px;
+    width: 100px;
+    background: #ccc;
+    border-radius: 5px;
+    display: inline-block;
+}
+.remotemedia-buttons .progress {
+    height: 5px;
+    width : 0%;
+    background: green;
+    border-radius: 5px;
+}
+
+#remotemedia-modal .backdrop {
+    z-index: 100000;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    opacity: 0.6;
+}
+
+#remotemedia-modal .content {
+    top: 50px;
+    bottom: 25px;
+    z-index: 200000;
+    position: absolute;
+    border-radius: 4px;
+    width: 920px;
+    left: 50%;
+    overflow-y: scroll;
+    margin-left: -460px;
+    background: #000;
+    font: normal 14px/14px Helvetica, Arial, sans-serif;
+}
+
+#remotemedia-modal .close {
+    background: #fff url(close.png) center center no-repeat;
+    height: 20px;
+    width: 20px;
+    border: 0;
+    border-radius: 20px;
+    text-indent: -99999px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+
+/* End Vanilla Attribute */
+
+#remotemedia-scaler .header, #remotemedia-browser .header {
+    float: left;
+    margin: 0;
+    padding: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: 100%;
+    position: relative;
+}
+
+#remotemedia-browser .header {
+    border-bottom: 1px solid #555;
+}
+
+
+#remotemedia-scaler .body, #remotemedia-browser .body {
+    clear: both;
+}
+
+#remotemedia-browser input {
+    border-radius: 10px;
+    margin: 0;
+    padding: 3px 7px;
+    border: 0;
+    height: 18px;
+    font-size: 12px;
+}
+
+#remotemedia-browser input:focus {
+    outline: none;
+}
+
+#remotemedia-browser button.search {
+    border: 0;
+    border-radius: 10px;
+    padding: 0 12px;
+    font: normal 12px/20px Helvetica, Arial, sans-serif;
+    height: 24px;
+    background: orange;
+    margin: 0 0 0 5px;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.3; }
+}
+@-webkit-keyframes pulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.3; }
+}
+
+#remotemedia-browser button.search.working {
+    -webkit-animation: pulse 3s infinite ease-in-out;
+    animation: pulse 3s infinite ease-in-out;
+}
+
+#remotemedia-browser button.search {
+    border: 0;
+    border-radius: 10px;
+    padding: 0 12px;
+    font: normal 12px/20px Helvetica, Arial, sans-serif;
+    height: 24px;
+    background: orange;
+    margin: 0 0 0 5px;
+}
+
+#remotemedia-browser a {
+    color: #fff;
+    text-decoration: none;
+}
+
+#remotemedia-browser .prev, #remotemedia-browser .next { display: none; }
+
+
+/* Browse media */
+
+#remotemedia-browser .item {
+    float: left;
+    width: 180px;
+    height: 120px;
+    border-right: 1px solid #333;
+    border-bottom: 1px solid #333;
+    padding: 3px;
+    position: relative;
+    overflow: hidden;
+}
+
+    #remotemedia-browser .item:first-child {
+        border-left: 1px solid #333;
+    }
+
+#remotemedia-browser .item .pick {
+    text-align: center;
+    width: 180px;
+    height: 120px;
+    /* background: url(loader.gif) center center no-repeat; */
+    vertical-align: middle;
+    display: table-cell;
+}
+
+
+#remotemedia-browser .item img {
+    margin: 0;
+    background-image: url("/extension/remotemedia/design/standard/images/transparent-background.png");
+}
+#remotemedia-browser .item:hover .meta {
+    display:-moz-box;
+    -moz-box-orient:horizontal;
+    -moz-box-pack:center;
+    -moz-box-align:center;
+
+    display:-webkit-box;
+    -webkit-box-orient:horizontal;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
+
+    display:box;
+    box-orient:horizontal;
+    box-pack:center;
+    box-align:center;
+}
+#remotemedia-browser .item .meta {
+    display: none;
+    bottom: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    padding: 0 10px;
+    margin: 0;
+    background: #000;
+    opacity: 0.7;
+    position: absolute;
+    color: #fff;
+    font: normal 12px/18px Helvetica, Arial, sans-serif;
+}
+
+
+
+
+
+/* Scale and crop media */
+
+#remotemedia-scaler .header ul {
+    list-style-type: none;
+    margin: 0;
+    float: left;
+}
+#remotemedia-scaler .header ul li {
+    float: left;
+    margin-right: 8px;
+}
+
+#remotemedia-scaler .header ul li a {
+    display: block;
+    float: left;
+    background: #fff;
+    border-radius: 4px;
+    height: 30px;
+    padding: 3px 15px 0 3px;
+    font: normal 11px/11px Helvetica, Arial, sans-serif;
+    text-decoration: none;
+    color: #000;
+    border: 1px dotted transparent;
+}
+
+#remotemedia-scaler .header ul li a p {
+    margin-right: 6px;
+    border: 1px solid #000;
+    border-radius: 2px;
+    float: left;
+}
+
+#remotemedia-scaler .header ul li a h2 {
+    display: inline;
+    margin: 0;
+    font: bold 12px/14px Helvetica, Arial, sans-serif;
+}
+
+#remotemedia-scaler .header ul li a span {
+    display: inline;
+    font: normal 10px/10px Helvetica, Arial, sans-serif;
+}
+
+#remotemedia-scaler .header ul li.uncropped a {
+    background: transparent;
+    border-color: #ccc;
+    color: #ccc;
+}
+
+#remotemedia-scaler .header ul li.uncropped a p {
+    border: 1px dotted #ccc;
+}
+
+
+#remotemedia-scaler .header ul li.uncropped a:hover {
+    border-color: #fff;
+    color: #fff;
+}
+
+#remotemedia-scaler .header ul li.uncropped a:hover p {
+    border: 1px dotted #fff;
+}
+
+
+#remotemedia-scaler .header ul li.cropped a:hover {
+    background: #fff60b;
+}
+
+#remotemedia-scaler .header ul li.active a, #remotemedia-scaler .header ul li.active a:hover {
+    background-color: #ffbb00;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ffbb00), to(#ff8d00));
+    background-image: -webkit-linear-gradient(top, #ffbb00, #ff8d00);
+    background-image: -moz-linear-gradient(top, #ffbb00, #ff8d00);
+    background-image: -ms-linear-gradient(top, #ffbb00, #ff8d00);
+    background-image: -o-linear-gradient(top, #ffbb00, #ff8d00);
+    background-image: linear-gradient(top, #ffbb00, #ff8d00);
+    color: #000;
+    border-color: transparent;
+}
+
+
+#remotemedia-scaler .header ul li:hover .overlay { display: block; opacity:1; }
+#remotemedia-scaler .header ul li.active:hover .overlay,
+#remotemedia-scaler .header ul li.uncropped:hover .overlay { display: none; }
+
+#remotemedia-scaler .overlay {
+    display: none;
+    opacity: 0;
+    position: absolute;
+    z-index: 700;
+    border: 1px solid #fff60b;
+    -webkit-transition: opacity 0.1s ease;
+    -moz-transition: opacity 0.1s ease;
+    -o-transition: opacity 0.1s ease;
+    transition: opacity 0.1s ease;
+}
+
+#remotemedia-scaler .header ul li.active .overlay { border-color: #000; }
+
+
+
+#remotemedia-scaler-image {
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Override jCrop */
+
+#remotemedia-scaler .jcrop-handle {
+	font-size: 1px;
+	width: 16px !important;
+	height: 16px !important;
+	border: 1px #eee solid;
+	background-color: #fff;
+	border-radius: 4px
+}

@@ -25,29 +25,38 @@ class TestCommand extends ContainerAwareCommand
 
         $repository->beginTransaction();
 
-        //$contentTypeService = $repository->getContentTypeService();
         $contentService = $repository->getContentService();
-        //$contentType = $contentTypeService->loadContentTypeByIdentifier('ng_article');
+        $contentTypeService = $repository->getContentTypeService();
 
         $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
-        $imagePath = $rootDir . '/test.jpg';
+        $imagePath = $rootDir . '/test2.png';
+
+        $contentType = $contentTypeService->loadContentTypeByIdentifier('ng_article');
+        $contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
 
         try {
-            /*$contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
-            $fieldDefCreate = $contentTypeService->newFieldDefinitionCreateStruct('test_image', 'ngremotemedia');
+
+            $fieldDefCreate = $contentTypeService->newFieldDefinitionCreateStruct('test_image2', 'ngremotemedia');
+            $fieldDefCreate->fieldSettings = array(
+                'formats' => array(
+                    'Name' => '200x200',
+                    'Name2' => '500x500'
+                )
+            );
 
             $contentTypeService->addFieldDefinition($contentTypeDraft, $fieldDefCreate);
-            $contentTypeService->publishContentTypeDraft($contentTypeDraft);*/
+            $contentTypeService->publishContentTypeDraft($contentTypeDraft);
 
 
-            $contentInfo = $contentService->loadContentInfo( 538 );
+
+            /*$contentInfo = $contentService->loadContentInfo( 538 );
             $contentDraft = $contentService->createContentDraft( $contentInfo );
             $contentUpdateStruct = $contentService->newContentUpdateStruct();
             $contentUpdateStruct->initialLanguageCode = 'nor-NO'; // set language for new version
             $contentUpdateStruct->setField( 'test_image', $imagePath );
             // update and publish draft
             $contentDraft = $contentService->updateContent( $contentDraft->versionInfo, $contentUpdateStruct );
-            $content = $contentService->publishVersion( $contentDraft->versionInfo );
+            $content = $contentService->publishVersion( $contentDraft->versionInfo );*/
 
 
             $repository->commit();
@@ -57,7 +66,8 @@ class TestCommand extends ContainerAwareCommand
             die(dump($e->getMessage()));
         }
 
-        //$contentType = $contentTypeService->loadContentTypeByIdentifier('ng_article');
-        die(dump($content->getFieldValue('test_image')));
+        $contentType = $contentTypeService->loadContentTypeByIdentifier('ng_article');
+        die(dump($contentType));
+        //die(dump($content->getFieldValue('test_image')));
     }
 }

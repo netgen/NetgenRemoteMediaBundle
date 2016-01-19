@@ -1,0 +1,13 @@
+<a>
+    {{#if toSmall}}
+    <img class="white" src="/extension/ezexceed/design/ezexceed/images/kp/24x24/white/Alert.png"
+        alt="{{translate "Image is to small for this version"}}"
+        title="{{translate "Image is to small for this version"}}" />
+    <img class="black" src="/extension/ezexceed/design/ezexceed/images/kp/24x24/Alert.png"
+        alt="{{translate "Image is to small for this version"}}"
+        title="{{translate "Image is to small for this version"}}" />
+    {{/if}}
+    {{name}}<br />
+    <small>{{width}}x{{height}}</small>
+</a>
+<div class="overlay"></div>

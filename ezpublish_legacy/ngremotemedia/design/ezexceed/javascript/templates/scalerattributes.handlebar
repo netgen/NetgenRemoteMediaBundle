@@ -1,0 +1,26 @@
+<div class="well control-group">
+    <input type="text" name="alttext"
+        placeholder="{{translate "Alternate text"}}"
+        {{#if alttext}} value="{{alttext}}"{{/if}}>
+
+    {{#if classes}}
+    <label for="cssclass">{{translate "Class"}}</label>
+    <select name="cssclass" id="cssclass">
+        <option value=""> - </option>
+        {{#each classes}}
+            <option value="{{value}}"{{#if selected}} selected{{/if}}>{{name}}</option>
+        {{/each}}
+    </select>
+    {{/if}}
+
+    {{#if viewmodes}}
+    <label for="viewmode">{{translate "View"}}</label>
+    <select name="viewmode" id="viewmode">
+        <option value=""> - </option>
+        {{#each viewmodes}}
+        <option value="{{value}}"
+        {{#if selected}} selected{{/if}}>{{name}}</option>
+        {{/each}}
+    </select>
+    {{/if}}
+</div>

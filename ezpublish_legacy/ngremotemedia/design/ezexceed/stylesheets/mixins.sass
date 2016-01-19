@@ -1,0 +1,53 @@
+// Mixins
+@mixin transition($style: all, $time: 0.8s, $type: ease)
+    -webkit-transition: $style $time $type
+    -moz-transition: $style $time $type
+    -o-transition: $style $time $type
+    transition: $style $time $type
+    
+@mixin box-shadow ($xaxis, $yaxsis, $blur, $offset: 0, $color: #000)
+    -webkit-box-shadow: $xaxis $yaxsis $blur $offset $color
+    -moz-box-shadow: $xaxis $yaxsis $blur $offset $color
+    box-shadow: $xaxis $yaxsis $blur $offset $color
+    
+@mixin box-shadow-inset ($xaxis, $yaxsis, $blur, $color, $inset: inset)
+    -webkit-box-shadow: $xaxis $yaxsis $blur $color $inset
+    -moz-box-shadow: $xaxis $yaxsis $blur $color $inset
+    box-shadow: $xaxis $yaxsis $blur $color $inset
+    
+@mixin box-shadow-both ($xaxis, $yaxsis, $blur, $color, $xaxis2, $yaxsis2, $blur2, $color2, $inset: inset)
+    -webkit-box-shadow: $xaxis $yaxsis $blur $color, $xaxis2 $yaxsis2 $blur2 $color2 $inset
+    -moz-box-shadow: $xaxis $yaxsis $blur $color, $xaxis2 $yaxsis2 $blur2 $color2 $inset
+    box-shadow: $xaxis $yaxsis $blur $color, $xaxis2 $yaxsis2 $blur2 $color2 $inset
+
+@mixin gradient($start, $end)
+    background-color: $end
+    background-image: -webkit-gradient(linear, left top, left bottom, from($start), to($end))
+    background-image: -webkit-linear-gradient(top, $start, $end)
+    background-image: -moz-linear-gradient(top, $start, $end)
+    background-image: -ms-linear-gradient(top, $start, $end)
+    background-image: -o-linear-gradient(top, $start, $end)
+    background-image: linear-gradient(top, $start, $end)
+    
+@mixin gradientAndImage($url, $start, $end)
+    background: $end
+    background-image: url($url)
+    background-image: url($url), -webkit-gradient(linear, left top, left bottom, from($start), to($end))
+    background-image: url($url), -webkit-linear-gradient(top, $start, $end)
+    background-image: url($url), -moz-linear-gradient(top, $start, $end)
+    background-image: url($url), -ms-linear-gradient(top, $start, $end)
+    background-image: url($url), -o-linear-gradient(top, $start, $end)
+    background-image: url($url), linear-gradient(top, $start, $end)
+    // NASTY IE7-8 hack
+    background: $end url($url)\9
+    
+@mixin textselection()
+    -moz-user-select: none
+    -webkit-user-select: none
+    -khtml-user-select: none
+    -o-user-select: none
+    user-select: none
+    
+@mixin animation($name, $time, $timing: ease, $run: 1, $type: normal)
+    -moz-animation: $name $time $timing $run $type
+    -webkit-animation: $name $time $timing $run $type

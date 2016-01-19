@@ -1,0 +1,11 @@
+<div class="item">
+    <a class="pick" data-id="{{id}}">
+        <img src="{{thumb.url}}" />
+        <p class="meta">{{filename}}<br />
+            <span class="details">{{width}} x {{height}}</span>
+            {{#if shared}}
+            <span class="share">{{translate "Shared"}}</span>
+            {{/if}}
+        </p>
+    </a>
+</div>

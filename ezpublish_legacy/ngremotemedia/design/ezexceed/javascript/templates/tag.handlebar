@@ -1,0 +1,1 @@
+<span class="label">{{tag}} <button class="close" data-tag="{{tag}}">×</button></span>

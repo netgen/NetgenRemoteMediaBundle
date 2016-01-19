@@ -1,0 +1,7 @@
+<?php /*
+
+[ExtensionSettings]
+DesignExtensions[]=ngremotemedia
+
+*/ ?>
+
