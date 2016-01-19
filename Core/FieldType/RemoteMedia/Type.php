@@ -76,6 +76,7 @@ class Type extends FieldType
         else if (is_string($inputValue)) {
             $newValue = new Value();
             $newValue->input_uri = $inputValue;
+
             return $newValue;
         }
 
@@ -199,7 +200,8 @@ class Type extends FieldType
      */
     public function isEmptyValue(SPIValue $value)
     {
-        return $value === null || $value == $this->getEmptyValue() || ($value->url === null && $value->secure_url === null);
+        return $value === null || $value == $this->getEmptyValue() ||
+            ($value->url === null && $value->secure_url === null && $value->input_uri === null);
     }
 
     /**
