@@ -42,9 +42,10 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     protected function getUploadOptions(VersionInfo $versionInfo, Field $field)
     {
         $fileUri = $field->value->externalData;
-        $folder = $versionInfo->contentInfo->id . '/' . $versionInfo->id;
+        $folder = $versionInfo->contentInfo->id . '/' . $field->id;
         $options = array(
-            'public_id' => $folder . '/' . basename($fileUri)
+            'public_id' => $folder . '/' . basename($fileUri),
+            'overwrite' => true
         );
 
         return $options;

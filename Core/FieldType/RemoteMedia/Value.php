@@ -22,6 +22,7 @@ class Value extends BaseValue
     public $bytes = null;
     public $type = null;
     public $etag = null;
+    public $overwritten = null;
 
     /**
      * Returns a string representation of the field value.
