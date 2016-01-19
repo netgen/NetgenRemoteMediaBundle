@@ -14,7 +14,7 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\CloudinaryStorage
         arguments:
             - @ezpublish.api.service.content
-            - @netgen_remote_media.remote_media
+            - @netgen_remote_media.remote_media.provider
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: ngremotemedia}
 
