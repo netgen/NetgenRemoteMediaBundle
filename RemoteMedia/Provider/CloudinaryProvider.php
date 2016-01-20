@@ -2,12 +2,12 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider;
 
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use \Cloudinary;
 use \Cloudinary\Uploader;
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
-use eZ\Publish\SPI\Persistence\Content\Field;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+
 
 class CloudinaryProvider implements RemoteMediaProviderInterface
 {
@@ -70,5 +70,52 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $value->variations = $response['variations'];
 
         return $value;
+    }
+
+    public function getVariation(Value $value, array $namedFormats, $format, $secure = true)
+    {
+        $variation = new Variation();
+        $url = $secure ? $value->secure_url : $value->url;
+
+        if (empty($format)) {
+            $variation->url = $url;
+
+            return $variation;
+        }
+
+        $options = array('secure' => $secure);
+
+        if (array_key_exists($format, $namedFormats)) {
+            $selectedFormat = $namedFormats[$format];
+            $sizes = explode('x', $selectedFormat);
+            $options['crop'] = 'crop';
+        } else {
+            $sizes = explode('x', $format);
+        }
+
+        if (count($sizes) !== 2) {
+            throw new \InvalidArgumentException(
+                "Format has to be either name of one of configured formats, or '[W]x[H]' (eg. '200x200'). "
+            );
+        }
+
+        $options['width'] = $sizes[0];
+        $options['height'] = $sizes[1];
+
+        if (array_key_exists($format, $value->variations)) {
+            $coords = $value->variations[$format];
+            $options['x'] = $coords['x'];
+            $options['y'] = $coords['y'];
+        }
+
+        $url = $this->getFormattedUrl(
+            $value->resourceId, $options
+        );
+
+        $variation->width = $options['width'];
+        $variation->height = $options['height'];
+        $variation->url = $url;
+
+        return $variation;
     }
 }

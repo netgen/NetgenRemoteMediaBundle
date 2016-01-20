@@ -1,8 +1,6 @@
-{*
-{if is_set($quality)|not}
-    {def $quality = false()}
+{if is_set($format)|not}
+    {def $format = '300x200'}
 {/if}
-*}
 
 {if is_set($silent)|not}
     {def $silent = true()}
@@ -10,32 +8,26 @@
 
 {def
     $value = $attribute.content
-    $media = ngremotemedia($attribute, 'T1', true)
+    $media = ngremotemedia($attribute, $format, true)
     $type = false()
 }
 
-{*if eq($handler.id, 0)|not*}
-    {if $media.url|is_set()}
-        {*
-        {if $handler.type|is_set()}
-            {set $type = $handler.type}
-        {else}
-            {set $type = $media.type}
-        {/if}
+{if $media.url|is_set()}
 
-
-        {if $silent|not}{debug-log msg='Loading type specific template:' var=$type}{/if}
-
-        {def $template = concat('design:content/datatype/view/', $type, '.tpl')}
-
-        {include uri=$template media=$media handler=$handler}
-        *}
-
-        <img src="{$media.url}" />
-
+    {if $value.type|is_set()}
+        {set $type = $value.type}
     {else}
-        {if $silent|not}{debug-log msg='Media.url not set'}{/if}
+        {set $type = 'image'}
     {/if}
-{*else}
-    {if $silent|not}{debug-log msg='No media id connected to attribute'}{/if}
-{/if*}
+
+    {*
+    {def $template = concat('design:content/datatype/view/', $type, '.tpl')}
+
+    {include uri=$template media=$media handler=$handler}
+    *}
+
+    <img src="{$media.url}" />
+
+{else}
+    {if $silent|not}{debug-log msg='Media.url not set'}{/if}
+{/if}

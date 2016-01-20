@@ -52,7 +52,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
         return array(
             new Twig_SimpleFunction(
                 'netgen_remote_media',
-                array($this, 'getRemoteMediaUrl')
+                array($this, 'getRemoteMediaVariation')
             ),
         );
     }
@@ -61,41 +61,8 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      *
      * @return string
      */
-    public function getRemoteMediaUrl($field, $fieldSettings, $format, $secure = true)
+    public function getRemoteMediaVariation($field, $fieldSettings, $format, $secure = true)
     {
-        $variation = new Variation();
-        $coords = array('x' => 0, 'y' => 0);
-        $url = $secure ? $field->value->secure_url : $field->value->url;
-
-        if (array_key_exists($format, $fieldSettings['formats'])) {
-            $selectedFormat = $fieldSettings['formats'][$format];
-
-            $sizes = explode('x', $selectedFormat);
-            $width = $sizes[0];
-            $height = $sizes[1];
-
-            if (array_key_exists($format, $field->value->variations)) {
-                $coords = $field->value->variations[$format];
-            }
-
-            $url = $this->provider->getFormattedUrl(
-                $field->value->resourceId,
-                array(
-                    'width' => $width,
-                    'height' => $height,
-                    'secure' => $secure,
-                    'x' => $coords['x'],
-                    'y' => $coords['y'],
-                    'crop' => 'crop'
-                )
-            );
-
-            $variation->width = $width;
-            $variation->height = $height;
-        }
-
-        $variation->url = $url;
-
-        return $variation;
+        return $this->provider->getVariation($field->value, $fieldSettings['formats'], $format, $secure);
     }
 }

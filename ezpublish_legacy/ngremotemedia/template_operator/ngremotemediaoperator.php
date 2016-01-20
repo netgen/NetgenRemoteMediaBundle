@@ -67,22 +67,6 @@ class NgRemoteMediaOperator
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
 
-        if (array_key_exists($format, $field->value->variations)) {
-            $coords = $field->value->variations[$format];
-        } else {
-            $coords = array('x' => 0, 'y' => 0);
-        }
-
-        $options = array(
-            'secure' => $secure,
-            'x' => $coords['x'],
-            'y' => $coords['y'],
-            'crop' => 'crop'
-        );
-
-        $variation = new Variation();
-        $variation->url = $provider->getFormattedUrl($data->resourceId, $options);
-
-        return $variation;
+        return $provider->getVariation($data, array(), $format, $secure);
     }
 }
