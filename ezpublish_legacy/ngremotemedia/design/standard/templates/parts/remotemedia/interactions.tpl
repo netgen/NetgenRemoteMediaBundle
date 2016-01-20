@@ -1,7 +1,7 @@
-{if $handler.backend}
-    {if eq(is_set($base), false())}
-        {def $base='ContentObjectAttribute'}
-    {/if}
+{if eq(is_set($base), false())}
+    {def $base='ContentObjectAttribute'}
+{/if}
+
 <div id="remotemedia-buttons-{$attribute.id}" class="remotemedia-buttons"
     data-prefix={'/ezjscore/call'|ezurl}
     data-id="{$attribute.id}"
@@ -30,6 +30,3 @@
         <div class="progress"></div>
     </div>
 </div>
-{else}
-<h2 class="error">{'No RemoteMedia connection for content class'|i18n( 'remotemedia' )}</h2>
-{/if}

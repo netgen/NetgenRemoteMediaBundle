@@ -33,7 +33,7 @@ class NgRemoteMediaOperator
                     'required' => true
                 ),
                 'format' => array(
-                    'type' => 'mixed',
+                    'type' => 'string',
                     'required' => false,
                     'default' => null
                 )

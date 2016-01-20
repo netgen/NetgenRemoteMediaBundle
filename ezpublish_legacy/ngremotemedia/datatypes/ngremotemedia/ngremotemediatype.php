@@ -116,8 +116,8 @@ class NgRemoteMediaType extends eZDataType
      */
     public function hasObjectAttributeContent($attribute)
     {
-        $handler = $this->objectAttributeContent($attribute);
-        return $handler->hasMedia();
+        $value = $this->objectAttributeContent($attribute);
+        return !empty($value->resourceId);
     }
 
     /**
