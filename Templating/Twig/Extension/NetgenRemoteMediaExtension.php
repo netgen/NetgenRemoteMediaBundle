@@ -74,7 +74,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
             $height = $sizes[1];
 
             $url = $this->provider->getFormattedUrl(
-                $field->value->public_id,
+                $field->value->resourceId,
                 array(
                     'width' => $width,
                     'height' => $height,

@@ -9,7 +9,7 @@ use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 
-class RemoteMediaStorage implements FieldStorage
+abstract class RemoteMediaStorage implements FieldStorage
 {
     /**
      * @var \eZ\Publish\API\Repository\ContentService
@@ -19,7 +19,7 @@ class RemoteMediaStorage implements FieldStorage
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
      */
-    protected $uploader;
+    protected $provider;
 
     /**
      * Constructor
@@ -29,11 +29,11 @@ class RemoteMediaStorage implements FieldStorage
      */
     public function __construct(
         ContentService $contentService,
-        RemoteMediaProviderInterface $uploader
+        RemoteMediaProviderInterface $provider
     )
     {
         $this->contentService = $contentService;
-        $this->uploader = $uploader;
+        $this->provider = $provider;
     }
 
     /**
@@ -47,11 +47,7 @@ class RemoteMediaStorage implements FieldStorage
      *
      * @return true Indicating internal value data has changed
      */
-    public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
-    {
-        // @todo: Implement specifics for each storage eg. Cloudinary
-        throw new NotImplementedException('Not implemented');
-    }
+    abstract public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context);
 
     /**
      * Populates $field value property based on the external data.
@@ -61,10 +57,8 @@ class RemoteMediaStorage implements FieldStorage
      * @param array $context
      */
 
-    public function getFieldData(VersionInfo $versionInfo, Field $field, array $context)
-    {
-        $field->value->externalData = array();
-    }
+    abstract public function getFieldData(VersionInfo $versionInfo, Field $field, array $context);
+
     /**
      * Deletes field data
      *

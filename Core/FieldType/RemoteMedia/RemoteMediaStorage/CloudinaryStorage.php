@@ -33,15 +33,30 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
                 )
             );
 
-            $response = $this->uploader->upload(
+            $response = $this->provider->upload(
                 $fileUri,
                 $options
             );
 
-            $field->value->data = $response;
+            $value = $this->provider->getValueFromResponse($response);
+
+            $field->value->data = $value;
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Populates $field value property based on the external data.
+     *
+     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
+     * @param \eZ\Publish\SPI\Persistence\Content\Field $field
+     * @param array $context
+     */
+
+    public function getFieldData(VersionInfo $versionInfo, Field $field, array $context)
+    {
+        $field->value->externalData = array();
     }
 }

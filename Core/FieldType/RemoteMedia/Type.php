@@ -47,8 +47,8 @@ class Type extends FieldType
      */
     public function getName(SPIValue $value)
     {
-        if (!empty($value->public_id)) {
-            return $value->public_id;
+        if (!empty($value->resourceId)) {
+            return $value->resourceId;
         }
 
         return '';
@@ -110,11 +110,11 @@ class Type extends FieldType
      */
     protected function checkValueStructure(BaseValue $value)
     {
-        if ($value instanceof Value && !is_string($value->public_id)) {
+        if ($value instanceof Value && !is_string($value->resourceId)) {
             throw new InvalidArgumentType(
                 '$value',
                 'string',
-                $value->public_id
+                $value->resourceId
             );
         }
         else if ($value instanceof InputValue && !is_string($value->input_uri)) {

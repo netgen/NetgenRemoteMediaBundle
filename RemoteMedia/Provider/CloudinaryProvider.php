@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider;
 
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use \Cloudinary;
 use \Cloudinary\Uploader;
@@ -40,5 +41,33 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     public function getFormattedUrl($source, $options = array())
     {
         return cloudinary_url_internal($source, $options);
+    }
+
+    public function getValueFromResponse($response)
+    {
+        $metaData = array(
+            'version'   => $response['version'] ?: '',
+            'width'     => $response['width'] ?: '',
+            'height'    => $response['height'] ?: '',
+            'format'    => $response['format'] ?: '',
+            'resource_type' => $response['resource_type'] ?: '',
+            'created'   => $response['created_at'] ?: '',
+            'tags'      => $response['tags'] ?: array(),
+            'signature' => $response['signature'] ?: '',
+            'type'      => $response['type'] ?: '',
+            'etag'      => $response['etag'] ?: '',
+            'overwritten' => $response['overwritten'] ?: '',
+            'alt_text'  => !empty($response['context']['custom']['alt']) ? $response['context']['custom']['alt'] : '',
+            'caption'  => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
+        );
+
+        $value = new Value();
+        $value->resourceId = $response['public_id'];
+        $value->url = $response['url'];
+        $value->secure_url = $response['secure_url'];
+        $value->size = $response['bytes'];
+        $value->metaData = $metaData;
+
+        return $value;
     }
 }
