@@ -95,7 +95,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
 
         if (count($sizes) !== 2) {
             throw new \InvalidArgumentException(
-                "Format has to be either name of one of configured formats, or '[W]x[H]' (eg. '200x200'). "
+                "Format has to be either name of one of configured formats or '[W]x[H]' (eg. '200x200'), {$format} given"
             );
         }
 
