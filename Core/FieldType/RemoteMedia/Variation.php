@@ -9,7 +9,7 @@ class Variation extends BaseValue
     public $url = null;
     public $width = null;
     public $height = null;
-    public $transformations = array();
+    public $coords = array('x' => 0, 'y' => 0);
 
 
     /**

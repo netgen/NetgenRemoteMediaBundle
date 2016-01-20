@@ -11,6 +11,7 @@ class Value extends BaseValue
     public $secure_url;
     public $size;
 
+    public $variations = array();
     public $metaData = array();
 
     /**

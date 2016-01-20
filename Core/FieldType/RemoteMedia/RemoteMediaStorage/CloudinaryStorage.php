@@ -38,6 +38,8 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
                 $options
             );
 
+            $response['variations'] = $data['variations'];
+
             $value = $this->provider->getValueFromResponse($response);
 
             $field->value->data = $value;

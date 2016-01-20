@@ -67,6 +67,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $value->secure_url = $response['secure_url'];
         $value->size = $response['bytes'];
         $value->metaData = $metaData;
+        $value->variations = $response['variations'];
 
         return $value;
     }

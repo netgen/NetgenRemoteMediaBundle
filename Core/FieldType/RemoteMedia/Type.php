@@ -172,7 +172,8 @@ class Type extends FieldType
                     "externalData" => array(
                         'input_uri' => $value->input_uri,
                         'alt_text'  => $value->alt_text,
-                        'caption'   => $value->caption
+                        'caption'   => $value->caption,
+                        'variations'=> $value->variations
                     ),
                     "sortKey" => $this->getSortInfo($value),
                 )

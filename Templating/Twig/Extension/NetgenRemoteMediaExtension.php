@@ -64,6 +64,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getRemoteMediaUrl($field, $fieldSettings, $format, $secure = true)
     {
         $variation = new Variation();
+        $coords = array('x' => 0, 'y' => 0);
         $url = $secure ? $field->value->secure_url : $field->value->url;
 
         if (array_key_exists($format, $fieldSettings['formats'])) {
@@ -73,12 +74,19 @@ class NetgenRemoteMediaExtension extends Twig_Extension
             $width = $sizes[0];
             $height = $sizes[1];
 
+            if (array_key_exists($format, $field->value->variations)) {
+                $coords = $field->value->variations[$format];
+            }
+
             $url = $this->provider->getFormattedUrl(
                 $field->value->resourceId,
                 array(
                     'width' => $width,
                     'height' => $height,
-                    'secure' => $secure
+                    'secure' => $secure,
+                    'x' => $coords['x'],
+                    'y' => $coords['y'],
+                    'crop' => 'crop'
                 )
             );
 
