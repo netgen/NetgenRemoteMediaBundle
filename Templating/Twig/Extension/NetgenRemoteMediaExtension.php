@@ -6,6 +6,7 @@ use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\TagsBundle\API\Repository\Values\Tags\Tag;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Twig_Extension;
 use Twig_SimpleFunction;
 
@@ -62,6 +63,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      */
     public function getRemoteMediaUrl($field, $fieldSettings, $format, $secure = true)
     {
+        $variation = new Variation();
         $url = $secure ? $field->value->secure_url : $field->value->url;
 
         if (array_key_exists($format, $fieldSettings['formats'])) {
@@ -75,11 +77,17 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 $field->value->public_id,
                 array(
                     'width' => $width,
-                    'height' => $height
+                    'height' => $height,
+                    'secure' => $secure
                 )
             );
+
+            $variation->width = $width;
+            $variation->height = $height;
         }
 
-        return $url;
+        $variation->url = $url;
+
+        return $variation;
     }
 }

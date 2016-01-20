@@ -1,10 +1,11 @@
 {% block ngremotemedia_field %}
 
-    <img src="{{ netgen_remote_media(field, fieldSettings, 'T1') }}"
-         {#
-            {% if field.value.width is defined %} width="{{ field.value.width }}"{% endif %}
-            {% if field.value.height is defined %} height="{{ field.value.height }}"{% endif %}
-        #}
-         {#alt="{{ field.value.alternativeText }}"#} />
+    {% set variation = netgen_remote_media(field, fieldSettings, 'T1') %}
+
+
+    <img src="{{ variation.url }}"
+            {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
+            {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
+            {#alt="{{ field.value.alternativeText }}"#} />
 
 {% endblock %}
