@@ -1,11 +1,14 @@
 {% block ngremotemedia_field %}
 
     {% set variation = netgen_remote_media(field, fieldSettings, 'T1') %}
-
+    {% set alt_text = field.value.context.custom.alt|default('') %}
+    {% set title = field.value.context.custom.caption|default('') %}
 
     <img src="{{ variation.url }}"
-            {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
-            {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
-            {#alt="{{ field.value.alternativeText }}"#} />
+        {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
+        {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
+        {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
+        {% if title is not empty %}title="{{ title }}"{% endif %}
+    />
 
 {% endblock %}

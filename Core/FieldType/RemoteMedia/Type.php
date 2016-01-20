@@ -7,6 +7,8 @@ use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 
 class Type extends FieldType
 {
@@ -83,14 +85,17 @@ class Type extends FieldType
      */
     protected function createValueFromInput($inputValue)
     {
-        if ($inputValue instanceof Value) {
+        if ($inputValue instanceof InputValue) {
             return $inputValue;
         }
         else if (is_string($inputValue)) {
-            $newValue = new Value();
+            $newValue = new InputValue();
             $newValue->input_uri = $inputValue;
 
             return $newValue;
+        }
+        else if(is_array($inputValue)) {
+            return new InputValue($inputValue);
         }
 
         return $inputValue;
@@ -105,7 +110,14 @@ class Type extends FieldType
      */
     protected function checkValueStructure(BaseValue $value)
     {
-        if ($value instanceof Value && (empty($value->input_uri) || !is_string($value->input_uri))) {
+        if ($value instanceof Value && !is_string($value->public_id)) {
+            throw new InvalidArgumentType(
+                '$value',
+                'string',
+                $value->public_id
+            );
+        }
+        else if ($value instanceof InputValue && !is_string($value->input_uri)) {
             throw new InvalidArgumentType(
                 '$value',
                 'string',
@@ -127,7 +139,7 @@ class Type extends FieldType
             return $this->getEmptyValue();
         }
 
-        $value = new Value($hash);
+        $value = new InputValue($hash);
 
         return $value;
     }
@@ -153,11 +165,15 @@ class Type extends FieldType
      */
     public function toPersistenceValue(SPIValue $value)
     {
-        if ($value instanceof Value) {
+        if ($value instanceof InputValue) {
             return new FieldValue(
                 array(
-                    "data" => $value->input_uri,
-                    "externalData" => $value->input_uri,
+                    "data" => null,
+                    "externalData" => array(
+                        'input_uri' => $value->input_uri,
+                        'alt_text'  => $value->alt_text,
+                        'caption'   => $value->caption
+                    ),
                     "sortKey" => $this->getSortInfo($value),
                 )
             );
@@ -191,30 +207,13 @@ class Type extends FieldType
      */
     static protected function checkValueType($value)
     {
-        if (!$value instanceof Value) {
+        if (!$value instanceof Value && !$value instanceof InputValue) {
             throw new InvalidArgumentType(
                 "\$value",
-                "Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value",
+                "Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value or \"Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\InputValue\",",
                 $value
             );
         }
-    }
-
-    /**
-     * Returns if the given $value is considered empty by the field type
-     *
-     * Default implementation, which performs a "==" check with the value
-     * returned by {@link getEmptyValue()}. Overwrite in the specific field
-     * type, if necessary.
-     *
-     * @param \eZ\Publish\Core\FieldType\Value $value
-     *
-     * @return boolean
-     */
-    public function isEmptyValue(SPIValue $value)
-    {
-        return $value === null || $value == $this->getEmptyValue() ||
-            ($value->url === null && $value->secure_url === null && $value->input_uri === null);
     }
 
     /**

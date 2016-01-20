@@ -13,7 +13,6 @@ class Value extends BaseValue
     public $format = null;
     public $url = null;
     public $secure_url = null;
-    public $input_uri = null;
     public $resource_type = null;
     public $created_at = null;
     public $tags = array();
@@ -23,6 +22,7 @@ class Value extends BaseValue
     public $type = null;
     public $etag = null;
     public $overwritten = null;
+    public $context = array();
 
     /**
      * Returns a string representation of the field value.

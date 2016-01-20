@@ -32,27 +32,13 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $this->cloudinaryUploader = new Uploader();
     }
 
-    public function upload(VersionInfo $versionInfo, Field $field)
+    public function upload($fileUri, $options = array())
     {
-        $options = $this->getUploadOptions($versionInfo, $field);
-
-        return $this->cloudinaryUploader->upload($field->value->externalData, $options);
+        return $this->cloudinaryUploader->upload($fileUri, $options);
     }
 
     public function getFormattedUrl($source, $options = array())
     {
         return cloudinary_url_internal($source, $options);
-    }
-
-    protected function getUploadOptions(VersionInfo $versionInfo, Field $field)
-    {
-        $fileUri = $field->value->externalData;
-        $folder = $versionInfo->contentInfo->id . '/' . $field->id;
-        $options = array(
-            'public_id' => $folder . '/' . pathinfo($fileUri, PATHINFO_FILENAME),
-            'overwrite' => true
-        );
-
-        return $options;
     }
 }
