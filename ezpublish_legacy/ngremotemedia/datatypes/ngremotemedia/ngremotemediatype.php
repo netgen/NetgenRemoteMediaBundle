@@ -1,5 +1,7 @@
 <?php
 
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+
 class NgRemoteMediaType extends eZDataType
 {
 	const DATA_TYPE_STRING = 'ngremotemedia';
@@ -127,7 +129,8 @@ class NgRemoteMediaType extends eZDataType
      */
     public function objectAttributeContent($attribute)
     {
-        return new Handler($attribute);
+        $value = new Value(json_decode($attribute->DataText), true);
+        return $value;
     }
 
     public function onPublish($attribute, $contentObject, $publishedNodes)
