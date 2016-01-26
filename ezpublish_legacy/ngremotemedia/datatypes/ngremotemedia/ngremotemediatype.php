@@ -85,10 +85,19 @@ class NgRemoteMediaType extends eZDataType
         return eZInputValidator::STATE_ACCEPTED;
     }
 
-    /*!
-    */
+    /**
+     * Fetches the HTTP input for the content object attribute.
+     *
+     * @param $http
+     * @param $base
+     * @param $attribute
+     *
+     * @return mixed
+     */
     public function fetchObjectAttributeHTTPInput( $http, $base, $attribute )
     {
+        // @todo: this will need to be overriden!
+
         // Get value of connected media id
         $attributeId = $attribute->attribute('id');
         $data = array(
@@ -107,11 +116,25 @@ class NgRemoteMediaType extends eZDataType
     }
 
     /**
+     * Stores the datatype data to the database which is related to the
+     * object attribute.
+     *
+     * Must return True if the value was stored correctly.
+     *
+     * @param $objectAttribute
+     */
+    function storeObjectAttribute( $objectAttribute )
+    {
+        // @todo this will also probably be neccessary to implement
+    }
+
+    /**
      * Check if attribute has content
      * Called before {$attribute.content} in templates delegates to
      * `objectAttributeContent` to actuall fetch the content
      *
      * @param object $attribute
+     *
      * @return bool
      */
     public function hasObjectAttributeContent($attribute)
@@ -125,7 +148,8 @@ class NgRemoteMediaType extends eZDataType
      * This method is triggered when a template states {$attribute.content}
      *
      * @param object $attribute
-     * @return \remotemedia\models\media\Handler
+     *
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function objectAttributeContent($attribute)
     {
@@ -133,10 +157,21 @@ class NgRemoteMediaType extends eZDataType
         return $value;
     }
 
+    /**
+     * Performs necessary actions with attribute data after object is published,
+     * it means that you have access to published nodes.
+     *
+     * Should return True if the value was stored correctly.
+     * Might be transaction unsafe.
+     *
+     * @param $attribute
+     * @param $contentObject
+     * @param $publishedNodes
+     */
     public function onPublish($attribute, $contentObject, $publishedNodes)
     {
-        $handler = $this->objectAttributeContent($attribute);
-        $handler->reportUsage($contentObject);
+        //$handler = $this->objectAttributeContent($attribute);
+        //$handler->reportUsage($contentObject);
     }
 }
 
