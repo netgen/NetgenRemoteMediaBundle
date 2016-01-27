@@ -11,7 +11,7 @@
   ],
   "require": {
     "ezsystems/ezpublish-kernel": "*",
-    "cloudinary/cloudinary_php": "~1.2.*"
+    "cloudinary/cloudinary_php": "~1.2.0"
   },
   "target-dir": "Netgen/Bundle/RemoteMediaBundle",
   "autoload": {
