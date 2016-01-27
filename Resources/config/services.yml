@@ -1,5 +1,5 @@
 parameters:
-    netgen_remote_media.provider: netgen_remote_media.remote_media.cloudinary
+    netgen_remote_media.provider: "netgen_remote_media.remote_media.cloudinary"
 
 services:
     ezpublish.fieldType.ngremotemedia:
@@ -16,8 +16,8 @@ services:
     ezpublish.fieldType.ngremotemedia.externalStorage:
         class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\CloudinaryStorage
         arguments:
-            - @ezpublish.api.service.content
-            - @netgen_remote_media.remote_media.provider
+            - "@ezpublish.api.service.content"
+            - "@netgen_remote_media.remote_media.provider"
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: ngremotemedia}
 
