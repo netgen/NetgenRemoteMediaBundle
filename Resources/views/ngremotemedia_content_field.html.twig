@@ -1,14 +1,32 @@
-{% block ngremotemedia_field %}
+{% extends 'EzPublishCoreBundle::content_fields.html.twig' %}
 
-    {% set variation = netgen_remote_media(field, fieldSettings, 'T1') %}
-    {% set alt_text = field.value.metaData.alt_text|default('') %}
-    {% set title = field.value.metaData.caption|default('') %}
+{##
+ # This field type block accepts the following parameters:
+ # - string format: either name of one of the named variations, or in the format [W]x[H]
+ # - string alt_text: if set, overrides the alternative text from the image
+ # - string title: used as title if set, otherwise caption from the image is used
+ #}
+{% block ngremotemedia_field %}
+    {% set format = parameters.format|default('800x400') %}
+    {% if parameters.alt_text is defined and parameters.alt_text is not empty %}
+        {% set alt_text = parameters.alt_text %}
+    {% else %}
+        {% set alt_text = field.value.metaData.alt_text|default('') %}
+    {% endif %}
+    {% if parameters.title is defined and parameters.title is not empty %}
+        {% set title = parameters.title %}
+    {% else %}
+        {% set title = field.value.metaData.caption|default('') %}
+    {% endif %}
+
+    {% set variation = netgen_remote_media(field, fieldSettings, format) %}
 
     <img src="{{ variation.url }}"
         {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
         {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
         {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
         {% if title is not empty %}title="{{ title }}"{% endif %}
+        {{ block( 'field_attributes' ) }}
     />
 
 {% endblock %}
