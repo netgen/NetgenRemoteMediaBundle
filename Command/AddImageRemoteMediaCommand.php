@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use eZ\Publish\API\Repository\Repository;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,7 +10,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AddImageRemoteMedia extends ContainerAwareCommand
+/**
+ * example usage php ezpublish/console netgen:remote:add:data 5230 test_image example.jpg
+ */
+class AddImageRemoteMediaCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -66,14 +70,11 @@ class AddImageRemoteMedia extends ContainerAwareCommand
         $repository = $this->getContainer()->get('ezpublish.api.repository');
         $contentService = $repository->getContentService();
         $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
-        $imagePath = $rootDir . $imagePath;
+        $imagePath = $rootDir . '/' . $imagePath;
 
         $repository->beginTransaction();
 
         $contentInfo = $contentService->loadContentInfo($contentId);
-        $contentDraft = $contentService->createContentDraft($contentInfo);
-        $contentUpdateStruct = $contentService->newContentUpdateStruct();
-        $contentUpdateStruct->initialLanguageCode = !empty($language) ? $language : $contentInfo->mainLanguageCode;
 
         $imageInput = new InputValue();
         $imageInput->input_uri = $imagePath;
@@ -83,10 +84,19 @@ class AddImageRemoteMedia extends ContainerAwareCommand
         //$imageInput->variations = array(
         //    'T1' => array('x' => 20, 'y' => 50)
         //);
+
+        $contentUpdateStruct = $contentService->newContentUpdateStruct();
+        $contentUpdateStruct->initialLanguageCode = !empty($language) ? $language : $contentInfo->mainLanguageCode;
         $contentUpdateStruct->setField($fieldIdentifier, $imageInput);
         try {
-            $contentDraft = $contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
-            $content = $contentService->publishVersion($contentDraft->versionInfo);
+            $content = $repository->sudo(
+                function (Repository $repository) use ($contentInfo, $contentUpdateStruct)
+                {
+                    $contentDraft = $repository->getContentService()->createContentDraft($contentInfo);
+                    $contentDraft = $repository->getContentService()->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
+                    return $repository->getContentService()->publishVersion($contentDraft->versionInfo);
+                }
+            );
 
             $repository->commit();
         } catch (\Exception $e) {
