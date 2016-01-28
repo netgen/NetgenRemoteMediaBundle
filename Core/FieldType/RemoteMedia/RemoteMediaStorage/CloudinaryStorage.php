@@ -25,7 +25,7 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
             $fileUri = $data['input_uri'];
             $folder = $versionInfo->contentInfo->id . '/' . $field->id;
             $options = array(
-                'public_id' => $folder . '/' . pathinfo($fileUri, PATHINFO_FILENAME),
+                'public_id' => pathinfo($fileUri, PATHINFO_FILENAME) . '/' . $folder,
                 'overwrite' => true,
                 'context' => array(
                     'alt' => $data['alt_text'],
