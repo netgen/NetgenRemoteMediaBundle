@@ -4,6 +4,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider;
 
 use \Cloudinary;
 use \Cloudinary\Uploader;
+use \Cloudinary\Api;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
@@ -12,6 +13,8 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 class CloudinaryProvider implements RemoteMediaProviderInterface
 {
     protected $cloudinary;
+
+    protected $cloudinaryApi;
 
     protected $cloudinaryUploader;
 
@@ -31,6 +34,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         );
 
         $this->cloudinaryUploader = new Uploader();
+        $this->cloudinaryApi = new Api();
     }
 
     public function upload($fileUri, $options = array())
@@ -117,5 +121,38 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $variation->url = $url;
 
         return $variation;
+    }
+
+    public function listResources()
+    {
+        $resources = $this->cloudinaryApi->resources()->getArrayCopy();
+
+        if (!empty($resources['resources'])) {
+            return $resources['resources'];
+        }
+
+        return array();
+    }
+
+    public function countResources()
+    {
+        return count($this->listResources());
+    }
+
+    public function searchResources($query, $resourceType)
+    {
+        $result = $this->cloudinaryApi->resources(
+            array(
+                "prefix" => $query,
+                "resource_type" => $resourceType,
+                "type" => "upload"
+            )
+        )->getArrayCopy();
+
+        if (!empty($result['resources'])) {
+            return $result['resources'];
+        }
+
+        return array();
     }
 }
