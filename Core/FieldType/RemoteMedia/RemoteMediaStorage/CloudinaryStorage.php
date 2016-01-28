@@ -29,8 +29,8 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
                 'overwrite' => true,
                 'context' => array(
                     'alt' => $data['alt_text'],
-                    'caption' => $data['caption']
-                )
+                    'caption' => $data['caption'],
+                ),
             );
 
             $response = $this->provider->upload(
@@ -43,6 +43,7 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
             $value = $this->provider->getValueFromResponse($response);
 
             $field->value->data = $value;
+
             return true;
         }
 
@@ -56,7 +57,6 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
      * @param array $context
      */
-
     public function getFieldData(VersionInfo $versionInfo, Field $field, array $context)
     {
         $field->value->externalData = array();

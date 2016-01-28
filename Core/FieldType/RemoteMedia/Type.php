@@ -8,8 +8,6 @@ use eZ\Publish\Core\FieldType\ValidationError;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 
 class Type extends FieldType
 {
@@ -24,11 +22,11 @@ class Type extends FieldType
         'formats' => array(
             'type' => 'string',
             'default' => '',
-        )
+        ),
     );
 
     /**
-     * Returns the field type identifier for this field type
+     * Returns the field type identifier for this field type.
      *
      * @return string
      */
@@ -44,7 +42,7 @@ class Type extends FieldType
      *
      * @param \eZ\Publish\SPI\FieldType\Value $value
      *
-     * @return integer
+     * @return int
      */
     public function getName(SPIValue $value)
     {
@@ -88,14 +86,12 @@ class Type extends FieldType
     {
         if ($inputValue instanceof InputValue) {
             return $inputValue;
-        }
-        else if (is_string($inputValue)) {
+        } elseif (is_string($inputValue)) {
             $newValue = new InputValue();
             $newValue->input_uri = $inputValue;
 
             return $newValue;
-        }
-        else if(is_array($inputValue)) {
+        } elseif (is_array($inputValue)) {
             return new InputValue($inputValue);
         }
 
@@ -117,8 +113,7 @@ class Type extends FieldType
                 'string',
                 $value->resourceId
             );
-        }
-        else if ($value instanceof InputValue && !is_string($value->input_uri)) {
+        } elseif ($value instanceof InputValue && !is_string($value->input_uri)) {
             throw new InvalidArgumentType(
                 '$value',
                 'string',
@@ -128,7 +123,7 @@ class Type extends FieldType
     }
 
     /**
-     * Converts an $hash to the Value defined by the field type
+     * Converts an $hash to the Value defined by the field type.
      *
      * @param mixed $hash
      *
@@ -146,7 +141,7 @@ class Type extends FieldType
     }
 
     /**
-     * Converts the given $value into a plain hash format
+     * Converts the given $value into a plain hash format.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value|\eZ\Publish\SPI\FieldType\Value $value
      *
@@ -158,7 +153,7 @@ class Type extends FieldType
     }
 
     /**
-     * Converts a $value to a persistence value
+     * Converts a $value to a persistence value.
      *
      * @param \eZ\Publish\SPI\FieldType\Value $value
      *
@@ -169,21 +164,21 @@ class Type extends FieldType
         if ($value instanceof InputValue) {
             return new FieldValue(
                 array(
-                    "data" => null,
-                    "externalData" => array(
+                    'data' => null,
+                    'externalData' => array(
                         'input_uri' => $value->input_uri,
-                        'alt_text'  => $value->alt_text,
-                        'caption'   => $value->caption,
-                        'variations'=> $value->variations
+                        'alt_text' => $value->alt_text,
+                        'caption' => $value->caption,
+                        'variations' => $value->variations,
                     ),
-                    "sortKey" => $this->getSortInfo($value),
+                    'sortKey' => $this->getSortInfo($value),
                 )
             );
         }
     }
 
     /**
-     * Converts a persistence $fieldValue to a Value
+     * Converts a persistence $fieldValue to a Value.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\FieldValue $fieldValue
      *
@@ -207,12 +202,12 @@ class Type extends FieldType
      *
      * @param mixed $value A value returned by {@see createValueFromInput()}.
      */
-    static protected function checkValueType($value)
+    protected static function checkValueType($value)
     {
         if (!$value instanceof Value && !$value instanceof InputValue) {
             throw new InvalidArgumentType(
-                "\$value",
-                "Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value or \"Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\InputValue\",",
+                '$value',
+                'Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value or "Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\InputValue",',
                 $value
             );
         }
@@ -230,6 +225,7 @@ class Type extends FieldType
         $validationErrors = array();
         if (!is_array($fieldSettings)) {
             $validationErrors[] = new ValidationError('Field settings must be in form of an array');
+
             return $validationErrors;
         }
         foreach ($fieldSettings as $name => $value) {
@@ -262,7 +258,7 @@ class Type extends FieldType
                                 null,
                                 array(
                                     'setting' => $name,
-                                    'format' => $format
+                                    'format' => $format,
                                 )
                             );
                         }
@@ -270,13 +266,14 @@ class Type extends FieldType
                     break;
             }
         }
+
         return $validationErrors;
     }
 
     /**
-     * Returns whether the field type is searchable
+     * Returns whether the field type is searchable.
      *
-     * @return boolean
+     * @return bool
      */
     public function isSearchable()
     {

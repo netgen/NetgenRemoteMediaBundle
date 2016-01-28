@@ -2,7 +2,6 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage;
 
-use eZ\Publish\API\Repository\Exceptions\NotImplementedException;
 use eZ\Publish\SPI\FieldType\FieldStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
@@ -22,16 +21,15 @@ abstract class RemoteMediaStorage implements FieldStorage
     protected $provider;
 
     /**
-     * Constructor
-
+     * Constructor.
+     
      * @param \eZ\Publish\API\Repository\ContentService $contentService
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
      */
     public function __construct(
         ContentService $contentService,
         RemoteMediaProviderInterface $provider
-    )
-    {
+    ) {
         $this->contentService = $contentService;
         $this->provider = $provider;
     }
@@ -56,35 +54,31 @@ abstract class RemoteMediaStorage implements FieldStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
      * @param array $context
      */
-
     abstract public function getFieldData(VersionInfo $versionInfo, Field $field, array $context);
 
     /**
-     * Deletes field data
+     * Deletes field data.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param array $fieldIds Array of field IDs
      * @param array $context
      *
-     * @return boolean
+     * @return bool
      */
-
-    public function deleteFieldData( VersionInfo $versionInfo, array $fieldIds, array $context )
+    public function deleteFieldData(VersionInfo $versionInfo, array $fieldIds, array $context)
     {
-        $fields = $this->contentService->loadContentByVersionInfo( $versionInfo )->getFields();
-        foreach ( $fields as $field )
-        {
-            if ( in_array( $field->id, $fieldIds ) )
-            {
+        $fields = $this->contentService->loadContentByVersionInfo($versionInfo)->getFields();
+        foreach ($fields as $field) {
+            if (in_array($field->id, $fieldIds)) {
                 // @todo (if possible): check if used elsewhere, if not, remove from remote
             }
         }
     }
 
     /**
-     * Checks if field type has external data to deal with
+     * Checks if field type has external data to deal with.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasFieldData()
     {
@@ -92,7 +86,7 @@ abstract class RemoteMediaStorage implements FieldStorage
     }
 
     /**
-     * Get index data for external data for search backend
+     * Get index data for external data for search backend.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
@@ -117,10 +111,10 @@ abstract class RemoteMediaStorage implements FieldStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $originalField
      * @param array $context
      *
-     * @return null|boolean Same as {@link \eZ\Publish\SPI\FieldType\FieldStorage::storeFieldData()}.
+     * @return null|bool Same as {@link \eZ\Publish\SPI\FieldType\FieldStorage::storeFieldData()}.
      */
     public function copyLegacyField(VersionInfo $versionInfo, Field $field, Field $originalField, array $context)
     {
-        return $this->storeFieldData( $versionInfo, $field, $context );
+        return $this->storeFieldData($versionInfo, $field, $context);
     }
 }

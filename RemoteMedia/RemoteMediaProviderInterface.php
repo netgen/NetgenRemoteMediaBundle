@@ -2,14 +2,15 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
 interface RemoteMediaProviderInterface
 {
     /**
-     * @param $fileUri
+     * Uploads the local resource to remote storage.
+     *
+     * @param string $fileUri
      * @param array $options
      *
      * @return mixed
@@ -17,7 +18,9 @@ interface RemoteMediaProviderInterface
     public function upload($fileUri, $options = array());
 
     /**
-     * @param $source
+     * Gets the absolute url of the remote resource formatted according to options provided.
+     *
+     * @param string $source
      * @param array $options
      *
      * @return string
@@ -25,35 +28,45 @@ interface RemoteMediaProviderInterface
     public function getFormattedUrl($source, $options = array());
 
     /**
-     * @param $response
+     * Transforms response from the remote storage to field type value.
+     *
+     * @param mixed $response
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function getValueFromResponse($response);
 
     /**
-     * @param Value $value
+     * Gets the remote media Variation.
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param array $namedFormats
-     * @param $format
-     * @param bool|true $secure
+     * @param string $format
+     * @param bool $secure
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
     public function getVariation(Value $value, array $namedFormats, $format, $secure = true);
 
     /**
+     * Lists all available resources from the remote storage.
+     *
      * @return array
      */
     public function listResources();
 
     /**
+     * Counts available resources from the remote storage.
+     *
      * @return int
      */
     public function countResources();
 
     /**
-     * @param $query
-     * @param $resourceType
+     * Searches for the remote resource containing term in the query.
+     *
+     * @param string $query
+     * @param string $resourceType
      *
      * @return array
      */

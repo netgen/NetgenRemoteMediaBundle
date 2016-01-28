@@ -83,10 +83,10 @@ class AddImageRemoteMedia extends ContainerAwareCommand
         //$imageInput->variations = array(
         //    'T1' => array('x' => 20, 'y' => 50)
         //);
-        $contentUpdateStruct->setField( $fieldIdentifier, $imageInput );
+        $contentUpdateStruct->setField($fieldIdentifier, $imageInput);
         try {
-            $contentDraft = $contentService->updateContent( $contentDraft->versionInfo, $contentUpdateStruct );
-            $content = $contentService->publishVersion( $contentDraft->versionInfo );
+            $contentDraft = $contentService->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
+            $content = $contentService->publishVersion($contentDraft->versionInfo);
 
             $repository->commit();
         } catch (\Exception $e) {

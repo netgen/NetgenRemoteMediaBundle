@@ -3,7 +3,6 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
 use eZ\Publish\API\Repository\Repository;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Example usage:
- * php ezpublish/console netgen:remotemedia:add:field ng_blog_post remote_image "Remote image" --formats=T1,200x200 --formats=T2,250x250
+ * php ezpublish/console netgen:remotemedia:add:field ng_blog_post remote_image "Remote image" --formats=T1,200x200 --formats=T2,250x250.
  */
 class AddRemoteMediaFieldCommand extends ContainerAwareCommand
 {
@@ -47,7 +46,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
                 'formats',
                 'f',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                "Variations in the format [variationName,WxH]",
+                'Variations in the format [variationName,WxH]',
                 array()
             )
         ;
@@ -73,15 +72,14 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $contentTypeNames = $contentType->getNames();
         $languageCodes = array_keys($contentTypeNames);
         $names = array();
-        foreach($languageCodes as $languageCode) {
+        foreach ($languageCodes as $languageCode) {
             $names[$languageCode] = $fieldName;
         }
 
         $repository->beginTransaction();
 
         $contentTypeDraft = $repository->sudo(
-            function (Repository $repository) use ($contentType)
-            {
+            function (Repository $repository) use ($contentType) {
                 return $repository->getContentTypeService()->createContentTypeDraft($contentType);
             }
         );
@@ -91,15 +89,15 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $fieldDefCreate->names = $names;
         if (!empty($variations)) {
             $fieldDefCreate->fieldSettings = array(
-                'formats' => $variations
+                'formats' => $variations,
             );
         }
 
         try {
             $repository->sudo(
-                function (Repository $repository) use ($contentTypeDraft, $fieldDefCreate)
-                {
+                function (Repository $repository) use ($contentTypeDraft, $fieldDefCreate) {
                     $repository->getContentTypeService()->addFieldDefinition($contentTypeDraft, $fieldDefCreate);
+
                     return $repository->getContentTypeService()->publishContentTypeDraft($contentTypeDraft);
                 }
             );

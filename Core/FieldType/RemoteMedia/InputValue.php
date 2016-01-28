@@ -7,8 +7,8 @@ use eZ\Publish\Core\FieldType\Value as BaseValue;
 class InputValue extends BaseValue
 {
     public $input_uri = null;
-    public $alt_text = "";
-    public $caption = "";
+    public $alt_text = '';
+    public $caption = '';
     public $variations = array();
 
     /**
