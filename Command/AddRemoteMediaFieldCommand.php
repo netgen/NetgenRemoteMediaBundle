@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use eZ\Publish\API\Repository\Repository;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -57,22 +58,15 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $fieldDefIdentifier = $input->getArgument('field_identifier');
         $fieldName = $input->getArgument('field_name');
         $fieldPosition = (int)$input->getOption('field_position');
-
         $formats = $input->getOption('formats');
+
+        $repository = $this->getContainer()->get('ezpublish.api.repository');
 
         $variations = array();
         foreach ($formats as $format) {
             $exploded = explode(',', $format);
             $variations[$exploded[0]] = $exploded[1];
         }
-
-        $repository = $this->getContainer()->get('ezpublish.api.repository');
-
-        $repository->setCurrentUser(
-            $repository->getUserService()->loadUser(14)
-        );
-
-        $repository->beginTransaction();
 
         $contentTypeService = $repository->getContentTypeService();
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
@@ -83,20 +77,32 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
             $names[$languageCode] = $fieldName;
         }
 
-        $contentTypeDraft = $contentTypeService->createContentTypeDraft($contentType);
+        $repository->beginTransaction();
+
+        $contentTypeDraft = $repository->sudo(
+            function (Repository $repository) use ($contentType)
+            {
+                return $repository->getContentTypeService()->createContentTypeDraft($contentType);
+            }
+        );
+
+        $fieldDefCreate = $contentTypeService->newFieldDefinitionCreateStruct($fieldDefIdentifier, 'ngremotemedia');
+        $fieldDefCreate->position = $fieldPosition;
+        $fieldDefCreate->names = $names;
+        if (!empty($variations)) {
+            $fieldDefCreate->fieldSettings = array(
+                'formats' => $variations
+            );
+        }
 
         try {
-            $fieldDefCreate = $contentTypeService->newFieldDefinitionCreateStruct($fieldDefIdentifier, 'ngremotemedia');
-            $fieldDefCreate->position = $fieldPosition;
-            $fieldDefCreate->names = $names;
-            if (!empty($variations)) {
-                $fieldDefCreate->fieldSettings = array(
-                    'formats' => $variations
-                );
-            }
-
-            $contentTypeService->addFieldDefinition($contentTypeDraft, $fieldDefCreate);
-            $contentTypeService->publishContentTypeDraft($contentTypeDraft);
+            $repository->sudo(
+                function (Repository $repository) use ($contentTypeDraft, $fieldDefCreate)
+                {
+                    $repository->getContentTypeService()->addFieldDefinition($contentTypeDraft, $fieldDefCreate);
+                    return $repository->getContentTypeService()->publishContentTypeDraft($contentTypeDraft);
+                }
+            );
 
             $repository->commit();
         } catch (\Exception $e) {

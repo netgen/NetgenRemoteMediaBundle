@@ -64,33 +64,27 @@ class AddImageRemoteMedia extends ContainerAwareCommand
         $language = $input->getOption('language');
 
         $repository = $this->getContainer()->get('ezpublish.api.repository');
-
-        $repository->setCurrentUser(
-            $repository->getUserService()->loadUser(14)
-        );
-
-        $repository->beginTransaction();
-
         $contentService = $repository->getContentService();
-        
         $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
         $imagePath = $rootDir . $imagePath;
 
-        try {
-            $contentInfo = $contentService->loadContentInfo($contentId);
-            $contentDraft = $contentService->createContentDraft($contentInfo);
-            $contentUpdateStruct = $contentService->newContentUpdateStruct();
-            $contentUpdateStruct->initialLanguageCode = !empty($language) ? $language : $contentInfo->mainLanguageCode;
+        $repository->beginTransaction();
 
-            $imageInput = new InputValue();
-            $imageInput->input_uri = $imagePath;
-            $imageInput->alt_text = $altText;
-            $imageInput->caption = $caption;
-            // it is also possible to set coordinations per named variation
-            //$imageInput->variations = array(
-            //    'T1' => array('x' => 20, 'y' => 50)
-            //);
-            $contentUpdateStruct->setField( $fieldIdentifier, $imageInput );
+        $contentInfo = $contentService->loadContentInfo($contentId);
+        $contentDraft = $contentService->createContentDraft($contentInfo);
+        $contentUpdateStruct = $contentService->newContentUpdateStruct();
+        $contentUpdateStruct->initialLanguageCode = !empty($language) ? $language : $contentInfo->mainLanguageCode;
+
+        $imageInput = new InputValue();
+        $imageInput->input_uri = $imagePath;
+        $imageInput->alt_text = $altText;
+        $imageInput->caption = $caption;
+        // it is also possible to set coordinations per named variation
+        //$imageInput->variations = array(
+        //    'T1' => array('x' => 20, 'y' => 50)
+        //);
+        $contentUpdateStruct->setField( $fieldIdentifier, $imageInput );
+        try {
             $contentDraft = $contentService->updateContent( $contentDraft->versionInfo, $contentUpdateStruct );
             $content = $contentService->publishVersion( $contentDraft->versionInfo );
 
