@@ -97,7 +97,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             'signature' => $response['signature'] ?: '',
             'type' => $response['type'] ?: '',
             'etag' => $response['etag'] ?: '',
-            'overwritten' => $response['overwritten'] ?: '',
+            'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
             'alt_text' => !empty($response['context']['custom']['alt']) ? $response['context']['custom']['alt'] : '',
             'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
         );
