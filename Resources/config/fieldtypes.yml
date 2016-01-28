@@ -1,0 +1,19 @@
+services:
+    ezpublish.fieldType.ngremotemedia:
+        class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Type
+        parent: ezpublish.fieldType
+        tags:
+            - {name: ezpublish.fieldType, alias: ngremotemedia}
+
+    ezpublish.fieldType.ngremotemedia.converter:
+        class: Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\RemoteMediaConverter
+        tags:
+            - {name: ezpublish.storageEngine.legacy.converter, alias: ngremotemedia}
+
+    ezpublish.fieldType.ngremotemedia.externalStorage:
+        class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\CloudinaryStorage
+        arguments:
+            - "@ezpublish.api.service.content"
+            - "@netgen_remote_media.remote_media.provider"
+        tags:
+            - {name: ezpublish.fieldType.externalStorageHandler, alias: ngremotemedia}

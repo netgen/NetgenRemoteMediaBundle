@@ -24,6 +24,7 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $loader->load('parameters.yml');
         $loader->load('services.yml');
         $loader->load('templating.yml');
+        $loader->load('fieldtypes.yml');
 
         $provider = $container->getParameter('netgen_remote_media.provider');
         $container->setAlias('netgen_remote_media.remote_media.provider', $provider);
