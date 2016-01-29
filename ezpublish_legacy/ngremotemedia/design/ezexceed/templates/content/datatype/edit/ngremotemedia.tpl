@@ -11,11 +11,11 @@
     data-url-root='{"/"|ezurl("no")}'
     {literal}
     data-paths='{
-        "remotemedia" : "/extension/remotemedia/design/ezexceed/javascript/",
-        "brightcove" : "/extension/remotemedia/design/standard/javascript/libs/BrightcoveExperiences"
+        "remotemedia" : "/extension/ngremotemedia/design/ezexceed/javascript/",
+        "brightcove" : "/extension/ngremotemedia/design/standard/javascript/libs/BrightcoveExperiences"
     }'
     {/literal}
-    data-bootstrap='{$media.data|json}'
+    data-bootstrap='{$value|json}'
 >
 
 {*
@@ -34,13 +34,12 @@
 
         {include uri="design:parts/remotemedia/preview.tpl"
             attribute=$attribute
-            media=$media
-            value=$value}
+            value=$media}
 
         <div class="remotemedia-alttext">
             <span class="help-block description">{'Alternate text'|i18n('remotemedia')}</span>
             <input type="text"
-                   name="{$attribute_base}_alttext_{$attribute.id}" value="{$value.metaData.alt_text}" class="media-alttext data">
+                   name="{$attribute_base}_alttext_{$attribute.id}" value="{$uploadedFile.metaData.alt_text}" class="media-alttext data">
         </div>
         <div class="remotemedia-tags">
             <div class="input-append add-tag">

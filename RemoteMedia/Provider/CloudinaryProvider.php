@@ -108,7 +108,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $value->secure_url = $response['secure_url'];
         $value->size = $response['bytes'];
         $value->metaData = $metaData;
-        $value->variations = $response['variations'];
+        $value->variations = !empty($response['variations']) ? $response['variations'] : array();
 
         return $value;
     }
@@ -244,5 +244,11 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         }
 
         return array();
+    }
+
+
+    public function getRemoteResource($resourceId)
+    {
+        return $this->cloudinaryApi->resource($resourceId);
     }
 }

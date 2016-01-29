@@ -1,0 +1,3 @@
+netgen_remote_media_upload:
+    path: /ezexceed/remotemedia/upload
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:uploadFile }

@@ -5,7 +5,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 class NgRemoteMediaType extends eZDataType
 {
 	const DATA_TYPE_STRING = 'ngremotemedia';
-    const FIELD_FORMATS = 'data_text1';
+    const FIELD_FORMATS = 'data_text4'; // the only one with length of 255
     const FIELD_VALUE = 'data_text';
 
     /**
@@ -94,25 +94,38 @@ class NgRemoteMediaType extends eZDataType
      *
      * @return mixed
      */
-    public function fetchObjectAttributeHTTPInput( $http, $base, $attribute )
+    public function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
-        // @todo: this will need to be overriden!
-
-        // Get value of connected media id
-        $attributeId = $attribute->attribute('id');
+        $attributeId = $contentObjectAttribute->attribute('id');
         $data = array(
-            'id' =>  $http->variable($base . '_media_id_' . $attributeId)
+            'public_id' =>  $http->variable($base . '_media_id_' . $attributeId)
         );
 
-        $extras = $http->variable($base . '_data_' . $attributeId);
+        /*$extras = $http->variable($base . '_data_' . $attributeId);
         if ($extras) {
             $data += json_decode($extras, true);
-        }
+        }*/
         $data['alttext'] = $http->variable($base . '_alttext_' . $attributeId, '');
 
-        $handler = new Handler($attribute);
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
 
-        return $data['id'] ? $handler->setMedia($data) : $handler->remove();
+        $response = $provider->getRemoteResource($data['public_id'])->getArrayCopy();
+
+        $contentClassAttribute = $contentObjectAttribute->contentClassAttribute();
+        $attributeVariations = json_decode($contentClassAttribute->attribute(self::FIELD_FORMATS), true);
+
+        $variations = array();
+        foreach($attributeVariations as $name => $dimension) {
+            $variations[$name] = array('x' => 0, 'y' => 0);
+        }
+
+        $response['variations'] = $variations;
+
+        $value = $provider->getValueFromResponse($response);
+        $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($value));
+
+        return true;
     }
 
     /**

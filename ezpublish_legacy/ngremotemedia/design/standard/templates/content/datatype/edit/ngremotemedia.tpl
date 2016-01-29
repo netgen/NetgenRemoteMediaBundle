@@ -4,7 +4,7 @@
 }
 
 {run-once}
-{foreach ezcssfiles(array('jquery.jcrop.css', 'remotemedia.css')) as $file}
+{foreach ezcssfiles(array('jquery.jcrop.css', 'ngremotemedia.css')) as $file}
 <link rel="stylesheet" type="text/css" href="{$file}?v2.0.0" />
 {/foreach}
 {ezscript_require( array(
