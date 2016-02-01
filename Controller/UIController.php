@@ -39,9 +39,10 @@ class UIController extends Controller
             $provider = $this->container->get('netgen_remote_media.remote_media.provider');
 
             $fileUri = $file->getRealPath();
-            $folder = $attributeId . '/' . $contentVersion;
+            $folder = $attributeId . '/' . $contentVersionId;
+
             $options = array(
-                'public_id' => pathinfo($fileUri, PATHINFO_FILENAME) . '/' . $folder,
+                'public_id' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '/' . $folder,
                 'overwrite' => true,
                 'context' => array(
                     'alt' => '',
