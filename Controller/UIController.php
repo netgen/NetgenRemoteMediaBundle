@@ -242,4 +242,48 @@ class UIController extends Controller
 
         return new JsonResponse($responseData, 200);
     }
+
+    public function browseRemoteMediaAction(Request $request, $attributeId, $contentVersionId)
+    {
+        $limit = 25;
+        $query = $request->get('query', '');
+
+        $provider = $this->get('netgen_remote_media.remote_media.provider');
+
+        if (empty($query)) {
+            $list = $provider->listResources();
+        } else {
+            $list = $provider->searchResources($query, 'image');
+        }
+
+        $listFormatted = array();
+        foreach ($list as $hit) {
+            $fileName = explode('/', $hit['public_id']);
+            $fileName = $fileName[0];
+            $listFormatted[] = array(
+                'id' => $hit['public_id'],
+                'tags' => $hit['tags'],
+                'type' => $hit['resource_type'],
+                'filesize' => $hit['bytes'],
+                'width' => $hit['width'],
+                'height' => $hit['height'],
+                'filename' => $fileName,
+                'shared' => array(),
+                'scalesTo' => array('quality' => 100, 'ending' => $hit['format']),
+                'host' => 'cloudinary'
+            );
+        }
+
+        $results = array(
+            'total' => count($list),
+            'hits' => $listFormatted
+        );
+
+        $responseData = array(
+            'keymediaId' => 0,
+            'results' => $results
+        );
+
+        return new JsonResponse($responseData, 200);
+    }
 }
