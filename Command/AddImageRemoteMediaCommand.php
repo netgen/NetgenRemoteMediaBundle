@@ -82,7 +82,12 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         $imageInput->caption = $caption;
         // it is also possible to set coordinations per named variation
         //$imageInput->variations = array(
-        //    'T1' => array('x' => 20, 'y' => 50)
+        //    'T1' => array(
+        //        'x' => 20,
+        //        'y' => 50,
+        //        'crop_w' => 200,
+        //        'crop_h' => 200
+        //    )
         //);
 
         $contentUpdateStruct = $contentService->newContentUpdateStruct();
