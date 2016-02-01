@@ -174,6 +174,14 @@ class Type extends FieldType
                     'sortKey' => $this->getSortInfo($value),
                 )
             );
+        } else if ($value instanceof Value) {
+            return new FieldValue(
+                array(
+                    'data' => $value,
+                    'externalData' => array(),
+                    'sortKey' => $this->getSortInfo($value)
+                )
+            );
         }
     }
 
