@@ -9,3 +9,7 @@ netgen_remote_media_fetch:
 netgen_remote_media_save:
     path: /ezexceed/ngremotemedia/save/{objectId}/{attributeId}/{contentVersionId}
     defaults: { _controller: NetgenRemoteMediaBundle:UI:saveAttribute }
+
+netgen_remote_media_browse:
+    path: /ezexceed/ngremotemedia/browse/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:browseRemoteMedia }
