@@ -55,9 +55,29 @@ class UIController extends Controller
                 $options
             );
 
-            $content = $this->renderView('design:content/datatype/edit/ngremotemedia.tpl', array(
-                'attribute' => $attribute,
-                'uploadedFile' => $result
+            $value = $provider->getValueFromResponse($result);
+            $attribute->setAttribute('data_text', json_encode($value));
+
+            $versionObject = $this->getLegacyKernel()->runCallback(
+                function () use ($attribute)
+                {
+                    return \eZContentObjectVersion::fetchVersion(
+                        $attribute->attribute('version'), $attribute->attribute('contentobject_id')
+                    );
+                }
+            );
+
+            $attribute = $this->getLegacyKernel()->runCallback(
+                function () use ($attribute, $versionObject)
+                {
+                    $attribute->store();
+                    $versionObject->store();
+                    return $attribute;
+                }
+            );
+
+            $content = $this->renderView('NetgenRemoteMediaBundle:user_interface/edit:ngremotemedia.html.twig', array(
+                'attribute' => $attribute
             ));
 
             $result['id'] = $result['public_id'];
@@ -91,10 +111,13 @@ class UIController extends Controller
             }
         );
 
-        $data = json_decode($attribute->attribute('data_text'), true);
-        $variations = $data['variations'];
+        //$data = json_decode($attribute->attribute('data_text'), true);
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $data */
+        $data = $attribute->Content();
+        //$variations = $data->['variations'];
+        $variations = $data->variations;
 
-        $content = $this->renderView('design:content/datatype/edit/ngremotemedia.tpl', array(
+        $content = $this->renderView('NetgenRemoteMediaBundle:user_interface/edit:ngremotemedia.html.twig', array(
             'attribute' => $attribute
         ));
 
@@ -107,7 +130,7 @@ class UIController extends Controller
         }
 
         $responseData = array(
-            'media' => $data,
+            'media' => !empty($data->resourceId) ? $data : false,
             'content' => $content,
             'toScale' => $scaling
         );
@@ -260,6 +283,12 @@ class UIController extends Controller
         foreach ($list as $hit) {
             $fileName = explode('/', $hit['public_id']);
             $fileName = $fileName[0];
+
+            $options = array();
+            $options['crop'] = 'fit';
+            $options['width'] = 160;
+            $options['height'] = 120;
+
             $listFormatted[] = array(
                 'id' => $hit['public_id'],
                 'tags' => $hit['tags'],
@@ -270,7 +299,10 @@ class UIController extends Controller
                 'filename' => $fileName,
                 'shared' => array(),
                 'scalesTo' => array('quality' => 100, 'ending' => $hit['format']),
-                'host' => 'cloudinary'
+                'host' => 'cloudinary',
+                'thumb' => array(
+                    'url' => $provider->getFormattedUrl($hit['public_id'], $options)
+                )
             );
         }
 

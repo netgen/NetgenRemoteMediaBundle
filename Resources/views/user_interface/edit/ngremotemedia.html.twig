@@ -1,0 +1,62 @@
+{% trans_default_domain "ezexceed" %}
+
+
+{% set value = attribute.content %}
+{% set media = netgen_remote_media(value, ['Small', 'Medium', 'Big'], '300x200') %}
+
+{% set attribute_base = "ContentObjectAttribute" %}
+
+<div class="attribute-base"
+     data-handler='remotemedia/remotemedia'
+     data-url-root="/"
+     data-paths='{
+        "remotemedia" : "/extension/ngremotemedia/design/ezexceed/javascript/",
+        "brightcove" : "/extension/ngremotemedia/design/standard/javascript/libs/BrightcoveExperiences"
+    }'
+    data-bootstrap='{{ media|json_encode }}'
+>
+
+{#
+{if and( $media, $handler.mediaFits|not )}
+<p class="error">{'The uploaded media might be too small for this format'|i18n('remotemedia')}</p>
+{/if}
+#}
+
+<input type="hidden" name="{{ attribute_base }}_media_id_{{ attribute.attribute('id') }}" value="{{ value.resourceId }}" class="media-id data"/>
+{#<input type="hidden" name="{$attribute_base}_host_{$attribute.id}" value="{$media.host}" class="media-host data"/>#}
+{#<input type="hidden" name="{$attribute_base}_type_{$attribute.id}" value="{$media.type}" class="media-type data"/>#}
+{#<input type="hidden" name="{$attribute_base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending data"/>#}
+
+{% if media %}
+<div class="eze-image">
+
+    {% include "NetgenRemoteMediaBundle:user_interface/edit:preview.html.twig" %}
+
+    <div class="remotemedia-alttext">
+        <span class="help-block description">{{ 'ngremotemedia.edit.alt_text'|trans }}</span>
+        <input type="text"
+               name="{{ attribute_base }}_alttext_{{ attribute.attribute('id') }}" value="{{ value.metaData.alt_text }}" class="media-alttext data">
+    </div>
+    <div class="remotemedia-tags">
+        <div class="input-append add-tag">
+            <input type="text" class="tag" placeholder="{{ 'ngremotemedia.edit.tag.write'|trans }}" data-autosave="off">
+            <button class="btn tag" disabled type="button">{{ 'ngremotemedia.edit.tag.add'|trans }}'</button>
+        </div>
+        <div class="tags"></div>
+    </div>
+</div>
+{% endif %}
+
+<div class="eze-no-image">
+    <button type="button" class="btn from-remotemedia">
+        {{ 'ngremotemedia.edit.browse'|trans }}
+    </button>
+    <span class="upload-container" id="remotemedia-local-file-container-{{ attribute.attribute('id') }}">
+        <button type="button" class="btn upload-from-disk"
+                id="remotemedia-local-file-{{ attribute.attribute('id') }}">
+            {{ 'ngremotemedia.edit.upload'|trans }}
+        </button>
+        <div class="upload-progress hide"><div class="progress"></div></div>
+    </span>
+</div>
+</div>
