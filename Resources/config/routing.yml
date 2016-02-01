@@ -1,3 +1,11 @@
 netgen_remote_media_upload:
     path: /ezexceed/remotemedia/upload
     defaults: { _controller: NetgenRemoteMediaBundle:UI:uploadFile }
+
+netgen_remote_media_fetch:
+    path: /ezexceed/ngremotemedia/fetch/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetch }
+
+netgen_remote_media_save:
+    path: /ezexceed/ngremotemedia/save/{objectId}/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:saveAttribute }

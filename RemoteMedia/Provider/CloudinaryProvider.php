@@ -139,7 +139,6 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         if (array_key_exists($format, $namedFormats)) {
             $selectedFormat = $namedFormats[$format];
             $sizes = explode('x', $selectedFormat);
-            $options['crop'] = 'crop';
         } else {
             $sizes = explode('x', $format);
         }
@@ -150,13 +149,32 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             );
         }
 
-        $options['width'] = $sizes[0];
-        $options['height'] = $sizes[1];
-
         if (array_key_exists($format, $value->variations)) {
             $coords = $value->variations[$format];
-            $options['x'] = $coords['x'];
-            $options['y'] = $coords['y'];
+            if (count($coords) > 2) {
+                $options['transformation'] = array(
+                    array(
+                        'x' => (int)$coords['x'],
+                        'y' => (int)$coords['y'],
+                        'width' => (int)$coords['w'],
+                        'height' => (int)$coords['h'],
+                        'crop' => 'crop',
+                    ),
+                    array(
+                        'width' => $sizes[0],
+                        'height' => $sizes[1],
+                        'crop' => 'fill'
+                    )
+                );
+            } else {
+                $options['x'] = $coords['x'];
+                $options['y'] = $coords['y'];
+            }
+
+        } else {
+            $options['crop'] = 'crop';
+            $options['width'] = $sizes[0];
+            $options['height'] = $sizes[1];
         }
 
         $url = $this->getFormattedUrl(
