@@ -34,12 +34,14 @@
 
         {include uri="design:parts/remotemedia/preview.tpl"
             attribute=$attribute
-            value=$media}
+            value=$value
+            media=$media
+        }
 
         <div class="remotemedia-alttext">
             <span class="help-block description">{'Alternate text'|i18n('remotemedia')}</span>
             <input type="text"
-                   name="{$attribute_base}_alttext_{$attribute.id}" value="{$uploadedFile.metaData.alt_text}" class="media-alttext data">
+                   name="{$attribute_base}_alttext_{$attribute.id}" value="{$media.metaData.alt_text}" class="media-alttext data">
         </div>
         <div class="remotemedia-tags">
             <div class="input-append add-tag">

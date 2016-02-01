@@ -15,6 +15,6 @@
                 value="{'Remove current media'|i18n('remotemedia')}">×</button>
         {/if}
 
-        {include uri="design:parts/overlay_action_button.tpl" media=$media value=$value}
+        {include uri="design:parts/overlay_action_button-1.tpl" media=$media value=$value attribute=$attribute}
     </div>
 {/if}
