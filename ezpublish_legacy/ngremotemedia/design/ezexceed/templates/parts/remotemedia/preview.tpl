@@ -9,11 +9,9 @@
     <div class="thumbnail">
         <img src="{$media.url}" />
 
-        {if eq($attribute.content.id, 0)|not}
         <button type="button" class="close remove"
                 name="CustomActionButton[{$attribute.id}_delete_media]"
                 value="{'Remove current media'|i18n('remotemedia')}">×</button>
-        {/if}
 
         {include uri="design:parts/overlay_action_button-1.tpl" media=$media value=$value attribute=$attribute}
     </div>
