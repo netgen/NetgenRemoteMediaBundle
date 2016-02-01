@@ -172,7 +172,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             }
 
         } else {
-            $options['crop'] = 'crop';
+            $options['crop'] = 'fit';
             $options['width'] = $sizes[0];
             $options['height'] = $sizes[1];
         }
