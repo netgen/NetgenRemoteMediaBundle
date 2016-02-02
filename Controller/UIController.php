@@ -274,16 +274,23 @@ class UIController extends Controller
 
     public function browseRemoteMediaAction(Request $request, $attributeId, $contentVersionId)
     {
+        $offset = $request->get('offset', 0);
+
+        $hardLimit = 500;
         $limit = 25;
-        $query = $request->get('query', '');
+        $query = $request->get('q', '');
 
         $provider = $this->get('netgen_remote_media.remote_media.provider');
 
         if (empty($query)) {
-            $list = $provider->listResources();
+            $list = $provider->listResources($hardLimit);
         } else {
-            $list = $provider->searchResources($query, 'image');
+            $list = $provider->searchResources($query, 'image', $hardLimit);
         }
+
+        $count = count($list);
+
+        $list = array_slice($list, $offset, $limit);
 
         $listFormatted = array();
         foreach ($list as $hit) {
@@ -313,7 +320,7 @@ class UIController extends Controller
         }
 
         $results = array(
-            'total' => count($list),
+            'total' => $count,
             'hits' => $listFormatted
         );
 
