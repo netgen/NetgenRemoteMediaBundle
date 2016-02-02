@@ -26,12 +26,7 @@ class UIController extends Controller
             );
         }
 
-        $attribute = $this->getLegacyKernel()->runCallback(
-            function () use ($attributeId, $contentVersionId)
-            {
-                return \eZContentObjectAttribute::fetch($attributeId, $contentVersionId);
-            }
-        );
+        $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
 
         $isRemoteMedia = $attribute->attribute('data_type_string') === 'ngremotemedia';
 
@@ -73,14 +68,7 @@ class UIController extends Controller
                 }
             );
 
-            $attribute = $this->getLegacyKernel()->runCallback(
-                function () use ($attribute, $versionObject)
-                {
-                    $attribute->store();
-                    $versionObject->store();
-                    return $attribute;
-                }
-            );
+            $attribute = $this->legacySaveAttribute($attribute, $versionObject);
 
             $content = $this->renderView('NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig', array(
                 'attribute' => $attribute
@@ -110,12 +98,7 @@ class UIController extends Controller
 
     public function fetchAction(Request $request, $attributeId, $contentVersionId)
     {
-        $attribute = $this->getLegacyKernel()->runCallback(
-            function () use ($attributeId, $contentVersionId)
-            {
-                return \eZContentObjectAttribute::fetch($attributeId, $contentVersionId);
-            }
-        );
+        $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
 
         //$data = json_decode($attribute->attribute('data_text'), true);
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $data */
@@ -159,12 +142,7 @@ class UIController extends Controller
 
         $contentService = $this->getRepository()->getContentService();
 
-        $attribute = $this->getLegacyKernel()->runCallback(
-            function () use ($attributeId, $contentVersionId)
-            {
-                return \eZContentObjectAttribute::fetch($attributeId, $contentVersionId);
-            }
-        );
+        $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
 
         $isKeymediaAttribute = ($attribute->attribute('data_type_string') == 'ngremotemedia' ? true : false);
 
@@ -190,6 +168,7 @@ class UIController extends Controller
             $versionObject->setAttribute('status', \eZContentObjectVersion::STATUS_DRAFT);
         }
 
+        // @todo: switch to $attribute->Content(); which should return Value
         $value = json_decode($attribute->attribute('data_text'), true);
 
         $variations = $value['variations'];
@@ -230,14 +209,7 @@ class UIController extends Controller
         $attribute->setAttribute('data_text', json_encode($value));
         $versionObject->setAttribute('remote_image', $attribute);
 
-        $this->getLegacyKernel()->runCallback(
-            function () use ($attribute, $versionObject)
-            {
-                $attribute->store();
-                $versionObject->store();
-                return;
-            }
-        );
+        $attribute = $this->legacySaveAttribute($attribute, $versionObject);
 
         $provider = $this->container->get('netgen_remote_media.remote_media.provider');
 
@@ -330,5 +302,118 @@ class UIController extends Controller
         );
 
         return new JsonResponse($responseData, 200);
+    }
+
+    public function updateTagsAction(Request $request, $attributeId, $contentVersionId)
+    {
+        $resourceId = $request->get('id', '');
+        $tags = $request->get('tags', array());
+
+        if (empty($resourceId) || empty($tags)) {
+            return new JsonResponse(
+                array(
+                    'error_text' => 'Not enough arguments',
+                    'content' => null
+                ),
+                400
+            );
+        }
+
+        $provider = $this->get('netgen_remote_media.remote_media.provider');
+
+        $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
+        $value = $attribute->Content();
+        $metaData = $value->metaData;
+        $originalTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
+
+        if (count($tags) > count($originalTags)) {
+            // we are adding tags
+            $newTags = array_diff($tags, $originalTags);
+            foreach($newTags as $tag) {
+                $result = $provider->addTagToResource($resourceId, $tag);
+            }
+        } else {
+            // we are removing tags
+            $removedTags = array_diff($originalTags, $tags);
+            foreach($removedTags as $tag) {
+                $result = $provider->removeTagFromResource($resourceId, $tag);
+            }
+        }
+
+        $metaData['tags'] = $tags;
+        $value->metaData = $metaData;
+        $attribute->setAttribute('data_text', json_encode($value));
+        $this->legacySaveAttribute($attribute);
+
+        $responseData = array(
+            'content' => json_encode($value)
+        );
+
+        return new JsonResponse($responseData, 200);
+    }
+
+    public function changeAltText(Request $request, $attributeId, $contentVersionId)
+    {
+        $altText = $request->get('alt', '');
+        $resourceId = $request->get('id', '');
+
+        $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
+        $value = $attribute->Content();
+
+        $metaData = $value->metaData;
+        $originalAltText = !empty($metaData['alt_text']) ? $metaData['alt_text'] : '';
+
+        if ($altText === $originalAltText) {
+            return new JsonResponse(
+                array(
+                    'done'
+                ),
+                200
+            );
+        }
+
+        $context = array(
+            'alt' => $altText
+        );
+
+        $provider = $this->get('netgen_remote_media.remote_media.provider');
+        $result = $provider->updateResourceContext($resourceId, $context);
+
+        $metaData['alt_text'] = $altText;
+        $value->metaData = $metaData;
+        $attribute->setAttribute('data_text', json_encode($value));
+        $this->legacySaveAttribute($attribute);
+
+        $responseData = array(
+            'content' => json_encode($value)
+        );
+
+        return new JsonResponse($responseData, 200);
+    }
+
+    protected function legacyGetAttribute($attributeId, $contentVersionId)
+    {
+        return $this->getLegacyKernel()->runCallback(
+            function () use ($attributeId, $contentVersionId)
+            {
+                return \eZContentObjectAttribute::fetch($attributeId, $contentVersionId);
+            }
+        );
+    }
+
+    protected function legacySaveAttribute($attribute, $versionObject = false)
+    {
+        return $this->getLegacyKernel()->runCallback(
+            function () use ($attribute, $versionObject)
+            {
+                $attribute->store();
+                if ($versionObject) {
+                    $versionObject->store();
+                }
+                return $attribute;
+            }
+        );
     }
 }

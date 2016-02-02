@@ -13,3 +13,7 @@ netgen_remote_media_save:
 netgen_remote_media_browse:
     path: /ezexceed/ngremotemedia/browse/{attributeId}/{contentVersionId}
     defaults: { _controller: NetgenRemoteMediaBundle:UI:browseRemoteMedia }
+
+netgen_remote_media_add_tag:
+    path: /ezexceed/ngremotemedia/tag/add/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:updateTags }
