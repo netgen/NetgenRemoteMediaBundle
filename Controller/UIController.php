@@ -41,9 +41,11 @@ class UIController extends Controller
             $fileUri = $file->getRealPath();
             $folder = $attributeId . '/' . $contentVersionId;
 
+            // clean up file name
             $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $clean = preg_replace( "/[^\p{L}|\p{N}]+/u", "_", $fileName );
             $cleanFileName = preg_replace( "/[\p{Z}]{2,}/u", "_", $clean );
+            $cleanFileName = rtrim($cleanFileName, '_');
 
             $options = array(
                 'public_id' => $cleanFileName . '/' . $folder,
