@@ -115,12 +115,14 @@ class NgRemoteMediaType extends eZDataType
         $contentClassAttribute = $contentObjectAttribute->contentClassAttribute();
         $attributeVariations = json_decode($contentClassAttribute->attribute(self::FIELD_FORMATS), true);
 
-        $variations = array();
+        $value = $contentObjectAttribute->Content();
+
+        //$variations = array();
         /*foreach($attributeVariations as $name => $dimension) {
             $variations[$name] = array();
         }*/
 
-        $response['variations'] = $variations;
+        $response['variations'] = $value->variations;
 
         $value = $provider->getValueFromResponse($response);
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($value));
@@ -138,7 +140,6 @@ class NgRemoteMediaType extends eZDataType
      */
     function storeObjectAttribute( $objectAttribute )
     {
-        // @todo this will also probably be neccessary to implement
     }
 
     /**
