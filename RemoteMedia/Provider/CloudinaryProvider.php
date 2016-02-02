@@ -193,9 +193,9 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function listResources()
+    public function listResources($limit = 10)
     {
-        $resources = $this->cloudinaryApi->resources(array('tags' => true))->getArrayCopy();
+        $resources = $this->cloudinaryApi->resources(array('tags' => true, 'max_results' => $limit))->getArrayCopy();
 
         if (!empty($resources['resources'])) {
             return $resources['resources'];
@@ -222,7 +222,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function searchResources($query, $resourceType)
+    public function searchResources($query, $resourceType, $limit = 10)
     {
         $result = $this->cloudinaryApi->resources(
             array(
@@ -230,6 +230,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
                 'resource_type' => $resourceType,
                 'type' => 'upload',
                 'tags' => true,
+                'max_results' => $limit
             )
         )->getArrayCopy();
 
