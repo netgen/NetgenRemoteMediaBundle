@@ -193,4 +193,49 @@
   top: 0px !important;
   left: 0px !important; }
 
+.attribute.ngremotemedia .remotemedia-alttext {
+  clear: both; }
+
+.eze .eze-object-attributes .ngremotemedia .btn {
+  margin: 0 5px 5px 0; }
+.eze .eze-object-attributes .ngremotemedia .scale img {
+  margin: -3px 0 0 -5px; }
+.eze .eze-object-attributes .ngremotemedia .plupload {
+  overflow: hidden; }
+.eze .eze-object-attributes .ngremotemedia .eze-no-image {
+  clear: both; }
+.eze .eze-object-attributes .ngremotemedia .thumbnail {
+  position: relative;
+  margin: 0 0 10px 0;
+  background: white;
+  float: left; }
+  .eze .eze-object-attributes .ngremotemedia .thumbnail img.info {
+    border-radius: 2px;
+    min-height: 80px;
+    min-width: 120px; }
+    .eze .eze-object-attributes .ngremotemedia .thumbnail img.info.icon-32 {
+      min-height: 0;
+      min-width: 0; }
+  .eze .eze-object-attributes .ngremotemedia .thumbnail .edit-image {
+    position: absolute;
+    bottom: 10px;
+    left: 10px; }
+  .eze .eze-object-attributes .ngremotemedia .thumbnail .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 4px 10px 8px 10px;
+    color: white;
+    opacity: 1; }
+  .eze .eze-object-attributes .ngremotemedia .thumbnail:hover .close {
+    -webkit-transition: background 0.2s ease;
+    -moz-transition: background 0.2s ease;
+    -o-transition: background 0.2s ease;
+    transition: background 0.2s ease;
+    background: white;
+    border-bottom-left-radius: 4px;
+    color: black; }
+.eze .eze-object-attributes .ngremotemedia .ngremotemedia-tags {
+  clear: both; }
+
 /*# sourceMappingURL=ngremotemedia.css.map */

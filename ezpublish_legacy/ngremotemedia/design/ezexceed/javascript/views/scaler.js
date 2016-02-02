@@ -88,7 +88,7 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
             fitTo: function(w, h, maxWidth, maxHeight) {
                 var ratio = Math.min(maxWidth / w, maxHeight / h);
                 return { w: Math.floor(w*ratio), h: Math.floor(h*ratio) };
-             },
+            },
 
             updateScalerSize: function(media){
                 this.SIZE = this.fitTo(media.get('file').width, media.get('file').height, this.$el.width(), this.$el.height() - 100);

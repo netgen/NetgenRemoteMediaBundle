@@ -301,5 +301,64 @@
     left:0px !important;
 }
 
+.attribute.ngremotemedia .remotemedia-alttext {
+    clear:both;
+}
 
+.eze {
 
+  .eze-object-attributes {
+
+    .ngremotemedia {
+      .btn {
+        margin: 0 5px 5px 0;
+      }
+      .scale img {
+        margin: -3px 0 0 -5px;
+      }
+      .plupload {
+        overflow: hidden;
+      }
+      .eze-no-image {
+        clear: both;
+      }
+      .thumbnail {
+        position: relative;
+        margin: 0 0 10px 0;
+        background: white;
+        float: left;
+        img.info {
+          border-radius: 2px;
+          min-height: 80px;
+          min-width: 120px;
+          &.icon-32 {
+            min-height: 0;
+            min-width: 0;
+          }
+        }
+        .edit-image {
+          position: absolute;
+          bottom: 10px;
+          left: 10px;
+        }
+        .close {
+          position: absolute;
+          top: 0;
+          right: 0;
+          padding: 4px 10px 8px 10px;
+          color: white;
+          opacity: 1;
+        }
+        &:hover .close {
+          @include transition(background, 0.2s);
+          background: white;
+          border-bottom-left-radius: 4px;
+          color: black;
+        }
+      }
+      .ngremotemedia-tags {
+        clear: both;
+      }
+    }
+  }
+}
