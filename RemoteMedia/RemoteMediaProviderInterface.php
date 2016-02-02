@@ -73,4 +73,19 @@ interface RemoteMediaProviderInterface
     public function searchResources($query, $resourceType);
 
     public function addTagToResource($resourceId, $tag);
+
+    public function removeTagFromResource($resourceId, $tag);
+
+    /**
+     * context = array(
+     *      'caption' => 'new caption'
+     *      'alt' => 'alt text'
+     * )
+     *
+     * @param $resourceId
+     * @param $context
+     *
+     * @return mixed
+     */
+    public function updateResourceContext($resourceId, $context);
 }
