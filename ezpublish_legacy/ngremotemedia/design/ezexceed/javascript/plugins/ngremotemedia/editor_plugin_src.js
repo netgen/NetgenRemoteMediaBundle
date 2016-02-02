@@ -8,8 +8,8 @@ var loadRemoteMedia =  function(textarea, ed, bookmark)
             }
         },
         paths : {
-            'jcrop' : '/extension/remotemedia/design/standard/javascript/libs/jquery.jcrop.min',
-            'remotemedia' : '/extension/remotemedia/design/ezexceed/javascript'
+            'jcrop' : '/extension/ngremotemedia/design/standard/javascript/libs/jquery.jcrop.min',
+            'remotemedia' : '/extension/ngremotemedia/design/ezexceed/javascript'
         }
     });
     require(['remotemedia/views/ezoe', 'remotemedia/templates'], function(View)
@@ -40,9 +40,9 @@ tinymce.create('tinymce.plugins.RemotemediaPlugin', {
     {
         return {
             longname : 'RemoteMedia',
-            author : 'Keyteq AS',
-            authorurl : 'http://www.keyteq.no',
-            infourl : 'http://www.keyteq.no',
+            author : 'Netgen',
+            authorurl : 'http://www.netgenlabs.com',
+            infourl : 'http://www.netgenlabs.com',
             version : tinymce.majorVersion + "." + tinymce.minorVersion
         };
     }
