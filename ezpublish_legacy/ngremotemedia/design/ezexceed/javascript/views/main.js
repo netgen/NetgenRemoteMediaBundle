@@ -109,10 +109,8 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         // Start render of scaler sub-view
         scale: function(ScaleView) {
             var data = this.$scale.data();
-            console.log("scale", data);
             var options = {
                 model: this.model,
-                //versions: convert_versions(data.versions),
                 trueSize: data.truesize
             };
 

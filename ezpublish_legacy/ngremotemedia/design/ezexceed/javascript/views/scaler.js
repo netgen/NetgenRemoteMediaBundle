@@ -83,29 +83,15 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                 }
             },
 
-            updateScalerSize: function(media) {
-                var file = media.get('file');
-                var width = this.$el.width();
-                var height = this.$el.height() - 100;
-                var ratio = file.width / file.height;
-                window.el = this.$el;
 
-                // TODO: keep aspect ratio
-                // if (ratio > 1) {
-                //     // Wide media
-                //     if (file.width < width) width = file.width;
-                //     height = width * ratio;
-                // }
-                // else {
-                //     // Tall media
-                //     if (file.height < height) height = file.height;
-                //     width = height * ratio;
-                // }
-                console.log("scaler image size", width, height);
-                this.size = {
-                    w: parseInt(width, 10),
-                    h: parseInt(height, 10)
-                };
+
+            fitTo: function(w, h, maxWidth, maxHeight) {
+                var ratio = Math.min(maxWidth / w, maxHeight / h);
+                return { w: Math.floor(w*ratio), h: Math.floor(h*ratio) };
+             },
+
+            updateScalerSize: function(media){
+                this.SIZE = this.fitTo(media.get('file').width, media.get('file').height, this.$el.width(), this.$el.height() - 100);
                 return this;
             },
 
