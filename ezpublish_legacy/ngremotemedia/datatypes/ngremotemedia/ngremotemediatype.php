@@ -101,10 +101,6 @@ class NgRemoteMediaType extends eZDataType
             'public_id' =>  $http->variable($base . '_media_id_' . $attributeId)
         );
 
-        /*$extras = $http->variable($base . '_data_' . $attributeId);
-        if ($extras) {
-            $data += json_decode($extras, true);
-        }*/
         $data['alttext'] = $http->variable($base . '_alttext_' . $attributeId, '');
 
         $container = ezpKernel::instance()->getServiceContainer();
@@ -117,12 +113,12 @@ class NgRemoteMediaType extends eZDataType
 
         $value = $contentObjectAttribute->Content();
 
-        //$variations = array();
-        /*foreach($attributeVariations as $name => $dimension) {
-            $variations[$name] = array();
-        }*/
-
         $response['variations'] = $value->variations;
+
+        if ($response['context']['custom']['alt'] !== $data['alttext']) {
+            $provider->updateResourceContext($data['public_id'], array('alt' => $data['alttext']));
+        }
+        $response['context']['custom']['alt'] = $data['alttext'];
 
         $value = $provider->getValueFromResponse($response);
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($value));

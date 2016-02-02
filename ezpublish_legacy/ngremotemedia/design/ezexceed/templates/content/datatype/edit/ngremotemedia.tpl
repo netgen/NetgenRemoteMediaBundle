@@ -1,7 +1,11 @@
+{if is_set($value)|not}
+    {def $value=$attribute.content}
+{/if}
+
 {def
-    $value = $attribute.content
-    $media = ngremotemedia($attribute, '300x200', true)
+    $media = ngremotemedia($value, '300x200', true)
 }
+
 {if is_set($attribute_base)|not}
     {def $attribute_base = "ContentObjectAttribute"}
 {/if}
@@ -41,7 +45,7 @@
         <div class="remotemedia-alttext">
             <span class="help-block description">{'Alternate text'|i18n('remotemedia')}</span>
             <input type="text"
-                   name="{$attribute_base}_alttext_{$attribute.id}" value="{$media.metaData.alt_text}" class="media-alttext data">
+                   name="{$attribute_base}_alttext_{$attribute.id}" value="{$value.metaData.alt_text}" class="media-alttext data">
         </div>
         <div class="remotemedia-tags">
             <div class="input-append add-tag">
