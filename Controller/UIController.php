@@ -7,6 +7,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use \Cloudinary\Api\NotFound;
 
 class UIController extends Controller
 {
@@ -100,10 +101,8 @@ class UIController extends Controller
     {
         $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
 
-        //$data = json_decode($attribute->attribute('data_text'), true);
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $data */
         $data = $attribute->Content();
-        //$variations = $data->['variations'];
         $variations = $data->variations;
 
         $content = $this->renderView('NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig', array(
@@ -114,7 +113,12 @@ class UIController extends Controller
         foreach($variations as $name => $coords) {
             $scaling[] = array(
                 'name' => $name,
-                'coords' => $coords
+                'coords' => array(
+                    (int)$coords['x'],
+                    (int)$coords['y'],
+                    (int)$coords['x'] + (int)$coords['w'],
+                    (int)$coords['y'] + (int)$coords['h']
+                )
             );
         }
 
@@ -129,6 +133,7 @@ class UIController extends Controller
 
     public function saveAttributeAction(Request $request, $objectId, $attributeId, $contentVersionId)
     {
+        // make all coords int
         $variantName = $request->get('name', '');
         $variantSize = $request->get('size', array());
         $crop_x = $request->get('crop_x', 0);
@@ -172,7 +177,6 @@ class UIController extends Controller
         $value = json_decode($attribute->attribute('data_text'), true);
 
         $variations = $value['variations'];
-
         $variationCoords = array(
             $variantName => array(
                 'x' => $crop_x,
@@ -182,28 +186,21 @@ class UIController extends Controller
             )
         );
 
-        $variations = array(
-            'Small' => array(
-                'x' => 0,
-                'y' => 0,
-                'w' => 0,
-                'h' => 0
-            ),
-            'Medium' => array(
-                'x' => 0,
-                'y' => 0,
-                'w' => 0,
-                'h' => 0
-            ),
-            'Big' => array(
-                'x' => 0,
-                'y' => 0,
-                'w' => 0,
-                'h' => 0
-            )
+        $emptyCoords = array(
+            'x' => 0,
+            'y' => 0,
+            'w' => 0,
+            'h' => 0
         );
 
-        $variations = $variationCoords + $variations;
+        $contentClassAttribute = $attribute->contentClassAttribute();
+        $attributeVariations = json_decode($contentClassAttribute->attribute('data_text4'), true);
+        $initalVariations = array();
+        foreach($attributeVariations as $name => $key) {
+            $initalVariations[$name] = $emptyCoords;
+        }
+
+        $variations = $variationCoords + $variations + $initalVariations;
 
         $value['variations'] = $variations;
         $attribute->setAttribute('data_text', json_encode($value));
@@ -212,14 +209,9 @@ class UIController extends Controller
         $attribute = $this->legacySaveAttribute($attribute, $versionObject);
 
         $provider = $this->container->get('netgen_remote_media.remote_media.provider');
-
         $variation = $provider->getVariation(
             new Value($value),
-            array(
-                'Small' => '200x200',
-                'Medium' => '400x400',
-                'Big' => '800x600'
-            ),
+            $attributeVariations,
             $variantName
         );
 
@@ -229,10 +221,10 @@ class UIController extends Controller
                 'name' => $variantName,
                 'url' => $variation->url,
                 'coords' => array(
-                    $crop_x,
-                    $crop_y,
-                    $crop_w,
-                    $crop_h,
+                    (int)$crop_x,
+                    (int)$crop_y,
+                    (int)$crop_x + (int)$crop_w,
+                    (int)$crop_y + (int)$crop_h,
                 ),
                 'size' => array(
                     $variantSize[0],
