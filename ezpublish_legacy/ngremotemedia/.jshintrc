@@ -1,0 +1,17 @@
+{
+    "browser": true,
+    "devel": true,
+    "curly": false,
+    "unused": true,
+    "undef": true,
+    "maxdepth": 3,
+    "expr": true,
+    "globals": {
+        "require": true,
+        "jQuery": true,
+        "$": true,
+        "define": true,
+        "eZExceed": true,
+        "_": true
+    }
+}

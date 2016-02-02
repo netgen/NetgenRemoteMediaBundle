@@ -79,7 +79,7 @@ define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'],
                 flash_swf_url : eZExceed.config.plupload.flash_swf_url,
                 browse_button : this.browseButton,
                 max_file_size : this.maxSize,
-                url : this.model.urlRoot + '/remotemedia::upload',
+                url : this.model.urlRoot + 'ezexceed/remotemedia/upload',
                 multipart_params : {
                     'AttributeID' : id,
                     'ContentObjectVersion' : this.options.version,

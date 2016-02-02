@@ -1,58 +1,81 @@
-define(['backbone', 'jquery-safe'], function(Backbone, $)
-{
+define(['backbone', 'jquery-safe'], function(Backbone, $) {
     var url = function() {
-        var args = ['remotemedia', 'media', this.id, this.get('version')];
-        if (arguments.length > 0) {
-            args = ['remotemedia'].concat(_.toArray(arguments));
-        }
-        return args.join('/');
+        // var args = ['remotemedia', 'media', this.id, this.get('version')];
+        // if (arguments.length > 0) {
+        //     args = ['remotemedia'].concat(_.toArray(arguments));
+        // }
+        console.warn(arguments);
+        return ["/ezexceed/ngremotemedia/fetch", this.id, this.get('version')].join('/') // /90430/5
+            // return args.join('/');
+    };
+
+
+    var find_version = function(versions, version_name){
+        return _.find(versions, function(v){ v.name.toLowerCase() === version_name.toLowerCase(); });
     };
 
     var Attribute = Backbone.Model.extend({
-        urlRoot : null,
-        medias : null,
+        urlRoot: null,
+        medias: null,
 
-        initialize : function(options)
-        {
+        initialize: function() {
             _.bindAll(this);
             this.medias = new MediaCollection();
         },
 
-        defaults : function()
-        {
+        toScaleIndexed: function(){
+            return _.reduce(this.get('toScale') || [], function(h,v){
+                h[v.name.toLowerCase()] = v; return h;
+            }, {});
+        },
+
+        defaults: function() {
             return {
-                content : false,
-                media : new Media()
+                content: false,
+                media: new Media()
             };
         },
 
-        url : url,
+        url: function() {
+            return ["/ezexceed/ngremotemedia/fetch", this.id, this.get('version')].join('/'); // /90430/5
+        },
 
-        parse : function(data)
-        {
+
+        parse: function(data) {
+            console.log(data);
             if ('media' in data) {
-                data.media = new Media(data.media, {parse: true});
-                data.media.set('attr', this);
+                data.media = new Media(data.media, {
+                    parse: true,
+                    attr: this
+                });
             }
-            if ('content' in data) data.content = data.content;
-            if ('toScale' in data) data.toScale = data.toScale;
             return data;
         },
 
-        fetch : function(options)
-        {
+
+        combined_versions: function(){
+            var indexed = this.toScaleIndexed();
+            return _.map(this.get('available_versions'), function(v){
+                v = $.extend({}, v);
+                var exact_version = indexed[v.name.toLowerCase()];
+                exact_version && (v.coords = exact_version.coords);
+                return v;
+            });
+        },
+
+        fetch: function(options) {
             options = options || ({});
             options.success = this.fetched;
+            options.transform = false;
             return Backbone.sync('read', this, options);
         },
 
-        fetched : function(response)
-        {
+        fetched: function(response) {
             this.set(this.parse(response));
             this.trigger('fetched');
         },
 
-        onScale : function(response) {
+        onScale: function(response) {
             this.trigger('scale', response);
         },
 
@@ -60,40 +83,47 @@ define(['backbone', 'jquery-safe'], function(Backbone, $)
         // name should be a string to put on the back of the object name
         // coords should be an array [x,y,x2,y2]
         // size shoudl be an array [width,height]
-        addVanityUrl : function(name, coords, size, options)
-        {
+        addVanityUrl: function(name, coords, size, options) {
             options = (options || {});
             var data = {
-                name : name,
-                size : size
+                name: name
             };
 
-            if (coords)
-                data.coords = coords;
+            if (coords) {
+                data.crop_x = Math.round(coords[0]);
+                data.crop_y = Math.round(coords[1]);
+                data.crop_w = Math.round(coords[2] - coords[0]);
+                data.crop_h = Math.round(coords[3] - coords[1]);
+            }
 
             if (_(options).has('media')) {
                 data.mediaId = options.media.id;
                 data.remotemediaId = options.media.get('remotemediaId');
-            }
-            else {
+            } else {
                 var media = this.get('media');
                 data.mediaId = media.id;
                 data.remotemediaId = media.get('remotemediaId');
             }
 
             var id = this.id !== "ezoe" ? this.id : this.get('attributeId');
-            var url = this.url('saveVersion', id, this.get('version'));
+            // var url = this.url('saveVersion', id, this.get('version'));
 
-            return Backbone.sync('create', {url: url}, {data: data});
+            var url = ["/ezexceed/ngremotemedia/save", eZExceed.config.currentObjectId, this.id, this.get('version')].join('/'); // /90430/5
+
+            return Backbone.sync('create', {
+                url: url
+            }, {
+                data: data,
+                transform: false
+            });
         }
     });
 
 
     var Media = Backbone.Model.extend({
-        urlRoot : '',
+        urlRoot: '',
 
-        initialize : function(options)
-        {
+        initialize: function(options) {
             options = (options || {});
             _.bindAll(this);
             if ('urlRoot' in options) {
@@ -102,76 +132,77 @@ define(['backbone', 'jquery-safe'], function(Backbone, $)
             }
         },
 
-        parse : function(data)
-        {
+        parse: function(data) {
+            data.file = data.metaData; //Create alias for metaData            
             data.tags = new Backbone.Collection(_.map(data.tags, function(tag) {
                 return {
-                    id : tag,
-                    tag : tag
+                    id: tag,
+                    tag: tag
                 };
             }));
             return data;
         },
 
-        domain : function()
-        {
+        domain: function() {
             return 'http://' + this.get('host');
         },
 
-        url : false,
+        url: false,
 
-        save : function()
-        {
+        save: function() {
             var attr = this.get('attr');
             var url = attr.url('tag', attr.id, attr.get('version'), 'tag');
 
             var data = {
-                id : this.id,
-                tags : this.get('tags').pluck('tag')
+                id: this.id,
+                tags: this.get('tags').pluck('tag')
             };
 
-            return Backbone.sync('create', {url: url}, {data: data});
+            return Backbone.sync('create', {
+                url: url
+            }, {
+                data: data,
+                transform: false
+            });
         },
 
+
         // Generate thumb url for a given size
-        thumb : function(width, height, filetype)
-        {
+        thumb: function(width, height, filetype) {
             filetype = (filetype || 'jpg');
-            return this.domain() + '/' + width + 'x' + height + '/' + this.id + '.' + filetype;
+            // return this.domain() + '/' + width + 'x' + height + '/' + this.id + '.' + filetype;
+            // http://res.cloudinary.com/netgentest/image/upload/v1454075723/phpb3r2JI/5.jpg
+            var url = this.get('url').split(/\/v\d+\//);
+            return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/")
         }
     });
 
     var MediaCollection = Backbone.Collection.extend({
-        model : Media,
+        model: Media,
 
         // Must end in trailing slash
-        urlRoot : '/',
+        urlRoot: '/',
+        attr: null,
+        total: 0,
+        q: '',
+        limit: 25,
+        remotemediaId: null,
+        xhr: null,
 
-        attr : null,
-
-        total : 0,
-
-        q : '',
-
-        limit : 25,
-
-        remotemediaId : null,
-
-        xhr : null,
-
-        initialize : function(options)
-        {
+        initialize: function(options) {
             _.bindAll(this);
         },
 
-        url : function()
-        {
-            return ['remotemedia', 'browse', this.id, this.version].join('/');
+        url: function() {
+            // return '/ezexceed/ngremotemedia/browse/{attributeId}/{contentVersionId}/{query}';
+            return ['/ezexceed/ngremotemedia/browse', this.id, this.version].join('/');
         },
 
-        search : function(q, data)
-        {
-            var data = (data || {});
+        transformUrl: false,
+
+
+        search: function(q, data) {
+            var data = (data ||  {});
             if (typeof q === 'string') {
                 this.q = q;
                 data.q = q;
@@ -180,18 +211,19 @@ define(['backbone', 'jquery-safe'], function(Backbone, $)
             if (this.xhr && typeof this.xhr.abort === 'function') {
                 this.xhr.abort();
             }
-            this.xhr = this.fetch({data : data, reset: true});
+            this.xhr = this.fetch({
+                data: data,
+                reset: true
+            });
             return this.xhr;
         },
 
-        fetched : function()
-        {
+        fetched: function() {
             this.trigger('fetched');
             this.xhr = null;
         },
 
-        parse : function(data)
-        {
+        parse: function(data) {
             if ('remotemediaId' in data) {
                 this.remotemediaId = data.remotemediaId;
             }
@@ -202,29 +234,32 @@ define(['backbone', 'jquery-safe'], function(Backbone, $)
             return data;
         },
 
-        page : function(q)
-        {
+        page: function(q) {
             if (this.length < this.total) {
                 var data = {
-                    limit : this.limit,
-                    offset : this.length,
-                    q : this.q
+                    limit: this.limit,
+                    offset: this.length,
+                    q: this.q
                 };
 
-                return Backbone.sync('read', {url: this.url()}, {data: data}).done(this.paged);
+                return Backbone.sync('read', {
+                    url: this.url()
+                }, {
+                    data: data,
+                    transform: false
+                }).done(this.paged);
             }
             return false;
         },
 
-        paged: function(data)
-        {
+        paged: function(data) {
             this.add(this.parse(data));
         }
     });
 
     return {
-        media : Media,
-        attribute : Attribute,
-        collection : MediaCollection
+        media: Media,
+        attribute: Attribute,
+        collection: MediaCollection
     };
 });

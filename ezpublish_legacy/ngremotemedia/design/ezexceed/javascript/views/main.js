@@ -1,12 +1,21 @@
-define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brightcove'], function(View, Models, TaggerView, UploadView)
-{
-    return View.extend({
-        media : null,
-        versions : null,
-        version : null,
+define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brightcove'], function(View, Models, TaggerView, UploadView) {
 
-        initialize : function(options)
-        {
+    function convert_versions(versions){
+        if(_.isArray(versions)){return versions;}
+        return _.map(versions, function(size, name) {
+            return {
+                size: size.split ? size.split('x') : size,
+                name: name
+            };
+        });
+    }
+
+    return View.extend({
+        media: null,
+        versions: null,
+        version: null,
+
+        initialize: function(options) {
             options = (options || {});
             _.bindAll(this);
             _.extend(this, _.pick(options, ['id', 'version']));
@@ -14,14 +23,17 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             var data = this.$el.data();
             _.extend(data, this.$('.attribute-base').data());
 
-            var urlRoot = '/ezjscore/call';
+            var urlRoot = '/';
             if (data.urlRoot !== '/') urlRoot = data.urlRoot + urlRoot;
 
             this.model = new Models.attribute({
-                id : data.id,
-                version : this.version,
-                media : data.bootstrap
-            }, {parse : true});
+                id: data.id,
+                version: this.version,
+                media: data.bootstrap
+            }, {
+                parse: true
+            });
+            console.log("Data:", data);
             this.model.urlRoot = urlRoot;
             this.model
                 .on('change', this.render)
@@ -37,60 +49,54 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             this.loadCSS();
         },
 
-        loadCSS : function()
-        {
+        loadCSS: function() {
             var headEl = document.getElementsByTagName('head')[0];
-            var files = ['jquery.jcrop', 'remotemedia'];
-            _.each(files, function(name)
-            {
+            var files = ['jquery.jcrop', 'ngremotemedia'];
+            _.each(files, function(name) {
                 var css = document.createElement('link');
-                css.href = '/extension/remotemedia/design/ezexceed/stylesheets/' + name + '.css';
+                css.href = '/extension/ngremotemedia/design/ezexceed/stylesheets/' + name + '.css';
                 css.type = 'text/css';
                 css.rel = 'stylesheet';
                 headEl.appendChild(css);
             });
         },
 
-        events : {
-            'click button.from-remotemedia' : function(e)
-            {
+        events: {
+            'click button.from-remotemedia': function(e) {
                 e.preventDefault();
                 require(['remotemedia/views/browser'], this.browse);
             },
-            'click button.scale' : function(e)
-            {
+            'click button.scale': function(e) {
                 e.preventDefault();
                 require(['remotemedia/views/scaler'], this.scale);
             },
-            'click .remove' : 'removeMedia'
+            'click .remove': 'removeMedia'
         },
 
-        removeMedia : function(e)
-        {
+        removeMedia: function(e) {
             e.preventDefault();
             var data = this.$('.data').val('').serializeArray();
 
             data.push({
-                name : 'mediaRemove',
-                value : 1
+                name: 'mediaRemove',
+                value: 1
             });
 
             this.trigger('save', this.model.id, data);
             this.hide(this.$('.eze-image'));
         },
 
-        browse : function(BrowseView)
-        {
+        browse: function(BrowseView) {
             var options = {
-                model : this.model,
-                version : this.version,
-                collection : this.collection
+                model: this.model,
+                version: this.version,
+                collection: this.collection
             };
 
             var context = {
-                icon : '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures.png',
-                heading : 'Select media',
-                render : true
+                icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures.png',
+                heading: 'Select media',
+                render: true
             };
             eZExceed.stack.push(
                 BrowseView,
@@ -101,24 +107,29 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         },
 
         // Start render of scaler sub-view
-        scale : function(ScaleView)
-        {
+        scale: function(ScaleView) {
             var data = this.$scale.data();
+            console.log("scale", data);
             var options = {
-                model : this.model,
-                versions : data.versions,
-                trueSize : data.truesize
+                model: this.model,
+                //versions: convert_versions(data.versions),
+                trueSize: data.truesize
             };
+
+            console.log("main:scale", options);
 
             var context = {
-                icon : '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures-alt-2b.png',
-                className : 'dark',
-                heading : 'Select crops',
-                render : true
+                icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures-alt-2b.png',
+                className: 'dark',
+                heading: 'Select crops',
+                render: true
             };
 
-            this.model.fetch().success(function(response)
-            {
+            this.model.fetch({
+                transform: false
+            }).success(function(){
+                console.log("fetch", this, arguments);
+
                 eZExceed.stack.push(
                     ScaleView,
                     options,
@@ -128,8 +139,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             return this;
         },
 
-        changeMedia : function(data)
-        {
+        changeMedia: function(data) {
             this.$('.media-id').val(data.id);
             this.$('.media-host').val(data.host);
             this.$('.media-type').val(data.type);
@@ -137,34 +147,36 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
 
             data = this.$(':input').serializeArray();
             data.push({
-                name : 'changeMedia',
-                value : 1
+                name: 'changeMedia',
+                value: 1
             });
 
             this.trigger('save', this.model.id, data);
         },
 
-        loader : function()
-        {
+        loader: function() {
             var data = {
-                size : 32,
-                className : 'icon-32',
-                statusText : 'Uploading…'
+                size: 32,
+                className: 'icon-32',
+                statusText: 'Uploading…'
             };
             this.$('.eze-image .thumbnail').html(this._loader(data));
             this.$('.upload-from-disk').attr("disabled", "disabled");
         },
 
-        update : function()
-        {
-            this.model.fetch();
+        update: function() {
+            this.model.fetch({
+                transform: false
+            });
         },
 
-        render : function()
-        {
+        render: function() {
+            window.main_view = this;
             var content = this.model.get('content');
             var media = this.model.get('media');
-            var file = media.get('file');
+            // var file = media.get('file');
+            var file = media.get('metaData');
+
             if (content) {
                 this.$('.attribute-base').html(content);
             }
@@ -172,12 +184,13 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             if (file) {
                 this.$scale = this.$("button.scale");
 
-                var toScale = this.$scale.data('versions');
+                var available_versions = convert_versions(this.$scale.data('versions'));
+                this.model.set('available_versions', available_versions);
 
                 var imgWidth = file.width;
                 var imgHeight = file.height;
 
-                var imageFitsAll = !_(toScale).some(function(version) {
+                var imageFitsAll = !_(available_versions).some(function(version) {
                     var width = parseInt(version.size[0], 10);
                     var height = parseInt(version.size[1], 10);
                     return width > imgWidth || height > imgHeight;
@@ -190,41 +203,41 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
                     this.hide(img);
 
                 if (file && 'type' in file && file.type.match(/video/)) {
-                    if (typeof brightcove !== 'undefined')
+                    if (typeof brightcove !== 'undefined'){
                         brightcove.createExperiences();
+                    }
                 }
             }
 
-            this.renderUpload()
-                .renderTags();
+            this.renderUpload().renderTags();
 
             return this;
         },
 
-        renderTags : function()
-        {
+        renderTags: function() {
             this.taggerView = new TaggerView({
-                el : this.$('.remotemedia-tags'),
-                model : this.model.get('media')
+                el: this.$('.remotemedia-tags'),
+                model: this.model.get('media')
             }).render();
             return this;
         },
 
-        renderUpload : function() {
+        renderUpload: function() {
             this.upload = new UploadView({
-                model : this.model,
-                uploaded : this.changeMedia,
-                el : this.$el,
-                version : this.version
+                model: this.model,
+                uploaded: this.changeMedia,
+                el: this.$el,
+                version: this.version
             }).render();
             this.listenTo(this.upload, 'uploading', this.loader);
             return this;
         },
 
-        versionCreated : function(versions)
-        {
+        versionCreated: function(versions) {
             this.model.trigger('autosave.saved');
-            this.trigger('save', 'triggerVersionUpdate', {'triggerVersionUpdate' : 1});
+            this.trigger('save', 'triggerVersionUpdate', {
+                'triggerVersionUpdate': 1
+            });
             this.$scale.data('versions', versions);
         }
     });
