@@ -71,4 +71,6 @@ interface RemoteMediaProviderInterface
      * @return array
      */
     public function searchResources($query, $resourceType);
+
+    public function addTagToResource($resourceId, $tag);
 }

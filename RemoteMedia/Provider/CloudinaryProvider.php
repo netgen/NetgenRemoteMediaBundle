@@ -269,4 +269,9 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     {
         return $this->cloudinaryApi->resource($resourceId);
     }
+
+    public function addTagToResource($resourceId, $tag)
+    {
+        return $this->cloudinaryUploader->add_tag($tag, array($resourceId));
+    }
 }
