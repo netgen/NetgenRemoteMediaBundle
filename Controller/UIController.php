@@ -82,7 +82,7 @@ class UIController extends Controller
                 }
             );
 
-            $content = $this->renderView('NetgenRemoteMediaBundle:user_interface/edit:ngremotemedia.html.twig', array(
+            $content = $this->renderView('NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig', array(
                 'attribute' => $attribute
             ));
 
@@ -123,7 +123,7 @@ class UIController extends Controller
         //$variations = $data->['variations'];
         $variations = $data->variations;
 
-        $content = $this->renderView('NetgenRemoteMediaBundle:user_interface/edit:ngremotemedia.html.twig', array(
+        $content = $this->renderView('NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig', array(
             'attribute' => $attribute
         ));
 

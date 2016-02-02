@@ -1,6 +1,5 @@
 {% trans_default_domain "ezexceed" %}
 
-
 {% set value = attribute.content %}
 {% set media = netgen_remote_media(value, ['Small', 'Medium', 'Big'], '300x200') %}
 
@@ -30,7 +29,7 @@
 {% if media %}
 <div class="eze-image">
 
-    {% include "NetgenRemoteMediaBundle:user_interface/edit:preview.html.twig" %}
+    {% include "NetgenRemoteMediaBundle:ezexceed/edit:preview.html.twig" %}
 
     <div class="remotemedia-alttext">
         <span class="help-block description">{{ 'ngremotemedia.edit.alt_text'|trans }}</span>
@@ -40,7 +39,7 @@
     <div class="remotemedia-tags">
         <div class="input-append add-tag">
             <input type="text" class="tag" placeholder="{{ 'ngremotemedia.edit.tag.write'|trans }}" data-autosave="off">
-            <button class="btn tag" disabled type="button">{{ 'ngremotemedia.edit.tag.add'|trans }}'</button>
+            <button class="btn tag" disabled type="button">{{ 'ngremotemedia.edit.tag.add'|trans }}</button>
         </div>
         <div class="tags"></div>
     </div>

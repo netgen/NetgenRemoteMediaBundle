@@ -1,10 +1,4 @@
-{#{if not( is_set( $value ) ) }
-{def $value = $attribute.content}
-{/if}
-{if not( is_set( $media ) ) }
-{def $media = ngremotemedia($attribute, '300x200', true)}
-{/if}
-#}
+{% trans_default_domain "ezexceed" %}
 
 {% if media %}
 <div class="thumbnail">
@@ -14,6 +8,6 @@
             name="CustomActionButton[{{ attribute.attribute('id') }}_delete_media]"
             value="{{ 'ngremotemedia.edit.remove'|trans }}">×</button>
 
-    {% include "NetgenRemoteMediaBundle:user_interface/edit:action_button.html.twig" %}
+    {% include "NetgenRemoteMediaBundle:ezexceed/edit:action_button.html.twig" %}
 </div>
 {% endif %}
