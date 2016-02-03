@@ -177,10 +177,10 @@ class UIController extends Controller
             $versionObject->setAttribute('status', \eZContentObjectVersion::STATUS_DRAFT);
         }
 
-        // @todo: switch to $attribute->Content(); which should return Value
-        $value = json_decode($attribute->attribute('data_text'), true);
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
+        $value = $attribute->Content();
 
-        $variations = $value['variations'];
+        $variations = $value->variations;
         $variationCoords = array(
             $variantName => array(
                 'x' => $crop_x,
@@ -206,7 +206,7 @@ class UIController extends Controller
 
         $variations = $variationCoords + $variations + $initalVariations;
 
-        $value['variations'] = $variations;
+        $value->variations = $variations;
         $attribute->setAttribute('data_text', json_encode($value));
         $versionObject->setAttribute('remote_image', $attribute);
 
@@ -214,7 +214,7 @@ class UIController extends Controller
 
         $provider = $this->container->get('netgen_remote_media.remote_media.provider');
         $variation = $provider->getVariation(
-            new Value($value),
+            $value,
             $attributeVariations,
             $variantName
         );
