@@ -44,9 +44,9 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
         parse: function(data) {
             console.log(data);
             if ('media' in data) {
+                data.media.attr = this;
                 data.media = new Media(data.media, {
-                    parse: true,
-                    attr: this
+                    parse: true
                 });
             }
             return data;
@@ -110,9 +110,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
 
             var url = ["/ezexceed/ngremotemedia/save", eZExceed.config.currentObjectId, this.id, this.get('version')].join('/'); // /90430/5
 
-            return Backbone.sync('create', {
-                url: url
-            }, {
+            return Backbone.sync('create', { url: url }, {
                 data: data,
                 transform: false
             });
@@ -134,6 +132,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
 
         parse: function(data) {
             data.file = data.metaData; //Create alias for metaData            
+            delete(data.metaData); //TODO: rename on server
             data.tags = new Backbone.Collection(_.map(data.tags, function(tag) {
                 return {
                     id: tag,
@@ -151,16 +150,14 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
 
         save: function() {
             var attr = this.get('attr');
-            var url = attr.url('tag', attr.id, attr.get('version'), 'tag');
+            var url = ['/ezexceed/ngremotemedia/tag/add', attr.id, attr.get('version') ].join('/');
 
             var data = {
-                id: this.id,
+                id: attr.get('media').get('resourceId'),
                 tags: this.get('tags').pluck('tag')
             };
 
-            return Backbone.sync('create', {
-                url: url
-            }, {
+            return Backbone.sync('create', { url: url }, {
                 data: data,
                 transform: false
             });
@@ -173,7 +170,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
             // return this.domain() + '/' + width + 'x' + height + '/' + this.id + '.' + filetype;
             // http://res.cloudinary.com/netgentest/image/upload/v1454075723/phpb3r2JI/5.jpg
             var url = this.get('url').split(/\/v\d+\//);
-            return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/")
+            return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
         }
     });
 

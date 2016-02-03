@@ -43,7 +43,6 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                 // i save my current scale
                 this.on('destruct', this.saveCrop, this);
                 this.on('stack.popped', this.stackPopped, this);
-                console.log("scaler:initialize", this, options);
             },
 
             events: {

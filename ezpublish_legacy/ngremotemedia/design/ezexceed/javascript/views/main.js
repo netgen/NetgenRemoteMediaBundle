@@ -123,11 +123,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
                 render: true
             };
 
-            this.model.fetch({
-                transform: false
-            }).success(function(){
-                console.log("fetch", this, arguments);
-
+            this.model.fetch({transform: false }).success(function(){
                 eZExceed.stack.push(
                     ScaleView,
                     options,
@@ -172,8 +168,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             window.main_view = this;
             var content = this.model.get('content');
             var media = this.model.get('media');
-            // var file = media.get('file');
-            var file = media.get('metaData');
+            var file = media.get('file');
 
             if (content) {
                 this.$('.attribute-base').html(content);
@@ -200,6 +195,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
                 else
                     this.hide(img);
 
+                //TODO: Video???
                 if (file && 'type' in file && file.type.match(/video/)) {
                     if (typeof brightcove !== 'undefined'){
                         brightcove.createExperiences();
@@ -213,6 +209,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         },
 
         renderTags: function() {
+            console.warn("RENDER TAGS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             this.taggerView = new TaggerView({
                 el: this.$('.remotemedia-tags'),
                 model: this.model.get('media')
