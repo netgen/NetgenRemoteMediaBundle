@@ -53,7 +53,7 @@ class RemoteMediaConverter implements Converter
             $fieldDef->fieldTypeConstraints->fieldSettings['formats'] :
             array();
         $formats = json_encode($formats);
-        $storageDef->dataText1 = $formats;
+        $storageDef->dataText4 = $formats;
     }
 
     /**
@@ -66,7 +66,7 @@ class RemoteMediaConverter implements Converter
     {
         $fieldDef->fieldTypeConstraints->fieldSettings = new FieldSettings(
             array(
-                'formats' => json_decode($storageDef->dataText1, true),
+                'formats' => json_decode($storageDef->dataText4, true),
             )
         );
     }
