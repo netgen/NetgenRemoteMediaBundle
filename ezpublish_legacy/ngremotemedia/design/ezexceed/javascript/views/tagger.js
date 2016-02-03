@@ -2,10 +2,11 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
     return View.extend({
         bindKeysScoped: true,
 
-        initialize: function(options) {
+        initialize: function() {
             _.bindAll(this);
+            console.log('initialize !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             this.collection = this.model.get('tags');
-            this.listenTo(this.collection, 'add remove', this.save);
+            // this.listenTo(this.collection, 'add remove', this.save);
             return this;
         },
 
@@ -20,34 +21,34 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
             'enter input:text': 'add'
         },
 
-        // Save any ad
-        save: function() {
-            this.trigger('save');
-            this.model.save().success(this.saved);
-        },
-
         saved: function() {
             this.trigger('saved');
             this.renderTags();
         },
 
         remove: function(e) {
+            console.log('remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
             e.preventDefault();
             e.stopPropagation();
+            this.trigger('save');
             var target = this.$(e.currentTarget);
-            var tag = target.data('tag');
-            this.collection.remove(this.collection.get(tag));
+            var tag_name = target.data('tag');
+            // var tag = this.collection.get(tag_name);
+            this.collection.remove(tag_name);
+            this.model.remove_tag(tag_name).success(this.saved);
         },
 
         add: function(e) {
+            console.log('add !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
             e.preventDefault();
             e.stopPropagation();
-            var tag = this.$input.val();
+            this.trigger('save');
+            var tag_name = this.$input.val();
             this.collection.add({
-                id: tag,
-                tag: tag
+                tag: tag_name
             });
             this.$input.val('').focus();
+            this.model.add_tag(tag_name).success(this.saved);
         },
 
         inputChange: function(e) {
@@ -58,7 +59,7 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
             return this;
         },
 
-        render: function(media) {
+        render: function() {
             this.$list = this.$('.tags');
             this.$input = this.$('input:text');
             this.$button = this.$('button.tag');

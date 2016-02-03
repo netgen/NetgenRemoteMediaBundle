@@ -165,7 +165,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         },
 
         render: function() {
-            window.main_view = this;
+            console.log("Main render !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             var content = this.model.get('content');
             var media = this.model.get('media');
             var file = media.get('file');
@@ -209,9 +209,9 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         },
 
         renderTags: function() {
-            console.warn("RENDER TAGS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            this.taggerView = new TaggerView({
-                el: this.$('.remotemedia-tags'),
+            console.log("PRE INITIALIZE TAGS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            new TaggerView({
+                el: this.$('.remotemedia-tags').off(),
                 model: this.model.get('media')
             }).render();
             return this;

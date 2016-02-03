@@ -133,7 +133,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
         parse: function(data) {
             data.file = data.metaData; //Create alias for metaData            
             delete(data.metaData); //TODO: rename on server
-            data.tags = new Backbone.Collection(_.map(data.tags, function(tag) {
+            data.tags = new Backbone.Collection(_.map(data.file.tags, function(tag) {
                 return {
                     id: tag,
                     tag: tag
@@ -148,18 +148,32 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
 
         url: false,
 
-        save: function() {
-            var attr = this.get('attr');
-            var url = ['/ezexceed/ngremotemedia/tag/add', attr.id, attr.get('version') ].join('/');
 
-            var data = {
-                id: attr.get('media').get('resourceId'),
-                tags: this.get('tags').pluck('tag')
-            };
+        tags_url: function(){
+            var attr = this.get('attr');            
+            return ['/ezexceed/ngremotemedia/tags', attr.id, attr.get('version') ].join('/');
+        },
 
-            return Backbone.sync('create', { url: url }, {
-                data: data,
-                transform: false
+
+        add_tag: function(tag_name){
+            return Backbone.sync('create', { url: this.tags_url() }, {
+                transform: false,
+                data: {
+                    id: this.get('attr').get('media').get('resourceId'),
+                    tag: tag_name
+                }
+            });
+        },
+
+
+        remove_tag: function (tag_name) {
+          return Backbone.sync('delete', { url: this.tags_url() }, {
+                transform: false,
+                method: 'DELETE',
+                data: {
+                    id: this.get('attr').get('media').get('resourceId'),
+                    tag: tag_name
+                }
             });
         },
 
