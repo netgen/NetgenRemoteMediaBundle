@@ -19,7 +19,7 @@
         {% set title = field.value.metaData.caption|default('') %}
     {% endif %}
 
-    {% set variation = netgen_remote_media(field, fieldSettings, format) %}
+    {% set variation = netgen_remote_media(field.value, fieldSettings.formats, format) %}
 
     <img src="{{ variation.url }}"
         {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}

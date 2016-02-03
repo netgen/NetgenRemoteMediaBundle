@@ -2,9 +2,8 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
-use eZ\Publish\API\Repository\Values\Content\Field;
-use eZ\Publish\Core\FieldType\FieldSettings;
 use eZ\Publish\Core\Helper\TranslationHelper;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use Twig_Extension;
 use Twig_SimpleFunction;
@@ -59,15 +58,15 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
-     * @param \eZ\Publish\API\Repository\Values\Content\Field $field
-     * @param \eZ\Publish\Core\FieldType\FieldSettings $fieldSettings
-     * @param string $format
-     * @param bool $secure
+     * @param \eZ\Publish\Core\FieldType\Value $field
+     * @param array                            $fieldSettings
+     * @param string                           $format
+     * @param bool                             $secure
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    public function getRemoteMediaVariation(Field $field, FieldSettings $fieldSettings, $format, $secure = true)
+    public function getRemoteMediaVariation(Value $value, $availableFormats, $format, $secure = true)
     {
-        return $this->provider->getVariation($field->value, $fieldSettings['formats'], $format, $secure);
+        return $this->provider->getVariation($value, $availableFormats, $format, $secure);
     }
 }
