@@ -28,73 +28,77 @@ class UIController extends Controller
         }
 
         $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
-
-        $isRemoteMedia = $attribute->attribute('data_type_string') === 'ngremotemedia';
-
-        if ($isRemoteMedia) {
-            $provider = $this->container->get('netgen_remote_media.remote_media.provider');
-
-            $fileUri = $file->getRealPath();
-            $folder = $attributeId . '/' . $contentVersionId;
-
-            // clean up file name
-            $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-            $clean = preg_replace( "/[^\p{L}|\p{N}]+/u", "_", $fileName );
-            $cleanFileName = preg_replace( "/[\p{Z}]{2,}/u", "_", $clean );
-            $cleanFileName = rtrim($cleanFileName, '_');
-
-            $options = array(
-                'public_id' => $cleanFileName . '/' . $folder,
-                'overwrite' => true,
-                'context' => array(
-                    'alt' => '',
-                    'caption' => '',
-                ),
-            );
-
-            $result = $provider->upload(
-                $fileUri,
-                $options
-            );
-
-            $value = $provider->getValueFromResponse($result);
-            $attribute->setAttribute('data_text', json_encode($value));
-
-            $versionObject = $this->getLegacyKernel()->runCallback(
-                function () use ($attribute)
-                {
-                    return \eZContentObjectVersion::fetchVersion(
-                        $attribute->attribute('version'), $attribute->attribute('contentobject_id')
-                    );
-                }
-            );
-
-            $attribute = $this->legacySaveAttribute($attribute, $versionObject);
-
-            $content = $this->renderView('NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig', array(
-                'attribute' => $attribute
-            ));
-
-            $result['id'] = $result['public_id'];
-            $result['scalesTo'] = array(
-                'quality' => 100,
-                'ending' => $result['format']
-            );
-
-
+        if ($attribute->attribute('data_type_string') !== 'ngremotemedia') {
             return new JsonResponse(
                 array(
-                    'error_text' => '',
-                    'content' => array(
-                        'media' => $result,
-                        'toScale' == ''/*$handler->attribute('toscale')*/,
-                        'content' => $content,
-                        'ok' => true
-                    )
-                ),
-                200
+                    'error_text' => 'Attribute is of the wrong field type'
+                )
             );
         }
+
+        $provider = $this->container->get('netgen_remote_media.remote_media.provider');
+
+        $fileUri = $file->getRealPath();
+        $folder = $attributeId . '/' . $contentVersionId;
+
+        // clean up file name
+        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $clean = preg_replace( "/[^\p{L}|\p{N}]+/u", "_", $fileName );
+        $cleanFileName = preg_replace( "/[\p{Z}]{2,}/u", "_", $clean );
+        $cleanFileName = rtrim($cleanFileName, '_');
+
+        $options = array(
+            'public_id' => $cleanFileName . '/' . $folder,
+            'overwrite' => true,
+            'context' => array(
+                'alt' => '',
+                'caption' => '',
+            ),
+        );
+
+        $result = $provider->upload(
+            $fileUri,
+            $options
+        );
+
+        $value = $provider->getValueFromResponse($result);
+        $attribute->setAttribute('data_text', json_encode($value));
+
+        /*$versionObject = $this->getLegacyKernel()->runCallback(
+            function () use ($attribute)
+            {
+                return \eZContentObjectVersion::fetchVersion(
+                    $attribute->attribute('version'), $attribute->attribute('contentobject_id')
+                );
+            }
+        );*/
+
+        //$attribute = $this->legacySaveAttribute($attribute, $versionObject);
+        $attribute = $this->legacySaveAttribute($attribute);
+
+        $content = $this->renderView('NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig', array(
+            'attribute' => $attribute
+        ));
+
+        $result['id'] = $result['public_id'];
+        $result['scalesTo'] = array(
+            'quality' => 100,
+            'ending' => $result['format']
+        );
+
+
+        return new JsonResponse(
+            array(
+                'error_text' => '',
+                'content' => array(
+                    'media' => $result,
+                    'toScale' == ''/*$handler->attribute('toscale')*/,
+                    'content' => $content,
+                    'ok' => true
+                )
+            ),
+            200
+        );
     }
 
     public function fetchAction(Request $request, $attributeId, $contentVersionId)
