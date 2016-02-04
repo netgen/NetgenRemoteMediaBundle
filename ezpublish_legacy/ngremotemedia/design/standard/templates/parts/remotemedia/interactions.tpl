@@ -8,7 +8,7 @@
     data-contentobject-id="{$attribute.contentobject_id}"
     data-version="{$attribute.version}">
 
-    <input type="hidden" name="{$base}_media_id_{$attribute.id}" value="{$media.id}" class="media-id" />
+    <input type="hidden" name="{$base}_media_id_{$attribute.id}" value="{$value.resourceId}" class="media-id" />
     {*<input type="hidden" name="{$base}_host_{$attribute.id}" value="{$media.host}" class="media-host" />*}
     {*<input type="hidden" name="{$base}_type_{$attribute.id}" value="{$media.type}" class="media-type" />*}
     {*<input type="hidden" name="{$base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending" />*}
