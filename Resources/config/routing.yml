@@ -15,5 +15,17 @@ netgen_remote_media_browse:
     defaults: { _controller: NetgenRemoteMediaBundle:UI:browseRemoteMedia }
 
 netgen_remote_media_add_tag:
-    path: /ezexceed/ngremotemedia/tag/add/{attributeId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:updateTags }
+    path: /ezexceed/ngremotemedia/tags/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:addTags }
+    methods: [POST]
+
+netgen_remote_media_remove_tag:
+    path: /ezexceed/ngremotemedia/tags/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:removeTags }
+    methods: [DELETE]
+
+netgen_remote_media_fetch_remote:
+    path: /ezexceed/ngremotemedia/fetch_remote/{id}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetchRemote }
+    requirements:
+        id: .+

@@ -282,34 +282,34 @@ class UIController extends Controller
                 'scalesTo' => array('quality' => 100, 'ending' => $hit['format']),
                 'host' => 'cloudinary',
                 'thumb' => array(
-                    'url' => $provider->getFormattedUrl($hit['public_id'], $options)
-                )
+                    'url' => $provider->getFormattedUrl($hit['public_id'], $options),
+                ),
             );
         }
 
         $results = array(
             'total' => $count,
-            'hits' => $listFormatted
+            'hits' => $listFormatted,
         );
 
         $responseData = array(
             'keymediaId' => 0,
-            'results' => $results
+            'results' => $results,
         );
 
         return new JsonResponse($responseData, 200);
     }
 
-    public function updateTagsAction(Request $request, $attributeId, $contentVersionId)
+    public function addTagsAction(Request $request, $attributeId, $contentVersionId)
     {
         $resourceId = $request->get('id', '');
-        $tags = $request->get('tags', array());
+        $tag = $request->get('tag', '');
 
-        if (empty($resourceId) || empty($tags)) {
+        if (empty($resourceId) || empty($tag)) {
             return new JsonResponse(
                 array(
-                    'error_text' => 'Not enough arguments',
-                    'content' => null
+                    'error_text' => 'Not enough arguments - neither resource id, nor tag can be empty',
+                    'content' => null,
                 ),
                 400
             );
@@ -321,32 +321,53 @@ class UIController extends Controller
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $attribute->Content();
         $metaData = $value->metaData;
-        $originalTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
+        $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
-        if (count($tags) > count($originalTags)) {
-            // we are adding tags
-            $newTags = array_diff($tags, $originalTags);
-            foreach($newTags as $tag) {
-                $result = $provider->addTagToResource($resourceId, $tag);
-            }
-        } else {
-            // we are removing tags
-            $removedTags = array_diff($originalTags, $tags);
-            foreach($removedTags as $tag) {
-                $result = $provider->removeTagFromResource($resourceId, $tag);
-            }
-        }
+        $result = $provider->addTagToResource($resourceId, $tag);
+        $attributeTags[] = $tag;
 
-        $metaData['tags'] = $tags;
+        $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
         $attribute->setAttribute('data_text', json_encode($value));
         $this->legacySaveAttribute($attribute);
 
-        $responseData = array(
-            'content' => json_encode($value)
-        );
+        return new JsonResponse($attributeTags, 200);
+    }
 
-        return new JsonResponse($responseData, 200);
+    public function removeTagsAction(Request $request, $attributeId, $contentVersionId)
+    {
+
+        $resourceId = $request->get('id', '');
+        $tag = $request->get('tag', '');
+
+        if (empty($resourceId) || empty($tag)) {
+            return new JsonResponse(
+                array(
+                    'error_text' => 'Not enough arguments - neither resource id, nor tag can be empty',
+                    'content' => null,
+                ),
+                400
+            );
+        }
+
+        $provider = $this->get('netgen_remote_media.remote_media.provider');
+
+        $attribute = $this->legacyGetAttribute($attributeId, $contentVersionId);
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
+        $value = $attribute->Content();
+        $metaData = $value->metaData;
+        $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
+
+        $result = $provider->removeTagFromResource($resourceId, $tag);
+        $attributeTags = array_diff($attributeTags, array($tag));
+
+        $metaData['tags'] = $attributeTags;
+        $value->metaData = $metaData;
+        $attribute->setAttribute('data_text', json_encode($value));
+        $this->legacySaveAttribute($attribute);
+
+        return new JsonResponse($attributeTags, 200);
+
     }
 
     public function changeAltText(Request $request, $attributeId, $contentVersionId)
