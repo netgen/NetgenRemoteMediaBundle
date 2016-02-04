@@ -33,7 +33,7 @@
 {*<input type="hidden" name="{$attribute_base}_type_{$attribute.id}" value="{$media.type}" class="media-type data"/>*}
 {*<input type="hidden" name="{$attribute_base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending data"/>*}
 
-{if $media}
+{if $media.url}
     <div class="eze-image">
 
         {include uri="design:parts/remotemedia/preview.tpl"
