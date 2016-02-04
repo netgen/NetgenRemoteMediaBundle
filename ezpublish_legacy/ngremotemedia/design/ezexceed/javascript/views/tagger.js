@@ -6,7 +6,14 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
             _.bindAll(this);
             console.log('initialize !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             this.collection = this.model.get('tags');
-            // this.listenTo(this.collection, 'add remove', this.save);
+
+            this.listenTo(this.collection, 'add', function(model){
+                this.model.add_tag(model.get('tag')).success(this.saved);
+            });
+
+            this.listenTo(this.collection, 'remove', function(model){
+                this.model.remove_tag(model.get('tag')).success(this.saved);
+            });            
             return this;
         },
 
@@ -26,30 +33,26 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
             this.renderTags();
         },
 
+
         remove: function(e) {
-            console.log('remove !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
             e.preventDefault();
-            e.stopPropagation();
             this.trigger('save');
-            var target = this.$(e.currentTarget);
-            var tag_name = target.data('tag');
-            // var tag = this.collection.get(tag_name);
+            var tag_name = $(e.currentTarget).data('tag');
             this.collection.remove(tag_name);
-            this.model.remove_tag(tag_name).success(this.saved);
         },
 
         add: function(e) {
-            console.log('add !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
             e.preventDefault();
-            e.stopPropagation();
             this.trigger('save');
             var tag_name = this.$input.val();
             this.collection.add({
+                id: tag_name,
                 tag: tag_name
             });
-            this.$input.val('').focus();
-            this.model.add_tag(tag_name).success(this.saved);
+            this.$input.val('').focus();    
         },
+
+
 
         inputChange: function(e) {
             e.preventDefault();
