@@ -191,6 +191,7 @@
 /* Scale */
 
 #remotemedia-scaler {
+
     .header {
         @include textselection;
 
@@ -313,6 +314,7 @@
       .btn {
         margin: 0 5px 5px 0;
       }
+
       .scale img {
         margin: -3px 0 0 -5px;
       }

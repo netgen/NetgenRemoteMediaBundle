@@ -1,18 +1,18 @@
 define(['backbone', 'jquery-safe'], function(Backbone, $) {
-    var url = function() {
-        // var args = ['remotemedia', 'media', this.id, this.get('version')];
-        // if (arguments.length > 0) {
-        //     args = ['remotemedia'].concat(_.toArray(arguments));
-        // }
-        console.warn(arguments);
-        return ["/ezexceed/ngremotemedia/fetch", this.id, this.get('version')].join('/') // /90430/5
-            // return args.join('/');
-    };
+    // var url = function() {
+    //     // var args = ['remotemedia', 'media', this.id, this.get('version')];
+    //     // if (arguments.length > 0) {
+    //     //     args = ['remotemedia'].concat(_.toArray(arguments));
+    //     // }
+    //     console.warn(arguments);
+    //     return ["/ezexceed/ngremotemedia/fetch", this.id, this.get('version')].join('/') // /90430/5
+    //         // return args.join('/');
+    // };
 
 
-    var find_version = function(versions, version_name){
-        return _.find(versions, function(v){ v.name.toLowerCase() === version_name.toLowerCase(); });
-    };
+    // var find_version = function(versions, version_name){
+    //     return _.find(versions, function(v){ v.name.toLowerCase() === version_name.toLowerCase(); });
+    // };
 
     var Attribute = Backbone.Model.extend({
         urlRoot: null,
@@ -105,7 +105,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
                 data.remotemediaId = media.get('remotemediaId');
             }
 
-            var id = this.id !== "ezoe" ? this.id : this.get('attributeId');
+            // var id = this.id !== "ezoe" ? this.id : this.get('attributeId');
             // var url = this.url('saveVersion', id, this.get('version'));
 
             var url = ["/ezexceed/ngremotemedia/save", eZExceed.config.currentObjectId, this.id, this.get('version')].join('/'); // /90430/5
@@ -131,7 +131,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
         },
 
         parse: function(data) {
-            data.file = data.metaData; //Create alias for metaData            
+            data.file = _.extend({}, data.metaData); //Create alias for metaData            
             delete(data.metaData); //TODO: rename on server
             data.tags = new Backbone.Collection(_.map(data.file.tags, function(tag) {
                 return {
@@ -200,7 +200,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
         remotemediaId: null,
         xhr: null,
 
-        initialize: function(options) {
+        initialize: function() {
             _.bindAll(this);
         },
 
@@ -213,7 +213,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
 
 
         search: function(q, data) {
-            var data = (data ||  {});
+            data = (data ||  {});
             if (typeof q === 'string') {
                 this.q = q;
                 data.q = q;
@@ -245,7 +245,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
             return data;
         },
 
-        page: function(q) {
+        page: function() {
             if (this.length < this.total) {
                 var data = {
                     limit: this.limit,

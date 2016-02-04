@@ -227,6 +227,9 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
             storeVersion: function(selection, scale) {
                 // Must store scale coords back onto object
                 var coords = [selection.x, selection.y, selection.x2, selection.y2];
+                console.log(scale);
+
+                //TODO: inspect when we don't have scale.size
                 var size = scale.size || ([selection.w, selection.h]);
 
                 this.trigger('save');

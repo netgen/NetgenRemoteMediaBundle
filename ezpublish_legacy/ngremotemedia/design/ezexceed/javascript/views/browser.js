@@ -47,7 +47,7 @@ define(['remotemedia/view', './upload', 'remotemedia/templates/browser', 'remote
             e.preventDefault();
             var q = '';
             if (this.input) {
-                q = this.input.val();
+                q = this.input.val().trim();
             }
 
             // Only do search if the there are at least 2 characters
@@ -84,7 +84,6 @@ define(['remotemedia/view', './upload', 'remotemedia/templates/browser', 'remote
             var html = '';
             if (this.collection.length) {
                 html = this.collection.map(function(item) {
-                    console.log(item.attributes);
                     return Item(item.attributes);
                 }, this);
             } else {
@@ -101,7 +100,7 @@ define(['remotemedia/view', './upload', 'remotemedia/templates/browser', 'remote
 
         page: function() {
             this.$('.load-more img').removeClass('hide');
-            this.collection.page(this.$('.q').val());
+            this.collection.page(this.q);
         },
 
         enableUpload: function() {

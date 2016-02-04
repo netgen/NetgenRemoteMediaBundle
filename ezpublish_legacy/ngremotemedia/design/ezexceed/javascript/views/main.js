@@ -108,6 +108,8 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
 
         // Start render of scaler sub-view
         scale: function(ScaleView) {
+            if(this.$scale.hasClass('loading')){return this;}
+            this.$scale.addClass('loading');
             var data = this.$scale.data();
             var options = {
                 model: this.model,
@@ -129,6 +131,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
                     options,
                     context
                 );
+                this.$scale.removeClass('loading');
             });
             return this;
         },
