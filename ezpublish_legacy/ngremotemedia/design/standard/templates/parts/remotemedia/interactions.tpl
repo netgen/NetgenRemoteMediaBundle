@@ -9,13 +9,12 @@
     data-version="{$attribute.version}">
 
     <input type="hidden" name="{$base}_media_id_{$attribute.id}" value="{$media.id}" class="media-id" />
-    <input type="hidden" name="{$base}_host_{$attribute.id}" value="{$media.host}" class="media-host" />
-    <input type="hidden" name="{$base}_type_{$attribute.id}" value="{$media.type}" class="media-type" />
-    <input type="hidden" name="{$base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending" />
+    {*<input type="hidden" name="{$base}_host_{$attribute.id}" value="{$media.host}" class="media-host" />*}
+    {*<input type="hidden" name="{$base}_type_{$attribute.id}" value="{$media.type}" class="media-type" />*}
+    {*<input type="hidden" name="{$base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending" />*}
 
-    {if $media}
-        {include uri="design:parts/overlay_action_button.tpl"
-            media=$media handler=$handler}
+    {if $media.url}
+        {include uri="design:parts/overlay_action_button-1.tpl" media=$media value=$value attribute=$attribute}
         <input type="button" class="remotemedia-remove-file button" value="{'Remove media'|i18n( 'content/edit' )}">
     {/if}
 

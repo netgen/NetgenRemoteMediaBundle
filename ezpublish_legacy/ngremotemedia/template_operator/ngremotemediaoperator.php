@@ -1,6 +1,7 @@
 <?php
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
 class NgRemoteMediaOperator
 {
@@ -10,7 +11,7 @@ class NgRemoteMediaOperator
      */
     function operatorList()
     {
-        return array('ngremotemedia');
+        return array('ngremotemedia', 'mediaFits');
     }
 
     /**
@@ -28,14 +29,24 @@ class NgRemoteMediaOperator
     {
         return array(
             'ngremotemedia' => array(
-                'attribute' => array(
-                    'type' => 'eZContentObjectAttribute',
+                'value' => array(
+                    'type' => 'Value',
                     'required' => true
                 ),
                 'format' => array(
                     'type' => 'string',
                     'required' => false,
                     'default' => null
+                )
+            ),
+            'mediaFits' => array(
+                'value' => array(
+                    'type' => 'Value',
+                    'required' => true
+                ),
+                'variations' => array(
+                    'type' => 'array',
+                    'required' => true
                 )
             )
         );
@@ -44,12 +55,12 @@ class NgRemoteMediaOperator
     function modify($tpl, $operatorName, $operatorParameters, $rootNamespace, $currentNamespace, &$operatorValue, $namedParameters, $placement)
     {
         if ($operatorName === 'ngremotemedia') {
-            if (!empty($namedParameters['attribute'])) {
-                $attribute = $namedParameters['attribute'];
+            if (!empty($namedParameters['value'])) {
+                $value = $namedParameters['value'];
                 $format = $namedParameters['format'] ?: '';
                 $secure = $namedParameters['secure'] ?: true;
 
-                $operatorValue = $this->ngremotemedia($attribute, $format, $secure);
+                $operatorValue = $this->ngremotemedia($value, $format, $secure);
 
                 return;
             }
@@ -57,16 +68,36 @@ class NgRemoteMediaOperator
             $operatorValue = null;
 
             return;
+        } elseif ($operatorName === 'mediaFits') {
+            $operatorValue = $this->mediaFits($namedParameters['value'], $namedParameters['variations']);
+
+            return;
         }
     }
 
-    function ngremotemedia($attribute, $format, $secure = true)
+    function ngremotemedia($value, $format, $secure = true)
     {
-        $data = $attribute->Content;
-
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
 
-        return $provider->getVariation($data, array(), $format, $secure);
+        return $provider->getVariation($value, array(), $format, $secure);
+    }
+
+    function mediaFits($value, $variations)
+    {
+        $valueWidth = $value.metaData.width;
+        $valueHeight = $value.metaData.height;
+
+        $variations = json_decode($variations, true);
+
+        foreach($variations as $variationName => $variationSize) {
+            $variationSizeArray = explode('x', $variationSize);
+
+            if ($valueWidth < $variationSizeArray[0] || $valueHeight < $variationSizeArray[1]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -1,6 +1,6 @@
 {def $base='ContentObjectAttribute'
-    $handler = $attribute.content
-    $media = $handler.media
+    $value = $attribute.content
+    $media = ngremotemedia($value, '300x200', true)
 }
 
 {run-once}
@@ -37,7 +37,8 @@
 {include uri="design:parts/js_templates.tpl"}
 {/run-once}
 
-<div class="remotemedia-type" data-bootstrap-media='{$media.data|json}'>
-    {include uri="design:parts/remotemedia/preview.tpl" attribute=$attribute}
-    {include uri="design:parts/remotemedia/interactions.tpl" attribute=$attribute base=$base}
+<div class="remotemedia-type" data-bootstrap-media='{$value|json}'>
+    {include uri="design:parts/remotemedia/preview.tpl" attribute=$attribute value=$value media=$media}
+    {include uri="design:parts/remotemedia/interactions.tpl" attribute=$attribute base=$base value=$value media=$media}
 </div>
+
