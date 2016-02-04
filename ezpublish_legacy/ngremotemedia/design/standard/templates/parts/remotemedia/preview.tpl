@@ -24,6 +24,12 @@
                     </ul>
                 {/if}
 
+                <div class="remotemedia-alttext">
+                    <span class="help-block description">{'Alternate text'|i18n('remotemedia')}</span>
+                    <input type="text"
+                           name="{$attribute_base}_alttext_{$attribute.id}" value="{$value.metaData.alt_text}" class="media-alttext data">
+                </div>
+
                 <input type="text" class="tagedit" />
                 <input type="button" class="button tagit" id="remotemedia-tagger-{$attribute.id}"
                     value="{'Add tag'|i18n( 'content/edit' )}">
