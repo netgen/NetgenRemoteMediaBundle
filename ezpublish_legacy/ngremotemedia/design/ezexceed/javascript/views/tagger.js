@@ -4,9 +4,8 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
 
         initialize: function() {
             _.bindAll(this);
-            console.log('initialize !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-            this.collection = this.model.get('tags');
 
+            this.collection = this.model.get('tags');
             this.listenTo(this.collection, 'add', function(model){
                 this.model.add_tag(model.get('tag')).success(this.saved);
             });
@@ -14,13 +13,14 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
             this.listenTo(this.collection, 'remove', function(model){
                 this.model.remove_tag(model.get('tag')).success(this.saved);
             });            
+
             return this;
         },
 
         events: {
             'change input:text': 'inputChange',
-            'keyup input:text':   'inputChange',
-            'click button.tag': 'add',
+            'keyup input:text':  'inputChange',
+            'click button.tag':  'add',
             'click .tags button.close': 'remove'
         },
 
@@ -43,8 +43,10 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
 
         add: function(e) {
             e.preventDefault();
+            var tag_name = this.$input.val().trim();
+            if(!tag_name.length){return;}
+
             this.trigger('save');
-            var tag_name = this.$input.val();
             this.collection.add({
                 id: tag_name,
                 tag: tag_name
@@ -56,8 +58,7 @@ define(['remotemedia/view', 'remotemedia/templates/tag'], function(View, Tag) {
 
         inputChange: function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            var val = this.$input.val();
+            var val = this.$input.val().trim();
             this.$button.attr('disabled', val.length === 0);
             return this;
         },
