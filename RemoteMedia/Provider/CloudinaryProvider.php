@@ -181,8 +181,8 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             $value->resourceId, $options
         );
 
-        $variation->width = $options['width'];
-        $variation->height = $options['height'];
+        $variation->width = $sizes[0];
+        $variation->height = $sizes[1];
         $variation->url = $url;
 
         return $variation;
