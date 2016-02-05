@@ -4,11 +4,19 @@ netgen_remote_media_upload:
 
 netgen_remote_media_fetch:
     path: /ezexceed/ngremotemedia/fetch/{attributeId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetch }
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetchTest }
+
+netgen_remote_media_fetch_test:
+    path: /ezexceed/ngremotemedia/fetch/test/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetchTest }
 
 netgen_remote_media_save:
     path: /ezexceed/ngremotemedia/save/{objectId}/{attributeId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:saveAttribute }
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:saveAttributeTest }
+
+netgen_remote_media_save_test:
+    path: /ezexceed/ngremotemedia/save/test/{objectId}/{attributeId}/{contentVersionId}
+    defaults: { _controller: NetgenRemoteMediaBundle:UI:saveAttributeTest }
 
 netgen_remote_media_browse:
     path: /ezexceed/ngremotemedia/browse/{attributeId}/{contentVersionId}

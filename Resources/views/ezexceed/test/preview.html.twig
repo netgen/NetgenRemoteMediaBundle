@@ -1,0 +1,13 @@
+{% trans_default_domain "ezexceed" %}
+
+{% if media %}
+<div class="thumbnail">
+    <img src="{{ media.url }}" />
+
+    <button type="button" class="close remove"
+            name="CustomActionButton[{{ fieldId }}_delete_media]"
+            value="{{ 'ngremotemedia.edit.remove'|trans }}">×</button>
+
+    {% include "NetgenRemoteMediaBundle:ezexceed/test:action_button.html.twig" %}
+</div>
+{% endif %}
