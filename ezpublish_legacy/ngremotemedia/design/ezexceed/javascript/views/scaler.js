@@ -47,44 +47,12 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
 
             events: {
                 'click .nav li': 'changeScale',
-                'mouseenter .nav li.cropped': 'overlay'
-            },
-
-            overlay: function(e) {
-                var node = this.$(e.currentTarget);
-                var overlay = node.find('div');
-                if (node !== this.current) {
-                    this.createOverlay(overlay, node.data('scale'));
-                }
-            },
-
-            // render the overlay div for a scaled versions
-            // menu item. Happens on mouseenter on the li or after saving
-            // new crop information
-            createOverlay: function(node, data) {
-                if (this.cropper && 'coords' in data && data.coords.length === 4) {
-
-                    var scale = this.cropper.getScaleFactor();
-                    var coords = data.coords;
-
-                    var x = parseInt(coords[0] / scale[0], 10),
-                        y = parseInt(coords[1] / scale[1], 10),
-                        x2 = parseInt(coords[2] / scale[0], 10),
-                        y2 = parseInt(coords[3] / scale[1], 10);
-
-                    node.css({
-                        'position': 'absolute',
-                        'top': y + node.parent().outerHeight(true),
-                        left: x,
-                        width: parseInt(x2 - x, 10),
-                        height: parseInt(y2 - y, 10)
-                    });
-                }
             },
 
 
 
             fitTo: function(w, h, maxWidth, maxHeight) {
+                if(w<maxWidth && h < maxHeight){return {w: w, h: h};}
                 var ratio = Math.min(maxWidth / w, maxHeight / h);
                 return { w: Math.floor(w*ratio), h: Math.floor(h*ratio) };
             },
@@ -104,9 +72,6 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                 });
                 this.$el.append(content);
 
-                console.log('scaler:render', this.versions);
-
-                var outerBounds = this.outerBounds(this.versions, 4, 40);
 
                 var classes = this.model.get('classList');
                 var viewModes = this.model.get('viewModes');
@@ -158,103 +123,40 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                     return new ScaledVersion({
                         model: version,
                         media: media,
-                        outerBounds: outerBounds,
                         className: (version.coords ? 'cropped' : 'uncropped')
                     }).render().el;
                 });
                 this.$('ul.nav').html(versionElements);
 
-                if (this.selectedVersion) {
-                    var scale;
-                    var selectedEl = _.filter(this.$('ul.nav li'), function(el) {
-                        scale = this.$(el).data('scale');
-                        if (scale && _(scale).has('name') && scale.name == this.selectedVersion)
-                            return true;
-                        return false;
-                    }, this);
 
-                    this.$(selectedEl).find('a').click();
+                if (this.selectedVersion) {
+                    this.$('ul.nav li[version_name="'+this.selectedVersion.toLowerCase()+'"]').click();
                 } else {
-                    // Enable the first scaling by simulating a click
                     this.$('ul.nav li:first-child a').click();
                 }
 
                 return this;
             },
 
-            // Calculate outer bounds for preview boxes
-            outerBounds: function(versions, gt, lt) {
 
-                var media = this.model.get('media');
-
-                var min = {
-                    w: 0,
-                    h: 0
-                };
-                var max = {
-                    w: 0,
-                    h: 0
-                };
-                var i, w, h;
-
-                for (i = 0; i < versions.length; i++) {
-                    if (_(versions[i]).has('size') && _(versions[i].size).isArray()) {
-                        w = parseInt(versions[i].size[0], 10);
-                        h = parseInt(versions[i].size[1], 10);
-                    } else {
-                        console.error("BUM");
-                        w = parseInt(media.get('width'), 10);
-                        h = parseInt(media.get('height'), 10);
-                    }
-
-                    if (w > max.w) max.w = w;
-                    if (h > max.h) max.h = h;
-
-                    if (min.w === 0 ||  w < min.w) min.w = w;
-                    if (min.h === 0 ||  h < min.h) min.h = h;
-                }
-
-                return {
-                    max: max,
-                    min: min
-                };
-            },
-
-            scaledId: function(item) {
-                return 'scaled-' + item.name;
-            },
 
             storeVersion: function(selection, scale) {
                 // Must store scale coords back onto object
                 var coords = [selection.x, selection.y, selection.x2, selection.y2];
-                console.log(scale);
-
-                //TODO: inspect when we don't have scale.size
-                var size = scale.size || ([selection.w, selection.h]);
+                
+                if(!scale.size){alert("bum4");} //TODO: inspect when we don't have scale.size
+                var size = scale.size; // || ([selection.w, selection.h]);
 
                 this.trigger('save');
                 this.model.addVanityUrl(scale.name, coords, size).success(this.versionCreated);
             },
 
             versionCreated: function(data) {
-                if ('content' in data && data.content) data = data.content;
-                /**
-                 * HACK. Prevent old coords to be used when scaling again
-                 * Store new coords in scale button
-                 */
-                var name = data.name;
-                var coords = data.coords;
+                data.content && (data = data.content);
 
-                _.each(this.versions, function(version, key) {
-                    if (version.name === name) {
-                        this.versions[key].coords = coords;
-                    }
-                }, this);
+                var current_version = _.find(this.versions, function(v) { return v.name  === data.name; });
+                current_version && (current_version.coords = data.coords);
 
-                console.log('versionCreated', this.versions);
-
-                var menuElement = this.$('#eze-remotemedia-scale-version-' + data.name.toLowerCase());
-                menuElement.data('versions', this.versions);
                 this.versionSaved = data;
                 if (this.singleVersion)
                     this.finishScaler();
@@ -279,12 +181,12 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                     });
                 }
                 var scale = this.current.data('scale');
-                console.log('saveCrop scale', scale);
 
                 if (this.cropper && scale) {
                     var selection = this.cropper.tellSelect();
 
                     if (!this.hasSelection) {
+                        alert("BUM 2");
                         selection.x = 0;
                         selection.y = 0;
                         selection.x2 = this.trueSize[0];
@@ -293,14 +195,8 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                             scale.size[0] = this.trueSize[0];
                         if (!parseInt(scale.size[1], 10))
                             scale.size[1] = this.trueSize[0];
-                    } else {
-                        var tellScaled = this.cropper.tellScaled();
-                        var ratio = (tellScaled.w / tellScaled.h);
-                        if (!parseInt(scale.size[0], 10))
-                            scale.size[0] = Math.ceil(scale.size[1] * ratio);
-                        else if (!parseInt(scale.size[1], 10))
-                            scale.size[1] = Math.ceil(scale.size[0] / ratio);
                     }
+                    
 
                     this.storeVersion(selection, scale);
                     this.current.removeClass('uncropped').addClass('cropped');
@@ -308,159 +204,67 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
             },
 
             changeScale: function(e) {
-                if (e) e.preventDefault();
+                e && e.preventDefault();
+                this.cropper && this.cropper.destroy();
 
-                if (this.current !== null) {
-                    if (!this.singleVersion)
-                        this.saveCrop();
-                    if (e && this.current.get(0) == this.$(e.currentTarget).get(0))
-                        return;
-
+                if (this.current) {
+                    if (!this.singleVersion){ this.saveCrop();}
+                    if (e && this.current.get(0) == e.currentTarget){ return; }
                     this.current.removeClass('active');
                 }
 
                 // If method is triggered without click we
                 // should return after saving the current scale
-                if (!e) return;
+                if (!e){ alert("BUM3"); return;}
 
-                this.current = this.$(e.currentTarget);
-                this.current.addClass('active');
-
+                this.current = $(e.currentTarget).addClass('active');
                 var scale = this.current.data('scale');
 
-                console.log(scale);
+                if (typeof scale === 'undefined'){return this;}
+                if (scale.toSmall) { return this; }
 
-                if (typeof scale === 'undefined')
-                    return this;
-
-                // If image is to small for the version, show an overlay with error message
-                var mediaFile = this.model.get('media').get('file');
-                var width = parseInt(mediaFile.width, 10);
-                var height = parseInt(mediaFile.height, 10);
-                if (scale.size[0] > width || scale.size[1] > height) {
-                    if (this.cropper) {
-                        this.cropper.destroy();
-                        this.cropper = null;
-                        this.$('.image-wrap>img').css('visibility', 'visible');
-                    }
-                    this.showAlert();
-                    return this;
-                }
-                /**
-                 * Hide the alert
-                 */
-                this.showAlert(true);
-
-                var w = this.SIZE.w;
-                var h = this.SIZE.h;
-                var x, y, x2, y2;
+                var w = this.SIZE.w,
+                    h = this.SIZE.h,
+                    x, y, x2, y2;
 
                 // Find initial placement of crop
                 // x,y,x2,y2
-                if (scale && 'coords' in scale) {
-                    x = scale.coords[0] - 0;
-                    y = scale.coords[1] - 0;
-                    x2 = scale.coords[2] - 0;
-                    y2 = scale.coords[3] - 0;
+                if (scale && scale.coords) {
+                    x = scale.coords[0];
+                    y = scale.coords[1];
+                    x2 = scale.coords[2];
+                    y2 = scale.coords[3];
                 } else {
-                    x = parseInt((this.trueSize[0] - w) / 2, 10);
-                    y = parseInt((this.trueSize[1] - h) / 2, 10);
-                    x2 = parseInt((this.trueSize[0] + w) / 2, 10);
-                    y2 = parseInt((this.trueSize[1] + h) / 2, 10);
+                    //This happens on fresh upload
+                    x = (this.trueSize[0] - w) / 2;
+                    y = (this.trueSize[1] - h) / 2;
+                    x2 = (this.trueSize[0] + w) / 2;
+                    y2 = (this.trueSize[1] + h) / 2;
                 }
-                var select = [x, y, x2, y2];
 
-                var ratio = null,
-                    minSize = null;
-
-                if (scale && scale.size) {
-                    if (parseInt(scale.size[0], 10) && parseInt(scale.size[1], 10))
-                        ratio = (scale.size[0] / scale.size[1]);
-                    minSize = scale.size;
-                }
+                var ratio = (scale.size[0] / scale.size[1]);
+                var context = this;
 
                 // If an API exists we dont need to build Jcrop
                 // but can just change crop
                 var cropperOptions = {
-                    setSelect: select
+                    setSelect: [x, y, x2, y2],
+                    aspectRatio: scale.unbounded ? null : ratio,
+                    minSize: scale.size,
+                    // Make sure user can't remove selection if width and height has bounded dimension
+                    // if it has ratio than it has bounded dimension
+                    allowSelect: scale.unbounded,
+                    trueSize: this.trueSize,
+                    onSelect:  function() { context.hasSelection = true; },
+                    onRelease: function() { context.hasSelection = false; }                    
                 };
 
-                if (ratio) {
-                    cropperOptions.aspectRatio = ratio;
-                } else {
-                    cropperOptions.aspectRatio = 0;
-                }
-                cropperOptions.minSize = minSize;
-
-                /**
-                 * Make sure user can't remove selection if width and height has bounded dimension
-                 */
-                cropperOptions.allowSelect = (parseInt(minSize[0], 10) && parseInt(minSize[1], 10)) ? false : true;
-
-                if (this.cropper) {
-                    // Change selection to new selection
-                    this.cropper.setOptions(cropperOptions);
-                } else {
-                    var context = this;
-                    this.$('.image-wrap>img').Jcrop({
-                        trueSize: this.trueSize,
-                        onSelect: function() {
-                            context.hasSelection = true;
-                        },
-                        onRelease: function() {
-                            context.hasSelection = false;
-                        }
-                    }, function(a) {
-                        // Store reference to API
-                        context.cropper = this;
-                        // Set true size of media
-                        this.setOptions(cropperOptions);
-                    });
-                }
-            },
-
-            showAlert: function(hide) {
-                if (hide) {
-                    this.$('.image-wrap p').remove();
-                    return;
-                }
-                if (this.$('.image-wrap p').length)
-                    return;
-
-                var wrapper = this.$('.image-wrap');
-                var img = wrapper.find('img');
-                var size = this.imageViewedSize();
-                wrapper.css({
-                    width: size.w + 2,
-                    height: size.h + 2
+                this.$('.image-wrap > img').Jcrop(cropperOptions, function(){
+                    context.cropper = this;
                 });
-                wrapper.append(this.template('alert'));
+
             },
 
-            /**
-             * Calculates the rendered image sizes
-             *
-             * @return {Object}
-             */
-            imageViewedSize: function() {
-                var media = this.model.get('media');
-                var file = media.get('file');
-                var data = {
-                    w: this.SIZE.w,
-                    h: this.SIZE.h
-                };
-                if (this.SIZE.w > file.width)
-                    data.w = file.width;
-
-                if (this.SIZE.h > file.height)
-                    data.h = file.height;
-
-                if (file.ratio > 1)
-                    data.h = Math.round(data.w / file.ratio);
-                else
-                    data.w = Math.round(data.h * file.ratio);
-                return data;
-            },
 
             stackPopped: function() {
                 this.poppedFromStack = true;

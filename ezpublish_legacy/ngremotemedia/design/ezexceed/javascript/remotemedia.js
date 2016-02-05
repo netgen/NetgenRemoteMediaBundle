@@ -1,4 +1,5 @@
 define(['shared/datatype', 'remotemedia/views/main', 'remotemedia/config'], function(Base, MainView) {
+
     return Base.extend({
         initialize: function(options) {
             _.bindAll(this);
@@ -9,9 +10,7 @@ define(['shared/datatype', 'remotemedia/views/main', 'remotemedia/config'], func
                 el: options.el,
                 id: options.objectId,
                 version: options.version
-            });
-
-            this.view.on('save', this.save, this);
+            }).on('save', this.save, this);
         },
 
         render: function() {

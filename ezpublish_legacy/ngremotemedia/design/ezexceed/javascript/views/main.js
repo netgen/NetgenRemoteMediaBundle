@@ -4,7 +4,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         if(_.isArray(versions)){return versions;}
         return _.map(versions, function(size, name) {
             return {
-                size: size.split ? size.split('x') : size,
+                size: size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size,
                 name: name
             };
         });
@@ -33,7 +33,6 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             }, {
                 parse: true
             });
-            console.log("Data:", data);
             this.model.urlRoot = urlRoot;
             this.model
                 .on('change', this.render)
@@ -111,12 +110,12 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             if(this.$scale.hasClass('loading')){return this;}
             this.$scale.addClass('loading');
             var data = this.$scale.data();
+
             var options = {
                 model: this.model,
                 trueSize: data.truesize
             };
 
-            console.log("main:scale", options);
 
             var context = {
                 icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures-alt-2b.png',
@@ -131,7 +130,6 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
                     options,
                     context
                 );
-                this.$scale.removeClass('loading');
             });
             return this;
         },
@@ -173,15 +171,14 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
             var media = this.model.get('media');
             var file = media.get('file');
 
-            if (content) {
-                this.$('.attribute-base').html(content);
-            }
+            // Update HTML
+            content && this.$('.attribute-base').html(content);
 
             if (file) {
                 this.$scale = this.$("button.scale");
 
                 var available_versions = convert_versions(this.$scale.data('versions'));
-                this.model.set('available_versions', available_versions);
+                this.model.set('available_versions', available_versions, {silent: true});
 
                 var imgWidth = file.width;
                 var imgHeight = file.height;
@@ -212,7 +209,6 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         },
 
         renderTags: function() {
-            console.log("PRE INITIALIZE TAGS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             new TaggerView({
                 el: this.$('.remotemedia-tags').off(),
                 model: this.model.get('media')
