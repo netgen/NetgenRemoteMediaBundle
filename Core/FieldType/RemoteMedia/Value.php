@@ -6,10 +6,10 @@ use eZ\Publish\Core\FieldType\Value as BaseValue;
 
 class Value extends BaseValue
 {
-    public $resourceId;
-    public $url;
-    public $secure_url;
-    public $size;
+    public $resourceId = null;
+    public $url = null;
+    public $secure_url = null;
+    public $size = null;
 
     public $variations = array();
     public $metaData = array();
