@@ -1,11 +1,11 @@
-{if is_set($value)|not}
+{*if is_set($value)|not}
     {def $value=$attribute.content}
-{/if}
+{/if*}
 
 {if is_set($attribute_base)|not}
     {def $attribute_base = "ContentObjectAttribute"}
 {/if}
-
+{*
 <div class="attribute-base"
     data-handler='remotemedia/remotemedia'
     data-url-root='{"/"|ezurl("no")}'
@@ -17,19 +17,19 @@
     {/literal}
     data-bootstrap='{$value|json}'
 >
-
+*}
 {*
 {if and( $media, $handler.mediaFits|not )}
     <p class="error">{'The uploaded media might be too small for this format'|i18n('remotemedia')}</p>
 {/if}
 *}
 
-<input type="hidden" name="{$attribute_base}_media_id_{$attribute.id}" value="{$value.resourceId}" class="media-id data"/>
+{*<input type="hidden" name="{$attribute_base}_media_id_{$attribute.id}" value="{$value.resourceId}" class="media-id data"/>
 {*<input type="hidden" name="{$attribute_base}_host_{$attribute.id}" value="{$media.host}" class="media-host data"/>*}
 {*<input type="hidden" name="{$attribute_base}_type_{$attribute.id}" value="{$media.type}" class="media-type data"/>*}
 {*<input type="hidden" name="{$attribute_base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending data"/>*}
 
-{if $value.resourceId}
+{* if $value.resourceId}
     <div class="eze-image">
 
         {include uri="design:parts/remotemedia/preview.tpl"
@@ -64,4 +64,16 @@
         <div class="upload-progress hide"><div class="progress"></div></div>
     </span>
 </div>
-</div>
+</div>*}
+
+{def $contentClassAttribute = $attribute.contentclass_attribute}
+{def $variations = $contentClassAttribute.data_text4}
+
+{symfony_include(
+    'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',
+        hash(
+            'value', $attribute.content,
+            'fieldId', $attribute.id,
+            'availableFormats', $variations
+        )
+)}

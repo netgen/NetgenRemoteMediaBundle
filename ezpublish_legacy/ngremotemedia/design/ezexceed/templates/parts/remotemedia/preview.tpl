@@ -1,4 +1,4 @@
-{if not( is_set( $value ) ) }
+{* {if not( is_set( $value ) ) }
     {def $value = $attribute.content}
 {/if}
 
@@ -27,4 +27,4 @@
                 value="{'Remove current media'|i18n('remotemedia')}">×</button>
     </div>
 
-{/if}
+{/if*}
