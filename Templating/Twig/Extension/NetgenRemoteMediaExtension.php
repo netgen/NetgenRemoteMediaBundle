@@ -54,6 +54,14 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 'netgen_remote_media',
                 array($this, 'getRemoteMediaVariation')
             ),
+            new Twig_SimpleFunction(
+                'netgen_remote_thumbnail',
+                array($this, 'getVideoThumbnail')
+            ),
+            new Twig_SimpleFunction(
+                'netgen_remote_video',
+                array($this, 'getRemoteVideoTag')
+            ),
         );
     }
 
@@ -68,5 +76,15 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getRemoteMediaVariation(Value $value, $availableFormats, $format, $secure = true)
     {
         return $this->provider->getVariation($value, $availableFormats, $format, $secure);
+    }
+
+    public function getVideoThumbnail(Value $value)
+    {
+        return $this->provider->getVideoThumbnail($value->resourceId);
+    }
+
+    public function getRemoteVideoTag(Value $value, $format = '', $availableFormats = array())
+    {
+        return $this->provider->generateVideoTag($value->resourceId, $format, $availableFormats);
     }
 }

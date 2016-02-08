@@ -31,6 +31,7 @@ class CloudinaryStorage extends RemoteMediaStorage implements FieldStorage
                     'alt' => $data['alt_text'],
                     'caption' => $data['caption'],
                 ),
+                'resource_type' => 'auto'
             );
 
             $response = $this->provider->upload(

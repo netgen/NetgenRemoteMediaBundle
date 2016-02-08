@@ -149,6 +149,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             );
         }
 
+        // @todo: take unbound dimensions into account!
         if (array_key_exists($format, $value->variations)) {
             $coords = $value->variations[$format];
             if (count($coords) > 2) {
@@ -266,9 +267,19 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
 
-    public function getRemoteResource($resourceId)
+    public function getRemoteResource($resourceId, $resourceType)
     {
-        return $this->cloudinaryApi->resource($resourceId);
+        $response = $this->cloudinaryApi->resources_by_ids(
+            array($resourceId),
+            array(
+                'resource_type' => $resourceType,
+                'max_results' => 1,
+                'tags' => true,
+                'context' => true,
+            )
+        )->getIterator()->current();
+
+        return $response[0];
     }
 
     public function addTagToResource($resourceId, $tag)
@@ -281,8 +292,55 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return $this->cloudinaryUploader->remove_tag($tag, array($resourceId));
     }
 
-    public function updateResourceContext($resourceId, $context)
+    public function updateResourceContext($resourceId, $resourceType, $context)
     {
-        $this->cloudinaryApi->update($resourceId, array("context" => $context));
+        $this->cloudinaryApi->update(
+            $resourceId,
+            array(
+                "context" => $context,
+                "resource_type" => $resourceType
+            )
+        );
+    }
+
+    public function getVideoThumbnail($resourceId, $offset = 'auto')
+    {
+        $options = array();
+        $options['crop'] = 'fit';
+        $options['width'] = 160;
+        $options['height'] = 120;
+        $options['resource_type'] = 'video';
+        $options['start_offset'] = $offset;
+
+        return cl_video_thumbnail_path($resourceId, $options);
+    }
+
+    public function generateVideoTag($resourceId, $format = '', $namedFormats = array())
+    {
+        $options = array(
+            'controls' => true,
+            'fallback_content' => 'Your browser does not support HTML5 video tags'
+        );
+
+        if (!empty($format)) {
+            if (array_key_exists($format, $namedFormats)) {
+                $selectedFormat = $namedFormats[$format];
+                $sizes = explode('x', $selectedFormat);
+            } else {
+                $sizes = explode('x', $format);
+            }
+
+            if ($sizes[0] !== 0) {
+                $options['width'] = $sizes[0];
+            }
+            if ($sizes[1] !== 0) {
+                $options['height'] = $sizes[1];
+            }
+
+            $options['background'] = 'black';
+            $options['crop'] = 'pad';
+        }
+
+        return cl_video_tag($resourceId, $options);
     }
 }

@@ -2,10 +2,6 @@
     {def $value=$attribute.content}
 {/if}
 
-{def
-    $media = ngremotemedia($value, '300x200', true)
-}
-
 {if is_set($attribute_base)|not}
     {def $attribute_base = "ContentObjectAttribute"}
 {/if}
@@ -33,7 +29,7 @@
 {*<input type="hidden" name="{$attribute_base}_type_{$attribute.id}" value="{$media.type}" class="media-type data"/>*}
 {*<input type="hidden" name="{$attribute_base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending data"/>*}
 
-{if $media.url}
+{if $value.resourceId}
     <div class="eze-image">
 
         {include uri="design:parts/remotemedia/preview.tpl"

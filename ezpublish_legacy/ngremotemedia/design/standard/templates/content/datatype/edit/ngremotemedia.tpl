@@ -34,7 +34,7 @@
     'remotemedia/run.js'
 ) )}
 
-{include uri="design:parts/js_templates.tpl"}
+{include uri="design:parts/js_templates_1.tpl"}
 {/run-once}
 
 <div class="remotemedia-type" data-bootstrap-media='{$value|json}'>

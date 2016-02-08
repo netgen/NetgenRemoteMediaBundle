@@ -56,12 +56,16 @@ class UIController extends Controller
                 'alt' => '',
                 'caption' => '',
             ),
+            'resource_type' => 'auto'
         );
 
         $result = $provider->upload($fileUri, $options);
 
         $value = $provider->getValueFromResponse($result);
         $dbHandler->update($value, $fieldId, $contentVersionId);
+
+        $fieldSettings = $dbHandler->loadFieldSettings($field->fieldDefinitionId);
+        $availableFormats = !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
 
         $content = $this->renderView(
             'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',

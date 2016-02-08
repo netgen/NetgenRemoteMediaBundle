@@ -98,30 +98,43 @@ class NgRemoteMediaType extends eZDataType
     {
         $attributeId = $contentObjectAttribute->attribute('id');
         $data = array(
-            'public_id' =>  $http->variable($base . '_media_id_' . $attributeId)
+            'public_id' =>  $http->variable($base . '_media_id_' . $attributeId),
+            'alttext' => $http->variable($base . '_alttext_' . $attributeId, ''),
+            'removeMedia' => $http->variable($base . 'removeMedia' . $attributeId, 0), // ezexceed specific
+            'changeMedia' => $http->variable($base . 'changeMedia' . $attributeId, 0)  // ezexceed specific
         );
-
-        $data['alttext'] = $http->variable($base . '_alttext_' . $attributeId, '');
 
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
 
-        $response = $provider->getRemoteResource($data['public_id'])->getArrayCopy();
+        $value = $contentObjectAttribute->Content();
+
+        $updatedValue = new Value();
+        if ($data['public_id'] !== $value->resourceId) {
+            // let's presume we're looking for an image for now
+            // ezexceed - when selecting image from browse
+            $response = $provider->getRemoteResource($data['public_id'], 'image');
+            $updatedValue = $provider->getValueFromResponse($response);
+        } else {
+            $updatedValue = $value;
+        }
+
+        if ($value->metaData['alt_text'] !== $data['alttext']) {
+            $provider->updateResourceContext(
+                $updatedValue->resourceId,
+                $value->metaData['resource_type'],
+                array(
+                    'alt' => $data['alttext']
+                )
+            );
+            $updatedValue->metaData['alt_text'] = $data['alttext'];
+        }
 
         $contentClassAttribute = $contentObjectAttribute->contentClassAttribute();
         $attributeVariations = json_decode($contentClassAttribute->attribute(self::FIELD_FORMATS), true);
+        $updatedValue->variations = $value->variations;
 
-        $value = $contentObjectAttribute->Content();
-
-        $response['variations'] = $value->variations;
-
-        if ($response['context']['custom']['alt'] !== $data['alttext']) {
-            $provider->updateResourceContext($data['public_id'], array('alt' => $data['alttext']));
-        }
-        $response['context']['custom']['alt'] = $data['alttext'];
-
-        $value = $provider->getValueFromResponse($response);
-        $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($value));
+        $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
 
         return true;
     }

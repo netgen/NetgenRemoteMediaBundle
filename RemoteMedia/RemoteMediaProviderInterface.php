@@ -83,9 +83,10 @@ interface RemoteMediaProviderInterface
      * )
      *
      * @param $resourceId
+     * @param $resourceType
      * @param $context
      *
      * @return mixed
      */
-    public function updateResourceContext($resourceId, $context);
+    public function updateResourceContext($resourceId, $resourceType, $context);
 }

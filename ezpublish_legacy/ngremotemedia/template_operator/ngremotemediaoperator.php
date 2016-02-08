@@ -11,7 +11,7 @@ class NgRemoteMediaOperator
      */
     function operatorList()
     {
-        return array('ngremotemedia', 'mediaFits');
+        return array('ngremotemedia', 'mediaFits', 'videoThumbnail');
     }
 
     /**
@@ -48,6 +48,12 @@ class NgRemoteMediaOperator
                     'type' => 'array',
                     'required' => true
                 )
+            ),
+            'videoThumbnail' => array(
+                'value' => array(
+                    'type' => 'Value',
+                    'required' => true
+                )
             )
         );
     }
@@ -72,6 +78,8 @@ class NgRemoteMediaOperator
             $operatorValue = $this->mediaFits($namedParameters['value'], $namedParameters['variations']);
 
             return;
+        } elseif ($operatorName === 'videoThumbnail') {
+            $operatorValue = $this->videoThumbnail($namedParameters['value']);
         }
     }
 
@@ -99,5 +107,13 @@ class NgRemoteMediaOperator
         }
 
         return true;
+    }
+
+    function videoThumbnail($value)
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
+
+        return $provider->getVideoThumbnail($value->resourceId);
     }
 }

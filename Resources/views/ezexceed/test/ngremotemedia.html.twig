@@ -28,7 +28,9 @@
 {% if media %}
 <div class="eze-image">
 
-    {% include "NetgenRemoteMediaBundle:ezexceed/test:preview.html.twig" %}
+    {% if value.resourceId %}
+        {% include "NetgenRemoteMediaBundle:ezexceed/test:preview.html.twig" %}
+    {% endif %}
 
     <div class="remotemedia-alttext">
         <span class="help-block description">{{ 'ngremotemedia.edit.alt_text'|trans }}</span>
