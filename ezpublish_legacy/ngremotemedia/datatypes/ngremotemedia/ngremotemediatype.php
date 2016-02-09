@@ -100,8 +100,8 @@ class NgRemoteMediaType extends eZDataType
         $data = array(
             'public_id' =>  $http->variable($base . '_media_id_' . $attributeId),
             'alttext' => $http->variable($base . '_alttext_' . $attributeId, ''),
-            'removeMedia' => $http->variable($base . 'removeMedia' . $attributeId, 0), // ezexceed specific
-            'changeMedia' => $http->variable($base . 'changeMedia' . $attributeId, 0)  // ezexceed specific
+            'mediaRemove' => $http->variable('mediaRemove', 0), // ezexceed specific
+            'changeMedia' => $http->variable('changeMedia', 0)  // ezexceed specific
         );
 
         $container = ezpKernel::instance()->getServiceContainer();
@@ -110,13 +110,15 @@ class NgRemoteMediaType extends eZDataType
         $value = $contentObjectAttribute->Content();
 
         $updatedValue = new Value();
-        if (!empty($data['public_id']) && $data['public_id'] !== $value->resourceId) {
-            // let's presume we're looking for an image for now
-            // ezexceed - when selecting image from browse
-            $response = $provider->getRemoteResource($data['public_id'], 'image');
-            $updatedValue = $provider->getValueFromResponse($response);
-        } else {
-            $updatedValue = $value;
+        if (!$data['mediaRemove']) {
+            if (!empty($data['public_id']) && $data['public_id'] !== $value->resourceId) {
+                // let's presume we're looking for an image for now
+                // ezexceed - when selecting image from browse
+                $response = $provider->getRemoteResource($data['public_id'], 'image');
+                $updatedValue = $provider->getValueFromResponse($response);
+            } else {
+                $updatedValue = $value;
+            }
         }
 
         if ($value->metaData['alt_text'] !== $data['alttext']) {

@@ -18,7 +18,7 @@
     data-bootstrap='{{ value|json_encode }}'
 >
 
-    {% if resourceType == 'image' and not netgen_remote_media_fits(value, availableFormats) %}
+    {% if value.resourceId and resourceType == 'image' and not netgen_remote_media_fits(value, availableFormats) %}
         <p class="error">{{ "ngremotemedia.edit.media_too_small"|trans }}</p>
     {% endif %}
 
