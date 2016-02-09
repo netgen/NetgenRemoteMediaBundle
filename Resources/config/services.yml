@@ -6,3 +6,8 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\CloudinaryProvider
         arguments:
             - "$cloudinary;netgen_remote_media$"
+
+    netgen_remote_media.helper:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
+        arguments:
+            - '@ezpublish.api.storage_engine.legacy.handler.ngremotemedia'
