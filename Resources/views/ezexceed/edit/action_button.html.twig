@@ -1,15 +1,12 @@
 {% trans_default_domain "ezexceed" %}
 
-{% set contentClassAttribute = attribute.attribute('contentclass_attribute') %}
-{% set variations = contentClassAttribute.attribute('data_text4') %}
-
 {% set width = value.metaData.width %}
 {% set height = value.metaData.height %}
 {% set size =  [width, height] %}
 
 <button type="button" class="btn btn-inverse scale edit-image"
         data-truesize='{{ size|json_encode }}'
-        data-versions='{{ variations }}'>
+        data-versions='{{ availableFormats|json_encode }}'>
     <img class="hide" src="/extension/ezexceed/design/ezexceed/images/kp/16x16/white/Info.png" />
     {{ 'ngremotemedia.edit.scale_variants'|trans }}
 </button>

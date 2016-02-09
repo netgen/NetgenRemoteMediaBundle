@@ -77,7 +77,7 @@ class UIController extends Controller
         $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
 
         $content = $this->templating->render(
-            'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',
+            'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
@@ -105,7 +105,7 @@ class UIController extends Controller
         );
     }
 
-    public function fetchTestAction(Request $request, $fieldId, $contentVersionId)
+    public function fetchAction(Request $request, $fieldId, $contentVersionId)
     {
         $field = $this->helper->loadField($fieldId, $contentVersionId);
         $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
@@ -115,7 +115,7 @@ class UIController extends Controller
         $variations = $value->variations;
 
         $content = $this->templating->render(
-            'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',
+            'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
@@ -191,7 +191,7 @@ class UIController extends Controller
 //        );
 //    }
 
-    public function saveAttributeTestAction(Request $request, $objectId, $fieldId, $contentVersionId)
+    public function saveAttributeAction(Request $request, $objectId, $fieldId, $contentVersionId)
     {
         // make all coords int
         $variantName = $request->get('name', '');
