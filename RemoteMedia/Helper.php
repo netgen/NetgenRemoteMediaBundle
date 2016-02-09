@@ -24,27 +24,55 @@ class Helper
      *
      * @return \eZ\Publish\SPI\Persistence\Content\Field
      */
-    public function loadField($fieldId, $version)
+    public function loadField($fieldId, $versionId)
     {
-        return $this->dbHandler->load($fieldId, $version);
+        return $this->dbHandler->load($fieldId, $versionId);
     }
 
-    public function loadFieldSettings($fieldId, $version)
+    /**
+     * @param $fieldId
+     * @param $versionId
+     *
+     * @return mixed
+     */
+    public function loadFieldSettings($fieldId, $versionId)
     {
-        $field = $this->loadField($field, $version);
+        $field = $this->loadField($field, $versionId);
 
         return $this->dbHandler->loadFieldSettings($field->fieldDefinitionId);
     }
 
+    /**
+     * @param Field $field
+     *
+     * @return mixed
+     */
     public function loadFieldSettingsBySPIField(Field $field)
     {
         return $this->dbHandler->loadFieldSettings($field->fieldDefinitionId);
     }
 
+    /**
+     * @param Field $field
+     *
+     * @return array
+     */
     public function loadSPIFieldAvailableFormats(Field $field)
     {
         $fieldSettings = $this->loadFieldSettingsBySPIField($field);
 
         return !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
+    }
+
+    /**
+     * @param $value
+     * @param $fieldId
+     * @param $contentVersionId
+     *
+     * @return Field
+     */
+    public function updateField($value, $fieldId, $contentVersionId)
+    {
+        return $this->dbHandler->update($value, $fieldId, $contentVersionId);
     }
 }

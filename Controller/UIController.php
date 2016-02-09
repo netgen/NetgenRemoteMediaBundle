@@ -25,10 +25,8 @@ class UIController extends Controller
             );
         }
 
-        $dbHandler = $this->get('ezpublish.api.storage_engine.legacy.handler.ngremotemedia');
-
-        /** @var \eZ\Publish\SPI\Persistence\Content\Field $field */
-        $field = $dbHandler->load($fieldId, $contentVersionId);
+        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
+        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
 
         if ($field->type !== 'ngremotemedia') {
             return new JsonResponse(
@@ -62,10 +60,8 @@ class UIController extends Controller
         $result = $provider->upload($fileUri, $options);
 
         $value = $provider->getValueFromResponse($result);
-        $dbHandler->update($value, $fieldId, $contentVersionId);
-
-        $fieldSettings = $dbHandler->loadFieldSettings($field->fieldDefinitionId);
-        $availableFormats = !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
+        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
+        $availableFormats = $remoteMediaHelper->loadSPIFieldAvailableFormats($field);
 
         $content = $this->renderView(
             'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',
@@ -96,52 +92,12 @@ class UIController extends Controller
         );
     }
 
-//    public function fetchAction(Request $request, $fieldId, $contentVersionId)
-//    {
-//        $attribute = $this->legacyGetAttribute($fieldId, $contentVersionId);
-//
-//        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $data */
-//        $data = $attribute->Content();
-//        $variations = $data->variations;
-//
-//        $content = $this->renderView(
-//            'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
-//            array(
-//                'attribute' => $attribute,
-//            )
-//        );
-//
-//        $scaling = array();
-//        foreach ($variations as $name => $coords) {
-//            $scaling[] = array(
-//                'name' => $name,
-//                'coords' => array(
-//                    (int) $coords['x'],
-//                    (int) $coords['y'],
-//                    (int) $coords['x'] + (int) $coords['w'],
-//                    (int) $coords['y'] + (int) $coords['h'],
-//                ),
-//            );
-//        }
-//
-//        $responseData = array(
-//            'media' => !empty($data->resourceId) ? $data : false,
-//            'content' => $content,
-//            'toScale' => $scaling,
-//        );
-//
-//        return new JsonResponse($responseData, 200);
-//    }
-
     public function fetchTestAction(Request $request, $fieldId, $contentVersionId)
     {
-        $dbHandler = $this->get('ezpublish.api.storage_engine.legacy.handler.ngremotemedia');
+        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
 
-        /** @var \eZ\Publish\SPI\Persistence\Content\Field $field */
-        $field = $dbHandler->load($fieldId, $contentVersionId);
-
-        $fieldSettings = $dbHandler->loadFieldSettings($field->fieldDefinitionId);
-        $availableFormats = !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
+        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
+        $availableFormats = $remoteMediaHelper->loadSPIFieldAvailableFormats($field);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
@@ -225,105 +181,6 @@ class UIController extends Controller
 //        );
 //    }
 
-//    public function saveAttributeAction(Request $request, $objectId, $fieldId, $contentVersionId)
-//    {
-//        // make all coords int
-//        $variantName = $request->get('name', '');
-//        $crop_x = $request->get('crop_x', 0);
-//        $crop_y = $request->get('crop_y', 0);
-//        $crop_w = $request->get('crop_w', 0);
-//        $crop_h = $request->get('crop_h', 0);
-//
-//        if (empty($variantName) || empty($crop_w) || empty($crop_h)) {
-//            throw new \InvalidArgumentException('Missing one of the arguments: variant name, crop width, crop height');
-//        }
-//
-//        $contentService = $this->getRepository()->getContentService();
-//
-//        $attribute = $this->legacyGetAttribute($fieldId, $contentVersionId);
-//
-//        $isKeymediaAttribute = ($attribute->attribute('data_type_string') == 'ngremotemedia' ? true : false);
-//
-//        if (!$isKeymediaAttribute) {
-//            return new JsonResponse('Error', 500);
-//        }
-//
-//        $versionObject = $this->getLegacyKernel()->runCallback(
-//            function () use ($attribute) {
-//                return \eZContentObjectVersion::fetchVersion(
-//                    $attribute->attribute('version'), $attribute->attribute('contentobject_id')
-//                );
-//            }
-//        );
-//
-//        if (!$versionObject instanceof \eZContentObjectVersion) {
-//            return new JsonResponse('Error', 500);
-//        }
-//
-//        $versionObject->setAttribute('modified', time());
-//        if ($versionObject->attribute('status') == \eZContentObjectVersion::STATUS_INTERNAL_DRAFT) {
-//            $versionObject->setAttribute('status', \eZContentObjectVersion::STATUS_DRAFT);
-//        }
-//
-//        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-//        $value = $attribute->Content();
-//
-//        $variations = $value->variations;
-//        $variationCoords = array(
-//            $variantName => array(
-//                'x' => $crop_x,
-//                'y' => $crop_y,
-//                'w' => $crop_w,
-//                'h' => $crop_h,
-//            ),
-//        );
-//
-//        $emptyCoords = array(
-//            'x' => 0,
-//            'y' => 0,
-//            'w' => 0,
-//            'h' => 0,
-//        );
-//
-//        $contentClassAttribute = $attribute->contentClassAttribute();
-//        $attributeVariations = json_decode($contentClassAttribute->attribute('data_text4'), true);
-//        $initalVariations = array();
-//        foreach ($attributeVariations as $name => $key) {
-//            $initalVariations[$name] = $emptyCoords;
-//        }
-//
-//        $variations = $variationCoords + $variations + $initalVariations;
-//
-//        $value->variations = $variations;
-//        $attribute->setAttribute('data_text', json_encode($value));
-//        $versionObject->setAttribute('remote_image', $attribute);
-//
-//        $attribute = $this->legacySaveAttribute($attribute, $versionObject);
-//
-//        $provider = $this->container->get('netgen_remote_media.remote_media.provider');
-//        $variation = $provider->getVariation(
-//            $value,
-//            $attributeVariations,
-//            $variantName
-//        );
-//
-//        $responseData = array(
-//            'error_text' => '',
-//            'content' => array(
-//                'name' => $variantName,
-//                'url' => $variation->url,
-//                'coords' => array(
-//                    (int) $crop_x,
-//                    (int) $crop_y,
-//                    (int) $crop_x + (int) $crop_w,
-//                    (int) $crop_y + (int) $crop_h,
-//                ),
-//            ),
-//        );
-//
-//        return new JsonResponse($responseData, 200);
-//    }
-
     public function saveAttributeTestAction(Request $request, $objectId, $fieldId, $contentVersionId)
     {
         // make all coords int
@@ -339,18 +196,13 @@ class UIController extends Controller
 
         $contentService = $this->getRepository()->getContentService();
 
-        $dbHandler = $this->get('ezpublish.api.storage_engine.legacy.handler.ngremotemedia');
-
-        /** @var \eZ\Publish\SPI\Persistence\Content\Field $field */
-        $field = $dbHandler->load($fieldId, $contentVersionId);
-
-        $fieldSettings = $dbHandler->loadFieldSettings($field->fieldDefinitionId);
-        $availableFormats = !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
+        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
+        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
+        $availableFormats = $remoteMediaHelper->loadSPIFieldAvailableFormats($field);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
         $variations = $value->variations;
-
 
         if ($field->type !== 'ngremotemedia') {
             return new JsonResponse('Error', 500);
@@ -380,7 +232,7 @@ class UIController extends Controller
         $variations = $variationCoords + $variations + $initalVariations;
         $value->variations = $variations;
 
-        $dbHandler->update($value, $fieldId, $contentVersionId);
+        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
 
         $provider = $this->container->get('netgen_remote_media.remote_media.provider');
         $variation = $provider->getVariation(
@@ -483,10 +335,8 @@ class UIController extends Controller
 
         $provider = $this->get('netgen_remote_media.remote_media.provider');
 
-        $dbHandler = $this->get('ezpublish.api.storage_engine.legacy.handler.ngremotemedia');
-
-        /** @var \eZ\Publish\SPI\Persistence\Content\Field $field */
-        $field = $dbHandler->load($fieldId, $contentVersionId);
+        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
+        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
@@ -499,7 +349,7 @@ class UIController extends Controller
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
 
-        $dbHandler->update($value, $fieldId, $contentVersionId);
+        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
 
         return new JsonResponse($attributeTags, 200);
     }
@@ -522,10 +372,8 @@ class UIController extends Controller
 
         $provider = $this->get('netgen_remote_media.remote_media.provider');
 
-        $dbHandler = $this->get('ezpublish.api.storage_engine.legacy.handler.ngremotemedia');
-
-        /** @var \eZ\Publish\SPI\Persistence\Content\Field $field */
-        $field = $dbHandler->load($fieldId, $contentVersionId);
+        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
+        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
@@ -537,32 +385,10 @@ class UIController extends Controller
 
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
-        $dbHandler->update($value, $fieldId, $contentVersionId);
+
+        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
 
         return new JsonResponse($attributeTags, 200);
 
     }
-
-//    protected function legacyGetAttribute($attributeId, $contentVersionId)
-//    {
-//        return $this->getLegacyKernel()->runCallback(
-//            function () use ($attributeId, $contentVersionId) {
-//                return \eZContentObjectAttribute::fetch($attributeId, $contentVersionId);
-//            }
-//        );
-//    }
-//
-//    protected function legacySaveAttribute($attribute, $versionObject = false)
-//    {
-//        return $this->getLegacyKernel()->runCallback(
-//            function () use ($attribute, $versionObject) {
-//                $attribute->store();
-//                if ($versionObject) {
-//                    $versionObject->store();
-//                }
-//
-//                return $attribute;
-//            }
-//        );
-//    }
 }
