@@ -62,6 +62,10 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 'netgen_remote_video',
                 array($this, 'getRemoteVideoTag')
             ),
+            new Twig_SimpleFunction(
+                'netgen_remote_media_fits',
+                array($this, 'mediaFits')
+            ),
         );
     }
 
@@ -86,5 +90,21 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getRemoteVideoTag(Value $value, $format = '', $availableFormats = array())
     {
         return $this->provider->generateVideoTag($value->resourceId, $format, $availableFormats);
+    }
+
+    public function mediaFits(Value $value, $variations)
+    {
+        $valueWidth = $value->metaData['width'];
+        $valueHeight = $value->metaData['height'];
+
+        foreach ($variations as $variationName => $variationSize) {
+            $variationSizeArray = explode('x', $variationSize);
+
+            if ($valueWidth < $variationSizeArray[0] || $valueHeight < $variationSizeArray[1]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
