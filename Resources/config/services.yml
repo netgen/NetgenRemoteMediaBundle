@@ -2,6 +2,13 @@ parameters:
     netgen_remote_media.provider: "netgen_remote_media.remote_media.cloudinary"
 
 services:
+    netgen_remote_media.controller.ui:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\UIController
+        arguments:
+            - "@netgen_remote_media.remote_media.provider"
+            - "@netgen_remote_media.helper"
+            - "@templating"
+
     netgen_remote_media.remote_media.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\CloudinaryProvider
         arguments:

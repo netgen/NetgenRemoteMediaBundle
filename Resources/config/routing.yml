@@ -1,39 +1,39 @@
 netgen_remote_media_upload:
     path: /ezexceed/remotemedia/upload
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:uploadFile }
+    defaults: { _controller: netgen_remote_media.controller.ui:uploadFileAction }
 
 netgen_remote_media_fetch:
     path: /ezexceed/ngremotemedia/fetch/{fieldId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetchTest }
+    defaults: { _controller: netgen_remote_media.controller.ui:fetchTestAction }
 
 netgen_remote_media_fetch_test:
     path: /ezexceed/ngremotemedia/fetch/test/{fieldId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetchTest }
+    defaults: { _controller: netgen_remote_media.controller.ui:fetchTestAction }
 
 netgen_remote_media_save:
     path: /ezexceed/ngremotemedia/save/{objectId}/{fieldId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:saveAttributeTest }
+    defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeTestAction }
 
 netgen_remote_media_save_test:
     path: /ezexceed/ngremotemedia/save/test/{objectId}/{fieldId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:saveAttributeTest }
+    defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeTestAction }
 
 netgen_remote_media_browse:
     path: /ezexceed/ngremotemedia/browse/{fieldId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:browseRemoteMedia }
+    defaults: { _controller: netgen_remote_media.controller.ui:browseRemoteMediaAction }
 
 netgen_remote_media_add_tag:
     path: /ezexceed/ngremotemedia/tags/{fieldId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:addTags }
+    defaults: { _controller: netgen_remote_media.controller.ui:addTagsAction }
     methods: [POST]
 
 netgen_remote_media_remove_tag:
     path: /ezexceed/ngremotemedia/tags/{fieldId}/{contentVersionId}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:removeTags }
+    defaults: { _controller: netgen_remote_media.controller.ui:removeTagsAction }
     methods: [DELETE]
 
 netgen_remote_media_fetch_remote:
     path: /ezexceed/ngremotemedia/fetch_remote/{id}
-    defaults: { _controller: NetgenRemoteMediaBundle:UI:fetchRemote }
+    defaults: { _controller: netgen_remote_media.controller.ui:fetchRemoteAction }
     requirements:
         id: .+

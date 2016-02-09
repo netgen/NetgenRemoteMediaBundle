@@ -3,12 +3,28 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Controller;
 
 use eZ\Bundle\EzPublishCoreBundle\Controller;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Cloudinary\Api\NotFound;
+use Symfony\Component\Templating\EngineInterface;
 
 class UIController extends Controller
 {
+    protected $provider;
+
+    protected $helper;
+
+    protected $templating;
+
+    public function __construct(RemoteMediaProviderInterface $provider, Helper $helper, EngineInterface $templating)
+    {
+        $this->provider = $provider;
+        $this->helper = $helper;
+        $this->templating = $templating;
+    }
+
     public function uploadFileAction(Request $request)
     {
         $file = $request->files->get('file', '');
@@ -25,8 +41,7 @@ class UIController extends Controller
             );
         }
 
-        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
-        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
+        $field = $this->helper->loadField($fieldId, $contentVersionId);
 
         if ($field->type !== 'ngremotemedia') {
             return new JsonResponse(
@@ -35,8 +50,6 @@ class UIController extends Controller
                 )
             );
         }
-
-        $provider = $this->container->get('netgen_remote_media.remote_media.provider');
 
         $fileUri = $file->getRealPath();
         $folder = $fieldId.'/'.$contentVersionId;
@@ -57,13 +70,13 @@ class UIController extends Controller
             'resource_type' => 'auto'
         );
 
-        $result = $provider->upload($fileUri, $options);
+        $result = $this->provider->upload($fileUri, $options);
 
-        $value = $provider->getValueFromResponse($result);
-        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
-        $availableFormats = $remoteMediaHelper->loadSPIFieldAvailableFormats($field);
+        $value = $this->provider->getValueFromResponse($result);
+        $this->helper->updateField($value, $fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
 
-        $content = $this->renderView(
+        $content = $this->templating->render(
             'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',
             array(
                 'value' => $value,
@@ -94,16 +107,14 @@ class UIController extends Controller
 
     public function fetchTestAction(Request $request, $fieldId, $contentVersionId)
     {
-        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
-
-        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
-        $availableFormats = $remoteMediaHelper->loadSPIFieldAvailableFormats($field);
+        $field = $this->helper->loadField($fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
         $variations = $value->variations;
 
-        $content = $this->renderView(
+        $content = $this->templating->render(
             'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',
             array(
                 'value' => $value,
@@ -137,10 +148,9 @@ class UIController extends Controller
     // used for ezoe
 //    public function fetchRemoteAction(Request $request, $id)
 //    {
-//        $provider = $this->get('netgen_remote_media.remote_media.provider');
 //
 //        try {
-//            $resource = $provider->getRemoteResource($id);
+//            $resource = $this->provider->getRemoteResource($id);
 //        } catch (NotFound $e) {
 //            return new JsonResponse(
 //                array(
@@ -194,11 +204,8 @@ class UIController extends Controller
             throw new \InvalidArgumentException('Missing one of the arguments: variant name, crop width, crop height');
         }
 
-        $contentService = $this->getRepository()->getContentService();
-
-        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
-        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
-        $availableFormats = $remoteMediaHelper->loadSPIFieldAvailableFormats($field);
+        $field = $this->helper->loadField($fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
@@ -232,10 +239,9 @@ class UIController extends Controller
         $variations = $variationCoords + $variations + $initalVariations;
         $value->variations = $variations;
 
-        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
+        $this->helper->updateField($value, $fieldId, $contentVersionId);
 
-        $provider = $this->container->get('netgen_remote_media.remote_media.provider');
-        $variation = $provider->getVariation(
+        $variation = $this->provider->getVariation(
             $value,
             $availableFormats,
             $variantName
@@ -266,12 +272,10 @@ class UIController extends Controller
         $limit = 25;
         $query = $request->get('q', '');
 
-        $provider = $this->get('netgen_remote_media.remote_media.provider');
-
         if (empty($query)) {
-            $list = $provider->listResources($hardLimit);
+            $list = $this->provider->listResources($hardLimit);
         } else {
-            $list = $provider->searchResources($query, 'image', $hardLimit);
+            $list = $this->provider->searchResources($query, 'image', $hardLimit);
         }
 
         $count = count($list);
@@ -300,7 +304,7 @@ class UIController extends Controller
                 'scalesTo' => array('quality' => 100, 'ending' => $hit['format']),
                 'host' => 'cloudinary',
                 'thumb' => array(
-                    'url' => $provider->getFormattedUrl($hit['public_id'], $options),
+                    'url' => $this->provider->getFormattedUrl($hit['public_id'], $options),
                 ),
             );
         }
@@ -333,23 +337,20 @@ class UIController extends Controller
             );
         }
 
-        $provider = $this->get('netgen_remote_media.remote_media.provider');
-
-        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
-        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
+        $field = $this->helper->loadField($fieldId, $contentVersionId);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
-        $result = $provider->addTagToResource($resourceId, $tag);
+        $result = $this->provider->addTagToResource($resourceId, $tag);
         $attributeTags[] = $tag;
 
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
 
-        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
+        $this->helper->updateField($value, $fieldId, $contentVersionId);
 
         return new JsonResponse($attributeTags, 200);
     }
@@ -370,23 +371,20 @@ class UIController extends Controller
             );
         }
 
-        $provider = $this->get('netgen_remote_media.remote_media.provider');
-
-        $remoteMediaHelper = $this->get('netgen_remote_media.helper');
-        $field = $remoteMediaHelper->loadField($fieldId, $contentVersionId);
+        $field = $this->helper->loadField($fieldId, $contentVersionId);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
-        $result = $provider->removeTagFromResource($resourceId, $tag);
+        $result = $this->provider->removeTagFromResource($resourceId, $tag);
         $attributeTags = array_diff($attributeTags, array($tag));
 
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
 
-        $remoteMediaHelper->updateField($value, $fieldId, $contentVersionId);
+        $this->helper->updateField($value, $fieldId, $contentVersionId);
 
         return new JsonResponse($attributeTags, 200);
 
