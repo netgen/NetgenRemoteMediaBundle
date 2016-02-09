@@ -152,7 +152,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         // @todo: take unbound dimensions into account!
         if (array_key_exists($format, $value->variations)) {
             $coords = $value->variations[$format];
-            if (count($coords) > 2) {
+            if (count($coords) > 2 && (int)$coords['w'] !== 0 ) {
                 $options['transformation'] = array(
                     array(
                         'x' => (int)$coords['x'],
