@@ -24,13 +24,15 @@
 
         {% set variation = netgen_remote_media(field.value, fieldSettings.formats, format) %}
 
-        <img src="{{ variation.url }}"
-            {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
-            {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
-            {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
-            {% if title is not empty %}title="{{ title }}"{% endif %}
-            {{ block( 'field_attributes' ) }}
-        />
+        {% if variation.url %}
+            <img src="{{ variation.url }}"
+                {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
+                {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
+                {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
+                {% if title is not empty %}title="{{ title }}"{% endif %}
+                {{ block( 'field_attributes' ) }}
+            />
+        {% endif %}
     {% else %}
         {{ netgen_remote_video(field.value, format, fieldSettings.formats )|raw }}
     {% endif %}
