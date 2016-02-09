@@ -149,7 +149,6 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             );
         }
 
-        // @todo: take unbound dimensions into account!
         if (array_key_exists($format, $value->variations)) {
             $coords = $value->variations[$format];
             if (count($coords) > 2 && (int)$coords['w'] !== 0 ) {
@@ -282,16 +281,40 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return $response[0];
     }
 
+    /**
+     * Adds tag to remote resource
+     *
+     * @param string $resourceId
+     * @param string $tag
+     *
+     * @return mixed
+     */
     public function addTagToResource($resourceId, $tag)
     {
         return $this->cloudinaryUploader->add_tag($tag, array($resourceId));
     }
 
+    /**
+     * Removes tag from remote resource
+     *
+     * @param string $resourceId
+     * @param string $tag
+     *
+     * @return mixed
+     */
     public function removeTagFromResource($resourceId, $tag)
     {
         return $this->cloudinaryUploader->remove_tag($tag, array($resourceId));
     }
 
+    /**
+     * Updates the resource context
+     * (eg. alt text and caption)
+     *
+     * @param string $resourceId
+     * @param string $resourceType
+     * @param array $context
+     */
     public function updateResourceContext($resourceId, $resourceType, $context)
     {
         $this->cloudinaryApi->update(
@@ -303,6 +326,14 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         );
     }
 
+    /**
+     * Returns thumbnail url for the video with provided id
+     *
+     * @param $resourceId
+     * @param string $offset
+     *
+     * @return string
+     */
     public function getVideoThumbnail($resourceId, $offset = 'auto')
     {
         $options = array();
@@ -315,6 +346,15 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return cl_video_thumbnail_path($resourceId, $options);
     }
 
+    /**
+     * Generates html5 video tag for the video with provided id
+     *
+     * @param $resourceId
+     * @param string $format
+     * @param array $namedFormats
+     *
+     * @return string
+     */
     public function generateVideoTag($resourceId, $format = '', $namedFormats = array())
     {
         $options = array(

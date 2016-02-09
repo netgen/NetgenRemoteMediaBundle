@@ -70,7 +70,9 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
-     * @param \eZ\Publish\Core\FieldType\Value $field
+     * Returns the Variation with the provided format
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $field
      * @param array                            $fieldSettings
      * @param string                           $format
      * @param bool                             $secure
@@ -82,16 +84,40 @@ class NetgenRemoteMediaExtension extends Twig_Extension
         return $this->provider->getVariation($value, $availableFormats, $format, $secure);
     }
 
+    /**
+     * Returns thumbnail url
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     *
+     * @return string
+     */
     public function getVideoThumbnail(Value $value)
     {
         return $this->provider->getVideoThumbnail($value->resourceId);
     }
 
+    /**
+     * Generates html5 video tag for the video with provided id
+     *
+     * @param Value $value
+     * @param string $format
+     * @param array $availableFormats
+     *
+     * @return mixed
+     */
     public function getRemoteVideoTag(Value $value, $format = '', $availableFormats = array())
     {
         return $this->provider->generateVideoTag($value->resourceId, $format, $availableFormats);
     }
 
+    /**
+     * Calculates whether the remote image fits into all variations
+     *
+     * @param Value $value
+     * @param $variations
+     *
+     * @return bool
+     */
     public function mediaFits(Value $value, $variations)
     {
         $valueWidth = $value->metaData['width'];

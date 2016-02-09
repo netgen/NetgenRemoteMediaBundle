@@ -31,8 +31,11 @@ class DoctrineDatabase extends Gateway
      * Returns an row from the database containing field data
      *
      * @param mixed $fieldId
+     * @param mixed $versionId
      *
      * @return array
+     *
+     * @throws \eZ\Publish\Core\Base\Exceptions\NotFoundException
      */
     public function loadField($fieldId, $versionId)
     {
@@ -63,6 +66,15 @@ class DoctrineDatabase extends Gateway
         throw new NotFoundException("field", $fieldId);
     }
 
+    /**
+     * Returns a row from the database containing field definition information
+     *
+     * @param $fieldDefinitionId
+     *
+     * @return array
+     *
+     * @throws \eZ\Publish\Core\Base\Exceptions\NotFoundException
+     */
     public function loadFieldDefinition($fieldDefinitionId)
     {
         $query = $this->handler->createSelectQuery();

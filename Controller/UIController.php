@@ -12,10 +12,19 @@ use Symfony\Component\Templating\EngineInterface;
 
 class UIController extends Controller
 {
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
+     */
     protected $provider;
 
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
+     */
     protected $helper;
 
+    /**
+     * @var \Symfony\Component\Templating\EngineInterface
+     */
     protected $templating;
 
     public function __construct(RemoteMediaProviderInterface $provider, Helper $helper, EngineInterface $templating)
@@ -25,6 +34,13 @@ class UIController extends Controller
         $this->templating = $templating;
     }
 
+    /**
+     * Uploads file to remote provider and updates the field value
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     public function uploadFileAction(Request $request)
     {
         $file = $request->files->get('file', '');
@@ -105,6 +121,16 @@ class UIController extends Controller
         );
     }
 
+    /**
+     * eZExceed:
+     * Fetches the field value
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param mixed $fieldId
+     * @param mixed $contentVersionId
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     public function fetchAction(Request $request, $fieldId, $contentVersionId)
     {
         $field = $this->helper->loadField($fieldId, $contentVersionId);
@@ -191,6 +217,17 @@ class UIController extends Controller
 //        );
 //    }
 
+    /**
+     * eZExceed:
+     * saves the attribute with updated information (variant coordinates)
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param mixed $objectId
+     * @param mixed $fieldId
+     * @param $contentVersionId
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     public function saveAttributeAction(Request $request, $objectId, $fieldId, $contentVersionId)
     {
         // make all coords int
@@ -264,6 +301,16 @@ class UIController extends Controller
         return new JsonResponse($responseData, 200);
     }
 
+    /**
+     * eZExceed:
+     * Fetches the list of available images from remote provider
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param mixed $fieldId
+     * @param mixed $contentVersionId
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     public function browseRemoteMediaAction(Request $request, $fieldId, $contentVersionId)
     {
         $offset = $request->get('offset', 0);
@@ -322,6 +369,15 @@ class UIController extends Controller
         return new JsonResponse($responseData, 200);
     }
 
+    /**
+     * Adds a tag to the remote resource and saves the updated field
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param mixed $fieldId
+     * @param mixed $contentVersionId
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     public function addTagsAction(Request $request, $fieldId, $contentVersionId)
     {
         $resourceId = $request->get('id', '');
@@ -355,9 +411,17 @@ class UIController extends Controller
         return new JsonResponse($attributeTags, 200);
     }
 
+    /**
+     * Removes the tag from remote resource and saves the updated value
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param nixed $fieldId
+     * @param mixed $contentVersionId
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     public function removeTagsAction(Request $request, $fieldId, $contentVersionId)
     {
-
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
 

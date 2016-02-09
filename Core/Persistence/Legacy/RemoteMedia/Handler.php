@@ -65,6 +65,13 @@ class Handler
         return $this->load($fieldId, $versionId);
     }
 
+    /**
+     * Loads field settings from the db
+     *
+     * @param $fieldDefinitionId
+     *
+     * @return mixed
+     */
     public function loadFieldSettings($fieldDefinitionId)
     {
         $data = $this->gateway->loadFieldDefinition($fieldDefinitionId);

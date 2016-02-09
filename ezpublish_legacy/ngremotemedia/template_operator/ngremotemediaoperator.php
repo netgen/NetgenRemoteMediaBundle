@@ -88,6 +88,7 @@ class NgRemoteMediaOperator
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
 
+        // no support for named formats in legacy
         return $provider->getVariation($value, array(), $format, $secure);
     }
 

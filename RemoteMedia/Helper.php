@@ -19,6 +19,8 @@ class Helper
     }
 
     /**
+     * Loads field from the database
+     *
      * @param $fieldId
      * @param $version
      *
@@ -30,6 +32,8 @@ class Helper
     }
 
     /**
+     * Loads field settings from the database
+     *
      * @param $fieldId
      * @param $versionId
      *
@@ -43,6 +47,8 @@ class Helper
     }
 
     /**
+     * Loads field settings for the provided field
+     *
      * @param Field $field
      *
      * @return mixed
@@ -53,6 +59,8 @@ class Helper
     }
 
     /**
+     * Loads available formats for the provided field
+     *
      * @param Field $field
      *
      * @return array
@@ -65,6 +73,8 @@ class Helper
     }
 
     /**
+     * Updates the field in the database with the provided value
+     *
      * @param $value
      * @param $fieldId
      * @param $contentVersionId
