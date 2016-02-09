@@ -3,7 +3,7 @@
 
 
 {symfony_include(
-    'NetgenRemoteMediaBundle:ezexceed/test:ngremotemedia.html.twig',
+    'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
         hash(
             'value', $attribute.content,
             'fieldId', $attribute.id,
