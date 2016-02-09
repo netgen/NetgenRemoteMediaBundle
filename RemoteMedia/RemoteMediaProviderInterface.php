@@ -51,9 +51,11 @@ interface RemoteMediaProviderInterface
     /**
      * Lists all available resources from the remote storage.
      *
+     * @param int $limit
+     *
      * @return array
      */
-    public function listResources();
+    public function listResources($limit = 10);
 
     /**
      * Counts available resources from the remote storage.
@@ -67,10 +69,11 @@ interface RemoteMediaProviderInterface
      *
      * @param string $query
      * @param string $resourceType
+     * @param int $limit
      *
      * @return array
      */
-    public function searchResources($query, $resourceType);
+    public function searchResources($query, $resourceType, $limit = 10);
 
     /**
      * Adds tag to remote resource

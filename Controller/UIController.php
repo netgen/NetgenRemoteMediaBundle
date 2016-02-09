@@ -67,37 +67,22 @@ class UIController extends Controller
             );
         }
 
-        $fileUri = $file->getRealPath();
-        $folder = $fieldId.'/'.$contentVersionId;
-
-        // clean up file name
-        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
-        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
-        $cleanFileName = rtrim($cleanFileName, '_');
-
-        $options = array(
-            'public_id' => $cleanFileName.'/'.$folder,
-            'overwrite' => true,
-            'context' => array(
-                'alt' => '',
-                'caption' => '',
-            ),
-            'resource_type' => 'auto'
+        $result = $this->helper->upload(
+            $file->getRealPath(),
+            pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            $fieldId,
+            $contentVersionId
         );
-
-        $result = $this->provider->upload($fileUri, $options);
 
         $value = $this->provider->getValueFromResponse($result);
         $this->helper->updateField($value, $fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
 
         $content = $this->templating->render(
             'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'availableFormats' => $availableFormats
+                'availableFormats' => $this->helper->loadSPIFieldAvailableFormats($field)
             )
         );
 
@@ -230,7 +215,7 @@ class UIController extends Controller
      */
     public function saveAttributeAction(Request $request, $objectId, $fieldId, $contentVersionId)
     {
-        // make all coords int
+        // @todo: make all coords int
         $variantName = $request->get('name', '');
         $crop_x = $request->get('crop_x', 0);
         $crop_y = $request->get('crop_y', 0);
@@ -246,8 +231,6 @@ class UIController extends Controller
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $field->value;
-        $variations = $value->variations;
-
         if ($field->type !== 'ngremotemedia') {
             return new JsonResponse('Error', 500);
         }
@@ -261,19 +244,17 @@ class UIController extends Controller
             ),
         );
 
-        $emptyCoords = array(
-            'x' => 0,
-            'y' => 0,
-            'w' => 0,
-            'h' => 0,
-        );
-
         $initalVariations = array();
         foreach ($availableFormats as $name => $key) {
-            $initalVariations[$name] = $emptyCoords;
+            $initalVariations[$name] = array(
+                'x' => 0,
+                'y' => 0,
+                'w' => 0,
+                'h' => 0,
+            );
         }
 
-        $variations = $variationCoords + $variations + $initalVariations;
+        $variations = $variationCoords + $value->variations + $initalVariations;
         $value->variations = $variations;
 
         $this->helper->updateField($value, $fieldId, $contentVersionId);
@@ -302,33 +283,16 @@ class UIController extends Controller
     }
 
     /**
-     * eZExceed:
-     * Fetches the list of available images from remote provider
+     * Formats the list to comply with the ezexceed
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param mixed $fieldId
-     * @param mixed $contentVersionId
+     * @todo: maybe this should be part of the provider implementation as it is provider specific?
      *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @param array $list
+     *
+     * @return array
      */
-    public function browseRemoteMediaAction(Request $request, $fieldId, $contentVersionId)
+    protected function formatBrowseList(array $list)
     {
-        $offset = $request->get('offset', 0);
-
-        $hardLimit = 500;
-        $limit = 25;
-        $query = $request->get('q', '');
-
-        if (empty($query)) {
-            $list = $this->provider->listResources($hardLimit);
-        } else {
-            $list = $this->provider->searchResources($query, 'image', $hardLimit);
-        }
-
-        $count = count($list);
-
-        $list = array_slice($list, $offset, $limit);
-
         $listFormatted = array();
         foreach ($list as $hit) {
             $fileName = explode('/', $hit['public_id']);
@@ -356,14 +320,41 @@ class UIController extends Controller
             );
         }
 
-        $results = array(
-            'total' => $count,
-            'hits' => $listFormatted,
-        );
+        return $listFormatted;
+    }
+
+    /**
+     * eZExceed:
+     * Fetches the list of available images from remote provider
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param mixed $fieldId
+     * @param mixed $contentVersionId
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function browseRemoteMediaAction(Request $request, $fieldId, $contentVersionId)
+    {
+        $hardLimit = 500;
+        $limit = 25;
+        $query = $request->get('q', '');
+        $offset = $request->get('offset', 0);
+
+        if (empty($query)) {
+            $list = $this->provider->listResources($hardLimit);
+        } else {
+            $list = $this->provider->searchResources($query, 'image', $hardLimit);
+        }
+
+        $count = count($list);
+        $listFormatted = $this->formatBrowseList(array_slice($list, $offset, $limit));
 
         $responseData = array(
             'keymediaId' => 0,
-            'results' => $results,
+            'results' => array(
+                'total' => $count,
+                'hits' => $listFormatted,
+            ),
         );
 
         return new JsonResponse($responseData, 200);
@@ -415,8 +406,8 @@ class UIController extends Controller
      * Removes the tag from remote resource and saves the updated value
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param nixed $fieldId
-     * @param mixed $contentVersionId
+     * @param nxed $fieldId
+     * @param $contentVersionId
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */

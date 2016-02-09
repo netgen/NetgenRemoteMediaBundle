@@ -17,4 +17,5 @@ services:
     netgen_remote_media.helper:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
         arguments:
-            - '@ezpublish.api.storage_engine.legacy.handler.ngremotemedia'
+            - "@ezpublish.api.storage_engine.legacy.handler.ngremotemedia"
+            - "@netgen_remote_media.remote_media.provider"

@@ -13,9 +13,15 @@ class Helper
      */
     protected $dbHandler;
 
-    public function __construct(Handler $handler)
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
+     */
+    protected $provider;
+
+    public function __construct(Handler $handler, RemoteMediaProviderInterface $provider)
     {
         $this->dbHandler = $handler;
+        $this->provider = $provider;
     }
 
     /**
@@ -84,5 +90,34 @@ class Helper
     public function updateField($value, $fieldId, $contentVersionId)
     {
         return $this->dbHandler->update($value, $fieldId, $contentVersionId);
+    }
+
+    public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
+    {
+        if (!empty($fieldId) && !empty($contentVersionId)) {
+            $folder = $fieldId . '/' . $contentVersionId;
+        }
+
+        $fileName = $this->filenameCleanUp($fileName);
+
+        $options = array(
+            'public_id' => $fileName.'/'.$folder,
+            'overwrite' => true,
+            'context' => array(
+                'alt' => '',
+                'caption' => '',
+            ),
+            'resource_type' => 'auto'
+        );
+
+        return $this->provider->upload($fileUri, $options);
+    }
+
+    protected function filenameCleanUp($fileName)
+    {
+        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
+        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
+
+        return rtrim($cleanFileName, '_');
     }
 }

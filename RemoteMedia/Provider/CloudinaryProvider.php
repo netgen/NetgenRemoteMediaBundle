@@ -219,6 +219,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      *
      * @param string $query
      * @param string $resourceType
+     * @param int $limit
      *
      * @return array
      */
