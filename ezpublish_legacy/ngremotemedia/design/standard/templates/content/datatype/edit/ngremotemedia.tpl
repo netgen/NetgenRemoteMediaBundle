@@ -37,8 +37,14 @@
 {include uri="design:parts/js_templates_1.tpl"}
 {/run-once}
 
+{if is_set($value.metaData.resource_type)}
+    {def $type = $value.metaData.resource_type}
+{else}
+    {def $type = 'image'}
+{/if}
+
 <div class="remotemedia-type" data-bootstrap-media='{$value|json}'>
-    {include uri="design:parts/remotemedia/preview.tpl" attribute=$attribute value=$value media=$media}
-    {include uri="design:parts/remotemedia/interactions.tpl" attribute=$attribute base=$base value=$value media=$media}
+    {include uri="design:parts/remotemedia/preview.tpl" attribute=$attribute value=$value media=$media type=$type}
+    {include uri="design:parts/remotemedia/interactions.tpl" attribute=$attribute base=$base value=$value media=$media type=$type}
 </div>
 

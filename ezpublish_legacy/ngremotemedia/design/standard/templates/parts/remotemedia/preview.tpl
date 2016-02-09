@@ -1,14 +1,20 @@
 {if not(is_set($value)) }
     {def $value = $attribute.content}
 {/if}
-{if not(is_set($media))}
-    {def $media = ngremotemedia($value, '300x200', true)}
+
+{if $type|eq('image')}
+    {if not(is_set($media))}
+        {def $media = ngremotemedia($value, '300x200', true)}
+    {/if}
+    {def $thumb_url = $media.url}
+{else}
+    {def $thumb_url = videoThumbnail($value)}
 {/if}
 
 <div class="remotemedia-image">
-    {if $media.url|eq('')|not}
+    {if $value.resourceId}
         <div class="image-wrap">
-                <img src="{$media.url}" />
+                <img src="{$thumb_url}" />
         </div>
 
         <div class="image-meta">

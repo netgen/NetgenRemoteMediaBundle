@@ -2,6 +2,7 @@
     {def $base='ContentObjectAttribute'}
 {/if}
 
+{if $type|eq('image')}
 <div id="remotemedia-buttons-{$attribute.id}" class="remotemedia-buttons"
     data-prefix={'/ezjscore/call'|ezurl}
     data-id="{$attribute.id}"
@@ -29,3 +30,4 @@
         <div class="progress"></div>
     </div>
 </div>
+{/if}
