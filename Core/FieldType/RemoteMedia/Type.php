@@ -279,6 +279,18 @@ class Type extends FieldType
     }
 
     /**
+     * Returns if the given $value is considered empty by the field type
+     *
+     * @param \eZ\Publish\Core\FieldType\Value $value
+     *
+     * @return boolean
+     */
+    public function isEmptyValue( SPIValue $value )
+    {
+        return $value === null || $value == $this->getEmptyValue() || empty($value->resourceId);
+    }
+
+    /**
      * Returns whether the field type is searchable.
      *
      * @return bool
