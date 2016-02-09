@@ -132,10 +132,6 @@ class NgRemoteMediaType extends eZDataType
             $updatedValue->metaData['alt_text'] = $data['alttext'];
         }
 
-        $contentClassAttribute = $contentObjectAttribute->contentClassAttribute();
-        $attributeVariations = json_decode($contentClassAttribute->attribute(self::FIELD_FORMATS), true);
-        $updatedValue->variations = $value->variations;
-
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
 
         return true;
