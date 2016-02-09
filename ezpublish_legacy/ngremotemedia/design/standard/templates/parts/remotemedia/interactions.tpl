@@ -2,7 +2,6 @@
     {def $base='ContentObjectAttribute'}
 {/if}
 
-{if $type|eq('image')}
 <div id="remotemedia-buttons-{$attribute.id}" class="remotemedia-buttons"
     data-prefix={'/ezjscore/call'|ezurl}
     data-id="{$attribute.id}"
@@ -15,7 +14,9 @@
     {*<input type="hidden" name="{$base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending" />*}
 
     {if $media.url}
-        {include uri="design:parts/overlay_action_button-1.tpl" media=$media value=$value attribute=$attribute}
+        {if $type|eq('image')}
+            {include uri="design:parts/overlay_action_button-1.tpl" media=$media value=$value attribute=$attribute}
+        {/if}
         <input type="button" class="remotemedia-remove-file button" value="{'Remove media'|i18n( 'content/edit' )}">
     {/if}
 
@@ -30,4 +31,3 @@
         <div class="progress"></div>
     </div>
 </div>
-{/if}
