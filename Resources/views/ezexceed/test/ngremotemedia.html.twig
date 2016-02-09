@@ -3,7 +3,7 @@
 {% set resourceType = value.metaData.resource_type|default('image') %}
 
 {% if resourceType == 'image' %}
-    {% set media = netgen_remote_media(value, ['Small', 'Medium', 'Big'], '300x200') %}
+    {% set media = netgen_remote_media(value, availableFormats, '300x200') %}
 {% endif %}
 
 {% set attribute_base = "ContentObjectAttribute" %}
