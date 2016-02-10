@@ -57,16 +57,6 @@ class UIController extends Controller
             );
         }
 
-        $field = $this->helper->loadField($fieldId, $contentVersionId);
-
-        if ($field->type !== 'ngremotemedia') {
-            return new JsonResponse(
-                array(
-                    'error_text' => 'Field is of the wrong field type',
-                )
-            );
-        }
-
         $result = $this->helper->upload(
             $file->getRealPath(),
             pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
@@ -75,14 +65,14 @@ class UIController extends Controller
         );
 
         $value = $this->provider->getValueFromResponse($result);
-        $this->helper->updateField($value, $fieldId, $contentVersionId);
+        $this->helper->updateValue($value, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
             'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'availableFormats' => $this->helper->loadSPIFieldAvailableFormats($field)
+                'availableFormats' => $this->helper->loadAvailableFormats($fieldId, $contentVersionId)
             )
         );
 
@@ -118,11 +108,10 @@ class UIController extends Controller
      */
     public function fetchAction(Request $request, $fieldId, $contentVersionId)
     {
-        $field = $this->helper->loadField($fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
-
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $field->value;
+        $value = $this->helper->loadValue($fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadAvailableFormats($fieldId, $contentVersionId);
+
         $variations = $value->variations;
 
         $content = $this->templating->render(
@@ -226,14 +215,9 @@ class UIController extends Controller
             throw new \InvalidArgumentException('Missing one of the arguments: variant name, crop width, crop height');
         }
 
-        $field = $this->helper->loadField($fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadSPIFieldAvailableFormats($field);
-
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $field->value;
-        if ($field->type !== 'ngremotemedia') {
-            return new JsonResponse('Error', 500);
-        }
+        $value = $this->helper->loadValue($fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadAvailableFormats($fieldId, $contentVersionId);
 
         $variationCoords = array(
             $variantName => array(
@@ -257,7 +241,7 @@ class UIController extends Controller
         $variations = $variationCoords + $value->variations + $initalVariations;
         $value->variations = $variations;
 
-        $this->helper->updateField($value, $fieldId, $contentVersionId);
+        $this->helper->updateValue($value, $fieldId, $contentVersionId);
 
         $variation = $this->provider->getVariation(
             $value,
@@ -384,10 +368,8 @@ class UIController extends Controller
             );
         }
 
-        $field = $this->helper->loadField($fieldId, $contentVersionId);
-
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $field->value;
+        $value = $this->helper->loadValue($fieldId, $contentVersionId);
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
@@ -397,7 +379,7 @@ class UIController extends Controller
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
 
-        $this->helper->updateField($value, $fieldId, $contentVersionId);
+        $this->helper->updateValue($value, $fieldId, $contentVersionId);
 
         return new JsonResponse($attributeTags, 200);
     }
@@ -426,10 +408,8 @@ class UIController extends Controller
             );
         }
 
-        $field = $this->helper->loadField($fieldId, $contentVersionId);
-
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $field->value;
+        $value = $this->helper->loadValue($fieldId, $contentVersionId);
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
@@ -439,7 +419,7 @@ class UIController extends Controller
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
 
-        $this->helper->updateField($value, $fieldId, $contentVersionId);
+        $this->helper->updateValue($value, $fieldId, $contentVersionId);
 
         return new JsonResponse($attributeTags, 200);
 

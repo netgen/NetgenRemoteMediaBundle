@@ -5,6 +5,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Handler;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 
 class Helper
 {
@@ -18,6 +19,11 @@ class Helper
      */
     protected $provider;
 
+    /**
+     * Helper constructor.
+     * @param Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Handler $handler
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface $provider
+     */
     public function __construct(Handler $handler, RemoteMediaProviderInterface $provider)
     {
         $this->dbHandler = $handler;
@@ -25,55 +31,29 @@ class Helper
     }
 
     /**
-     * Loads field from the database
+     * Loads the field value from the database
      *
-     * @param $fieldId
-     * @param $version
+     * @param mixed $fieldId
+     * @param mixed $versionId
      *
-     * @return \eZ\Publish\SPI\Persistence\Content\Field
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia
      */
-    public function loadField($fieldId, $versionId)
+    public function loadValue($fieldId, $versionId)
     {
-        return $this->dbHandler->load($fieldId, $versionId);
+        return $this->dbHandler->loadValue($fieldId, $versionId);
     }
 
     /**
-     * Loads field settings from the database
+     * Loads available formats for the field
      *
-     * @param $fieldId
-     * @param $versionId
-     *
-     * @return mixed
-     */
-    public function loadFieldSettings($fieldId, $versionId)
-    {
-        $field = $this->loadField($field, $versionId);
-
-        return $this->dbHandler->loadFieldSettings($field->fieldDefinitionId);
-    }
-
-    /**
-     * Loads field settings for the provided field
-     *
-     * @param Field $field
-     *
-     * @return mixed
-     */
-    public function loadFieldSettingsBySPIField(Field $field)
-    {
-        return $this->dbHandler->loadFieldSettings($field->fieldDefinitionId);
-    }
-
-    /**
-     * Loads available formats for the provided field
-     *
-     * @param Field $field
+     * @param mixed $fieldId
+     * @param mixed $versionId
      *
      * @return array
      */
-    public function loadSPIFieldAvailableFormats(Field $field)
+    public function loadAvailableFormats($fieldId, $versionId)
     {
-        $fieldSettings = $this->loadFieldSettingsBySPIField($field);
+        $fieldSettings = $this->dbHandler->loadFieldSettingsByFieldId($fieldId, $versionId);
 
         return !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
     }
@@ -81,17 +61,27 @@ class Helper
     /**
      * Updates the field in the database with the provided value
      *
-     * @param $value
-     * @param $fieldId
-     * @param $contentVersionId
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param mixed $fieldId
+     * @param mixed $contentVersionId
      *
-     * @return Field
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
-    public function updateField($value, $fieldId, $contentVersionId)
+    public function updateValue($value, $fieldId, $contentVersionId)
     {
         return $this->dbHandler->update($value, $fieldId, $contentVersionId);
     }
 
+    /**
+     * Uploads the local file to the remote provider
+     *
+     * @param string $fileUri
+     * @param string $fileName
+     * @param mixed|null $fieldId
+     * @param mixed|null $contentVersionId
+     *
+     * @return mixed
+     */
     public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
     {
         if (!empty($fieldId) && !empty($contentVersionId)) {
@@ -113,6 +103,13 @@ class Helper
         return $this->provider->upload($fileUri, $options);
     }
 
+    /**
+     * Cleans up the file name for uploading
+     *
+     * @param string $fileName
+     *
+     * @return string
+     */
     protected function filenameCleanUp($fileName)
     {
         $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);

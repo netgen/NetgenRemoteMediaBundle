@@ -67,27 +67,35 @@ class DoctrineDatabase extends Gateway
     }
 
     /**
-     * Returns a row from the database containing field definition information
+     * Returns row from the database containing field definition for the field with provided id
      *
-     * @param $fieldDefinitionId
+     * @param mixed $fieldId
+     * @param mixed $versionId
      *
      * @return array
      *
      * @throws \eZ\Publish\Core\Base\Exceptions\NotFoundException
      */
-    public function loadFieldDefinition($fieldDefinitionId)
+    public function loadFieldDefinitionByFieldId($fieldId, $versionId)
     {
         $query = $this->handler->createSelectQuery();
         $query
-            ->select("*")
+            ->select("ezcontentclass_attribute.*")
             ->from($this->handler->quoteTable("ezcontentclass_attribute"))
-            ->where(
+            ->leftJoin(
+                $this->handler->quoteTable("ezcontentobject_attribute"),
+                $this->handler->quoteColumn("id", "ezcontentclass_attribute"),
+                $this->handler->quoteColumn("contentclassattribute_id", "ezcontentobject_attribute")
+            )->where(
                 $query->expr->eq(
-                    $this->handler->quoteColumn("id"),
-                    $query->bindValue($fieldDefinitionId, null, PDO::PARAM_INT)
+                    $this->handler->quoteColumn("id", "ezcontentobject_attribute"),
+                    $query->bindValue($fieldId, null, PDO::PARAM_INT)
+                ),
+                $query->expr->eq(
+                    $this->handler->quoteColumn("version", "ezcontentobject_attribute"),
+                    $query->bindValue($versionId, null, PDO::PARAM_INT)
                 )
             )
-            ->orderBy("version")
         ;
 
         $statement = $query->prepare();
@@ -103,7 +111,7 @@ class DoctrineDatabase extends Gateway
 
 
     /**
-     * Updates an existing tag
+     * Updates field
      *
      * @param \eZ\Publish\Core\Persistence\Legacy\Content\StorageFieldValue $storageFieldValue
      * @param mixed $fieldId

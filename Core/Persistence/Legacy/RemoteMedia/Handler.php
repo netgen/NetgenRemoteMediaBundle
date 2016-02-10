@@ -33,17 +33,18 @@ class Handler
     }
 
     /**
-     * Loads value by field id and version
+     * Loads the value from the database
      *
      * @param mixed $fieldId
-     * @param mixed versionId
+     * @param mixed $versionId
      *
-     * @return \eZ\Publish\SPI\Persistence\Content\Field
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia
      */
-    public function load($fieldId, $versionId)
+    public function loadValue($fieldId, $versionId)
     {
         $data = $this->gateway->loadField($fieldId, $versionId);
-        return $this->mapper->extractFieldFromRow($data);
+
+        return $this->mapper->extractFieldValueFromRow($data);
     }
 
     /**
@@ -53,7 +54,7 @@ class Handler
      * @param mixed $fieldId
      * @param mixed $versionId
      *
-     * @return \eZ\Publish\SPI\Persistence\Content\Field
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function update($value, $fieldId, $versionId)
     {
@@ -62,23 +63,21 @@ class Handler
         $storageFieldValue->dataText = json_encode($value);
         $this->gateway->updateField($storageFieldValue, $fieldId, $versionId);
 
-        return $this->load($fieldId, $versionId);
+        return $this->loadValue($fieldId, $versionId);
     }
 
     /**
-     * Loads field settings from the db
+     * Loads field settings for the field
      *
-     * @param $fieldDefinitionId
+     * @param mixed $fieldId
+     * @param mixed $versionId
      *
-     * @return mixed
+     * @return \eZ\Publish\Core\FieldType\FieldSettings
      */
-    public function loadFieldSettings($fieldDefinitionId)
+    public function loadFieldSettingsByFieldId($fieldId, $versionId)
     {
-        $data = $this->gateway->loadFieldDefinition($fieldDefinitionId);
-        $field = $this->mapper->extractFieldDefinitionFromRow($data);
+        $data = $this->gateway->loadFieldDefinitionByFieldId($fieldId, $versionId);
 
-        $fieldSettings = $field->fieldTypeConstraints->fieldSettings;
-
-        return $fieldSettings;
+        return $this->mapper->extractFieldSettingsFromRow($data);
     }
 }
