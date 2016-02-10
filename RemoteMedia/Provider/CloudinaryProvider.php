@@ -134,14 +134,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             return $variation;
         }
 
-        $options = array('secure' => $secure);
-
-        if (array_key_exists($format, $namedFormats)) {
-            $selectedFormat = $namedFormats[$format];
-            $sizes = explode('x', $selectedFormat);
-        } else {
-            $sizes = explode('x', $format);
-        }
+        $sizes = array_key_exists($format, $namedFormats) ? explode('x', $namedFormats[$format]) : explode('x', $format);
 
         if (count($sizes) !== 2) {
             throw new \InvalidArgumentException(
@@ -149,11 +142,18 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             );
         }
 
-        if (array_key_exists($format, $namedFormats)) {
-            if (array_key_exists($format, $value->variations)) {
-                $coords = $value->variations[$format];
-                if (count($coords) > 2 && (int)$coords['w'] !== 0) {
-                    $options['transformation'] = array(
+        $options = array(
+            'secure' => $secure,
+            'crop' => 'fill',
+            'width' => $sizes[0],
+            'height' => $sizes[1]
+        );
+
+        if (array_key_exists($format, $value->variations)) {
+            $coords = $value->variations[$format];
+            if (count($coords) > 2 && (int)$coords['w'] !== 0) {
+                $options = array(
+                    'transformation' => array(
                         array(
                             'x' => (int)$coords['x'],
                             'y' => (int)$coords['y'],
@@ -162,25 +162,14 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
                             'crop' => 'crop',
                         ),
                         array(
+                            'crop' => 'fill',
                             'width' => $sizes[0],
-                            'height' => $sizes[1],
-                            'crop' => 'fill'
+                            'height' => $sizes[1]
                         )
-                    );
-                } else {
-                    $options['width'] = $coords['x'];
-                    $options['height'] = $coords['y'];
-                    $options['crop'] = 'fill';
-                }
-            } else {
-                $options['crop'] = 'fill';
-                $options['width'] = $sizes[0];
-                $options['height'] = $sizes[1];
+                    ),
+                    'secure' => $secure
+                );
             }
-        } else {
-            $options['crop'] = 'fill';
-            $options['width'] = $sizes[0];
-            $options['height'] = $sizes[1];
         }
 
         $url = $this->getFormattedUrl(
