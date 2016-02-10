@@ -3,6 +3,8 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Controller;
 
 use eZ\Bundle\EzPublishCoreBundle\Controller;
+use eZ\Publish\API\Repository\Repository;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,11 +43,16 @@ class UIController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function uploadFileAction(Request $request)
+    public function uploadFileAction(Request $request, $contentId)
     {
         $file = $request->files->get('file', '');
         $fieldId = $request->get('AttributeID', '');
         $contentVersionId = $request->get('ContentObjectVersion', '');
+        $legacy = (bool) $request->get('legacy', false);
+
+        $template = $legacy ?
+            'file:extension/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl' :
+            'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig';
 
         if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
             return new JsonResponse(
@@ -68,13 +75,16 @@ class UIController extends Controller
         $this->helper->updateValue($value, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
-            'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
+            $template,
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'availableFormats' => $this->helper->loadAvailableFormats($fieldId, $contentVersionId)
+                'availableFormats' => $this->helper->loadAvailableFormats($fieldId, $contentVersionId),
+                'version' => $contentVersionId,
+                'contentObjectId' => $contentId
             )
         );
+
 
         $result['id'] = $result['public_id'];
         $result['scalesTo'] = array(
@@ -96,32 +106,9 @@ class UIController extends Controller
         );
     }
 
-    /**
-     * eZExceed:
-     * Fetches the field value
-     *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param mixed $fieldId
-     * @param mixed $contentVersionId
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function fetchAction(Request $request, $fieldId, $contentVersionId)
+    protected function getScaling(Value $value)
     {
-        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $this->helper->loadValue($fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadAvailableFormats($fieldId, $contentVersionId);
-
         $variations = $value->variations;
-
-        $content = $this->templating->render(
-            'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
-            array(
-                'value' => $value,
-                'fieldId' => $fieldId,
-                'availableFormats' => $availableFormats
-            )
-        );
 
         $scaling = array();
         foreach ($variations as $name => $coords) {
@@ -136,10 +123,38 @@ class UIController extends Controller
             );
         }
 
+        return $scaling;
+    }
+
+    /**
+     * eZExceed:
+     * Fetches the field value
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param mixed $fieldId
+     * @param mixed $contentVersionId
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function fetchAction(Request $request, $contentId, $fieldId, $contentVersionId)
+    {
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
+        $value = $this->helper->loadValue($fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadAvailableFormats($fieldId, $contentVersionId);
+
+        $content = $this->templating->render(
+            'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
+            array(
+                'value' => $value,
+                'fieldId' => $fieldId,
+                'availableFormats' => $availableFormats
+            )
+        );
+
         $responseData = array(
             'media' => !empty($value->resourceId) ? $value : false,
             'content' => $content,
-            'toScale' => $scaling,
+            'toScale' => $this->getScaling($value),
         );
 
         return new JsonResponse($responseData, 200);
@@ -196,20 +211,20 @@ class UIController extends Controller
      * saves the attribute with updated information (variant coordinates)
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param mixed $objectId
+     * @param mixed $contentId
      * @param mixed $fieldId
      * @param $contentVersionId
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function saveAttributeAction(Request $request, $objectId, $fieldId, $contentVersionId)
+    public function saveAttributeAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         // @todo: make all coords int
-        $variantName = $request->get('name', '');
-        $crop_x = $request->get('crop_x', 0);
-        $crop_y = $request->get('crop_y', 0);
-        $crop_w = $request->get('crop_w', 0);
-        $crop_h = $request->get('crop_h', 0);
+        $variantName = $request->request->getAlnum('name', '');
+        $crop_x = $request->request->getInt('crop_x');
+        $crop_y = $request->request->getInt('crop_y');
+        $crop_w = $request->request->getInt('crop_w');
+        $crop_h = $request->request->getInt('crop_h');
 
         if (empty($variantName) || empty($crop_w) || empty($crop_h)) {
             throw new \InvalidArgumentException('Missing one of the arguments: variant name, crop width, crop height');
@@ -255,12 +270,45 @@ class UIController extends Controller
                 'name' => $variantName,
                 'url' => $variation->url,
                 'coords' => array(
-                    (int) $crop_x,
-                    (int) $crop_y,
-                    (int) $crop_x + (int) $crop_w,
-                    (int) $crop_y + (int) $crop_h,
+                    $crop_x,
+                    $crop_y,
+                    $crop_x + $crop_w,
+                    $crop_y + $crop_h,
                 ),
             ),
+        );
+
+        return new JsonResponse($responseData, 200);
+    }
+
+    public function saveAttributeLegacy(Request $request, $contentId, $fieldId, $contentVersionId)
+    {
+        $resourceId = $this->get('resourceId', '');
+
+        if (empty($resourceId)) {
+            throw new \InvalidArgumentException('Resource id must not be empty');
+        }
+
+        $response = $this->provider->getRemoteResource($data['public_id'], 'image');
+        $updatedValue = $provider->getValueFromResponse($response);
+
+        $value = $this->helper->updateValue($updatedValue, $fieldId, $contentVersionId);
+
+        $content = $this->templating->render(
+            'file:extension/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl',
+            array(
+                'value' => $value,
+                'attributeId' => $fieldId,
+                'variations' => $this->helper->loadAvailableFormats($fieldId, $contentVersionId),
+                'version' => $contentVersionId,
+                'contentObjectId' => $contentId
+            )
+        );
+
+        $responseData = array(
+            'media' => !empty($value->resourceId) ? $value : false,
+            'content' => $content,
+            'toScale' => $this->getScaling($value),
         );
 
         return new JsonResponse($responseData, 200);
@@ -317,7 +365,7 @@ class UIController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function browseRemoteMediaAction(Request $request, $fieldId, $contentVersionId)
+    public function browseRemoteMediaAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $hardLimit = 500;
         $limit = 25;
@@ -353,7 +401,7 @@ class UIController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function addTagsAction(Request $request, $fieldId, $contentVersionId)
+    public function addTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
@@ -393,7 +441,7 @@ class UIController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function removeTagsAction(Request $request, $fieldId, $contentVersionId)
+    public function removeTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');

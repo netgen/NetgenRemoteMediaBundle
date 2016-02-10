@@ -1,7 +1,24 @@
-{def $base='ContentObjectAttribute'
-    $value = $attribute.content
-    $media = ngremotemedia($value, '300x200', true)
-}
+{def $base='ContentObjectAttribute'}
+
+{if not(is_set($value))}
+    {def $value = $attribute.content}
+{/if}
+{if not(is_set($media))}
+    {def $media = ngremotemedia($value, '300x200', true)}
+{/if}
+{if not(is_set($fieldId))}
+    {def $fieldId = $attribute.id}
+{/if}
+{if not(is_set($version))}
+    {def $version=$attribute.version}
+{/if}
+{if not(is_set($contentObjectId))}
+    {def $contentObjectId = $attribute.contentobject_id}
+{/if}
+{if not(is_set($variations))}
+    {def $contentClassAttribute = $attribute.contentclass_attribute}
+    {def $availableFormats = $contentClassAttribute.data_text4}
+{/if}
 
 {run-once}
 {foreach ezcssfiles(array('jquery.jcrop.css', 'ngremotemedia.css')) as $file}
@@ -44,7 +61,7 @@
 {/if}
 
 <div class="remotemedia-type" data-bootstrap-media='{$value|json}'>
-    {include uri="design:parts/remotemedia/preview.tpl" attribute=$attribute value=$value media=$media type=$type}
-    {include uri="design:parts/remotemedia/interactions.tpl" attribute=$attribute base=$base value=$value media=$media type=$type}
+    {include uri="design:parts/remotemedia/preview.tpl"}
+    {include uri="design:parts/remotemedia/interactions.tpl"}
 </div>
 

@@ -1,28 +1,32 @@
 netgen_remote_media_upload:
-    path: /ezexceed/remotemedia/upload
+    path: /ezexceed/ngremotemedia/upload/{contentId}
     defaults: { _controller: netgen_remote_media.controller.ui:uploadFileAction }
 
 netgen_remote_media_fetch:
-    path: /ezexceed/ngremotemedia/fetch/{fieldId}/{contentVersionId}
+    path: /ezexceed/ngremotemedia/fetch/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:fetchAction }
 
 netgen_remote_media_save:
-    path: /ezexceed/ngremotemedia/save/{objectId}/{fieldId}/{contentVersionId}
+    path: /ezexceed/ngremotemedia/save/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeAction }
 
 netgen_remote_media_browse:
-    path: /ezexceed/ngremotemedia/browse/{fieldId}/{contentVersionId}
+    path: /ezexceed/ngremotemedia/browse/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:browseRemoteMediaAction }
 
 netgen_remote_media_add_tag:
-    path: /ezexceed/ngremotemedia/tags/{fieldId}/{contentVersionId}
+    path: /ezexceed/ngremotemedia/tags/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:addTagsAction }
     methods: [POST]
 
 netgen_remote_media_remove_tag:
-    path: /ezexceed/ngremotemedia/tags/{fieldId}/{contentVersionId}
+    path: /ezexceed/ngremotemedia/tags/{contentId}{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:removeTagsAction }
     methods: [DELETE]
+
+netgen_remote_media_legacy_save:
+    path: /standard/ngremotemedia/change/{contentId}/{fieldId}/{contentVersionId}
+    defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeLegacyAction }
 
 netgen_remote_media_fetch_remote:
     path: /ezexceed/ngremotemedia/fetch_remote/{id}

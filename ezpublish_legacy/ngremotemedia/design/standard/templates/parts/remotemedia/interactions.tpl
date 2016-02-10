@@ -1,33 +1,26 @@
-{if eq(is_set($base), false())}
-    {def $base='ContentObjectAttribute'}
-{/if}
-
-<div id="remotemedia-buttons-{$attribute.id}" class="remotemedia-buttons"
+<div id="remotemedia-buttons-{$fieldId}" class="remotemedia-buttons"
     data-prefix={'/ezjscore/call'|ezurl}
-    data-id="{$attribute.id}"
-    data-contentobject-id="{$attribute.contentobject_id}"
-    data-version="{$attribute.version}">
+    data-id="{$fieldId}"
+    data-contentobject-id="{$contentObjectId}"
+    data-version="{$version}">
 
-    <input type="hidden" name="{$base}_media_id_{$attribute.id}" value="{$value.resourceId}" class="media-id" />
-    {*<input type="hidden" name="{$base}_host_{$attribute.id}" value="{$media.host}" class="media-host" />*}
-    {*<input type="hidden" name="{$base}_type_{$attribute.id}" value="{$media.type}" class="media-type" />*}
-    {*<input type="hidden" name="{$base}_ending_{$attribute.id}" value="{$media.ending}" class="media-ending" />*}
+    <input type="hidden" name="{$base}_media_id_{$fieldId}" value="{$value.resourceId}" class="media-id" />
 
     {if $media.url}
         {if $type|eq('image')}
-            {include uri="design:parts/overlay_action_button-1.tpl" media=$media value=$value attribute=$attribute}
+            {include uri="design:parts/overlay_action_button-1.tpl"}
         {/if}
         <input type="button" class="remotemedia-remove-file button" value="{'Remove media'|i18n( 'content/edit' )}">
     {/if}
 
     <input type="button" class="remotemedia-remote-file button" value="{'Choose from RemoteMedia'|i18n( 'content/edit' )}">
 
-    <div class="remotemedia-local-file-container" id="remotemedia-local-file-container-{$attribute.id}">
-        <input type="button" class="remotemedia-local-file button" id="remotemedia-local-file-{$attribute.id}"
+    <div class="remotemedia-local-file-container" id="remotemedia-local-file-container-{$fieldId}">
+        <input type="button" class="remotemedia-local-file button" id="remotemedia-local-file-{$fieldId}"
             value="{'Choose from computer'|i18n( 'content/edit' )}">
     </div>
 
-    <div class="upload-progress hid" id="remotemedia-progress-{$attribute.id}">
+    <div class="upload-progress hid" id="remotemedia-progress-{$fieldId}">
         <div class="progress"></div>
     </div>
 </div>

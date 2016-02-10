@@ -1,7 +1,3 @@
-{if not(is_set($value)) }
-    {def $value = $attribute.content}
-{/if}
-
 {if $type|eq('image')}
     {if not(is_set($media))}
         {def $media = ngremotemedia($value, '300x200', true)}
@@ -33,11 +29,11 @@
                 <div class="remotemedia-alttext">
                     <span class="help-block description">{'Alternate text'|i18n('remotemedia')}</span>
                     <input type="text"
-                           name="{$attribute_base}_alttext_{$attribute.id}" value="{$value.metaData.alt_text}" class="media-alttext data">
+                           name="{$attribute_base}_alttext_{$fieldId}" value="{$value.metaData.alt_text}" class="media-alttext data">
                 </div>
 
                 <input type="text" class="tagedit" />
-                <input type="button" class="button tagit" id="remotemedia-tagger-{$attribute.id}"
+                <input type="button" class="button tagit" id="remotemedia-tagger-{$fieldId}"
                     value="{'Add tag'|i18n( 'content/edit' )}">
                 <ul>
                 </ul>
