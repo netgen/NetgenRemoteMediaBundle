@@ -64,14 +64,13 @@ class UIController extends Controller
             );
         }
 
-        $result = $this->helper->upload(
+        $value = $this->helper->upload(
             $file->getRealPath(),
             pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
             $fieldId,
             $contentVersionId
         );
 
-        $value = $this->provider->getValueFromResponse($result);
         $this->helper->updateValue($value, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
@@ -242,6 +241,7 @@ class UIController extends Controller
             ),
         );
 
+        // @todo: do we need this here?
         $initalVariations = array();
         foreach ($availableFormats as $name => $key) {
             $initalVariations[$name] = array(
@@ -257,11 +257,7 @@ class UIController extends Controller
 
         $this->helper->updateValue($value, $fieldId, $contentVersionId);
 
-        $variation = $this->provider->getVariation(
-            $value,
-            $availableFormats,
-            $variantName
-        );
+        $variation = $this->helper->getVariationFromValue($value, $variantName, $availableFormats);
 
         $responseData = array(
             'error_text' => '',
@@ -299,9 +295,7 @@ class UIController extends Controller
             throw new \InvalidArgumentException('Resource id must not be empty');
         }
 
-        $response = $this->provider->getRemoteResource($data['public_id'], 'image');
-        $updatedValue = $provider->getValueFromResponse($response);
-
+        $updatedValue = $this->helper->getValueFromRemoteResource($data['public_id'], 'image');
         $value = $this->helper->updateValue($updatedValue, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(

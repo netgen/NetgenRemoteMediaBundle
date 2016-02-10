@@ -73,14 +73,14 @@ class Helper
     }
 
     /**
-     * Uploads the local file to the remote provider
+     * Uploads the local file to the remote provider and returns new Value
      *
      * @param string $fileUri
      * @param string $fileName
      * @param mixed|null $fieldId
      * @param mixed|null $contentVersionId
      *
-     * @return mixed
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
     {
@@ -100,7 +100,21 @@ class Helper
             'resource_type' => 'auto'
         );
 
-        return $this->provider->upload($fileUri, $options);
+        $response = $this->provider->upload($fileUri, $options);
+
+        return $this->provider->getValueFromResponse($response);
+    }
+
+    public function getValueFromRemoteResource($resourceId, $resourceType)
+    {
+        $response = $this->provider->getRemoteResource($resourceId, $resourceType);
+
+        return $this->provider->getValueFromResponse($response);
+    }
+
+    public function getVariationFromValue($value, $variantName, $availableFormats)
+    {
+        $availableFormats = $this->provider->getVariation($value, $availableFormats, $variantName);
     }
 
     /**
