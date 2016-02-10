@@ -1,17 +1,14 @@
-define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'],
-    function(View, $, plupload)
-{
+define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'], function(View, $, plupload) {
     return View.extend({
-        browseButton : null,
-        browseContainer : null,
-        maxSize : '25mb',
+        browseButton: null,
+        browseContainer: null,
+        maxSize: '25mb',
 
-        headers : {
-            'Accept' : 'application/json, text/javascript, */*; q=0.01'
+        headers: {
+            'Accept': 'application/json, text/javascript, */*; q=0.01'
         },
 
-        initialize : function(options)
-        {
+        initialize: function(options) {
             _.bindAll(this);
             if (_(options).has('uploadContainer')) {
                 this.uploadContainer = options.uploadContainer;
@@ -23,8 +20,7 @@ define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'],
             return this;
         },
 
-        uploaded : function(up, file, info)
-        {
+        uploaded: function(up, file, info) {
             if (!info || !info.response) {
                 return true;
             }
@@ -32,27 +28,22 @@ define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'],
             var data;
             try {
                 data = $.parseJSON(info.response);
-            }
-            catch (e) {
+            } catch (e) {
                 if (this.uploadCallback) {
                     this.uploadCallback({
-                        refresh : true
+                        refresh: true
                     });
                 }
                 return true;
             }
 
-            if (data && data.content && data.content.media) {
-                var media = data.content.media;
-                if (this.uploadCallback) {
-                    this.uploadCallback({
-                        id : media.id,
-                        host : media.host,
-                        type : media.type,
-                        ending : media.scalesTo.ending,
-                        media : media
-                    });
-                }
+            var media = data && data.content && data.content.media;
+            if (media && this.uploadCallback) {
+                this.uploadCallback({
+                    id: media.id,
+                    new_image_selected: true,
+                    media: media
+                });
             }
 
             this.$('.upload-progress').fadeOut();
@@ -60,32 +51,32 @@ define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'],
             return this;
         },
 
-        progress : function(up, file) {
+        progress: function(up, file) {
             this.$('.progress').css('width', file.percent + '%');
         },
 
-        added : function(up, files) {
+        added: function(up, files) {
             up.start();
             this.trigger('uploading');
             this.$('.upload-progress').show();
         },
 
-        render : function(response) {
+        render: function(response) {
             var button = this.$('#' + this.browseButton);
             var id = this.model.id !== "ezoe" ? this.model.id : this.model.get('attributeId');
             var settings = {
-                runtimes : 'html5,flash,html4',
-                container : this.browseContainer,
-                flash_swf_url : eZExceed.config.plupload.flash_swf_url,
-                browse_button : this.browseButton,
-                max_file_size : this.maxSize,
-                url : this.model.urlRoot + 'ezexceed/remotemedia/upload',
-                multipart_params : {
-                    'AttributeID' : id,
-                    'ContentObjectVersion' : this.options.version,
-                    'http_accept' : 'json' //Because of some strange failing when html4 is used
+                runtimes: 'html5,flash,html4',
+                container: this.browseContainer,
+                flash_swf_url: eZExceed.config.plupload.flash_swf_url,
+                browse_button: this.browseButton,
+                max_file_size: this.maxSize,
+                url: this.model.urlRoot + 'ezexceed/remotemedia/upload',
+                multipart_params: {
+                    'AttributeID': id,
+                    'ContentObjectVersion': this.options.version,
+                    'http_accept': 'json' //Because of some strange failing when html4 is used
                 },
-                headers : this.headers
+                headers: this.headers
             };
 
             if ($('#ezxform_token_js').length) {

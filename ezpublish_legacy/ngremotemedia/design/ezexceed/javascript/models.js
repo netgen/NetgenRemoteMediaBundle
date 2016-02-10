@@ -133,6 +133,7 @@ define(['backbone', 'jquery-safe'], function(Backbone, $) {
         parse: function(data) {
             data.file = _.extend({}, data.metaData); //Create alias for metaData            
             delete(data.metaData); //TODO: rename on server
+            data.file.type = data.file.resource_type;
             data.tags = new Backbone.Collection(_.map(data.file.tags, function(tag) {
                 return {
                     id: tag,

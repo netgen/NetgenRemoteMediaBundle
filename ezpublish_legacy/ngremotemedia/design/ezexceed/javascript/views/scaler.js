@@ -236,10 +236,10 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                     y2 = scale.coords[3];
                 } else {
                     //This happens on fresh upload
-                    x = (this.trueSize[0] - w) / 2;
-                    y = (this.trueSize[1] - h) / 2;
-                    x2 = (this.trueSize[0] + w) / 2;
-                    y2 = (this.trueSize[1] + h) / 2;
+                    x = 0;
+                    y = 0;
+                    x2 = w / 2;
+                    y2 = h / 2;
                 }
 
                 var ratio = (scale.size[0] / scale.size[1]);

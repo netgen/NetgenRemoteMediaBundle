@@ -1,4 +1,4 @@
-define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brightcove'], function(View, Models, TaggerView, UploadView) {
+define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], function(View, Models, TaggerView, UploadView) {
 
     function convert_versions(versions){
         if(_.isArray(versions)){return versions;}
@@ -135,10 +135,11 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         },
 
         changeMedia: function(data) {
+
+            if(!data.new_image_selected){return;}
+            data.new_image_selected && this.loader();
+
             this.$('.media-id').val(data.id);
-            this.$('.media-host').val(data.host);
-            this.$('.media-type').val(data.type);
-            this.$('.media-ending').val(data.ending);
 
             data = this.$(':input').serializeArray();
             data.push({
@@ -160,9 +161,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
         },
 
         update: function() {
-            this.model.fetch({
-                transform: false
-            });
+            this.model.fetch({transform: false});
         },
 
         render: function() {
@@ -190,17 +189,8 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload', 'brigh
                 });
 
                 var img = this.$('.edit-image img');
-                if (!imageFitsAll)
-                    this.show(img);
-                else
-                    this.hide(img);
+                !imageFitsAll ? this.show(img) : this.hide(img);
 
-                //TODO: Video???
-                if (file && 'type' in file && file.type.match(/video/)) {
-                    if (typeof brightcove !== 'undefined'){
-                        brightcove.createExperiences();
-                    }
-                }
             }
 
             this.renderUpload().renderTags();

@@ -31,10 +31,7 @@ define(['remotemedia/view', './upload', 'remotemedia/templates/browser', 'remote
             var model = this.collection.get(id);
             eZExceed.stack.pop({
                 id: id,
-                host: model.get('host'),
-                type: model.get('type'),
-                ending: model.get('scalesTo').ending,
-                remotemediaId: this.collection.remotemediaId,
+                new_image_selected: true,
                 refresh: true,
                 model: model.toJSON()
             });
@@ -118,10 +115,7 @@ define(['remotemedia/view', './upload', 'remotemedia/templates/browser', 'remote
         uplodedMedia: function(data) {
             eZExceed.stack.pop({
                 id: data.id,
-                host: data.host,
-                type: data.type,
-                ending: data.ending,
-                remotemediaId: this.collection.remotemediaId
+                new_image_selected: true
             });
         }
     });
