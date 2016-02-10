@@ -51,6 +51,10 @@ class DoctrineDatabase extends Gateway
                 $query->expr->eq(
                     $this->handler->quoteColumn("version"),
                     $query->bindValue($versionId, null, PDO::PARAM_INT)
+                ),
+                $query->expr->eq(
+                    $this->handler->quoteColumn("data_type_string"),
+                    $query->bindValue('ngremotemedia', null, PDO::PARAM_STR)
                 )
             )
         ;
@@ -63,7 +67,7 @@ class DoctrineDatabase extends Gateway
             return $row;
         }
 
-        throw new NotFoundException("field", $fieldId);
+        throw new NotFoundException("ngremotemedia field", $fieldId);
     }
 
     /**
@@ -94,6 +98,10 @@ class DoctrineDatabase extends Gateway
                 $query->expr->eq(
                     $this->handler->quoteColumn("version", "ezcontentobject_attribute"),
                     $query->bindValue($versionId, null, PDO::PARAM_INT)
+                ),
+                $query->expr->eq(
+                    $this->handler->quoteColumn("data_type_string", "ezcontentobject_attribute"),
+                    $query->bindValue('ngremotemedia', null, PDO::PARAM_STR)
                 )
             )
         ;
@@ -133,6 +141,10 @@ class DoctrineDatabase extends Gateway
                 $query->expr->eq(
                     $this->handler->quoteColumn( "version" ),
                     $query->bindValue( $versionId, null, PDO::PARAM_INT )
+                ),
+                $query->expr->eq(
+                    $this->handler->quoteColumn("data_type_string"),
+                    $query->bindValue('ngremotemedia', null, PDO::PARAM_STR)
                 )
             );
 
