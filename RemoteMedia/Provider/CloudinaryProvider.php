@@ -149,30 +149,36 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             );
         }
 
-        if (array_key_exists($format, $value->variations)) {
-            $coords = $value->variations[$format];
-            if (count($coords) > 2 && (int)$coords['w'] !== 0 ) {
-                $options['transformation'] = array(
-                    array(
-                        'x' => (int)$coords['x'],
-                        'y' => (int)$coords['y'],
-                        'width' => (int)$coords['w'],
-                        'height' => (int)$coords['h'],
-                        'crop' => 'crop',
-                    ),
-                    array(
-                        'width' => $sizes[0],
-                        'height' => $sizes[1],
-                        'crop' => 'fill'
-                    )
-                );
+        if (array_key_exists($format, $namedFormats)) {
+            if (array_key_exists($format, $value->variations)) {
+                $coords = $value->variations[$format];
+                if (count($coords) > 2 && (int)$coords['w'] !== 0) {
+                    $options['transformation'] = array(
+                        array(
+                            'x' => (int)$coords['x'],
+                            'y' => (int)$coords['y'],
+                            'width' => (int)$coords['w'],
+                            'height' => (int)$coords['h'],
+                            'crop' => 'crop',
+                        ),
+                        array(
+                            'width' => $sizes[0],
+                            'height' => $sizes[1],
+                            'crop' => 'fill'
+                        )
+                    );
+                } else {
+                    $options['width'] = $coords['x'];
+                    $options['height'] = $coords['y'];
+                    $options['crop'] = 'fill';
+                }
             } else {
-                $options['x'] = $coords['x'];
-                $options['y'] = $coords['y'];
+                $options['crop'] = 'fill';
+                $options['width'] = $sizes[0];
+                $options['height'] = $sizes[1];
             }
-
         } else {
-            $options['crop'] = 'fit';
+            $options['crop'] = 'fill';
             $options['width'] = $sizes[0];
             $options['height'] = $sizes[1];
         }
