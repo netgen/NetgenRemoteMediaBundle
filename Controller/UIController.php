@@ -85,7 +85,6 @@ class UIController extends Controller
             )
         );
 
-
         $result['id'] = $result['public_id'];
         $result['scalesTo'] = array(
             'quality' => 100,
@@ -208,7 +207,7 @@ class UIController extends Controller
 
     /**
      * eZExceed:
-     * saves the attribute with updated information (variant coordinates)
+     * updates the coordinates on the value
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
      * @param mixed $contentId
@@ -217,7 +216,7 @@ class UIController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function saveAttributeAction(Request $request, $contentId, $fieldId, $contentVersionId)
+    public function updateCoordinatesAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         // @todo: make all coords int
         $variantName = $request->request->getAlnum('name', '');
@@ -281,6 +280,17 @@ class UIController extends Controller
         return new JsonResponse($responseData, 200);
     }
 
+    /**
+     * Legacy admin:
+     * Called when media is selected from the list of uploaded resources
+     *
+     * @param Request $request
+     * @param $contentId
+     * @param $fieldId
+     * @param $contentVersionId
+     *
+     * @return JsonResponse
+     */
     public function saveAttributeLegacy(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $resourceId = $this->get('resourceId', '');
@@ -416,20 +426,9 @@ class UIController extends Controller
             );
         }
 
-        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $this->helper->loadValue($fieldId, $contentVersionId);
-        $metaData = $value->metaData;
-        $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
+        $tags = $this->helper->addTag($fieldId, $contentVersionId, $tag);
 
-        $result = $this->provider->addTagToResource($resourceId, $tag);
-        $attributeTags[] = $tag;
-
-        $metaData['tags'] = $attributeTags;
-        $value->metaData = $metaData;
-
-        $this->helper->updateValue($value, $fieldId, $contentVersionId);
-
-        return new JsonResponse($attributeTags, 200);
+        return new JsonResponse($tags, 200);
     }
 
     /**
@@ -456,18 +455,7 @@ class UIController extends Controller
             );
         }
 
-        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $this->helper->loadValue($fieldId, $contentVersionId);
-        $metaData = $value->metaData;
-        $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
-
-        $result = $this->provider->removeTagFromResource($resourceId, $tag);
-        $attributeTags = array_diff($attributeTags, array($tag));
-
-        $metaData['tags'] = $attributeTags;
-        $value->metaData = $metaData;
-
-        $this->helper->updateValue($value, $fieldId, $contentVersionId);
+        $tags = $this->helper->removeTag($fieldId, $contentVersionId, $tag);
 
         return new JsonResponse($attributeTags, 200);
 

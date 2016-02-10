@@ -104,6 +104,61 @@ class Helper
     }
 
     /**
+     * Adds the tag to the value
+     *
+     * @param $fieldId
+     * @param $versionId
+     * @param $tag
+     *
+     * @return array list of tags for the value
+     */
+    public function addTag($fieldId, $versionId, $tag)
+    {
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
+        $value = $this->loadValue($fieldId, $versionId);
+        $metaData = $value->metaData;
+        $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
+
+        $result = $this->provider->addTagToResource($resourceId, $tag);
+        $attributeTags[] = $tag;
+
+        $metaData['tags'] = $attributeTags;
+        $value->metaData = $metaData;
+
+        $this->updateValue($value, $fieldId, $versionId);
+
+        return $attributeTags;
+    }
+
+    /**
+     * Removes the tag from the value
+     *
+     * @param $fieldId
+     * @param $versionId
+     * @param $tag
+     *
+     * @return array list of tags for the value
+     */
+    public function removeTag($fieldId, $versionId, $tag)
+    {
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
+        $value = $this->loadValue($fieldId, $versionId);
+        $metaData = $value->metaData;
+        $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
+
+        $result = $this->provider->removeTagFromResource($resourceId, $tag);
+        $attributeTags = array_diff($attributeTags, array($tag));
+
+        $metaData['tags'] = $attributeTags;
+        $value->metaData = $metaData;
+
+        $this->updateValue($value, $fieldId, $versionId);
+
+        return $attributeTags;
+
+    }
+
+    /**
      * Cleans up the file name for uploading
      *
      * @param string $fileName

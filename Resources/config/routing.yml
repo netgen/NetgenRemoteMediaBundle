@@ -8,7 +8,7 @@ netgen_remote_media_fetch:
 
 netgen_remote_media_save:
     path: /ezexceed/ngremotemedia/save/{contentId}/{fieldId}/{contentVersionId}
-    defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeAction }
+    defaults: { _controller: netgen_remote_media.controller.ui:updateCoordinatesAction }
 
 netgen_remote_media_browse:
     path: /ezexceed/ngremotemedia/browse/{contentId}/{fieldId}/{contentVersionId}
