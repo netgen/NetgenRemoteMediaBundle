@@ -1,33 +1,47 @@
-{if is_set($format)|not}
-    {def $format = '300x200'}
-{/if}
-
-{if is_set($silent)|not}
-    {def $silent = true()}
-{/if}
+{def $contentClassAttribute = $attribute.contentclass_attribute}
+{def $variations = $contentClassAttribute.data_text4}
 
 {def
     $value = $attribute.content
-    $media = ngremotemedia($attribute, $format, true)
-    $type = false()
+    $type = $value.metaData.resource_type|default('image')
 }
 
-{if $media.url|is_set()}
+{if $value.resourceId}
+    {if $type|eq('image')}
+        {if not(is_set($format))}
+            {def $format = '300x200'}
+        {/if}
+        {def $media = ngremotemedia($attribute, $format, $variations)}
 
-    {if $value.type|is_set()}
-        {set $type = $value.type}
-    {else}
-        {set $type = 'image'}
+        {if not(is_set($alt_text))}
+            {def alt_text = $value.metaData.alt_text|default('')}
+        {/if}
+
+        {if not(is_set($title))}
+            {def title = $value.metaData.caption|default('')}
+        {/if}
+
+        {if is_set($format)}
+            {def $variation = ngremotemedia($value, $format, $variations)}
+        {/if}
+
+        {if is_set($variation)}
+            <img src="{$variation.url}"
+                {if $variation.width} width="{$variation.width}"{/if}
+                {if $variation.height} height="{$variation.height}"{/if}
+                 {if $alt_text}alt="{$alt_text}"{/if}
+                 {if $title}title="{$title}"{/if}
+            />
+        {else}
+            <img src="{$value.secure_url}"
+                {if $value.metaData.width} width="{$value.metaData.width}"{/if}
+                {if $value.metaData.height} height="{$value.metaData.height}"{/if}
+                {if $alt_text}alt="{$alt_text}"{/if}
+                {if $title}title="{$title}"{/if}
+            />
+        {/if}
+
+    {elseif $type|eq('video')}
+        {ngremotevideo($value, $variations, $format)}
     {/if}
-
-    {*
-    {def $template = concat('design:content/datatype/view/', $type, '.tpl')}
-
-    {include uri=$template media=$media handler=$handler}
-    *}
-
-    <img src="{$media.url}" />
-
-{else}
-    {if $silent|not}{debug-log msg='Media.url not set'}{/if}
 {/if}

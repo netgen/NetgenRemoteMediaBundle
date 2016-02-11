@@ -35,8 +35,16 @@ class NgRemoteMediaOperator
                 ),
                 'format' => array(
                     'type' => 'string',
+                    'required' => true
+                ),
+                'availableFormats' => array(
+                    'type' => 'array',
+                    'required' => true
+                ),
+                'secure' => array(
+                    'type' => 'boolean',
                     'required' => false,
-                    'default' => null
+                    'default' => true
                 )
             ),
             'mediaFits' => array(
@@ -54,6 +62,20 @@ class NgRemoteMediaOperator
                     'type' => 'Value',
                     'required' => true
                 )
+            ),
+            'ngremotevideo' => array(
+                'value' => array(
+                    'type' => 'Value',
+                    'required' => true
+                ),
+                'availableFormats' => array(
+                    'type' => 'array',
+                    'required' => true
+                ),
+                'format' => array(
+                    'type' => 'string',
+                    'required' => false
+                )
             )
         );
     }
@@ -61,35 +83,37 @@ class NgRemoteMediaOperator
     function modify($tpl, $operatorName, $operatorParameters, $rootNamespace, $currentNamespace, &$operatorValue, $namedParameters, $placement)
     {
         if ($operatorName === 'ngremotemedia') {
-            if (!empty($namedParameters['value'])) {
-                $value = $namedParameters['value'];
-                $format = $namedParameters['format'] ?: '';
-                $secure = $namedParameters['secure'] ?: true;
-
-                $operatorValue = $this->ngremotemedia($value, $format, $secure);
+            if (empty($namedParameters['value'])) {
+                $operatorValue = null;
 
                 return;
             }
 
-            $operatorValue = null;
-
-            return;
+            $operatorValue = $this->ngremotemedia(
+                $namedParameters['value'],
+                $namedParameters['format'],
+                $namedParameters['availableFormats'],
+                $namedParameters['secure']
+            );
         } elseif ($operatorName === 'mediaFits') {
             $operatorValue = $this->mediaFits($namedParameters['value'], $namedParameters['variations']);
-
-            return;
         } elseif ($operatorName === 'videoThumbnail') {
             $operatorValue = $this->videoThumbnail($namedParameters['value']);
+        } elseif ($operatorName === 'ngremotevideo') {
+            $operatorValue = $this->getvideoTag(
+                $namedParameters['value'],
+                $namedParameters['availableFormats'],
+                $namedParameters['format']
+            );
         }
     }
 
-    function ngremotemedia($value, $format, $secure = true)
+    function ngremotemedia($value, $format, $availableFormats, $secure = true)
     {
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
 
-        // no support for named formats in legacy
-        return $provider->getVariation($value, array(), $format, $secure);
+        return $provider->getVariation($value, $format, $availableFormats, $secure);
     }
 
     function mediaFits($value, $variations)
@@ -116,5 +140,13 @@ class NgRemoteMediaOperator
         $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
 
         return $provider->getVideoThumbnail($value->resourceId);
+    }
+
+    function getVideoTag($value, $availableFormats, $format)
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
+
+        return $provider->generateVideoTag($value->resourceId, $format, $availableFormats);
     }
 }
