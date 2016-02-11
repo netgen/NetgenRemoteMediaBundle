@@ -429,8 +429,8 @@ class UIController extends Controller
      * Removes the tag from remote resource and saves the updated value
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param nxed $fieldId
-     * @param $contentVersionId
+     * @param mixed $fieldId
+     * @param mixed $contentVersionId
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
@@ -450,8 +450,7 @@ class UIController extends Controller
         }
 
         $tags = $this->helper->removeTag($fieldId, $contentVersionId, $tag);
-
-        return new JsonResponse($attributeTags, 200);
+        return new JsonResponse($tags, 200);
 
     }
 }

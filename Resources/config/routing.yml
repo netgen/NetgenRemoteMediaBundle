@@ -20,7 +20,7 @@ netgen_remote_media_add_tag:
     methods: [POST]
 
 netgen_remote_media_remove_tag:
-    path: /ezexceed/ngremotemedia/tags/{contentId}{fieldId}/{contentVersionId}
+    path: /ezexceed/ngremotemedia/tags/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:removeTagsAction }
     methods: [DELETE]
 

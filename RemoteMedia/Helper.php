@@ -133,7 +133,7 @@ class Helper
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
-        $result = $this->provider->addTagToResource($resourceId, $tag);
+        $result = $this->provider->addTagToResource($value->resourceId, $tag);
         $attributeTags[] = $tag;
 
         $metaData['tags'] = $attributeTags;
@@ -160,7 +160,7 @@ class Helper
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
-        $result = $this->provider->removeTagFromResource($resourceId, $tag);
+        $result = $this->provider->removeTagFromResource($value->resourceId, $tag);
         $attributeTags = array_diff($attributeTags, array($tag));
 
         $metaData['tags'] = $attributeTags;
