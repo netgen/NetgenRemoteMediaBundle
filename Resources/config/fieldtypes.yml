@@ -18,19 +18,3 @@ services:
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: ngremotemedia}
 
-    ezpublish.api.storage_engine.legacy.handler.ngremotemedia:
-        class: Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Handler
-        arguments:
-            - '@ezpublish.api.storage_engine.legacy.gateway.ngremotemedia'
-            - '@ezpublish.api.storage_enginge.legacy.mapper.ngremotemedia'
-
-    ezpublish.api.storage_engine.legacy.gateway.ngremotemedia:
-        class: Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Gateway\DoctrineDatabase
-        arguments:
-            - '@ezpublish.api.storage_engine.legacy.dbhandler'
-
-    ezpublish.api.storage_enginge.legacy.mapper.ngremotemedia:
-        class: Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Mapper
-        arguments:
-            - '@ezpublish.fieldType.ngremotemedia.converter'
-

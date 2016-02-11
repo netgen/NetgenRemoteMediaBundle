@@ -2,32 +2,66 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Handler;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 
 class Helper
 {
-    /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Handler
-     */
-    protected $dbHandler;
-
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
      */
     protected $provider;
 
     /**
+     * @var ContentService
+     */
+    protected $contentService;
+
+    /**
+     * @var ContentTypeService
+     */
+    protected $contentTypeService;
+
+    /**
      * Helper constructor.
      * @param Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Handler $handler
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface $provider
      */
-    public function __construct(Handler $handler, RemoteMediaProviderInterface $provider)
+    public function __construct(
+        RemoteMediaProviderInterface $provider,
+        ContentService $contentService,
+        ContentTypeService $contentTypeService
+    )
     {
-        $this->dbHandler = $handler;
         $this->provider = $provider;
+        $this->contentService = $contentService;
+        $this->contentTypeService = $contentTypeService;
+    }
+
+    protected function loadContent($contentId, $versionId, $languageCode = null)
+    {
+        $languageCode = empty($languageCode) ? $languageCode : array($languageCode);
+
+        return $this->contentService->loadContent($contentId, $languageCode, $versionId);
+    }
+
+    public function loadField($contentId, $fieldId, $versionId, $languageCode = null)
+    {
+        $content = $this->loadContent($contentId, $versionId, $languageCode);
+        $contentFields = $content->getFieldsByLanguage($languageCode);
+
+        $currentField = null;
+        foreach($contentFields as $field) {
+            if ($field->id == $fieldId) {
+                return $field;
+            }
+        }
+
+        // @todo: fix exception
+        throw new \InvalidArgumentException("Field not found");
     }
 
     /**
@@ -38,9 +72,11 @@ class Helper
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia
      */
-    public function loadValue($fieldId, $versionId)
+    public function loadValue($contentId, $fieldId, $versionId, $languageCode = null)
     {
-        return $this->dbHandler->loadValue($fieldId, $versionId);
+        $field = $this->loadField($contentId, $fieldId, $versionId, $languageCode);
+
+        return $field->value;
     }
 
     /**
@@ -51,9 +87,14 @@ class Helper
      *
      * @return array
      */
-    public function loadAvailableFormats($fieldId, $versionId)
+    public function loadAvailableFormats($contentId, $fieldId, $versionId, $languageCode = null)
     {
-        $fieldSettings = $this->dbHandler->loadFieldSettingsByFieldId($fieldId, $versionId);
+        $field = $this->loadField($contentId, $fieldId, $versionId, $languageCode);
+
+        $content = $this->loadContent($contentId, $versionId, $languageCode);
+        $contentType = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId);
+        $fieldDefinition = $contentType->getFieldDefinition($field->fieldDefIdentifier);
+        $fieldSettings = $fieldDefinition->getFieldSettings();
 
         return !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
     }
@@ -67,9 +108,16 @@ class Helper
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
-    public function updateValue($value, $fieldId, $contentVersionId)
+    public function updateValue($value, $contentId, $fieldId, $contentVersionId, $languageCode = null)
     {
-        return $this->dbHandler->update($value, $fieldId, $contentVersionId);
+        $field = $this->loadField($contentId, $fieldId, $contentVersionId, $languageCode);
+        $versionInfo = $this->contentService->loadVersionInfoById($contentId, $contentVersionId);
+
+        $contentUpdateStruct = $this->contentService->newContentUpdateStruct();
+        $contentUpdateStruct->setField($field->fieldDefIdentifier, $value);
+        $contentDraft = $this->contentService->updateContent($versionInfo, $contentUpdateStruct);
+
+        return $value;
     }
 
     /**
@@ -114,7 +162,7 @@ class Helper
 
     public function getVariationFromValue($value, $variantName, $availableFormats)
     {
-        $availableFormats = $this->provider->getVariation($value, $availableFormats, $variantName);
+        return $this->provider->getVariation($value, $availableFormats, $variantName);
     }
 
     /**
@@ -126,10 +174,10 @@ class Helper
      *
      * @return array list of tags for the value
      */
-    public function addTag($fieldId, $versionId, $tag)
+    public function addTag($contentId, $fieldId, $versionId, $tag)
     {
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $this->loadValue($fieldId, $versionId);
+        $value = $this->loadValue($contentId, $fieldId, $versionId);
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
@@ -139,7 +187,7 @@ class Helper
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
 
-        $this->updateValue($value, $fieldId, $versionId);
+        $this->updateValue($value, $contentId, $fieldId, $versionId);
 
         return $attributeTags;
     }
@@ -153,10 +201,10 @@ class Helper
      *
      * @return array list of tags for the value
      */
-    public function removeTag($fieldId, $versionId, $tag)
+    public function removeTag($contentId, $fieldId, $versionId, $tag)
     {
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $this->loadValue($fieldId, $versionId);
+        $value = $this->loadValue($contentId, $fieldId, $versionId);
         $metaData = $value->metaData;
         $attributeTags = !empty($metaData['tags']) ? $metaData['tags'] : array();
 
@@ -166,7 +214,7 @@ class Helper
         $metaData['tags'] = $attributeTags;
         $value->metaData = $metaData;
 
-        $this->updateValue($value, $fieldId, $versionId);
+        $this->updateValue($value, $contentId, $fieldId, $versionId);
 
         return $attributeTags;
 

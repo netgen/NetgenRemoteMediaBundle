@@ -71,23 +71,25 @@ class UIController extends Controller
             $contentVersionId
         );
 
-        $this->helper->updateValue($value, $fieldId, $contentVersionId);
+        $this->helper->updateValue($value, $contentId, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
             $template,
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'availableFormats' => $this->helper->loadAvailableFormats($fieldId, $contentVersionId),
+                'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
                 'version' => $contentVersionId,
                 'contentObjectId' => $contentId
             )
         );
 
-        $result['id'] = $result['public_id'];
+        $result = json_decode($value->__toString(), true);
+
+        $result['id'] = $value->resourceId;
         $result['scalesTo'] = array(
             'quality' => 100,
-            'ending' => $result['format'],
+            'ending' => $value->metaData['format'],
         );
 
         return new JsonResponse(
@@ -137,8 +139,8 @@ class UIController extends Controller
     public function fetchAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $this->helper->loadValue($fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadAvailableFormats($fieldId, $contentVersionId);
+        $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
             'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
@@ -229,8 +231,8 @@ class UIController extends Controller
         }
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
-        $value = $this->helper->loadValue($fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadAvailableFormats($fieldId, $contentVersionId);
+        $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
+        $availableFormats = $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId);
 
         $variationCoords = array(
             $variantName => array(
@@ -255,7 +257,7 @@ class UIController extends Controller
         $variations = $variationCoords + $value->variations + $initalVariations;
         $value->variations = $variations;
 
-        $this->helper->updateValue($value, $fieldId, $contentVersionId);
+        $this->helper->updateValue($value, $contentId, $fieldId, $contentVersionId);
 
         $variation = $this->helper->getVariationFromValue($value, $variantName, $availableFormats);
 
@@ -296,14 +298,14 @@ class UIController extends Controller
         }
 
         $updatedValue = $this->helper->getValueFromRemoteResource($data['public_id'], 'image');
-        $value = $this->helper->updateValue($updatedValue, $fieldId, $contentVersionId);
+        $value = $this->helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
             'file:extension/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl',
             array(
                 'value' => $value,
                 'attributeId' => $fieldId,
-                'variations' => $this->helper->loadAvailableFormats($fieldId, $contentVersionId),
+                'variations' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
                 'version' => $contentVersionId,
                 'contentObjectId' => $contentId
             )
@@ -420,7 +422,7 @@ class UIController extends Controller
             );
         }
 
-        $tags = $this->helper->addTag($fieldId, $contentVersionId, $tag);
+        $tags = $this->helper->addTag($contentId, $fieldId, $contentVersionId, $tag);
 
         return new JsonResponse($tags, 200);
     }
@@ -449,7 +451,7 @@ class UIController extends Controller
             );
         }
 
-        $tags = $this->helper->removeTag($fieldId, $contentVersionId, $tag);
+        $tags = $this->helper->removeTag($contentId, $fieldId, $contentVersionId, $tag);
         return new JsonResponse($tags, 200);
 
     }
