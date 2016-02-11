@@ -36,8 +36,11 @@
     'libs/jquery.jcrop.min.js',
 
     'remotemedia/ns.js',
-    'remotemedia/Attribute.js',
-    'remotemedia/Media.js',
+
+    'remotemedia/shared/models.js',
+    'remotemedia/shared/tagger.js',
+
+    'remotemedia/models.js',
 
     'remotemedia/views/Modal.js',
     'remotemedia/views/RemoteMedia.js',

@@ -1,15 +1,14 @@
 RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     // Holds current active subview
-    view : null,
-    destination : null,
-    host : null,
-    type : null,
-    wrapper : null,
+    view: null,
+    destination: null,
+    host: null,
+    type: null,
+    wrapper: null,
 
-    container : false,
+    container: false,
 
-    initialize : function(options)
-    {
+    initialize: function(options) {
         options = (options || {});
         _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');
 
@@ -22,8 +21,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
 
         if ('container' in options) {
             this.container = options.container;
-        }
-        else {
+        } else {
             this.container = new RemoteMedia.views.Modal().render();
             this.container.$el.prependTo('body');
         }
@@ -31,22 +29,30 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         return this;
     },
 
-    events : {
-        'click .remotemedia-remote-file' : 'search',
-        'click .remotemedia-scale' : 'scaler',
-        'click .remotemedia-remove-file' : 'remove'
+    convert_versions: function(versions){
+        if(_.isArray(versions)){return versions;}
+        return _.map(versions, function(size, name) {
+            return {
+                size: size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size,
+                name: name
+            };
+        });
     },
 
-    render : function()
-    {
+    events: {
+        'click .remotemedia-remote-file': 'search',
+        'click .remotemedia-scale': 'scaler',
+        'click .remotemedia-remove-file': 'remove'
+    },
+
+    render: function() {
         this.container.render();
         this.enableUpload();
         this.delegateEvents();
         return this;
     },
 
-    remove : function(e)
-    {
+    remove: function(e) {
         e.preventDefault();
         this.destination.val('');
         this.host.val('');
@@ -58,62 +64,77 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         return this;
     },
 
-    changeMedia : function(data)
-    {
+    changeMedia: function(data) {
         this.destination.val(data.id);
-        this.host.val(data.host);
-        this.type.val(data.type);
-        this.ending.val(data.ending);
+        // this.host.val(data.host);
+        // this.type.val(data.type);
+        // this.ending.val(data.ending);
+        // _.delay(this.refresh.bind(this), 1000);
+        // this.refresh();
         return this;
     },
 
-    enableUpload : function() {
+
+    refresh: function(){
+      var selector = '[data-id="'+this.model.id+'"]';
+      var $wrapper = this.wrapper;
+
+      $.get(location.href).done(function(resp){
+        $wrapper.html($(resp).find(selector).closest('.remotemedia-type').html());
+      });
+
+      return this;
+    },
+
+    enableUpload: function() {
         this.upload = new RemoteMedia.views.Upload({
-            model : this.model,
-            uploaded : this.changeMedia,
-            el : this.$el.parent(),
-            prefix : this.$el.data('prefix'),
-            version : this.$el.data('version')
+            model: this.model,
+            uploaded: this.changeMedia,
+            el: this.$el.parent(),
+            prefix: this.$el.data('prefix'),
+            version: this.$el.data('version')
         });
         this.upload.render();
         return this;
     },
 
-    search : function()
-    {
+    search: function() {
         this.view = new RemoteMedia.views.Browser({
-            collection : this.model.medias,
-            onSelect : this.changeMedia,
-            el : this.container.show().contentEl
+            collection: this.model.medias,
+            onSelect: this.changeMedia,
+            el: this.container.show().contentEl
         }).render();
 
         this.model.medias.search('');
     },
 
     // Open a scaling gui
-    scaler : function(e) {
+    scaler: function(e) {
         if (!(this.destination && this.destination.val())) {
             return false;
         }
 
         var node = $(e.currentTarget);
-        settings = {
-            mediaId : this.destination.val(),
-            versions : node.data('versions'),
-            trueSize : node.data('truesize'),
-            host : this.host.val(),
-            type : this.type.val(),
-            model : this.model,
-            el : this.container.show().contentEl
+
+        var available_versions = this.convert_versions(node.data('versions'));
+        this.model.set('available_versions', available_versions, {silent: true});
+
+        var settings = {
+            mediaId: this.destination.val(),
+            //versions: this.convert_versions(node.data('versions')),
+            trueSize: node.data('truesize'),
+            host: this.host.val(),
+            type: this.type.val(),
+            model: this.model,
+            el: this.container.show().contentEl
         };
         this.view = new RemoteMedia.views.Scaler(settings);
         this.model.scale(settings.mediaId);
     },
 
-    close : function() {
+    close: function() {
         if (this.view && ('close' in this.view)) {
             this.view.close();
         }
     }
 });
-

@@ -1,26 +1,24 @@
 RemoteMedia.views.Modal = Backbone.View.extend({
     // el construction information
-    tagName : 'div',
-    id : 'remotemedia-modal',
+    tagName: 'div',
+    id: 'remotemedia-modal',
 
     // Template for containing data
-    template : '<div class="backdrop"/><div class="content"/>',
+    template: '<div class="backdrop"/><div class="content"/>',
 
     // To hold a subview
-    view : null,
+    view: null,
 
-    initialize : function(options)
-    {
+    initialize: function() {
         _.bindAll(this);
         return this;
     },
 
-    events : {
-        'click .close' : 'close'
+    events: {
+        'click .close': 'close'
     },
 
-    render : function()
-    {
+    render: function() {
         this.$el.html(this.template).hide();
         this.contentEl = this.$('.content');
 
@@ -29,16 +27,14 @@ RemoteMedia.views.Modal = Backbone.View.extend({
         return this;
     },
 
-    show : function() {
+    show: function() {
         this.$el.show();
         return this;
     },
 
-    close : function(e) {
+    close: function(e) {
         this.trigger('close');
         this.$el.hide();
-        if (this.view !== null)
-            this.view.remove();
+        this.view && this.view.remove();
     }
 });
-

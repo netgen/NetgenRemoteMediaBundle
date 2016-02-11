@@ -32,11 +32,15 @@
                            name="{$attribute_base}_alttext_{$fieldId}" value="{$value.metaData.alt_text}" class="media-alttext data">
                 </div>
 
-                <input type="text" class="tagedit" />
-                <input type="button" class="button tagit" id="remotemedia-tagger-{$fieldId}"
-                    value="{'Add tag'|i18n( 'content/edit' )}">
-                <ul>
-                </ul>
+
+                <div class="remotemedia-tags">
+                    <div class="input-append add-tag">
+                        <input type="text" class="tag" placeholder="{'Add tag'|i18n( 'content/edit' )}" data-autosave="off">
+                        <button class="btn tag" disabled type="button">{'Add tag'|i18n( 'content/edit' )}</button>
+                    </div>
+                    <div class="tags"></div>
+                </div>
+
             </div>
             {if $value.size|null()|not()}
             <p>
@@ -46,4 +50,3 @@
         </div>
     {/if}
 </div>
-

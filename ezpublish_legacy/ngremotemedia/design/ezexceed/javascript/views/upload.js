@@ -55,14 +55,14 @@ define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'], function(View, 
             this.$('.progress').css('width', file.percent + '%');
         },
 
-        added: function(up, files) {
+        added: function(up /*, files*/) {
             up.start();
             this.trigger('uploading');
             this.$('.upload-progress').show();
         },
 
-        render: function(response) {
-            var button = this.$('#' + this.browseButton);
+        render: function(/*response*/) {
+            // var button = this.$('#' + this.browseButton);
             var id = this.model.id !== "ezoe" ? this.model.id : this.model.get('attributeId');
             var settings = {
                 runtimes: 'html5,flash,html4',
@@ -70,7 +70,7 @@ define(['remotemedia/view', 'jquery-safe', 'plupload/plupload'], function(View, 
                 flash_swf_url: eZExceed.config.plupload.flash_swf_url,
                 browse_button: this.browseButton,
                 max_file_size: this.maxSize,
-                url: this.model.urlRoot + 'ezexceed/remotemedia/upload',
+                url: this.model.urlRoot + 'ezexceed/ngremotemedia/upload/' + eZExceed.config.currentObjectId,
                 multipart_params: {
                     'AttributeID': id,
                     'ContentObjectVersion': this.options.version,

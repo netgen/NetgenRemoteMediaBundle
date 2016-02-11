@@ -1,8 +1,8 @@
+/*globals RemoteMediaTranslations*/
 RemoteMedia.views.Browser = Backbone.View.extend({
-    tpl : null,
+    tpl: null,
     $input: null,
-    initialize : function(options)
-    {
+    initialize: function(options) {
         _.bindAll(this);
 
         this.listenTo(this.collection, {
@@ -11,31 +11,31 @@ RemoteMedia.views.Browser = Backbone.View.extend({
         this.onSelect = options.onSelect;
 
         this.tpl = {
-            browser : Handlebars.compile($('#tpl-remotemedia-browser').html()),
-            item : Handlebars.compile($('#tpl-remotemedia-item').html())
-        };
+            browser: Handlebars.compile($('#tpl-remotemedia-browser').html()),
+            item: Handlebars.compile($('#tpl-remotemedia-item').html())
+        }; 
     },
 
-    events : {
-        'click button.search' : 'search',
-        'submit form.search' : 'search',
-        'click .item a' : 'select'
+    events: {
+        'click button.search': 'search',
+        'submit form.search': 'search',
+        'click .item a': 'select'
     },
 
-    select : function(e) {
+    select: function(e) {
         e.preventDefault();
         var node = $(e.currentTarget).parent();
         this.onSelect({
-            id : node.data('id'),
-            host : node.data('host'),
-            type : node.data('type'),
-            ending : node.data('ending')
+            id: node.data('id'),
+            host: node.data('host'),
+            type: node.data('type'),
+            ending: node.data('ending')
         });
+        console.log(node.data());
         this.$('.close').click();
     },
 
-    search : function(e)
-    {
+    search: function(e) {
         e.preventDefault();
         var $btn = this.$('button.search');
         var prevVal = $btn.text();
@@ -47,10 +47,10 @@ RemoteMedia.views.Browser = Backbone.View.extend({
             });
     },
 
-    render : function() {
+    render: function() {
         this.$el.html(
             this.tpl.browser({
-                tr : _RemoteMediaTranslations
+                tr: RemoteMediaTranslations
             })
         );
         this.renderItems();
@@ -58,16 +58,15 @@ RemoteMedia.views.Browser = Backbone.View.extend({
         return this;
     },
 
-    renderItems : function()
-    {
+    renderItems: function() {
         var template = this.tpl.item;
         var views = this.collection.map(function(item) {
             var view = $(template(item.attributes));
             view.data({
-                id : item.id,
-                host : item.get('host'),
-                type : item.get('type'),
-                ending : item.get('scalesTo').ending
+                id: item.id,
+                host: item.get('host'),
+                type: item.get('type'),
+                ending: item.get('scalesTo').ending
             });
             return view[0];
         });
