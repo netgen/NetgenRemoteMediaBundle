@@ -87,16 +87,16 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     public function getValueFromResponse($response)
     {
         $metaData = array(
-            'version' => $response['version'] ?: '',
-            'width' => $response['width'] ?: '',
-            'height' => $response['height'] ?: '',
-            'format' => $response['format'] ?: '',
-            'resource_type' => $response['resource_type'] ?: '',
-            'created' => $response['created_at'] ?: '',
+            'version' => !empty($response['version']) ? $response['version'] : '',
+            'width' => !empty($response['width']) ? $response['width'] : '',
+            'height' => !empty($response['height']) ? $response['height'] : '',
+            'format' => !empty($response['format']) ? $response['format'] : '',
+            'resource_type' => !empty($response['resource_type']) ? $response['resource_type'] : '',
+            'created' => !empty($response['created_at']) ? $response['created_at'] : '',
             'tags' => $response['tags'] ?: array(),
-            'signature' => $response['signature'] ?: '',
-            'type' => $response['type'] ?: '',
-            'etag' => $response['etag'] ?: '',
+            'signature' => !empty($response['signature']) ? $response['signature'] : '',
+            'type' => !empty($response['type']) ? $response['type'] : '',
+            'etag' => !empty($response['etag']) ? $response['etag'] : '',
             'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
             'alt_text' => !empty($response['context']['custom']['alt']) ? $response['context']['custom']['alt'] : '',
             'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
@@ -117,13 +117,12 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      * Gets the remote media Variation.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param array $namedFormats
      * @param string $format
+     * @param array $namedFormats
      * @param bool $secure
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
+     * @return Variation
      */
-    public function getVariation(Value $value, array $namedFormats, $format, $secure = true)
+    public function getVariation(Value $value, $format, array $namedFormats, $secure = true)
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;

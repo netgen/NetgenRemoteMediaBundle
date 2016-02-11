@@ -289,15 +289,20 @@ class UIController extends Controller
      *
      * @return JsonResponse
      */
-    public function saveAttributeLegacy(Request $request, $contentId, $fieldId, $contentVersionId)
+    public function saveAttributeLegacyAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        $resourceId = $this->get('resourceId', '');
+        // @todo: receive user id from legacy
+        $this->repository->setCurrentUser(
+            $this->repository->getUserService()->loadUser(14)
+        );
+
+        $resourceId = $request->get('resource_id', '');
 
         if (empty($resourceId)) {
             throw new \InvalidArgumentException('Resource id must not be empty');
         }
 
-        $updatedValue = $this->helper->getValueFromRemoteResource($data['public_id'], 'image');
+        $updatedValue = $this->helper->getValueFromRemoteResource($resourceId, 'image');
         $value = $this->helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
@@ -307,7 +312,8 @@ class UIController extends Controller
                 'attributeId' => $fieldId,
                 'variations' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
                 'version' => $contentVersionId,
-                'contentObjectId' => $contentId
+                'contentObjectId' => $contentId,
+                'ajax' => true
             )
         );
 

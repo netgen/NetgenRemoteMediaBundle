@@ -81,7 +81,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      */
     public function getRemoteMediaVariation(Value $value, $availableFormats, $format, $secure = true)
     {
-        return $this->provider->getVariation($value, $availableFormats, $format, $secure);
+        return $this->provider->getVariation($value, $format, $availableFormats, $secure);
     }
 
     /**

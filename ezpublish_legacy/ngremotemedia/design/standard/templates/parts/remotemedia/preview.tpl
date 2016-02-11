@@ -1,6 +1,6 @@
 {if $type|eq('image')}
     {if not(is_set($media))}
-        {def $media = ngremotemedia($value, '300x200', true)}
+        {def $media = ngremotemedia($value, '300x200', variations, true)}
     {/if}
     {def $thumb_url = $media.url}
 {else}

@@ -6,7 +6,7 @@
 
     <input type="hidden" name="{$base}_media_id_{$fieldId}" value="{$value.resourceId}" class="media-id" />
 
-    {if $media.url}
+    {if $value.resourceId}
         {if $type|eq('image')}
             {include uri="design:parts/overlay_action_button-1.tpl"}
         {/if}

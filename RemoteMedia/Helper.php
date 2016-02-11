@@ -7,6 +7,7 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
+use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 class Helper
 {
@@ -16,19 +17,21 @@ class Helper
     protected $provider;
 
     /**
-     * @var ContentService
+     * @var \eZ\Publish\API\Repository\ContentService
      */
     protected $contentService;
 
     /**
-     * @var ContentTypeService
+     * @var \eZ\Publish\API\Repository\ContentTypeService
      */
     protected $contentTypeService;
 
     /**
      * Helper constructor.
-     * @param Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\RemoteMedia\Handler $handler
+     *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface $provider
+     * @param \eZ\Publish\API\Repository\ContentService $contentService
+     * @param \eZ\Publish\API\Repository\ContentTypeService $contentTypeService
      */
     public function __construct(
         RemoteMediaProviderInterface $provider,
@@ -41,14 +44,33 @@ class Helper
         $this->contentTypeService = $contentTypeService;
     }
 
-    protected function loadContent($contentId, $versionId, $languageCode = null)
+    /**
+     * Loads the content.
+     *
+     * @param mixed $contentId
+     * @param mixed|null $versionId
+     * @param string|null $languageCode
+     *
+     * @return \eZ\Publish\API\Repository\Values\Content\Content
+     */
+    protected function loadContent($contentId, $versionId = null, $languageCode = null)
     {
         $languageCode = empty($languageCode) ? $languageCode : array($languageCode);
 
         return $this->contentService->loadContent($contentId, $languageCode, $versionId);
     }
 
-    public function loadField($contentId, $fieldId, $versionId, $languageCode = null)
+    /**
+     * Loads the field.
+     *
+     * @param mixed $contentId
+     * @param mixed $fieldId
+     * @param mixed|null $versionId
+     * @param string|null $languageCode
+     *
+     * @return \eZ\Publish\API\Repository\Values\Content\Field
+     */
+    protected function loadField($contentId, $fieldId, $versionId = null, $languageCode = null)
     {
         $content = $this->loadContent($contentId, $versionId, $languageCode);
         $contentFields = $content->getFieldsByLanguage($languageCode);
@@ -60,19 +82,20 @@ class Helper
             }
         }
 
-        // @todo: fix exception
-        throw new \InvalidArgumentException("Field not found");
+        throw new NotFoundException('field', $fieldId);
     }
 
     /**
-     * Loads the field value from the database
+     * Loads the field value.
      *
+     * @param mixed $contentId
      * @param mixed $fieldId
-     * @param mixed $versionId
+     * @param mixed|null $versionId
+     * @param string|null $languageCode
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia
      */
-    public function loadValue($contentId, $fieldId, $versionId, $languageCode = null)
+    public function loadValue($contentId, $fieldId, $versionId = null, $languageCode = null)
     {
         $field = $this->loadField($contentId, $fieldId, $versionId, $languageCode);
 
@@ -80,14 +103,16 @@ class Helper
     }
 
     /**
-     * Loads available formats for the field
+     * Loads available variation formats for the field.
      *
+     * @param mixed $contentId
      * @param mixed $fieldId
-     * @param mixed $versionId
+     * @param mixed|null $versionId
+     * @param string|null $languageCode
      *
      * @return array
      */
-    public function loadAvailableFormats($contentId, $fieldId, $versionId, $languageCode = null)
+    public function loadAvailableFormats($contentId, $fieldId, $versionId = null, $languageCode = null)
     {
         $field = $this->loadField($contentId, $fieldId, $versionId, $languageCode);
 
@@ -100,11 +125,13 @@ class Helper
     }
 
     /**
-     * Updates the field in the database with the provided value
+     * Updates the field value.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param mixed $contentId
      * @param mixed $fieldId
      * @param mixed $contentVersionId
+     * @param string|null $languageCode
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
@@ -121,7 +148,7 @@ class Helper
     }
 
     /**
-     * Uploads the local file to the remote provider and returns new Value
+     * Uploads the local file to the remote provider and returns new Value.
      *
      * @param string $fileUri
      * @param string $fileName
@@ -153,6 +180,14 @@ class Helper
         return $this->provider->getValueFromResponse($response);
     }
 
+    /**
+     * Fetches remote resource and creates new Value with it.
+     *
+     * @param string $resourceId
+     * @param string $resourceType
+     *
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
+     */
     public function getValueFromRemoteResource($resourceId, $resourceType)
     {
         $response = $this->provider->getRemoteResource($resourceId, $resourceType);
@@ -160,17 +195,27 @@ class Helper
         return $this->provider->getValueFromResponse($response);
     }
 
+    /**
+     * Returns the Variation for the value.
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param string $variantName
+     * @param array $availableFormats
+     *
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
+     */
     public function getVariationFromValue($value, $variantName, $availableFormats)
     {
-        return $this->provider->getVariation($value, $availableFormats, $variantName);
+        return $this->provider->getVariation($value, $variantName, $availableFormats);
     }
 
     /**
-     * Adds the tag to the value
+     * Adds the tag to the field value.
      *
-     * @param $fieldId
-     * @param $versionId
-     * @param $tag
+     * @param mixed $contentId
+     * @param mixed $fieldId
+     * @param mixed $versionId
+     * @param string $tag
      *
      * @return array list of tags for the value
      */
@@ -193,11 +238,12 @@ class Helper
     }
 
     /**
-     * Removes the tag from the value
+     * Removes the tag from the field value.
      *
-     * @param $fieldId
-     * @param $versionId
-     * @param $tag
+     * @param mixed $contentId
+     * @param mixed $fieldId
+     * @param mixed $versionId
+     * @param string $tag
      *
      * @return array list of tags for the value
      */
@@ -221,7 +267,7 @@ class Helper
     }
 
     /**
-     * Cleans up the file name for uploading
+     * Cleans up the file name for uploading.
      *
      * @param string $fileName
      *
