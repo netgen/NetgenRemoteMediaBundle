@@ -229,13 +229,14 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
 
     /**
      * Counts available resources from the remote storage.
-     * @todo: see if this implementation can be improved.
      *
      * @return int
      */
     public function countResources()
     {
-        return count($this->listResources());
+        $usage = $this->cloudinaryApi->usage();
+
+        return $usage['resources'];
     }
 
     /**
