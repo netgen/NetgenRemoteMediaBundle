@@ -12,7 +12,15 @@ class Value extends BaseValue
     public $size = null;
 
     public $variations = array();
-    public $metaData = array();
+    public $metaData = array(
+        'format' => '',
+        'alt_text' => '',
+        'caption' => '',
+        'format' => '',
+        'width' => '',
+        'height' => '',
+        'tags' => array(),
+    );
 
     /**
      * Returns a string representation of the field value.
