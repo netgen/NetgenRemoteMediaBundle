@@ -1,6 +1,6 @@
 window.RemoteMediaShared || (window.RemoteMediaShared = {});
 
-window.RemoteMediaShared.tagger = function(Tag){
+window.RemoteMediaShared.tagger = function(){
     return {
 
         bindKeysScoped: true,
@@ -80,7 +80,7 @@ window.RemoteMediaShared.tagger = function(Tag){
         // Render tags
         renderTags: function() {
             var html = this.collection.map(function(tag) {
-                return Tag(tag.toJSON());
+                return JST.tag(tag.toJSON());
             });
             this.$list.html(html);
         }

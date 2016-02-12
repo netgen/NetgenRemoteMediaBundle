@@ -19,13 +19,13 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         this.ending = options.ending;
         this.wrapper = options.wrapper;
 
-        if ('container' in options) {
-            this.container = options.container;
-        } else {
-            this.container = new RemoteMedia.views.Modal().render();
-            this.container.$el.prependTo('body');
-        }
-        this.container.bind('close', this.close);
+        // if ('container' in options) {
+        //     this.container = options.container;
+        // } else {
+        //     // this.container = new RemoteMedia.views.Modal().render();
+        //     // this.container.$el.prependTo('body');
+        // }
+        // // this.container.bind('close', this.close);
         return this;
     },
 
@@ -46,9 +46,9 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     },
 
     render: function() {
-        this.container.render();
+        // this.container.render();
         this.enableUpload();
-        this.delegateEvents();
+        // this.delegateEvents();
         return this;
     },
 
@@ -64,8 +64,20 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         return this;
     },
 
-    changeMedia: function(data) {
-        this.destination.val(data.id);
+    changeMedia: function(model) {
+        this.destination.val(model.id);
+
+        var url = ["/standard/ngremotemedia/change", RemoteMediaShared.config().currentObjectId, this.model.id, this.model.get('version')].join('/');
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                resource_id: model.id,
+                user_id: RemoteMediaShared.config().user_id
+            }  
+        }).done(this.refresh.bind(this));
+
         // this.host.val(data.host);
         // this.type.val(data.type);
         // this.ending.val(data.ending);
@@ -75,37 +87,42 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     },
 
 
-    refresh: function(){
-      var selector = '[data-id="'+this.model.id+'"]';
-      var $wrapper = this.wrapper;
-
-      $.get(location.href).done(function(resp){
-        $wrapper.html($(resp).find(selector).closest('.remotemedia-type').html());
-      });
-
-      return this;
+    refresh: function(data){
+        var html = $(jQuery.parseHTML(data.content.trim())).html();
+        this.$el.html(html);
+        _.delay(this.enableUpload.bind(this), 100);
     },
+
 
     enableUpload: function() {
         this.upload = new RemoteMedia.views.Upload({
             model: this.model,
-            uploaded: this.changeMedia,
-            el: this.$el.parent(),
-            prefix: this.$el.data('prefix'),
-            version: this.$el.data('version')
+            uploaded: function(data){
+                this.refresh(data.html);
+            }.bind(this),
+            el: this.$el,
+            // prefix: this.$el.data('prefix'),
+            version: this.model.get('version')
         });
         this.upload.render();
         return this;
     },
 
     search: function() {
+        var modal = new RemoteMedia.views.Modal().insert().render();
+
         this.view = new RemoteMedia.views.Browser({
+            model: this.model,
             collection: this.model.medias,
-            onSelect: this.changeMedia,
-            el: this.container.show().contentEl
+            onSelect: function(model){
+                modal.close();
+                this.changeMedia(model);
+            }.bind(this),
+            el: modal.show().contentEl
         }).render();
 
-        this.model.medias.search('');
+        this.model.medias.search(''); //Fetch
+
     },
 
     // Open a scaling gui
@@ -113,6 +130,8 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         if (!(this.destination && this.destination.val())) {
             return false;
         }
+
+        var modal = new RemoteMedia.views.Modal().insert().render();
 
         var node = $(e.currentTarget);
 
@@ -126,7 +145,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
             host: this.host.val(),
             type: this.type.val(),
             model: this.model,
-            el: this.container.show().contentEl
+            el: modal.show().contentEl
         };
         this.view = new RemoteMedia.views.Scaler(settings);
         this.model.scale(settings.mediaId);

@@ -15,9 +15,8 @@
 
     <input type="button" class="remotemedia-remote-file button" value="{'Choose from RemoteMedia'|i18n( 'content/edit' )}">
 
-    <div class="remotemedia-local-file-container" id="remotemedia-local-file-container-{$fieldId}">
-        <input type="button" class="remotemedia-local-file button" id="remotemedia-local-file-{$fieldId}"
-            value="{'Choose from computer'|i18n( 'content/edit' )}">
+    <div class="remotemedia-local-file-container">
+        <input type="button" class="remotemedia-local-file button upload-from-disk" value="{'Choose from computer'|i18n( 'content/edit' )}">
     </div>
 
     <div class="upload-progress hid" id="remotemedia-progress-{$fieldId}">

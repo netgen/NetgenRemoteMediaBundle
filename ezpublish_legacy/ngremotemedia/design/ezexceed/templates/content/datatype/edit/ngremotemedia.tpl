@@ -4,8 +4,11 @@
 
 {run-once}
   {ezscript( array(
+      'remotemedia/shared/templates.js',
       'remotemedia/shared/models.js',
-      'remotemedia/shared/tagger.js'
+      'remotemedia/shared/tagger.js',
+      'remotemedia/shared/browser.js',
+      'remotemedia/shared/upload.js'
   ))}
 {/run-once}
 

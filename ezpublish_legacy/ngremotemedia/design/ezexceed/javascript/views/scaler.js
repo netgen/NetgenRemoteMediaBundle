@@ -1,5 +1,5 @@
-define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/templates/scaler', 'remotemedia/templates/scalerattributes', 'jcrop'],
-    function(View, ScaledVersion, $, Scaler, Scalerattributes) {
+define(['remotemedia/view', './scaled_version', 'jquery-safe', 'jcrop'],
+    function(View, ScaledVersion, $) {
         return View.extend({
             // size of cropping media
             SIZE: {
@@ -67,7 +67,7 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
 
                 this.updateScalerSize(media);
 
-                var content = Scaler({
+                var content = JST.scaler({
                     media: media.thumb(this.SIZE.w, this.SIZE.h, 'jpg')
                 });
                 this.$el.append(content);
@@ -111,7 +111,7 @@ define(['remotemedia/view', './scaled_version', 'jquery-safe', 'remotemedia/temp
                     }
 
                     this.$('.customattributes').html(
-                        Scalerattributes({
+                        JST.scalerattributes({
                             classes: classes,
                             viewmodes: viewsObj,
                             alttext: alttext

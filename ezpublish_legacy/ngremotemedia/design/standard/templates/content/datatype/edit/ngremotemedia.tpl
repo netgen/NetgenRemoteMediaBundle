@@ -28,7 +28,7 @@
         'libs/backbone.js'
     ))}
     {ezscript( array(
-        'libs/handlebars.js',
+        'libs/handlebars.runtime.js',
         'libs/plupload/moxie.js',
         'libs/plupload/plupload.js',
         'libs/jquery.jcrop.min.js',
@@ -39,6 +39,7 @@
         'remotemedia/shared/models.js',
         'remotemedia/shared/tagger.js',
         'remotemedia/shared/browser.js',
+        'remotemedia/shared/upload.js',
 
         'remotemedia/models.js',
 

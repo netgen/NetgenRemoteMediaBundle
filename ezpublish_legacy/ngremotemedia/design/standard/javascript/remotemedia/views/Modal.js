@@ -21,10 +21,16 @@ RemoteMedia.views.Modal = Backbone.View.extend({
     render: function() {
         this.$el.html(this.template).hide();
         this.contentEl = this.$('.content');
+        this.contentEl.prepend('<a href="#" class="close">X</a>');
 
         this.delegateEvents();
 
         return this;
+    },
+
+    insert: function(){
+      $(document.body).prepend(this.$el);
+      return this;
     },
 
     show: function() {
@@ -32,7 +38,7 @@ RemoteMedia.views.Modal = Backbone.View.extend({
         return this;
     },
 
-    close: function(e) {
+    close: function() {
         this.trigger('close');
         this.$el.hide();
         this.view && this.view.remove();

@@ -6,7 +6,7 @@ $(function() {
         if (container.length) {
             
             var bootstrapData = wrapper.data('bootstrap-media');
-            // if (bootstrapData) media.set(bootstrapData);
+            
 
             var model = new RemoteMedia.models.Attribute({
                 id : container.data('id'),
@@ -26,8 +26,7 @@ $(function() {
             // media.attr = model;
 
             var controller = new RemoteMedia.views.RemoteMedia({
-                el : container,
-                wrapper : wrapper,
+                el : wrapper,
                 model : model,
                 destination : container.find('.media-id'),
                 host : container.find('.media-host'),

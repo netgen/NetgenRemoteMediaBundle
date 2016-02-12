@@ -1,14 +1,21 @@
 /*global eZOeGlobalSettings, RemoteMediaShared*/
 window.RemoteMediaShared || (window.RemoteMediaShared = {});
 
-window.RemoteMediaShared.config = function(){
+window.RemoteMediaShared.config = function() {
+
     var is_admin = typeof eZOeGlobalSettings !== 'undefined';
+    this.user_id || ( this.user_id = $('[data-user-id]').data('user-id') );
+
     return {
+        is_admin: is_admin,
+        user_id: this.user_id,
+        plupload_swf: is_admin ? '/extension/remotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url,
         currentObjectId: is_admin ? eZOeGlobalSettings.ez_contentobject_id : eZExceed.config.currentObjectId
     };
 };
 
-window.RemoteMediaShared.Models = function(){
+
+window.RemoteMediaShared.Models = function() {
 
     // var url = function() {
     //     // var args = ['remotemedia', 'media', this.id, this.get('version')];
@@ -34,9 +41,10 @@ window.RemoteMediaShared.Models = function(){
             this.medias = new MediaCollection();
         },
 
-        toScaleIndexed: function(){
-            return _.reduce(this.get('toScale') || [], function(h,v){
-                h[v.name.toLowerCase()] = v; return h;
+        toScaleIndexed: function() {
+            return _.reduce(this.get('toScale') || [], function(h, v) {
+                h[v.name.toLowerCase()] = v;
+                return h;
             }, {});
         },
 
@@ -64,9 +72,9 @@ window.RemoteMediaShared.Models = function(){
         },
 
 
-        combined_versions: function(){
+        combined_versions: function() {
             var indexed = this.toScaleIndexed();
-            return _.map(this.get('available_versions'), function(v){
+            return _.map(this.get('available_versions'), function(v) {
                 v = $.extend({}, v);
                 var exact_version = indexed[v.name.toLowerCase()];
                 exact_version && (v.coords = exact_version.coords);
@@ -121,7 +129,9 @@ window.RemoteMediaShared.Models = function(){
 
             var url = ["/ezexceed/ngremotemedia/save", RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/'); // /90430/5
 
-            return Backbone.sync('create', { url: url }, {
+            return Backbone.sync('create', {
+                url: url
+            }, {
                 data: data,
                 transform: false
             });
@@ -145,7 +155,6 @@ window.RemoteMediaShared.Models = function(){
             data.file = _.extend({}, data.metaData); //Create alias for metaData            
             delete(data.metaData); //TODO: rename on server
             data.file.type = data.file.resource_type;
-            console.log("MEDIA -----------------------", data);
             data.tags = new Backbone.Collection(_.map(data.file.tags, function(tag) {
                 return {
                     id: tag,
@@ -158,13 +167,13 @@ window.RemoteMediaShared.Models = function(){
         url: false,
 
 
-        tags_url: function(){
-            var attr = this.get('attr');            
-            return ['/ezexceed/ngremotemedia/tags', RemoteMediaShared.config().currentObjectId, attr.id, attr.get('version') ].join('/');
+        tags_url: function() {
+            var attr = this.get('attr');
+            return ['/ezexceed/ngremotemedia/tags', RemoteMediaShared.config().currentObjectId, attr.id, attr.get('version')].join('/');
         },
 
 
-        add_tag: function(tag_name){
+        add_tag: function(tag_name) {
             return Backbone.sync('create', this, {
                 transform: false,
                 url: this.tags_url(),
@@ -176,9 +185,9 @@ window.RemoteMediaShared.Models = function(){
         },
 
 
-        remove_tag: function (tag_name) {
-           console.log('remove_tag');
-          return Backbone.sync('delete', this, {
+        remove_tag: function(tag_name) {
+            console.log('remove_tag');
+            return Backbone.sync('delete', this, {
                 transform: false,
                 method: 'DELETE',
                 url: this.tags_url(),
@@ -230,6 +239,8 @@ window.RemoteMediaShared.Models = function(){
                 data.q = q;
             }
             data.limit = this.limit;
+            data.user_id = RemoteMediaShared.config().user_id;
+            
             if (this.xhr && typeof this.xhr.abort === 'function') {
                 this.xhr.abort();
             }
@@ -279,7 +290,7 @@ window.RemoteMediaShared.Models = function(){
         }
     });
 
-    
+
     return {
         Media: Media,
         Attribute: Attribute,

@@ -10,8 +10,14 @@
         "require": true,
         "jQuery": true,
         "$": true,
+        "JST": true,
+        "RemoteMediaShared": true,
+        "RemoteMediaTranslations": true,
         "define": true,
         "eZExceed": true,
+        "Backbone": true,
+        "RemoteMedia": true,
+        "Handlebars": true,
         "_": true
     }
 }
