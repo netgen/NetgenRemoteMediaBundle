@@ -149,6 +149,7 @@ class Helper
 
     /**
      * Uploads the local file to the remote provider and returns new Value.
+     * This method DOES NOT save the new Value!
      *
      * @param string $fileUri
      * @param string $fileName
@@ -160,21 +161,15 @@ class Helper
     public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
     {
         if (!empty($fieldId) && !empty($contentVersionId)) {
-            $folder = $fieldId . '/' . $contentVersionId;
+            $folder = $fieldId.'/'.$contentVersionId;
+        } else {
+            $folder = '';
         }
 
         $fileName = $this->filenameCleanUp($fileName);
+        $id = $fileName.'/'.$folder;
 
-        $options = array(
-            'public_id' => $fileName.'/'.$folder,
-            'overwrite' => true,
-            'context' => array(
-                'alt' => '',
-                'caption' => '',
-            ),
-            'resource_type' => 'auto'
-        );
-
+        $options = $this->provider->prepareUploadOptions($id);
         $response = $this->provider->upload($fileUri, $options);
 
         return $this->provider->getValueFromResponse($response);
@@ -279,5 +274,29 @@ class Helper
         $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
 
         return rtrim($cleanFileName, '_');
+    }
+
+    /**
+     * Performs the search for the available remote resources.
+     *
+     * @param $query
+     * @param $offset
+     * @param $limit
+     * @param $hardLimit
+     *
+     * @return array
+     */
+    public function searchResources($query, $offset, $limit, $hardLimit)
+    {
+        if (empty($query)) {
+            $list = $this->provider->listResources($hardLimit);
+        } else {
+            $list = $this->provider->searchResources($query, $hardLimit);
+        }
+
+        return array(
+            'hits' => $this->provider->formatBrowseList(array_slice($list, $offset, $limit)),
+            'count' => count($list),
+        );
     }
 }

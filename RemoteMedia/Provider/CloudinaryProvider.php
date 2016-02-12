@@ -52,6 +52,29 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
     /**
+     *
+     *
+     * @param string $id
+     * @param string|null $resourceType
+     * @param string $altText
+     * @param string $caption
+     *
+     * @return array
+     */
+    public function prepareUploadOptions($id, $resourceType = null, $altText = '', $caption = '')
+    {
+        return array(
+            'public_id' => $id,
+            'overwrite' => true,
+            'context' => array(
+                'alt' => $altText,
+                'caption' => $caption,
+            ),
+            'resource_type' => $resourceType ?: 'auto'
+        );
+    }
+
+    /**
      * Uploads the local resource to remote storage.
      *
      * @param string $fileUri
@@ -189,7 +212,13 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      */
     public function listResources($limit = 10)
     {
-        $resources = $this->cloudinaryApi->resources(array('tags' => true, 'max_results' => $limit))->getArrayCopy();
+        $resources = $this->cloudinaryApi->resources(
+            array(
+                'tags' => true,
+                'context' => true,
+                'max_results' => $limit,
+            )
+        )->getArrayCopy();
 
         if (!empty($resources['resources'])) {
             return $resources['resources'];
@@ -200,6 +229,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
 
     /**
      * Counts available resources from the remote storage.
+     * @todo: see if this implementation can be improved.
      *
      * @return int
      */
@@ -217,12 +247,11 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function searchResources($query, $resourceType, $limit = 10)
+    public function searchResources($query, $limit = 10)
     {
         $result = $this->cloudinaryApi->resources(
             array(
                 'prefix' => $query,
-                'resource_type' => $resourceType,
                 'type' => 'upload',
                 'tags' => true,
                 'max_results' => $limit
@@ -260,7 +289,14 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return array();
     }
 
-
+    /**
+     * Returns the remote resource with provided id and type.
+     *
+     * @param mixed $resourceId
+     * @param string $resourceType
+     *
+     * @return array
+     */
     public function getRemoteResource($resourceId, $resourceType)
     {
         $response = $this->cloudinaryApi->resources_by_ids(
@@ -277,7 +313,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
     /**
-     * Adds tag to remote resource
+     * Adds tag to remote resource.
      *
      * @param string $resourceId
      * @param string $tag
@@ -290,7 +326,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
     /**
-     * Removes tag from remote resource
+     * Removes tag from remote resource.
      *
      * @param string $resourceId
      * @param string $tag
@@ -303,12 +339,18 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
     /**
-     * Updates the resource context
-     * (eg. alt text and caption)
+     * Updates the resource context.
+     * eg. alt text and caption:
+     * context = array(
+     *      'caption' => 'new caption'
+     *      'alt' => 'alt text'
+     * );
      *
-     * @param string $resourceId
+     * @param mixed $resourceId
      * @param string $resourceType
      * @param array $context
+     *
+     * @return mixed
      */
     public function updateResourceContext($resourceId, $resourceType, $context)
     {
@@ -322,15 +364,17 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
     /**
-     * Returns thumbnail url for the video with provided id
+     * Returns thumbnail url for the video with provided id.
      *
-     * @param $resourceId
-     * @param string $offset
+     * @param mixed $resourceId
+     * @param mixed|null $offset
      *
      * @return string
      */
-    public function getVideoThumbnail($resourceId, $offset = 'auto')
+    public function getVideoThumbnail($resourceId, $offset = null)
     {
+        $offset = $offset ?: 'auto';
+
         $options = array();
         $options['crop'] = 'fit';
         $options['width'] = 160;
@@ -342,9 +386,9 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
     /**
-     * Generates html5 video tag for the video with provided id
+     * Generates html5 video tag for the video with provided id.
      *
-     * @param $resourceId
+     * @param mixed $resourceId
      * @param string $format
      * @param array $namedFormats
      *
@@ -377,5 +421,44 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         }
 
         return cl_video_tag($resourceId, $options);
+    }
+
+    /**
+     * Formats browse list to comply with eZExceed.
+     *
+     * @param array $list
+     *
+     * @return array
+     */
+    public function formatBrowseList(array $list)
+    {
+        $listFormatted = array();
+        foreach ($list as $hit) {
+            $fileName = explode('/', $hit['public_id']);
+            $fileName = $fileName[0];
+
+            $options = array();
+            $options['crop'] = 'fit';
+            $options['width'] = 160;
+            $options['height'] = 120;
+
+            $listFormatted[] = array(
+                'id' => $hit['public_id'],
+                'tags' => $hit['tags'],
+                'type' => $hit['resource_type'],
+                'filesize' => $hit['bytes'],
+                'width' => $hit['width'],
+                'height' => $hit['height'],
+                'filename' => $fileName,
+                'shared' => array(),
+                'scalesTo' => array('quality' => 100, 'ending' => $hit['format']),
+                'host' => 'cloudinary',
+                'thumb' => array(
+                    'url' => $this->getFormattedUrl($hit['public_id'], $options),
+                ),
+            );
+        }
+
+        return $listFormatted;
     }
 }

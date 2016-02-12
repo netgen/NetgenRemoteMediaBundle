@@ -58,7 +58,7 @@ class UIController extends Controller
             return new JsonResponse(
                 array(
                     'ok' => false,
-                    'error' => 'Not all arguments where set (file, attribute Id, content version)',
+                    'error_text' => 'Not all arguments where set (file, attribute Id, content version)',
                 ),
                 400
             );
@@ -140,14 +140,13 @@ class UIController extends Controller
     {
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId);
 
         $content = $this->templating->render(
             'NetgenRemoteMediaBundle:ezexceed/edit:ngremotemedia.html.twig',
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'availableFormats' => $availableFormats
+                'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId)
             )
         );
 
@@ -169,7 +168,7 @@ class UIController extends Controller
 //        } catch (NotFound $e) {
 //            return new JsonResponse(
 //                array(
-//                    'error' => $e->getMessage(),
+//                    'error_text' => $e->getMessage(),
 //                )
 //            );
 //        }
@@ -227,12 +226,17 @@ class UIController extends Controller
         $crop_h = $request->request->getInt('crop_h');
 
         if (empty($variantName) || empty($crop_w) || empty($crop_h)) {
-            throw new \InvalidArgumentException('Missing one of the arguments: variant name, crop width, crop height');
+            return new JsonResponse(
+                array(
+                    'error_text' => 'Missing one of the arguments: variant name, crop width, crop height',
+                    'content' => null,
+                ),
+                400
+            );
         }
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
-        $availableFormats = $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId);
 
         $variationCoords = array(
             $variantName => array(
@@ -243,23 +247,16 @@ class UIController extends Controller
             ),
         );
 
-        // @todo: do we need this here?
-        $initalVariations = array();
-        foreach ($availableFormats as $name => $key) {
-            $initalVariations[$name] = array(
-                'x' => 0,
-                'y' => 0,
-                'w' => 0,
-                'h' => 0,
-            );
-        }
-
-        $variations = $variationCoords + $value->variations + $initalVariations;
+        $variations = $variationCoords + $value->variations;
         $value->variations = $variations;
 
         $this->helper->updateValue($value, $contentId, $fieldId, $contentVersionId);
 
-        $variation = $this->helper->getVariationFromValue($value, $variantName, $availableFormats);
+        $variation = $this->helper->getVariationFromValue(
+            $value,
+            $variantName,
+            $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId)
+        );
 
         $responseData = array(
             'error_text' => '',
@@ -291,19 +288,24 @@ class UIController extends Controller
      */
     public function saveAttributeLegacyAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        // @todo: receive user id from legacy
-        $this->repository->setCurrentUser(
-            $this->repository->getUserService()->loadUser(14)
-        );
+        $userId = $request->get('user_id', null);
+        $this->checkPermissions($contentId, $userId);
 
         $resourceId = $request->get('resource_id', '');
+        $languageCode = $request->get('language_code', null);
 
         if (empty($resourceId)) {
-            throw new \InvalidArgumentException('Resource id must not be empty');
+            return new JsonResponse(
+                array(
+                    'error_text' => 'Resource id must not be empty',
+                    'content' => null,
+                ),
+                400
+            );
         }
 
         $updatedValue = $this->helper->getValueFromRemoteResource($resourceId, 'image');
-        $value = $this->helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId);
+        $value = $this->helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId, $languageCode);
 
         $content = $this->templating->render(
             'file:extension/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl',
@@ -323,48 +325,12 @@ class UIController extends Controller
             'toScale' => $this->getScaling($value),
         );
 
-        return new JsonResponse($responseData, 200);
-    }
-
-    /**
-     * Formats the list to comply with the ezexceed
-     *
-     * @todo: maybe this should be part of the provider implementation as it is provider specific?
-     *
-     * @param array $list
-     *
-     * @return array
-     */
-    protected function formatBrowseList(array $list)
-    {
-        $listFormatted = array();
-        foreach ($list as $hit) {
-            $fileName = explode('/', $hit['public_id']);
-            $fileName = $fileName[0];
-
-            $options = array();
-            $options['crop'] = 'fit';
-            $options['width'] = 160;
-            $options['height'] = 120;
-
-            $listFormatted[] = array(
-                'id' => $hit['public_id'],
-                'tags' => $hit['tags'],
-                'type' => $hit['resource_type'],
-                'filesize' => $hit['bytes'],
-                'width' => $hit['width'],
-                'height' => $hit['height'],
-                'filename' => $fileName,
-                'shared' => array(),
-                'scalesTo' => array('quality' => 100, 'ending' => $hit['format']),
-                'host' => 'cloudinary',
-                'thumb' => array(
-                    'url' => $this->provider->getFormattedUrl($hit['public_id'], $options),
-                ),
-            );
+        if (!empty($userId)) {
+            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
+            $this->repository->setCurrentUser($anonymousUser);
         }
 
-        return $listFormatted;
+        return new JsonResponse($responseData, 200);
     }
 
     /**
@@ -384,20 +350,13 @@ class UIController extends Controller
         $query = $request->get('q', '');
         $offset = $request->get('offset', 0);
 
-        if (empty($query)) {
-            $list = $this->provider->listResources($hardLimit);
-        } else {
-            $list = $this->provider->searchResources($query, 'image', $hardLimit);
-        }
-
-        $count = count($list);
-        $listFormatted = $this->formatBrowseList(array_slice($list, $offset, $limit));
+        $list = $this->helper->searchResources($query, $offset, $limit, $this->browseLimit);
 
         $responseData = array(
             'keymediaId' => 0,
             'results' => array(
-                'total' => $count,
-                'hits' => $listFormatted,
+                'total' => $list['count'],
+                'hits' => $list['hits'],
             ),
         );
 

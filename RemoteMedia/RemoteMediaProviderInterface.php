@@ -8,6 +8,18 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 interface RemoteMediaProviderInterface
 {
     /**
+     * Returns the array with options required for the upload.
+     *
+     * @param string $id
+     * @param string $resourceType
+     * @param string $altText
+     * @param string $caption
+     *
+     * @return array
+     */
+    public function prepareUploadOptions($id, $resourceType = null, $altText = '', $caption = '');
+
+    /**
      * Uploads the local resource to remote storage.
      *
      * @param string $fileUri
@@ -38,6 +50,8 @@ interface RemoteMediaProviderInterface
 
     /**
      * Gets the remote media Variation.
+     * If the remote media does not support variations, this method should return the Variation
+     * with the url set to original resource.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $format
@@ -72,10 +86,29 @@ interface RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function searchResources($query, $resourceType, $limit = 10);
+    public function searchResources($query, $limit = 10);
 
     /**
-     * Adds tag to remote resource
+     * Searches for the remote resource tagged with a provided tag.
+     *
+     * @param string $tag
+     *
+     * @return array
+     */
+    public function searchResourcesByTag($tag);
+
+    /**
+     * Returns the remote resource with provided id and type.
+     *
+     * @param mixed $resourceId
+     * @param string $resourceType
+     *
+     * @return array
+     */
+    public function getRemoteResource($resourceId, $resourceType);
+
+    /**
+     * Adds tag to remote resource.
      *
      * @param string $resourceId
      * @param string $tag
@@ -85,7 +118,7 @@ interface RemoteMediaProviderInterface
     public function addTagToResource($resourceId, $tag);
 
     /**
-     * Removes tag from remote resource
+     * Removes tag from remote resource.
      *
      * @param string $resourceId
      * @param string $tag
@@ -95,18 +128,49 @@ interface RemoteMediaProviderInterface
     public function removeTagFromResource($resourceId, $tag);
 
     /**
-     * Updates the resource context
+     * Updates the resource context.
      * eg. alt text and caption:
      * context = array(
      *      'caption' => 'new caption'
      *      'alt' => 'alt text'
      * );
      *
-     * @param $resourceId
-     * @param $resourceType
-     * @param $context
+     * @param mixed $resourceId
+     * @param string $resourceType
+     * @param array $context
      *
      * @return mixed
      */
     public function updateResourceContext($resourceId, $resourceType, $context);
+
+    /**
+     * Returns thumbnail url for the video with provided id.
+     *
+     * @param mixed $resourceId
+     * @param mixed|null $offset
+     *
+     * @return string
+     */
+    public function getVideoThumbnail($resourceId, $offset = null);
+
+    /**
+     * Generates html5 video tag for the video with provided id.
+     *
+     * @param mixed $resourceId
+     * @param string $format
+     * @param array $namedFormats
+     *
+     * @return string
+     */
+    public function generateVideoTag($resourceId, $format = '', $namedFormats = array());
+
+    /**
+     * Formats browse list to comply with eZExceed.
+     * If eZExceed is not used, this method can be left blank.
+     *
+     * @param array $list
+     *
+     * @return array
+     */
+    public function formatBrowseList(array $list);
 }
