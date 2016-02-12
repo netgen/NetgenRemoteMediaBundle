@@ -173,4 +173,6 @@ interface RemoteMediaProviderInterface
      * @return array
      */
     public function formatBrowseList(array $list);
+
+    public function deleteResource($resourceId);
 }

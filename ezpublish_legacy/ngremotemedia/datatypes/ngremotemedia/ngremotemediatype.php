@@ -110,7 +110,7 @@ class NgRemoteMediaType extends eZDataType
         $value = $contentObjectAttribute->Content();
 
         $updatedValue = new Value();
-        if ($data['mediaRemove'] !== 1) {
+        if ($data['mediaRemove'] !== 1 && $data['id'] !== 'removed') {
             if (!empty($data['id']) && $data['id'] !== $value->resourceId) {
                 // let's presume we're looking for an image for now
                 // ezexceed - when selecting image from browse
@@ -133,8 +133,48 @@ class NgRemoteMediaType extends eZDataType
         }
 
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
+        $this->saveExternalData($contentObjectAttribute, $updatedValue, $provider);
 
         return true;
+    }
+
+    protected function saveExternalData($contentObjectAttribute, $value, $provider)
+    {
+        $db = eZDB::instance();
+        $result = $db->arrayQuery(
+            "SELECT COUNT(*) as count FROM ngremotemedia_field_link WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
+                " AND version = " . (int)$contentObjectAttribute->attribute('version') .
+                " AND provider = 'cloudinary'"
+        );
+        $count = $result[0]['count'];
+
+        $id = $value->resourceId;
+        if (empty($id)) {
+            $db->query(
+                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
+                " AND version = " . (int)$contentObjectAttribute->attribute('version') . " AND provider = 'cloudinary'"
+            );
+
+            return;
+        }
+
+        if ($count > 0) {
+            $db->query(
+                "UPDATE ngremotemedia_field_link SET resource_id = '" . $id .
+                "' WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
+                " AND version = " . (int)$contentObjectAttribute->attribute('version')
+            );
+        } else {
+            $db->query(
+                "INSERT INTO ngremotemedia_field_link (contentobject_id, field_id, version, resource_id, provider)" .
+                " VALUES (" . (int)$contentObjectAttribute->attribute('contentobject_id') . ", " .
+                (int)$contentObjectAttribute->attribute('id') . ", " .
+                (int)$contentObjectAttribute->attribute('version') . ", " .
+                $id . ", " .
+                "cloudinary" .
+                ")"
+            );
+        }
     }
 
     /**

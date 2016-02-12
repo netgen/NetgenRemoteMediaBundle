@@ -1,0 +1,20 @@
+Netgen\Bundle\RemoteMediaBundle\Entity\RemoteMediaFieldLink:
+    type: entity
+    table: ngremotemedia_field_link
+    id:
+        fieldId:
+            type: integer
+            column: field_id
+        versionId:
+            type: integer
+            column: version
+        resourceId:
+            type: string
+            column: resource_id
+        provider:
+            type: string
+            column: provider
+    fields:
+        contentId:
+            type: integer
+            column: contentobject_id

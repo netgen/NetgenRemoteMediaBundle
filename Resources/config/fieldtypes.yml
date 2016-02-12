@@ -11,12 +11,17 @@ services:
             - {name: ezpublish.storageEngine.legacy.converter, alias: ngremotemedia}
 
     ezpublish.fieldType.ngremotemedia.externalStorage:
-        class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\RemoteMediaStorage
+        class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage
         arguments:
             - "@ezpublish.api.service.content"
             - "@netgen_remote_media.remote_media.provider"
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: ngremotemedia}
+
+    ezpublish.fieldType.ngremotemedia.storage_gateway:
+        class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway\LegacyStorage
+        tags:
+            - {name: ezpublish.fieldType.externalStorageHandler.gateway, alias: ngremotemedia, identifier: LegacyStorage}
 
     netgen_remote_media.templating.converter.ngremotemedia:
         class: Netgen\Bundle\RemoteMediaBundle\Templating\Converter\RemoteMediaValueConverter

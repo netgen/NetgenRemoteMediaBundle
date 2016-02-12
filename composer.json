@@ -11,6 +11,7 @@
   ],
   "require": {
     "ezsystems/ezpublish-kernel": "*",
+    "doctrine/orm": "~2.4",
     "cloudinary/cloudinary_php": "~1.2.0"
   },
   "target-dir": "Netgen/Bundle/RemoteMediaBundle",

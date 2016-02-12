@@ -1,14 +1,15 @@
 <?php
 
-namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage;
+namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
+use eZ\Publish\Core\FieldType\GatewayBasedStorage;
 use eZ\Publish\SPI\FieldType\FieldStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 
-class RemoteMediaStorage implements FieldStorage
+class RemoteMediaStorage extends GatewayBasedStorage
 {
     /**
      * @var \eZ\Publish\API\Repository\ContentService
@@ -47,7 +48,20 @@ class RemoteMediaStorage implements FieldStorage
     {
         $data = $field->value->externalData;
 
-        if (is_array($data) && !empty($data)) {
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway $gateway */
+        $gateway = $this->getGateway($context);
+
+        if ($data instanceof Value)
+        {
+            $gateway->storeFieldData(
+                $field->id,
+                $data->resourceId,
+                $versionInfo->contentInfo->id,
+                'cloudinary',
+                $versionInfo->versionNo
+            );
+        }
+        else if (is_array($data) && !empty($data)) {
             $fileUri = $data['input_uri'];
             $folder = $field->id . '/' . $versionInfo->id;
             $id = pathinfo($fileUri, PATHINFO_FILENAME) . '/' . $folder;
@@ -63,6 +77,13 @@ class RemoteMediaStorage implements FieldStorage
             $value = $this->provider->getValueFromResponse($response);
 
             $field->value->data = $value;
+            $gateway->storeFieldData(
+                $field->id,
+                $value->resourceId,
+                $versionInfo->contentInfo->id,
+                'cloudinary', // @todo: get value from the provider
+                $versionInfo->versionNo
+            );
 
             return true;
         }
@@ -93,14 +114,22 @@ class RemoteMediaStorage implements FieldStorage
      */
     public function deleteFieldData(VersionInfo $versionInfo, array $fieldIds, array $context)
     {
-        /*$fields = $this->contentService->loadContentByVersionInfo($versionInfo)->getFields();
+        $fields = $this->contentService->loadContentByVersionInfo($versionInfo)->getFields();
         foreach ($fields as $field) {
             if (in_array($field->id, $fieldIds)) {
+                // 1) remove entry in the database connecting field/version and remote resource
+                /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway $gateway */
+                $gateway = $this->getGateway($context);
+                $gateway->deleteFieldData($field->value->resourceId, $versionInfo->contentInfo->id, 'cloudinary', $versionInfo->versionNo);
 
+                // 2) check whether the remote resource is no longer in the database
+                if (!$gateway->remoteResourceConnected($field->value->resourceId)) {
+                    // 3) remove from remote provider
+                    $this->provider->deleteResource($field->value->resourceId);
+                }
             }
-        }*/
+        }
 
-        // do nothing
     }
 
     /**

@@ -444,7 +444,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             $options['height'] = 120;
 
             $listFormatted[] = array(
-                'id' => $hit['public_id'],
+                'resourceId' => $hit['public_id'],
                 'tags' => $hit['tags'],
                 'type' => $hit['resource_type'],
                 'filesize' => $hit['bytes'],
@@ -461,5 +461,10 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         }
 
         return $listFormatted;
+    }
+
+    public function deleteResource($resourceId)
+    {
+        $this->cloudinaryApi->delete_resources(array($resourceId));
     }
 }
