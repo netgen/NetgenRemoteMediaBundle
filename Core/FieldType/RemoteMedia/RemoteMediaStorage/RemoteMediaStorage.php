@@ -22,7 +22,7 @@ abstract class RemoteMediaStorage implements FieldStorage
 
     /**
      * Constructor.
-     
+
      * @param \eZ\Publish\API\Repository\ContentService $contentService
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
      */
@@ -67,12 +67,14 @@ abstract class RemoteMediaStorage implements FieldStorage
      */
     public function deleteFieldData(VersionInfo $versionInfo, array $fieldIds, array $context)
     {
-        $fields = $this->contentService->loadContentByVersionInfo($versionInfo)->getFields();
+        /*$fields = $this->contentService->loadContentByVersionInfo($versionInfo)->getFields();
         foreach ($fields as $field) {
             if (in_array($field->id, $fieldIds)) {
-                // @todo (if possible): check if used elsewhere, if not, remove from remote
+
             }
-        }
+        }*/
+
+        // do nothing
     }
 
     /**
