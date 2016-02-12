@@ -64,7 +64,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $field->id,
                 $data->resourceId,
                 $versionInfo->contentInfo->id,
-                'cloudinary',
+                $this->provider->getIdentifier(),
                 $versionInfo->versionNo
             );
         }
@@ -88,7 +88,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $field->id,
                 $value->resourceId,
                 $versionInfo->contentInfo->id,
-                'cloudinary', // @todo: get value from the provider
+                $this->provider->getIdentifier(),
                 $versionInfo->versionNo
             );
 

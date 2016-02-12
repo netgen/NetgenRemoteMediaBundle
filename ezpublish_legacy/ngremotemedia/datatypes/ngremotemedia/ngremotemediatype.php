@@ -144,7 +144,7 @@ class NgRemoteMediaType extends eZDataType
         $result = $db->arrayQuery(
             "SELECT COUNT(*) as count FROM ngremotemedia_field_link WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
                 " AND version = " . (int)$contentObjectAttribute->attribute('version') .
-                " AND provider = 'cloudinary'"
+                " AND provider = '". $provider->getIdentifier() ."'"
         );
         $count = $result[0]['count'];
 
@@ -152,7 +152,7 @@ class NgRemoteMediaType extends eZDataType
         if (empty($id)) {
             $db->query(
                 "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
-                " AND version = " . (int)$contentObjectAttribute->attribute('version') . " AND provider = 'cloudinary'"
+                " AND version = " . (int)$contentObjectAttribute->attribute('version') . " AND provider = '". $provider->getIdentifier() ."'"
             );
 
             return;
@@ -170,11 +170,22 @@ class NgRemoteMediaType extends eZDataType
                 " VALUES (" . (int)$contentObjectAttribute->attribute('contentobject_id') . ", " .
                 (int)$contentObjectAttribute->attribute('id') . ", " .
                 (int)$contentObjectAttribute->attribute('version') . ", " .
-                $id . ", " .
-                "cloudinary" .
-                ")"
+                $id . ", '" .
+                $provider->getIdentifier() .
+                "')"
             );
         }
+    }
+
+    /**
+     * Deletes $objectAttribute datatype data, optionally in version $version.
+     *
+     * @param eZContentObjectAttribute $objectAttribute
+     * @param int $version
+     */
+    function deleteStoredObjectAttribute( $objectAttribute, $version = null )
+    {
+        // @todo: add delete code here (ref. storage/deletefielddata)
     }
 
     /**
@@ -187,6 +198,7 @@ class NgRemoteMediaType extends eZDataType
      */
     function storeObjectAttribute( $objectAttribute )
     {
+        // @todo: move code from protected method here
     }
 
     /**

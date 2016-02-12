@@ -467,4 +467,9 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     {
         $this->cloudinaryApi->delete_resources(array($resourceId));
     }
+
+    public function getIdentifier()
+    {
+        return 'cloudinary';
+    }
 }
