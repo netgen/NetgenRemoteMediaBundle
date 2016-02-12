@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Cloudinary\Api\NotFound;
 use Symfony\Component\Templating\EngineInterface;
+use eZ\Publish\Core\Base\Exceptions\UnauthorizedException;
 
 class UIController extends Controller
 {
@@ -29,11 +30,64 @@ class UIController extends Controller
      */
     protected $templating;
 
-    public function __construct(RemoteMediaProviderInterface $provider, Helper $helper, EngineInterface $templating)
+    /**
+     * @var \eZ\Publish\API\Repository\Repository
+     */
+    protected $repository;
+
+    /**
+     * @var mixed
+     */
+    protected $anonymousUserId;
+
+    /**
+     * @var int
+     */
+    protected $browseLimit;
+
+    /**
+     * UIController constructor.
+     *
+     * @param RemoteMediaProviderInterface $provider
+     * @param Helper $helper
+     * @param EngineInterface $templating
+     * @param Repository $repository
+     */
+    public function __construct(
+        RemoteMediaProviderInterface $provider,
+        Helper $helper,
+        EngineInterface $templating,
+        Repository $repository
+    )
+
     {
         $this->provider = $provider;
         $this->helper = $helper;
         $this->templating = $templating;
+        $this->repository = $repository;
+    }
+
+    public function setAnonymousUserId($anonymousUserId = null)
+    {
+        $this->anonymousUserId = $anonymousUserId;
+    }
+
+    public function setBrowseLimit($browseLimit = null)
+    {
+        $this->browseLimit = !empty($browseLimit) ? (int) $browseLimit : 1000;
+    }
+
+    protected function checkPermissions($contentId, $userId = null,  $function = 'edit')
+    {
+        if (!empty($userId)) {
+            $user = $this->repository->getUserService()->loadUser($userId);
+            $this->repository->setCurrentUser($user);
+        }
+
+        $contentInfo = $this->repository->getContentService()->loadContentInfo($contentId);
+        if (!$this->repository->canUser('content', $function, $contentInfo)) {
+            throw new UnauthorizedException('content', 'edit', array('contentId' => $contentId));
+        }
     }
 
     /**
@@ -45,6 +99,9 @@ class UIController extends Controller
      */
     public function uploadFileAction(Request $request, $contentId)
     {
+        $userId = $request->get('user_id', null);
+        $this->checkPermissions($contentId, $userId);
+
         $file = $request->files->get('file', '');
         $fieldId = $request->get('AttributeID', '');
         $contentVersionId = $request->get('ContentObjectVersion', '');
@@ -86,11 +143,17 @@ class UIController extends Controller
 
         $result = json_decode($value->__toString(), true);
 
+        // eZExceed specific:
         $result['id'] = $value->resourceId;
         $result['scalesTo'] = array(
             'quality' => 100,
             'ending' => $value->metaData['format'],
         );
+
+        if (!empty($userId)) {
+            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
+            $this->repository->setCurrentUser($anonymousUser);
+        }
 
         return new JsonResponse(
             array(
@@ -138,6 +201,8 @@ class UIController extends Controller
      */
     public function fetchAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
+        //$this->checkPermissions($contentId);
+
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
 
@@ -218,7 +283,8 @@ class UIController extends Controller
      */
     public function updateCoordinatesAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        // @todo: make all coords int
+        //$this->checkPermissions($contentId);
+
         $variantName = $request->request->getAlnum('name', '');
         $crop_x = $request->request->getInt('crop_x');
         $crop_y = $request->request->getInt('crop_y');
@@ -345,7 +411,8 @@ class UIController extends Controller
      */
     public function browseRemoteMediaAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        $hardLimit = 500;
+        //$this->checkPermissions($contentId); // do we need to check permissions here?
+
         $limit = 25;
         $query = $request->get('q', '');
         $offset = $request->get('offset', 0);
@@ -374,6 +441,9 @@ class UIController extends Controller
      */
     public function addTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
+        $userId = $request->get('user_id', null);
+        $this->checkPermissions($contentId, $userId);
+
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
 
@@ -389,6 +459,11 @@ class UIController extends Controller
 
         $tags = $this->helper->addTag($contentId, $fieldId, $contentVersionId, $tag);
 
+        if (!empty($userId)) {
+            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
+            $this->repository->setCurrentUser($anonymousUser);
+        }
+
         return new JsonResponse($tags, 200);
     }
 
@@ -403,6 +478,9 @@ class UIController extends Controller
      */
     public function removeTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
+        $userId = $request->get('user_id', null);
+        $this->checkPermissions($contentId, $userId);
+
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
 
@@ -417,7 +495,12 @@ class UIController extends Controller
         }
 
         $tags = $this->helper->removeTag($contentId, $fieldId, $contentVersionId, $tag);
-        return new JsonResponse($tags, 200);
 
+        if (!empty($userId)) {
+            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
+            $this->repository->setCurrentUser($anonymousUser);
+        }
+
+        return new JsonResponse($tags, 200);
     }
 }
