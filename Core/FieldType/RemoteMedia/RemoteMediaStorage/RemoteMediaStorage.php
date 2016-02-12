@@ -8,7 +8,7 @@ use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 
-abstract class RemoteMediaStorage implements FieldStorage
+class RemoteMediaStorage implements FieldStorage
 {
     /**
      * @var \eZ\Publish\API\Repository\ContentService
@@ -41,11 +41,34 @@ abstract class RemoteMediaStorage implements FieldStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
      * @param array $context
      *
-     * @throws \eZ\Publish\API\Repository\Exceptions\NotImplementedException
-     *
      * @return true Indicating internal value data has changed
      */
-    abstract public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context);
+    public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
+    {
+        $data = $field->value->externalData;
+
+        if (is_array($data) && !empty($data)) {
+            $fileUri = $data['input_uri'];
+            $folder = $field->id . '/' . $versionInfo->id;
+            $id = pathinfo($fileUri, PATHINFO_FILENAME) . '/' . $folder;
+
+            $options = $this->provider->prepareUploadOptions($id, null, $data['alt_text'], $data['caption']);
+            $response = $this->provider->upload(
+                $fileUri,
+                $options
+            );
+
+            $response['variations'] = $data['variations'];
+
+            $value = $this->provider->getValueFromResponse($response);
+
+            $field->value->data = $value;
+
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Populates $field value property based on the external data.
@@ -54,7 +77,10 @@ abstract class RemoteMediaStorage implements FieldStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
      * @param array $context
      */
-    abstract public function getFieldData(VersionInfo $versionInfo, Field $field, array $context);
+    public function getFieldData(VersionInfo $versionInfo, Field $field, array $context)
+    {
+        $field->value->externalData = array();
+    }
 
     /**
      * Deletes field data.
