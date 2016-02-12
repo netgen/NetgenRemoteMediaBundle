@@ -105,7 +105,7 @@ class UIController extends Controller
         $file = $request->files->get('file', '');
         $fieldId = $request->get('AttributeID', '');
         $contentVersionId = $request->get('ContentObjectVersion', '');
-        $legacy = (bool) $request->get('legacy', false);
+        $legacy = $request->request->getBoolean('legacy', false);
 
         $template = $legacy ?
             'file:extension/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl' :
@@ -142,13 +142,12 @@ class UIController extends Controller
             )
         );
 
-        $result = json_decode($value->__toString(), true);
+        //$result = json_decode($value->__toString(), true);
 
-        // eZExceed specific:
-        $result['id'] = $value->resourceId;
-        $result['scalesTo'] = array(
-            'quality' => 100,
-            'ending' => $value->metaData['format'],
+        $responseData = array(
+            'media' => !empty($value->resourceId) ? $value : false,
+            'content' => $content,
+            'toScale' => $this->getScaling($value),
         );
 
         if (!empty($userId)) {
@@ -156,18 +155,7 @@ class UIController extends Controller
             $this->repository->setCurrentUser($anonymousUser);
         }
 
-        return new JsonResponse(
-            array(
-                'error_text' => '',
-                'content' => array(
-                    'media' => $result,
-                    'toScale' == ''/*$handler->attribute('toscale')*/,
-                    'content' => $content,
-                    'ok' => true,
-                ),
-            ),
-            200
-        );
+        return new JsonResponse($responseData, 200);
     }
 
     protected function getScaling(Value $value)
@@ -343,7 +331,7 @@ class UIController extends Controller
     }
 
     /**
-     * Legacy admin:
+     * Legacy admin: CHANGE
      * Called when media is selected from the list of uploaded resources
      *
      * @param Request $request
@@ -378,7 +366,7 @@ class UIController extends Controller
             'file:extension/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl',
             array(
                 'value' => $value,
-                'attributeId' => $fieldId,
+                'fieldId' => $fieldId,
                 'variations' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
                 'version' => $contentVersionId,
                 'contentObjectId' => $contentId,
@@ -401,7 +389,7 @@ class UIController extends Controller
     }
 
     /**
-     * eZExceed:
+     * eZExceed/Admin:
      * Fetches the list of available images from remote provider
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
