@@ -137,7 +137,8 @@ class UIController extends Controller
                 'fieldId' => $fieldId,
                 'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
                 'version' => $contentVersionId,
-                'contentObjectId' => $contentId
+                'contentObjectId' => $contentId,
+                'ajax' => true // tells legacy templates not to load js
             )
         );
 
@@ -381,7 +382,7 @@ class UIController extends Controller
                 'variations' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
                 'version' => $contentVersionId,
                 'contentObjectId' => $contentId,
-                'ajax' => true
+                'ajax' => true // tells legacy template not to load js
             )
         );
 
