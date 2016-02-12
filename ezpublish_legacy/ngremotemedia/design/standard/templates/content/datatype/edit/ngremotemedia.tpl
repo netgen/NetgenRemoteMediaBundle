@@ -69,7 +69,7 @@
 
 {def $user=fetch( 'user', 'current_user' )}
 
-<div class="remotemedia-type" data-bootstrap-media='{$value|json}' data-user-id="{$user.contentobject_id}">
+<div class="remotemedia-type" data-bootstrap-media={$value|json} data-user-id="{$user.contentobject_id}">
     {include uri="design:parts/remotemedia/preview.tpl"}
     {include uri="design:parts/remotemedia/interactions.tpl"}
 </div>

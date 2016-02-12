@@ -165,13 +165,13 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
         },
 
         render: function() {
-            console.log("Main render !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             var content = this.model.get('content');
             var media = this.model.get('media');
             var file = media.get('file');
 
+            console.log('main render', content);
             // Update HTML
-            content && this.$('.attribute-base').html(content);
+            content && this.$('.attribute-base').html( $('<div />').html(content).find('.attribute-base').html());
 
             if (file) {
                 this.$scale = this.$("button.scale");
@@ -209,7 +209,9 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
         renderUpload: function() {
             this.upload = new UploadView({
                 model: this.model,
-                uploaded: this.changeMedia,
+                uploaded: function(resp){
+                    this.model.set(this.model.parse(resp.model_attributes));
+                }.bind(this),
                 el: this.$el,
                 version: this.version
             }).render();

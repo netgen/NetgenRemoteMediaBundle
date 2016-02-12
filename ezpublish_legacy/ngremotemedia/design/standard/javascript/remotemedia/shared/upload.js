@@ -21,10 +21,10 @@ window.RemoteMediaShared.upload = function($, plupload){
         uploaded: function(up, file, info) {
             if (!info || !info.response) { return true; }
 
-            var data;
+            var model_attributes;
 
             try {
-                data = $.parseJSON(info.response);
+                model_attributes = $.parseJSON(info.response);
             } catch (e) {
                 alert("Upload bum!");
                 if (this.uploadCallback) {
@@ -35,15 +35,13 @@ window.RemoteMediaShared.upload = function($, plupload){
                 return true;
             }
 
-            var media = data && data.content && data.content.media;
-            if (media && this.uploadCallback) {
-                this.uploadCallback({
-                    id: media.id,
-                    new_image_selected: true,
-                    media: media,
-                    html: data.content
-                });
-            }
+            
+            
+            model_attributes && this.uploadCallback && this.uploadCallback({
+                model_attributes: model_attributes,
+                new_image_selected: true
+            });
+        
 
             // this.$('.upload-progress').fadeOut();
 

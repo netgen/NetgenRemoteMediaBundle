@@ -2,30 +2,11 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     // Holds current active subview
     view: null,
     destination: null,
-    host: null,
-    type: null,
-    wrapper: null,
-
-    container: false,
 
     initialize: function(options) {
         options = (options || {});
-        _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');
-
-        // DOM node to store selected media id into
-        this.destination = options.destination;
-        this.host = options.host;
-        this.type = options.type;
-        this.ending = options.ending;
-        this.wrapper = options.wrapper;
-
-        // if ('container' in options) {
-        //     this.container = options.container;
-        // } else {
-        //     // this.container = new RemoteMedia.views.Modal().render();
-        //     // this.container.$el.prependTo('body');
-        // }
-        // // this.container.bind('close', this.close);
+        _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');       
+        this.listenTo(this.model, 'change', this.render);
         return this;
     },
 
@@ -46,59 +27,41 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     },
 
     render: function() {
-        // this.container.render();
-        this.enableUpload();
-        // this.delegateEvents();
+        this.model.get('content') && this.$el.html($(this.model.get('content')).html());
+        this.destination = this.$('.media-id');
+        this.renderTags().enableUpload();
         return this;
     },
+
+
+    renderTags: function() {
+        new RemoteMedia.views.Tagger({
+            el: this.$('.remotemedia-tags').off(),
+            model: this.model.get('media')
+        }).render();
+        return this;
+    },    
 
     remove: function(e) {
         e.preventDefault();
-        this.destination.val('');
-        this.host.val('');
-        this.type.val('');
-        this.ending.val('');
-        this.wrapper.find('.remotemedia-image').remove();
-        this.$('.remotemedia-scale').remove();
-        this.$('.remotemedia-remove-file').remove();
+        this.destination.attr('value', 'removed');
+        this.$('.remotemedia-image, .remotemedia-scale, .remotemedia-remove-file').remove();
         return this;
     },
 
-    changeMedia: function(model) {
-        this.destination.val(model.id);
-
-        var url = ["/standard/ngremotemedia/change", RemoteMediaShared.config().currentObjectId, this.model.id, this.model.get('version')].join('/');
-
-        $.ajax({
-            url: url,
-            method: 'POST',
-            data: {
-                resource_id: model.id,
-                user_id: RemoteMediaShared.config().user_id
-            }  
-        }).done(this.refresh.bind(this));
-
-        // this.host.val(data.host);
-        // this.type.val(data.type);
-        // this.ending.val(data.ending);
-        // _.delay(this.refresh.bind(this), 1000);
-        // this.refresh();
+    changeMedia: function(new_media){
+        this.model.change_media(new_media.id);
         return this;
     },
 
 
-    refresh: function(data){
-        var html = $(jQuery.parseHTML(data.content.trim())).html();
-        this.$el.html(html);
-        _.delay(this.enableUpload.bind(this), 100);
-    },
 
 
     enableUpload: function() {
         this.upload = new RemoteMedia.views.Upload({
             model: this.model,
-            uploaded: function(data){
-                this.refresh(data.html);
+            uploaded: function(resp){
+                this.model.set(this.model.parse(resp.model_attributes));
             }.bind(this),
             el: this.$el,
             // prefix: this.$el.data('prefix'),
@@ -110,7 +73,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
 
     search: function() {
         var modal = new RemoteMedia.views.Modal().insert().render();
-
+        window.tmp = this.model.medias;
         this.view = new RemoteMedia.views.Browser({
             model: this.model,
             collection: this.model.medias,

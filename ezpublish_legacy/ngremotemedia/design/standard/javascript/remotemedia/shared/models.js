@@ -98,6 +98,20 @@ window.RemoteMediaShared.Models = function() {
             this.trigger('scale', response);
         },
 
+
+        change_media: function(id){
+            var url = ["/standard/ngremotemedia/change", RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
+
+            return this.save({}, {
+                url: url,
+                method: 'POST',
+                data: {
+                    resource_id: id, 
+                    user_id: RemoteMediaShared.config().user_id
+                } 
+            });
+        },
+
         // Create a new vanity url for a version
         // name should be a string to put on the back of the object name
         // coords should be an array [x,y,x2,y2]
@@ -152,6 +166,7 @@ window.RemoteMediaShared.Models = function() {
         },
 
         parse: function(data) {
+            data.id = data.resourceId;
             data.file = _.extend({}, data.metaData); //Create alias for metaData            
             delete(data.metaData); //TODO: rename on server
             data.file.type = data.file.resource_type;
