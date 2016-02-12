@@ -15,6 +15,8 @@ services:
         arguments:
             - "@ezpublish.api.service.content"
             - "@netgen_remote_media.remote_media.provider"
+        calls:
+            - [setDeleteUnused, ["remove_unused;netgen_remote_media$"]]
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: ngremotemedia}
 
