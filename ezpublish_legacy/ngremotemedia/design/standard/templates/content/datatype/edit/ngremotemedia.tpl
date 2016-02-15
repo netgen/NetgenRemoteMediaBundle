@@ -40,12 +40,14 @@
         'remotemedia/shared/tagger.js',
         'remotemedia/shared/browser.js',
         'remotemedia/shared/upload.js',
+        'remotemedia/shared/scaled_version.js',
+        'remotemedia/shared/scaler.js',
 
         'remotemedia/models.js',
 
         'remotemedia/views/Modal.js',
         'remotemedia/views/RemoteMedia.js',
-        'remotemedia/views/Scalebox.js',
+        'remotemedia/views/scaled_version.js',
         'remotemedia/views/Scaler.js',
         'remotemedia/views/Upload.js',
         'remotemedia/views/Browser.js',

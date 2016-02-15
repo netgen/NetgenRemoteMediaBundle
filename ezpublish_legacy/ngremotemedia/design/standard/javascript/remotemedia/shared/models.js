@@ -143,9 +143,8 @@ window.RemoteMediaShared.Models = function() {
 
             var url = ["/ezexceed/ngremotemedia/save", RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/'); // /90430/5
 
-            return Backbone.sync('create', {
-                url: url
-            }, {
+            return Backbone.sync('create', this, {
+                url: url,
                 data: data,
                 transform: false
             });

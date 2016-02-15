@@ -42,5 +42,6 @@ RemoteMedia.views.Modal = Backbone.View.extend({
         this.trigger('close');
         this.$el.hide();
         this.view && this.view.remove();
+        this.remove();
     }
 });

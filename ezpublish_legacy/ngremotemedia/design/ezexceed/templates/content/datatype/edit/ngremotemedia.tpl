@@ -8,7 +8,9 @@
       'remotemedia/shared/models.js',
       'remotemedia/shared/tagger.js',
       'remotemedia/shared/browser.js',
-      'remotemedia/shared/upload.js'
+      'remotemedia/shared/upload.js',
+      'remotemedia/shared/scaled_version.js',
+      'remotemedia/shared/scaler.js'
   ))}
 {/run-once}
 

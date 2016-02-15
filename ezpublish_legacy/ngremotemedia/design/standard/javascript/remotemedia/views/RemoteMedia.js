@@ -73,7 +73,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
 
     search: function() {
         var modal = new RemoteMedia.views.Modal().insert().render();
-        window.tmp = this.model.medias;
+
         this.view = new RemoteMedia.views.Browser({
             model: this.model,
             collection: this.model.medias,
@@ -90,33 +90,38 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
 
     // Open a scaling gui
     scaler: function(e) {
-        if (!(this.destination && this.destination.val())) {
-            return false;
-        }
-
+        console.log("click scaler", this.destination && this.destination.val());
         var modal = new RemoteMedia.views.Modal().insert().render();
+        var data = $(e.currentTarget).data();
 
-        var node = $(e.currentTarget);
-
-        var available_versions = this.convert_versions(node.data('versions'));
+        var available_versions = this.convert_versions(data.versions);
         this.model.set('available_versions', available_versions, {silent: true});
 
-        var settings = {
-            mediaId: this.destination.val(),
-            //versions: this.convert_versions(node.data('versions')),
-            trueSize: node.data('truesize'),
-            host: this.host.val(),
-            type: this.type.val(),
+
+        var scaler_view = new RemoteMedia.views.Scaler({
+            trueSize: data.truesize,
             model: this.model,
             el: modal.show().contentEl
-        };
-        this.view = new RemoteMedia.views.Scaler(settings);
-        this.model.scale(settings.mediaId);
+        });
+
+
+        modal.on('close', function(){
+            scaler_view.trigger('destruct');
+            scaler_view.trigger('stack.popped');
+        });
+
+        this.model.fetch({
+            transform: false,
+            data: {
+                user_id: RemoteMediaShared.config().user_id
+            }
+        }).done(function(){
+            scaler_view.render();
+        });
+
     },
 
     close: function() {
-        if (this.view && ('close' in this.view)) {
-            this.view.close();
-        }
+        this.view && this.view.close && this.view.close();
     }
 });
