@@ -190,7 +190,8 @@ class UIController extends Controller
      */
     public function fetchAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        //$this->checkPermissions($contentId);
+        $userId = $request->get('user_id', null);
+        $this->checkPermissions($contentId, $userId);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
@@ -209,6 +210,11 @@ class UIController extends Controller
             'content' => $content,
             'toScale' => $this->getScaling($value),
         );
+
+        if (!empty($userId)) {
+            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
+            $this->repository->setCurrentUser($anonymousUser);
+        }
 
         return new JsonResponse($responseData, 200);
     }
@@ -367,7 +373,7 @@ class UIController extends Controller
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'variations' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
+                'variations' => json_encode($this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId)),
                 'version' => $contentVersionId,
                 'contentObjectId' => $contentId,
                 'ajax' => true // tells legacy template not to load js
