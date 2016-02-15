@@ -185,7 +185,15 @@ class NgRemoteMediaType extends eZDataType
      */
     function deleteStoredObjectAttribute( $objectAttribute, $version = null )
     {
-        // @todo: add delete code here (ref. storage/deletefielddata)
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
+
+        $db = eZDB::instance();
+        $result = $db->arrayQuery(
+            "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
+            " AND version = " . $version .
+            " AND provider = '". $provider->getIdentifier() ."'"
+        );
     }
 
     /**
@@ -198,7 +206,6 @@ class NgRemoteMediaType extends eZDataType
      */
     function storeObjectAttribute( $objectAttribute )
     {
-        // @todo: move code from protected method here
     }
 
     /**
