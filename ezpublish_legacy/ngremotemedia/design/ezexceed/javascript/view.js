@@ -1,6 +1,3 @@
-define(['shared/view', './libs/handlebars'], function(View)
-{
-    return View.extend({
-        templateNamespace: '_remotemediaTemplates'
-    });
+define(['shared/view'], function(View){
+    return View.extend();
 });

@@ -20,7 +20,7 @@
 {if not(is_set($ajax))}
     {run-once}
     {foreach ezcssfiles(array('jquery.jcrop.css', 'ngremotemedia.css')) as $file}
-    <link rel="stylesheet" type="text/css" href="{$file}?v2.0.0" />
+    <link rel="stylesheet" type="text/css" href="{$file}?v3.0.0" />
     {/foreach}
     {ezscript_require( array(
         'ezjsc::jquery',
@@ -31,7 +31,7 @@
         'libs/handlebars.runtime.js',
         'libs/plupload/moxie.js',
         'libs/plupload/plupload.js',
-        'libs/jquery.jcrop.min.js',
+        'libs/jquery.jcrop.js',
 
         'remotemedia/ns.js',
 

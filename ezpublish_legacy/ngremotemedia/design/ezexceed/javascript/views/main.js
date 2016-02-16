@@ -169,7 +169,6 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
             var media = this.model.get('media');
             var file = media.get('file');
 
-            console.log('main render', content);
             // Update HTML
             content && this.$('.attribute-base').html( $('<div />').html(content).find('.attribute-base').html());
 

@@ -7,10 +7,7 @@ $(function() {
             
             var bootstrapData = wrapper.data('bootstrap-media');
 
-            console.log(bootstrapData);
-            
             var media_attributes = _.extend({}, bootstrapData, {
-                // id : container.find('.media-id').val(),
                 prefix : container.data('prefix')
             });
 
@@ -25,18 +22,11 @@ $(function() {
             model.medias.id = model.id;
             model.medias.version = model.get('version');
 
-            
-
-            
-
             var controller = new RemoteMedia.views.RemoteMedia({
                 el : wrapper,
                 model : model
             }).render();
 
-
-
-            
 
             wrapper.data('objects', {
                 model : model,

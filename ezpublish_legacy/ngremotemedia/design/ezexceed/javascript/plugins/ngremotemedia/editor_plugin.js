@@ -8,7 +8,7 @@ var loadRemoteMedia =  function(textarea, ed, bookmark)
             }
         },
         paths : {
-            'jcrop' : '/extension/ngremotemedia/design/standard/javascript/libs/jquery.jcrop.min',
+            'jcrop' : '/extension/ngremotemedia/design/standard/javascript/libs/jquery.jcrop',
             'remotemedia' : '/extension/ngremotemedia/design/ezexceed/javascript'
         }
     });
