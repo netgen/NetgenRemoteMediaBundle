@@ -1,0 +1,102 @@
+@import "mixins.sass";
+
+/*********************
+  EzExceed & admin 
+**********************/
+.remotemedia-type {
+  .image-meta {float: none; overflow: hidden;}
+  
+  .title {margin-bottom: 10px;}
+  .help-block {display: block; margin: 0 0 5px;}
+  
+  .remotemedia-alttext {clear: both; margin-bottom: 10px;}
+  .remotemedia-buttons {clear: left;}
+
+  .remotemedia-local-file-container {display: inline;}
+
+  .add-tag .btn {padding: 0.3em 1em; margin-left: 5px; border-radius: 3px; background: #5d7db1; border: 1px solid #5d7db1; box-shadow: 0 2px 0 #445c89; color: #fff; font-size: 1em; @include transition(ease, all, 0.3s);
+    &:hover,
+    &:focus {background-color: rgba(0,0,0,0.1); color: black; border: 1px solid #999; outline: none;}
+  }
+  
+  .remotemedia-tags {font-size: 12px;}
+  .tags {margin: 10px 0 5px;
+    .label {position: relative; display: inline-block; margin: 0 8px 5px 0; padding: 0.166em 1.5em 0.166em 0.65em; font-size: 1em; line-height: 1em; background-color: rgb(86, 115, 165); text-decoration: none; border-radius: 4px; color: #fff;}
+    .close {position: absolute; right: 0.2em; top: 50%; @include translate(0, -50%); float: none; padding: 0 2px; background: transparent; color: #fff; border: none; box-shadow: none; font-size: 1.09375em; line-height: 1em; vertical-align: text-top;
+      &:focus {outline: none;}
+    }
+  }
+  
+  // EzExceed only
+  .eze & {
+    .thumbnail { position: relative; margin: 0 0 10px 0; background: #fff; float: left;
+      .edit-image { position: absolute; bottom: 10px; left: 10px; }
+      .close {position: absolute; top: 0; right: 0; padding: 4px 10px 8px 10px; color: #fff; opacity: 1;}
+      &:hover .close {@include transition(linear, background-color, 0.2s); background: #fff; border-bottom-left-radius: 4px; color: #000;}
+    }
+
+    .add-tag {position:relative;
+      .btn {
+        position: absolute; top: 0; right: 0; padding: 3px 10px 2px 10px; z-index: 2; font-size: 12px; color: #333; border: 1px solid #bbbbbb; background: #f5f5f5; background-repeat: repeat-x;
+        box-shadow: none; background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+        &:hover,
+        &:focus {background-color: #e6e6e6; background-position: 0 -15px; @include transition(linear, background-position, 0.1s);}
+        &[disabled] {background-color: #e6e6e6; opacity: 0.65; background-image: none;}
+      }
+      input {display: block; width: 100%; box-sizing: border-box; height: auto;}
+    }
+    .tags {
+      .label {padding: 0.2em 1.75em 0.2em 0.65em; background: #666;}
+      .close {font-size: 1.25em; opacity: 1; filter: alpha(opacity = 100);}
+    }
+  }
+
+}
+
+
+// Remote media thumbs 
+.remotemedia-thumbs {clear: both; display: table;
+  .item {float: left; width: 100%; max-width: 180px; cursor: pointer;
+    &:hover img {opacity: 1;}
+    &:nth-child(5n+6) {clear:left;}
+    img {border: 1px solid #fff; box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.4); opacity: 0.9; @include transition(ease-in-out, opacity, 0.2s);}
+  }
+  .pick {display: block; margin-top: 10px; padding: 0 10px 0 10px;}
+  .meta {max-width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-top: 5px;}
+}
+
+// Remote media crop
+.remotemedia-crop {
+  .nav-pills {display: table; clear: both; margin: 0 0 20px; list-style: none;
+    > li {float: left;
+      &.active a {color: #000; background-color: #ffbb00; @include gradient(#ffbb00, #ff8d00); border-color: transparent;}
+    }
+    a {display: block; padding: 8px 12px; margin: 0 2px; color: #ccc; border-radius: 5px; background: transparent; border: 1px solid #ccc; @include transition(all, 0.2s, ease-in-out);
+      &:hover,
+      &:focus {color: darken(#ccc, 10%); border-color: darken(#ccc, 10%);}
+    }
+  }
+}
+
+// remote media admin
+#remotemedia-modal {position: fixed; height: 100%; width: 100%; z-index: 1000;
+  .backdrop { z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: #fff; opacity: 0.6; }
+  .content { position: absolute; top: 50px; bottom: 25px; z-index: 200000; padding: 40px; border-radius: 4px; width: 920px; left: 50%; margin-left: -460px; background-color: #000; font: normal 14px/14px Helvetica, Arial, sans-serif; }
+  .close { background: #fff url(close.png) center center no-repeat; height: 20px; width: 20px; border: 0; border-radius: 20px; text-indent: -99999px; position: absolute; top: 10px; right: 10px; }
+
+  .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
+    .btn {box-shadow: none; line-height: 16px;}
+  }
+  
+  .remotemedia-thumbs {
+    .item {
+      img {border: none;}
+    }
+    .pick {color: rgba(#fff, 0.75); text-decoration: none;}
+  }
+  .load-more {display: block; width: 100%; margin-top: 40px; box-shadow: none; line-height: 16px;} 
+  .loader {
+    &.icon-16 {height: 16px; width: 16px; max-width: 16px;}
+  }
+  .well {color: #fff;}
+}

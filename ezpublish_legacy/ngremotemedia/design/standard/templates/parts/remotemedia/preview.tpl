@@ -12,7 +12,7 @@
         </div>
 
         <div class="image-meta">
-            <h3>{$value.resourceId|wash}</h3>
+            <h3 class="title">{$value.resourceId|wash}</h3>
 
             <div class="tagger">
                 <div class="remotemedia-alttext">

@@ -5,4 +5,5 @@ composer.phar
 composer.lock
 phpunit.phar
 .php_cs.cache
-
+**/.sass-cache
+npm-debug.log

@@ -1,10 +1,10 @@
 // Mixins
-@mixin transition($style: all, $time: 0.8s, $type: ease)
+@mixin transition($style, $time: 0.8s, $type: ease)
     -webkit-transition: $style $time $type
     -moz-transition: $style $time $type
     -o-transition: $style $time $type
     transition: $style $time $type
-    
+
 @mixin box-shadow ($xaxis, $yaxsis, $blur, $offset: 0, $color: #000)
     -webkit-box-shadow: $xaxis $yaxsis $blur $offset $color
     -moz-box-shadow: $xaxis $yaxsis $blur $offset $color
@@ -51,3 +51,23 @@
 @mixin animation($name, $time, $timing: ease, $run: 1, $type: normal)
     -moz-animation: $name $time $timing $run $type
     -webkit-animation: $name $time $timing $run $type
+
+// generic transform
+@mixin transform($transforms) 
+    -moz-transform: $transforms
+    -o-transform: $transforms
+    -ms-transform: $transforms
+    -webkit-transform: $transforms
+    transform: $transforms
+
+// rotate
+@mixin rotate ($deg)
+    @include transform(rotate(#{$deg}deg))
+
+// scale
+@mixin scale($scale)
+    @include transform(scale($scale))
+
+// translate
+@mixin translate ($x, $y)
+    @include transform(translate($x, $y))
