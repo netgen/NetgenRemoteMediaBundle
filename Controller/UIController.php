@@ -278,7 +278,8 @@ class UIController extends Controller
      */
     public function updateCoordinatesAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        //$this->checkPermissions($contentId);
+        $userId = $request->get('user_id', null);
+        $this->checkPermissions($contentId, $userId);
 
         $variantName = $request->request->getAlnum('name', '');
         $crop_x = $request->request->getInt('crop_x');
@@ -332,6 +333,11 @@ class UIController extends Controller
                 ),
             ),
         );
+
+        if (!empty($userId)) {
+            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
+            $this->repository->setCurrentUser($anonymousUser);
+        }
 
         return new JsonResponse($responseData, 200);
     }
