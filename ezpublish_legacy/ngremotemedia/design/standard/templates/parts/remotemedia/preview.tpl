@@ -23,7 +23,7 @@
 
                 <div class="remotemedia-tags">
                     <div class="input-append add-tag">
-                        <input type="text" class="tag" placeholder="{'Add tag'|i18n( 'content/edit' )}" data-autosave="off">
+                        <input type="text" class="tag no-autosave" placeholder="{'Add tag'|i18n( 'content/edit' )}" data-autosave="off">
                         <button class="btn tag" disabled type="button">{'Add tag'|i18n( 'content/edit' )}</button>
                     </div>
                     <div class="tags"></div>

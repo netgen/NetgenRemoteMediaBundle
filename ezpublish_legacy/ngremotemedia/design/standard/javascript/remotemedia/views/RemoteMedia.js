@@ -61,10 +61,9 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         this.upload = new RemoteMedia.views.Upload({
             model: this.model,
             uploaded: function(resp){
-                this.model.set(this.model.parse(resp.model_attributes));
+                resp && this.model.set(this.model.parse(resp.model_attributes));
             }.bind(this),
             el: this.$el,
-            // prefix: this.$el.data('prefix'),
             version: this.model.get('version')
         });
         this.upload.render();
@@ -77,9 +76,9 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         this.view = new RemoteMedia.views.Browser({
             model: this.model,
             collection: this.model.medias,
-            onSelect: function(model){
+            onSelect: function(model){ //also used just for close on upload
                 modal.close();
-                this.changeMedia(model);
+                model && this.changeMedia(model);
             }.bind(this),
             el: modal.show().contentEl
         }).render();
@@ -90,7 +89,6 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
 
     // Open a scaling gui
     scaler: function(e) {
-        console.log("click scaler", this.destination && this.destination.val());
         var modal = new RemoteMedia.views.Modal().insert().render();
         var data = $(e.currentTarget).data();
 

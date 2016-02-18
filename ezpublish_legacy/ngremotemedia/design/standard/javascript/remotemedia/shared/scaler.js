@@ -144,12 +144,9 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
             storeVersion: function(selection, scale) {
                 // Must store scale coords back onto object
                 var coords = [selection.x, selection.y, selection.x2, selection.y2];
-                
-                if(!scale.size){alert("bum4");} //TODO: inspect when we don't have scale.size
-                var size = scale.size; // || ([selection.w, selection.h]);
 
                 this.trigger('save');
-                this.model.addVanityUrl(scale.name, coords, size).success(this.versionCreated);
+                this.model.addVanityUrl(scale.name, coords, scale.size).success(this.versionCreated);
             },
 
             versionCreated: function(data) {
@@ -187,7 +184,7 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                     var selection = this.cropper.tellSelect();
 
                     if (!this.hasSelection) {
-                        alert("BUM 2");
+                        console.warn("hasSelection", this.hasSelection);
                         selection.x = 0;
                         selection.y = 0;
                         selection.x2 = this.trueSize[0];
@@ -213,13 +210,7 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                     this.current.removeClass('active');
                 }
 
-                
                 this.cropper && this.cropper.destroy();
-
-                // If method is triggered without click we
-                // should return after saving the current scale
-                if (!e){ alert("BUM3"); return;}
-
 
                 this.current = $(e.currentTarget).addClass('active');
                 var scale = this.current.data('scale');

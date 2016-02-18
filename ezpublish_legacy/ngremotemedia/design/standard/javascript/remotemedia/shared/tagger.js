@@ -9,7 +9,6 @@ window.RemoteMediaShared.tagger = function(){
             _.bindAll(this);
 
             this.collection = this.model.get('tags');
-            console.log(this.collection);
             this.listenTo(this.collection, 'add', function(model){
                 this.model.add_tag(model.get('tag')).success(this.saved);
             });
@@ -39,7 +38,6 @@ window.RemoteMediaShared.tagger = function(){
 
 
         remove: function(e) {
-            console.log('remove');
             e.preventDefault();
             this.trigger('save');
             var tag_name = $(e.currentTarget).data('tag');
@@ -72,7 +70,6 @@ window.RemoteMediaShared.tagger = function(){
             this.$list = this.$('.tags');
             this.$input = this.$('input:text');
             this.$button = this.$('button.tag');
-            console.log(this);
             this.renderTags();
             return this;
         },

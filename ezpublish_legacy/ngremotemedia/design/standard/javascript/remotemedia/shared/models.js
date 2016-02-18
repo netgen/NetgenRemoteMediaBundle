@@ -17,21 +17,6 @@ window.RemoteMediaShared.config = function() {
 
 window.RemoteMediaShared.Models = function() {
 
-    // var url = function() {
-    //     // var args = ['remotemedia', 'media', this.id, this.get('version')];
-    //     // if (arguments.length > 0) {
-    //     //     args = ['remotemedia'].concat(_.toArray(arguments));
-    //     // }
-    //     console.warn(arguments);
-    //     return ["/ezexceed/ngremotemedia/fetch", this.id, this.get('version')].join('/') // /90430/5
-    //         // return args.join('/');
-    // };
-
-
-    // var find_version = function(versions, version_name){
-    //     return _.find(versions, function(v){ v.name.toLowerCase() === version_name.toLowerCase(); });
-    // };
-
     var Attribute = Backbone.Model.extend({
         urlRoot: null,
         medias: null,
@@ -61,7 +46,6 @@ window.RemoteMediaShared.Models = function() {
 
 
         parse: function(data) {
-            console.log(data);
             if ('media' in data) {
                 data.media.attr = this;
                 data.media = new Media(data.media, {
@@ -138,8 +122,7 @@ window.RemoteMediaShared.Models = function() {
                 data.remotemediaId = media.get('remotemediaId');
             }
 
-            // var id = this.id !== "ezoe" ? this.id : this.get('attributeId');
-            // var url = this.url('saveVersion', id, this.get('version'));
+            data.user_id = RemoteMediaShared.config().user_id;
 
             var url = ["/ezexceed/ngremotemedia/save", RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/'); // /90430/5
 
@@ -167,7 +150,7 @@ window.RemoteMediaShared.Models = function() {
         parse: function(data) {
             data.id = data.resourceId;
             data.file = _.extend({}, data.metaData); //Create alias for metaData            
-            delete(data.metaData); //TODO: rename on server
+            delete(data.metaData);
             data.file.type = data.file.resource_type;
             data.tags = new Backbone.Collection(_.map(data.file.tags, function(tag) {
                 return {
@@ -192,7 +175,8 @@ window.RemoteMediaShared.Models = function() {
                 transform: false,
                 url: this.tags_url(),
                 data: {
-                    id: this.get('resourceId'), //this.get('attr').get('media').get('resourceId'),
+                    user_id: RemoteMediaShared.config().user_id,
+                    id: this.get('resourceId'), 
                     tag: tag_name
                 }
             });
@@ -200,12 +184,12 @@ window.RemoteMediaShared.Models = function() {
 
 
         remove_tag: function(tag_name) {
-            console.log('remove_tag');
             return Backbone.sync('delete', this, {
                 transform: false,
                 method: 'DELETE',
                 url: this.tags_url(),
                 data: {
+                    user_id: RemoteMediaShared.config().user_id,
                     id: this.get('resourceId'),
                     tag: tag_name
                 }
@@ -216,8 +200,6 @@ window.RemoteMediaShared.Models = function() {
         // Generate thumb url for a given size
         thumb: function(width, height, filetype) {
             filetype = (filetype || 'jpg');
-            // return this.domain() + '/' + width + 'x' + height + '/' + this.id + '.' + filetype;
-            // http://res.cloudinary.com/netgentest/image/upload/v1454075723/phpb3r2JI/5.jpg
             var url = this.get('url').split(/\/v\d+\//);
             return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
         }
@@ -284,14 +266,14 @@ window.RemoteMediaShared.Models = function() {
         page: function() {
             if (this.length < this.total) {
                 var data = {
+                    user_id: RemoteMediaShared.config().user_id,
                     limit: this.limit,
                     offset: this.length,
                     q: this.q
                 };
 
-                return Backbone.sync('read', {
-                    url: this.url()
-                }, {
+                return Backbone.sync('read', this, {
+                    url: this.url(),
                     data: data,
                     transform: false
                 }).done(this.paged);

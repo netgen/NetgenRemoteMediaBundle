@@ -111,15 +111,13 @@ window.RemoteMediaShared.browser = function(UploadView) {
                 model: this.model,
                 uploaded: this.uplodedMedia,
                 el: this.$el,
-                version: this.model.get('version'),
-                browseContainer: 'remotemedia-browser-local-file-container-' + this.model.id,
-                browseButton: 'remotemedia-browser-local-file-' + this.model.id
+                version: this.model.get('version')
             }).render();
             return this;
         },
 
         uplodedMedia: function(data) {
-            eZExceed.stack.pop({
+            data && eZExceed.stack.pop({
                 id: data.id,
                 new_image_selected: true
             });

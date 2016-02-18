@@ -4,7 +4,7 @@ RemoteMedia.views.Modal = Backbone.View.extend({
     id: 'remotemedia-modal',
 
     // Template for containing data
-    template: '<div class="backdrop"/><div class="content"/>',
+    template: '<div class="backdrop"/><div class="content"><div class="in"></div></div>',
 
     // To hold a subview
     view: null,
@@ -20,8 +20,8 @@ RemoteMedia.views.Modal = Backbone.View.extend({
 
     render: function() {
         this.$el.html(this.template).hide();
-        this.contentEl = this.$('.content');
-        this.contentEl.prepend('<a href="#" class="close">X</a>');
+        this.contentEl = this.$('.in');
+        this.contentEl.before('<a href="#" class="close">X</a>');
 
         this.delegateEvents();
 

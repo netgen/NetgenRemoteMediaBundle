@@ -223,6 +223,13 @@
     margin-left: -460px;
     background-color: #000;
     font: normal 14px/14px Helvetica, Arial, sans-serif; }
+  #remotemedia-modal .in {
+    overflow: auto;
+    position: absolute;
+    top: 50px;
+    left: 40px;
+    right: 40px;
+    bottom: 25px; }
   #remotemedia-modal .close {
     background: #fff url(close.png) center center no-repeat;
     height: 20px;
@@ -241,20 +248,24 @@
       box-shadow: none;
       line-height: 16px; }
   #remotemedia-modal .remotemedia-thumbs .item img {
-    border: none; }
+    border: none;
+    width: 100%; }
   #remotemedia-modal .remotemedia-thumbs .pick {
     color: rgba(255, 255, 255, 0.75);
     text-decoration: none; }
   #remotemedia-modal .load-more {
     display: block;
-    width: 100%;
-    margin-top: 40px;
+    margin: 40px auto 0;
+    width: 80%;
     box-shadow: none;
     line-height: 16px; }
   #remotemedia-modal .loader.icon-16 {
     height: 16px;
     width: 16px;
-    max-width: 16px; }
+    max-width: 16px;
+    vertical-align: middle; }
+  #remotemedia-modal .form-search .loader {
+    margin: 0px 10px 0px -24px; }
   #remotemedia-modal .well {
     color: #fff; }
 

@@ -19,31 +19,23 @@ window.RemoteMediaShared.upload = function($, plupload){
         },
 
         uploaded: function(up, file, info) {
-            if (!info || !info.response) { return true; }
+            if (!info || !info.response || !this.uploadCallback) { return this; }
 
             var model_attributes;
 
             try {
                 model_attributes = $.parseJSON(info.response);
             } catch (e) {
-                alert("Upload bum!");
-                if (this.uploadCallback) {
-                    this.uploadCallback({
-                        refresh: true
-                    });
-                }
-                return true;
+                alert("Error while uploading file.");
+                this.uploadCallback(false);
+                return this;
             }
 
             
-            
-            model_attributes && this.uploadCallback && this.uploadCallback({
+            this.uploadCallback({
                 model_attributes: model_attributes,
                 new_image_selected: true
             });
-        
-
-            // this.$('.upload-progress').fadeOut();
 
             return this;
         },
@@ -55,7 +47,6 @@ window.RemoteMediaShared.upload = function($, plupload){
         added: function(up /*, files*/) {
             up.start();
             this.trigger('uploading');
-            // this.$('.upload-progress').show();
         },
 
         render: function(/*response*/) {

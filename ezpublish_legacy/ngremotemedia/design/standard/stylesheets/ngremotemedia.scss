@@ -82,6 +82,7 @@
 #remotemedia-modal {position: fixed; height: 100%; width: 100%; z-index: 1000;
   .backdrop { z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: #fff; opacity: 0.6; }
   .content { position: absolute; top: 50px; bottom: 25px; z-index: 200000; padding: 40px; border-radius: 4px; width: 920px; left: 50%; margin-left: -460px; background-color: #000; font: normal 14px/14px Helvetica, Arial, sans-serif; }
+  .in{overflow: auto; position: absolute; top:50px; left:40px; right:40px; bottom:25px;}
   .close { background: #fff url(close.png) center center no-repeat; height: 20px; width: 20px; border: 0; border-radius: 20px; text-indent: -99999px; position: absolute; top: 10px; right: 10px; }
 
   .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
@@ -90,13 +91,14 @@
   
   .remotemedia-thumbs {
     .item {
-      img {border: none;}
+      img {border: none; width:100%;}
     }
     .pick {color: rgba(#fff, 0.75); text-decoration: none;}
   }
-  .load-more {display: block; width: 100%; margin-top: 40px; box-shadow: none; line-height: 16px;} 
+  .load-more {display: block; margin:40px auto 0; width:80%; box-shadow: none; line-height: 16px;} 
   .loader {
-    &.icon-16 {height: 16px; width: 16px; max-width: 16px;}
+    &.icon-16 {height: 16px; width: 16px; max-width: 16px; vertical-align:middle;}
   }
+  .form-search .loader{margin:0px 10px 0px -24px;}
   .well {color: #fff;}
 }
