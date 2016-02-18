@@ -30,6 +30,12 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         this.model.get('content') && this.$el.html($(this.model.get('content')).html());
         this.destination = this.$('.media-id');
         this.renderTags().enableUpload();
+
+        var data = this.$('.remotemedia-scale').data();
+
+        var available_versions = this.convert_versions(data.versions);
+        this.model.set({available_versions: available_versions, truesize: data.truesize}, {silent: true});
+
         return this;
     },
 
@@ -53,9 +59,6 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         this.model.change_media(new_media.id);
         return this;
     },
-
-
-
 
     enableUpload: function() {
         this.upload = new RemoteMedia.views.Upload({
@@ -88,25 +91,9 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     },
 
     // Open a scaling gui
-    scaler: function(e) {
-        var modal = new RemoteMedia.views.Modal().insert().render();
-        var data = $(e.currentTarget).data();
-
-        var available_versions = this.convert_versions(data.versions);
-        this.model.set('available_versions', available_versions, {silent: true});
-
-
-        var scaler_view = new RemoteMedia.views.Scaler({
-            trueSize: data.truesize,
-            model: this.model,
-            el: modal.show().contentEl
-        });
-
-
-        modal.on('close', function(){
-            scaler_view.trigger('destruct');
-            scaler_view.trigger('stack.popped');
-        });
+    scaler: function() {
+        var modal = new RemoteMedia.views.Modal().insert().render(),
+            scaler_view;
 
         this.model.fetch({
             transform: false,
@@ -114,8 +101,20 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
                 user_id: RemoteMediaShared.config().user_id
             }
         }).done(function(){
-            scaler_view.render();
-        });
+
+            scaler_view = new RemoteMedia.views.Scaler({
+                trueSize: this.model.get('truesize'),
+                model: this.model,
+                el: modal.show().contentEl
+            }).render();
+
+        }.bind(this));
+
+
+        modal.on('close', function(){
+            scaler_view.trigger('destruct');
+            scaler_view.trigger('stack.popped');
+        });        
 
     },
 

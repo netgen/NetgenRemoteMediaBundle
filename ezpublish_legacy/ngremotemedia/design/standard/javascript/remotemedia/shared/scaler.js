@@ -35,8 +35,6 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.versionSaved = null;
                 this.poppedFromStack = null;
 
-                this.versions = this.model.combined_versions();
-
                 // Model is an instance of Attribute
                 this.model.on('scale', this.render, this);
 
@@ -44,12 +42,13 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 // i save my current scale
                 this.on('destruct', this.saveCrop, this);
                 this.on('stack.popped', this.stackPopped, this);
+
+                this.versions = this.model.combined_versions();
             },
 
             events: {
                 'click .nav li': 'changeScale',
             },
-
 
 
             fitTo: function(w, h, maxWidth, maxHeight) {
@@ -156,20 +155,18 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 current_version && (current_version.coords = data.coords);
 
                 this.versionSaved = data;
-                if (this.singleVersion)
+                if (this.singleVersion){ //For online editor
                     this.finishScaler();
-                else {
+                }else {
                     this.model.trigger('version.create', this.versions, this.versionSaved);
                     this.trigger('saved');
                 }
             },
 
             saveCrop: function() {
-                if (!this.current)
-                    return;
-                /**
-                 * Set editor attribute values if any
-                 */
+                if (!this.current){return;}
+                
+                // Set editor attribute values if any
                 if (this.editorAttributes) {
                     var _this = this;
                     var inputEl = this.$('.customattributes :input');

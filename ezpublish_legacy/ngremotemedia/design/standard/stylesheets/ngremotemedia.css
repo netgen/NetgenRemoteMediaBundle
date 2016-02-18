@@ -264,9 +264,11 @@
     width: 16px;
     max-width: 16px;
     vertical-align: middle; }
-  #remotemedia-modal .form-search .loader {
-    margin: 0px 10px 0px -24px; }
   #remotemedia-modal .well {
     color: #fff; }
+
+.eze-modal-content .form-search .loader,
+#remotemedia-modal .form-search .loader {
+  margin: 0px 10px 0px -24px; }
 
 /*# sourceMappingURL=ngremotemedia.css.map */

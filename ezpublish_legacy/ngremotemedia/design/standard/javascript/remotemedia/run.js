@@ -18,7 +18,7 @@ $(function() {
                 media: media_attributes
             }, {parse: true});
 
-            //MediaCollection //TODO: optimize this
+
             model.medias.id = model.id;
             model.medias.version = model.get('version');
 
