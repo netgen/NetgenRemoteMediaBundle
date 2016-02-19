@@ -13,6 +13,7 @@
         "JST": true,
         "RemoteMediaShared": true,
         "RemoteMediaTranslations": true,
+        "tinymce": true,
         "define": true,
         "eZExceed": true,
         "Backbone": true,

@@ -10,7 +10,8 @@
       'remotemedia/shared/browser.js',
       'remotemedia/shared/upload.js',
       'remotemedia/shared/scaled_version.js',
-      'remotemedia/shared/scaler.js'
+      'remotemedia/shared/scaler.js',
+      'plugins/remotemedia/editor_plugin.js'
   ))}
 {/run-once}
 

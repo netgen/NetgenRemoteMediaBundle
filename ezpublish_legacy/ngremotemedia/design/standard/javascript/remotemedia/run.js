@@ -18,10 +18,6 @@ $(function() {
                 media: media_attributes
             }, {parse: true});
 
-
-            model.medias.id = model.id;
-            model.medias.version = model.get('version');
-
             var controller = new RemoteMedia.views.RemoteMedia({
                 el : wrapper,
                 model : model

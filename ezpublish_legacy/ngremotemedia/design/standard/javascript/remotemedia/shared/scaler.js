@@ -153,6 +153,7 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
 
                 var current_version = _.find(this.versions, function(v) { return v.name  === data.name; });
                 current_version && (current_version.coords = data.coords);
+                console.log('bla', this.versions, this.versionSaved);
 
                 this.versionSaved = data;
                 if (this.singleVersion){ //For online editor
@@ -263,11 +264,10 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.finishScaler();
             },
 
-            /**
-             * Checks if both stack animation is finished and version saved to server before
-             * adding to tinyMCE
-             */
+            
+            // Checks if both stack animation is finished and version saved to server before adding to tinyMCE            
             finishScaler: function() {
+                console.log('finishScaler');
                 if (this.versionSaved && this.poppedFromStack) {
                     var _this = this;
                     /**
