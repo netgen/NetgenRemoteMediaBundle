@@ -96,16 +96,34 @@ class UIController extends Controller
         $this->browseLimit = !empty($browseLimit) ? (int) $browseLimit : 1000;
     }
 
-    protected function checkPermissions($contentId, $userId = null,  $function = 'edit')
+    protected function setRepositoryUser($userId)
     {
         if (!empty($userId)) {
             $user = $this->repository->getUserService()->loadUser($userId);
             $this->repository->setCurrentUser($user);
         }
+    }
+
+    protected function checkContentPermissions($contentId, $userId = null,  $function = 'edit')
+    {
+        $this->setRepositoryUser($userId);
 
         $contentInfo = $this->repository->getContentService()->loadContentInfo($contentId);
         if (!$this->repository->canUser('content', $function, $contentInfo)) {
-            throw new UnauthorizedException('content', 'edit', array('contentId' => $contentId));
+            throw new UnauthorizedException('content', $function, array('contentId' => $contentId));
+        }
+    }
+
+    protected function checkPermissions($module, $function, $userId = null, $valueObject = null)
+    {
+        $attribute = !empty($valueObject) ?
+            new AuthorizationAttribute($module, $function, $valueObject) :
+            new AuthorizationAttribute($module, $function);
+
+        $this->setRepositoryUser($userId);
+
+        if (!$this->authorizationChecker->isGranted($attribute)) {
+            throw new UnauthorizedException('ng_remote_provider', 'browse');
         }
     }
 
@@ -119,7 +137,7 @@ class UIController extends Controller
     public function uploadFileAction(Request $request, $contentId)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId, $userId);
 
         $file = $request->files->get('file', '');
         $fieldId = $request->get('AttributeID', '');
@@ -170,8 +188,7 @@ class UIController extends Controller
         );
 
         if (!empty($userId)) {
-            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
-            $this->repository->setCurrentUser($anonymousUser);
+            $this->setRepositoryUser($this->anonymousUserId);
         }
 
         return new JsonResponse($responseData, 200);
@@ -210,7 +227,7 @@ class UIController extends Controller
     public function fetchAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId, $userId);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
@@ -231,8 +248,7 @@ class UIController extends Controller
         );
 
         if (!empty($userId)) {
-            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
-            $this->repository->setCurrentUser($anonymousUser);
+            $this->setRepositoryUser($this->anonymousUserId);
         }
 
         return new JsonResponse($responseData, 200);
@@ -282,7 +298,7 @@ class UIController extends Controller
                     continue;
                 }
 
-                $toScale[] = array(
+                $availableVersions[] = array(
                     'name' => $format[0],
                     'size' => $size,
                 );
@@ -290,12 +306,10 @@ class UIController extends Controller
         }
 
         $classList = $this->configResolver->getParameter('ezoe.class_list', 'netgen_remote_media');
-        //$viewModes = $this->getConfigResolver()->getParameter('ezoe.view_modes', 'netgen_remote_media');
 
         $responseData = array(
             'media' => !empty($resource) ? $resource : false,
-            //'toScale' => $this->getScaling($value),
-            'available_versions' => $toScale,
+            'available_versions' => $availableVersions,
             'class_list' => $classList
         );
 
@@ -316,7 +330,7 @@ class UIController extends Controller
     public function updateCoordinatesAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId, $userId);
 
         $variantName = $request->request->getAlnum('name', '');
         $crop_x = $request->request->getInt('crop_x');
@@ -372,8 +386,7 @@ class UIController extends Controller
         );
 
         if (!empty($userId)) {
-            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
-            $this->repository->setCurrentUser($anonymousUser);
+            $this->setRepositoryUser($this->anonymousUserId);
         }
 
         return new JsonResponse($responseData, 200);
@@ -391,18 +404,8 @@ class UIController extends Controller
     public function generateVariationAction(Request $request)
     {
         $userId = $request->get('user_id', null);
-        $attribute = new AuthorizationAttribute('ng_remote_provider', 'generate');
-        if (!empty($userId)) {
-            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($userId));
-        }
 
-        if (!$this->authorizationChecker->isGranted($attribute)) {
-            throw new UnauthorizedException('ng_remote_provider', 'generate');
-        }
-
-        if (!empty($userId)) {
-            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($this->anonymousUserId));
-        }
+        $this->checkPermissions('ng_remote_provider', 'generate', $userId);
 
         $resourceId = $request->request->get('resourceId', '');
         $variantName = $request->request->getAlnum('name', '');
@@ -467,11 +470,10 @@ class UIController extends Controller
             ),
         );
 
-        // @todo
-//        if (!empty($userId)) {
-//            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
-//            $this->repository->setCurrentUser($anonymousUser);
-//        }
+
+        if (!empty($userId)) {
+            $this->setRepositoryUser($this->anonymousUserId);
+        }
 
         return new JsonResponse($responseData, 200);
     }
@@ -490,7 +492,7 @@ class UIController extends Controller
     public function saveAttributeLegacyAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId, $userId);
 
         $resourceId = $request->get('resource_id', '');
         $languageCode = $request->get('language_code', null);
@@ -527,8 +529,7 @@ class UIController extends Controller
         );
 
         if (!empty($userId)) {
-            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
-            $this->repository->setCurrentUser($anonymousUser);
+            $this->setRepositoryUser($this->anonymousUserId);
         }
 
         return new JsonResponse($responseData, 200);
@@ -547,18 +548,8 @@ class UIController extends Controller
     public function browseRemoteMediaAction(Request $request)
     {
         $userId = $request->get('user_id', null);
-        $attribute = new AuthorizationAttribute('ng_remote_provider', 'browse');
-        if (!empty($userId)) {
-            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($userId));
-        }
-
-        if (!$this->authorizationChecker->isGranted($attribute)) {
-            throw new UnauthorizedException('ng_remote_provider', 'browse');
-        }
-
-        if (!empty($userId)) {
-            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($this->anonymousUserId));
-        }
+        
+        $this->checkPermissions('ng_remote_provider', 'browse', $userId);
 
         $limit = 25;
         $query = $request->get('q', '');
@@ -572,6 +563,10 @@ class UIController extends Controller
                 'hits' => $list['hits'],
             ),
         );
+
+        if (!empty($userId)) {
+            $this->setRepositoryUser($this->anonymousUserId);
+        }
 
         return new JsonResponse($responseData, 200);
     }
@@ -588,7 +583,7 @@ class UIController extends Controller
     public function addTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId, $userId);
 
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
@@ -606,8 +601,7 @@ class UIController extends Controller
         $tags = $this->helper->addTag($contentId, $fieldId, $contentVersionId, $tag);
 
         if (!empty($userId)) {
-            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
-            $this->repository->setCurrentUser($anonymousUser);
+            $this->setRepositoryUser($this->anonymousUserId);
         }
 
         return new JsonResponse($tags, 200);
@@ -625,7 +619,7 @@ class UIController extends Controller
     public function removeTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId, $userId);
 
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
@@ -643,8 +637,7 @@ class UIController extends Controller
         $tags = $this->helper->removeTag($contentId, $fieldId, $contentVersionId, $tag);
 
         if (!empty($userId)) {
-            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
-            $this->repository->setCurrentUser($anonymousUser);
+            $this->setRepositoryUser($this->anonymousUserId);
         }
 
         return new JsonResponse($tags, 200);
