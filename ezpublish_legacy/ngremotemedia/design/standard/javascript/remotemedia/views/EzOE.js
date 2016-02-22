@@ -126,7 +126,7 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
                 className : 'remotemedia-scaler',
                 singleVersion : true,
                 editorAttributes : this.editorAttributes,
-                selectedVersion : (_(this.editorAttributes).has('version')) ? this.editorAttributes.version : null
+                selectedVersion : this.editorAttributes.version
             }).render();
 
         }.bind(this));
@@ -148,6 +148,8 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
         var attributes = {
             resourceId: media.id,
             version: data.name,
+            alttext: this.editorAttributes.alttext,
+            cssclass: this.editorAttributes.cssclass,
             coords: data.coords.join(','),
             image_url: media.get('generated_url')
         };

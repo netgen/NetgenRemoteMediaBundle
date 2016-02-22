@@ -73,53 +73,7 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.$el.append(content);
 
 
-                var classes = media.get('class_list');
-                var viewModes = this.model.get('viewModes'); //TODO: delete this
-
-                console.log("aaaaaaaaaaaaaaaaaaaaaaaa", classes, viewModes);
-
-                if (classes || viewModes) {
-                    var selectedClass = false;
-                    var selectedView = false;
-                    var viewsObj = false;
-                    var alttext = '';
-                    var tmpArr = [];
-
-                    if (this.editorAttributes) {
-                        alttext = (this.editorAttributes.alttext || '');
-                        selectedClass = (this.editorAttributes.cssclass || false);
-                        selectedView = (this.editorAttributes.viewmode || false);
-                    }
-
-                    if (classes) {
-                        classes = _(classes).map(function(value) {
-                            tmpArr = value.split('|');
-                            return {
-                                value: tmpArr[0],
-                                name: _(tmpArr).last(),
-                                selected: (tmpArr[0] == selectedClass)
-                            };
-                        });
-                    }
-                    if (viewModes) {
-                        viewsObj = _(viewModes).map(function(value) {
-                            tmpArr = value.split('|');
-                            return {
-                                value: tmpArr[0],
-                                name: _(tmpArr).last(),
-                                selected: (tmpArr[0] == selectedView)
-                            };
-                        });
-                    }
-
-                    this.$('.customattributes').html(
-                        JST.scalerattributes({
-                            classes: classes,
-                            viewmodes: viewsObj,
-                            alttext: alttext
-                        })
-                    );
-                }
+                this.render_editor_elements();
 
                 var versionElements = _(this.versions).map(function(version) {
                     return new ScaledVersion({
@@ -138,6 +92,35 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 }
 
                 return this;
+            },
+
+
+            render_editor_elements: function(){
+                if(!this.editorAttributes){return;}
+
+                var classes = this.model.get('media').get('class_list'),
+                    selectedClass = this.editorAttributes.cssclass || false;
+
+                if (classes) {
+
+                    classes = _(classes).map(function(value) {
+                        var s = value.split('|');
+                        return {
+                            value: s[0],
+                            name: s[1],
+                            selected: s[0] == selectedClass
+                        };
+                    });
+
+
+                }
+                console.log(this.editorAttributes);
+                this.$('.customattributes').html(
+                    JST.scalerattributes({
+                        classes: classes,
+                        alttext: this.editorAttributes.alttext
+                    })
+                );
             },
 
 
@@ -174,16 +157,9 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
 
             saveCrop: function() {
                 if (!this.current){return;}
-                
-                // Set editor attribute values if any
-                if (this.editorAttributes) {
-                    var _this = this;
-                    var inputEl = this.$('.customattributes :input');
-                    inputEl.each(function() {
-                        var el = $(this);
-                        _this.editorAttributes[el.attr('name')] = el.val();
-                    });
-                }
+
+                this.set_editor_attributes();
+
                 var scale = this.current.data('scale');
 
                 if (this.cropper && scale) {
@@ -207,6 +183,15 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 }
             },
 
+
+            set_editor_attributes: function(){
+                if (!this.editorAttributes){ return; }
+                var self = this;
+                this.$('.customattributes :input').each(function(){
+                    self.editorAttributes[this.name] = $(this).val();
+                });
+            },
+
             changeScale: function(e) {
                 e && e.preventDefault();
 
@@ -221,35 +206,16 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.current = $(e.currentTarget).addClass('active');
                 var scale = this.current.data('scale');
 
-                if (typeof scale === 'undefined'){return this;}
-                if (scale.toSmall) { return this; }
+                if (typeof scale === 'undefined' || scale.toSmall){return this;}
 
-                var w = this.SIZE.w,
-                    h = this.SIZE.h,
-                    x, y, x2, y2;
-
-                // Find initial placement of crop
-                // x,y,x2,y2
-                if (scale && scale.coords) {
-                    x = scale.coords[0];
-                    y = scale.coords[1];
-                    x2 = scale.coords[2];
-                    y2 = scale.coords[3];
-                } else {
-                    //This happens on fresh upload
-                    x = 0;
-                    y = 0;
-                    x2 = w / 2;
-                    y2 = h / 2;
-                }
-
-                var ratio = (scale.size[0] / scale.size[1]);
-                var context = this;
+                var coords = scale.coords || [0, 0, this.SIZE.w/2, this.SIZE.h/2], //Defaults are for fresh upload
+                    ratio = (scale.size[0] / scale.size[1]),
+                    context = this;
 
                 // If an API exists we dont need to build Jcrop
                 // but can just change crop
                 var cropperOptions = {
-                    setSelect: [x, y, x2, y2],
+                    setSelect: coords,
                     aspectRatio: scale.unbounded ? null : ratio,
                     minSize: scale.size,
                     // Make sure user can't remove selection if width and height has bounded dimension

@@ -13,14 +13,4 @@
     </select>
     {{/if}}
 
-    {{#if viewmodes}}
-    <label for="viewmode">{{translate "View"}}</label>
-    <select name="viewmode" id="viewmode">
-        <option value=""> - </option>
-        {{#each viewmodes}}
-        <option value="{{value}}"
-        {{#if selected}} selected{{/if}}>{{name}}</option>
-        {{/each}}
-    </select>
-    {{/if}}
 </div>

@@ -165,6 +165,7 @@ window.RemoteMediaShared.Models = function() {
             if(data.media){
                 var new_data = data.media;
                 new_data.available_versions = data.available_versions;
+                new_data.class_list = data.class_list;
                 new_data.metaData = data.media;
                 new_data.resourceId = data.media.public_id;
                 data = new_data;
