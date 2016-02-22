@@ -2,4 +2,4 @@
 
 [ModuleSettings]
 ExtensionRepositories[]=ngremotemedia
-ModuleList[]=remotemedia
+ModuleList[]=ng_remote_provider

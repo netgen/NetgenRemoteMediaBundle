@@ -4,14 +4,17 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller;
 
 use eZ\Bundle\EzPublishCoreBundle\Controller;
 use eZ\Publish\API\Repository\Repository;
+use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Cloudinary\Api\NotFound;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Templating\EngineInterface;
 use eZ\Publish\Core\Base\Exceptions\UnauthorizedException;
+use eZ\Publish\Core\MVC\Symfony\Security\Authorization\Attribute as AuthorizationAttribute;
 
 class UIController extends Controller
 {
@@ -46,18 +49,32 @@ class UIController extends Controller
     protected $browseLimit;
 
     /**
+     * @var \eZ\Publish\Core\MVC\ConfigResolverInterface
+     */
+    protected $configResolver;
+
+    /**
+     * @var \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface
+     */
+    protected $authorizationChecker;
+
+    /**
      * UIController constructor.
      *
      * @param RemoteMediaProviderInterface $provider
      * @param Helper $helper
      * @param EngineInterface $templating
      * @param Repository $repository
+     * @param \eZ\Publish\Core\MVC\ConfigResolverInterface $configResolver
+     * @param \Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface $authorizationChecker
      */
     public function __construct(
         RemoteMediaProviderInterface $provider,
         Helper $helper,
         EngineInterface $templating,
-        Repository $repository
+        Repository $repository,
+        ConfigResolverInterface $configResolver,
+        AuthorizationCheckerInterface $authorizationChecker
     )
 
     {
@@ -65,6 +82,8 @@ class UIController extends Controller
         $this->helper = $helper;
         $this->templating = $templating;
         $this->repository = $repository;
+        $this->configResolver = $configResolver;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     public function setAnonymousUserId($anonymousUserId = null)
@@ -219,51 +238,69 @@ class UIController extends Controller
         return new JsonResponse($responseData, 200);
     }
 
-    // used for ezoe
-//    public function fetchRemoteAction(Request $request, $id)
-//    {
-//
-//        try {
-//            $resource = $this->provider->getRemoteResource($id);
-//        } catch (NotFound $e) {
-//            return new JsonResponse(
-//                array(
-//                    'error_text' => $e->getMessage(),
-//                )
-//            );
-//        }
-//
-//        $versions = $this->getConfigResolver()->getParameter('ezoe.variation_list', 'netgen_remote_media');
-//        $toScale = array();
-//        if (!empty($versions) && is_array($versions)) {
-//            foreach ($versions as $name => $size) {
-//                $size = array_map(function ($value) { return (int) $value;}, explode('x', $size));
-//
-//                if (count($size) != 2 || !is_integer($size[0]) && !is_integer($size[1])) {
-//                    continue;
-//                }
-//                /*
-//                 * Both dimensions can't be unbound
-//                 */
-//                if ($size[0] == 0 || $size[1] == 0) {
-//                    continue;
-//                }
-//
-//                $toScale[] = array(
-//                    'name' => $name,
-//                    'size' => $size,
-//                );
-//            }
-//        }
-//
-//        $classList = $this->getConfigResolver()->getParameter('ezoe.class_list', 'netgen_remote_media');
-//        $viewModes = $this->getConfigResolver()->getParameter('ezoe.view_modes', 'netgen_remote_media');
-//
-//        return new JsonResponse(
-//            compact('resource', 'toScale', 'classList', 'viewModes'),
-//            200
-//        );
-//    }
+    /**
+     * EZOE
+     *
+     * @param Request $request
+     * @param $id
+     *
+     * @return JsonResponse
+     */
+    public function fetchRemoteAction(Request $request, $id)
+    {
+        try {
+            $resource = $this->provider->getRemoteResource($id, 'image');
+        } catch (NotFound $e) {
+            return new JsonResponse(
+                array(
+                    'error_text' => $e->getMessage(),
+                )
+            );
+        }
+
+        $versions = $this->configResolver->getParameter('ezoe.variation_list', 'netgen_remote_media');
+        $availableVersions = array();
+        $toScale = array();
+        if (!empty($versions) && is_array($versions)) {
+            foreach ($versions as $version) {
+
+                $format = explode(',', $version);
+
+                if (count($format) != 2) {
+                    continue;
+                }
+
+                $size = explode('x', $format[1]);
+                if (count($size) != 2) {
+                    continue;
+                }
+
+                /*
+                 * Both dimensions can't be unbound
+                 */
+                if ($size[0] == 0 && $size[1] == 0) {
+                    continue;
+                }
+
+                $toScale[] = array(
+                    'name' => $format[0],
+                    'size' => $size,
+                );
+            }
+        }
+
+        $classList = $this->configResolver->getParameter('ezoe.class_list', 'netgen_remote_media');
+        //$viewModes = $this->getConfigResolver()->getParameter('ezoe.view_modes', 'netgen_remote_media');
+
+        $responseData = array(
+            'media' => !empty($resource) ? $resource : false,
+            //'toScale' => $this->getScaling($value),
+            'available_versions' => $toScale,
+            'class_list' => $classList
+        );
+
+        return new JsonResponse($responseData, 200);
+    }
 
     /**
      * eZExceed:
@@ -343,6 +380,103 @@ class UIController extends Controller
     }
 
     /**
+     * EZOE - scaling
+     *
+     * @param Request $request
+     *
+     * @throws UnauthorizedException if user does not have permission for this action
+     *
+     * @return JsonResponse
+     */
+    public function generateVariationAction(Request $request)
+    {
+        $userId = $request->get('user_id', null);
+        $attribute = new AuthorizationAttribute('ng_remote_provider', 'generate');
+        if (!empty($userId)) {
+            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($userId));
+        }
+
+        if (!$this->authorizationChecker->isGranted($attribute)) {
+            throw new UnauthorizedException('ng_remote_provider', 'generate');
+        }
+
+        if (!empty($userId)) {
+            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($this->anonymousUserId));
+        }
+
+        $resourceId = $request->request->get('resourceId', '');
+        $variantName = $request->request->getAlnum('name', '');
+        $crop_x = $request->request->getInt('crop_x');
+        $crop_y = $request->request->getInt('crop_y');
+        $crop_w = $request->request->getInt('crop_w');
+        $crop_h = $request->request->getInt('crop_h');
+
+        if (empty($resourceId) || empty($variantName) || empty($crop_w) || empty($crop_h)) {
+            return new JsonResponse(
+                array(
+                    'error_text' => 'Missing one of the arguments: variant name, crop width, crop height',
+                    'content' => null,
+                ),
+                400
+            );
+        }
+
+        $remoteResourceValue = $this->helper->getValueFromRemoteResource($resourceId, 'image');
+
+        $variationCoords = array(
+            $variantName => array(
+                'x' => $crop_x,
+                'y' => $crop_y,
+                'w' => $crop_w,
+                'h' => $crop_h,
+            ),
+        );
+
+        $variations = $variationCoords + $remoteResourceValue->variations;
+        $remoteResourceValue->variations = $variations;
+
+        $formatListInitial = $this->configResolver->getParameter('ezoe.variation_list', 'netgen_remote_media');
+        $formatList = array();
+        foreach ($formatListInitial as $format) {
+            $format = explode(',', $format);
+
+            if (count($format) != 2) {
+                continue;
+            }
+
+            $formatList[$format[0]] = $format[1];
+        }
+
+        $variation = $this->helper->getVariationFromValue(
+            $remoteResourceValue,
+            $variantName,
+            $formatList
+        );
+
+        $responseData = array(
+            'error_text' => '',
+            'content' => array(
+                'name' => $variantName,
+                'url' => $variation->url,
+                'coords' => array(
+                    $crop_x,
+                    $crop_y,
+                    $crop_x + $crop_w,
+                    $crop_y + $crop_h,
+                ),
+            ),
+        );
+
+        // @todo
+//        if (!empty($userId)) {
+//            $anonymousUser = $this->repository->getUserService()->loadUser($this->anonymousUserId);
+//            $this->repository->setCurrentUser($anonymousUser);
+//        }
+
+        return new JsonResponse($responseData, 200);
+    }
+
+    /**
      * Legacy admin: CHANGE
      * Called when media is selected from the list of uploaded resources
      *
@@ -405,14 +539,26 @@ class UIController extends Controller
      * Fetches the list of available images from remote provider
      *
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param mixed $fieldId
-     * @param mixed $contentVersionId
+     *
+     * @throws UnauthorizedException if user does not have permission to browse
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
-    public function browseRemoteMediaAction(Request $request, $contentId, $fieldId, $contentVersionId)
+    public function browseRemoteMediaAction(Request $request)
     {
-        //$this->checkPermissions($contentId); // do we need to check permissions here?
+        $userId = $request->get('user_id', null);
+        $attribute = new AuthorizationAttribute('ng_remote_provider', 'browse');
+        if (!empty($userId)) {
+            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($userId));
+        }
+
+        if (!$this->authorizationChecker->isGranted($attribute)) {
+            throw new UnauthorizedException('ng_remote_provider', 'browse');
+        }
+
+        if (!empty($userId)) {
+            $this->repository->setCurrentUser($this->repository->getUserService()->loadUser($this->anonymousUserId));
+        }
 
         $limit = 25;
         $query = $request->get('q', '');
@@ -421,7 +567,6 @@ class UIController extends Controller
         $list = $this->helper->searchResources($query, $offset, $limit, $this->browseLimit);
 
         $responseData = array(
-            'keymediaId' => 0,
             'results' => array(
                 'total' => $list['count'],
                 'hits' => $list['hits'],

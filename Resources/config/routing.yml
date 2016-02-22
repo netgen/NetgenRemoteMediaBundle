@@ -11,7 +11,7 @@ netgen_remote_media_save:
     defaults: { _controller: netgen_remote_media.controller.ui:updateCoordinatesAction }
 
 netgen_remote_media_browse:
-    path: /ezexceed/ngremotemedia/browse/{contentId}/{fieldId}/{contentVersionId}
+    path: /ezexceed/ngremotemedia/browse
     defaults: { _controller: netgen_remote_media.controller.ui:browseRemoteMediaAction }
 
 netgen_remote_media_add_tag:
@@ -29,7 +29,11 @@ netgen_remote_media_legacy_save:
     defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeLegacyAction }
 
 netgen_remote_media_fetch_remote:
-    path: /ezexceed/ngremotemedia/fetch_remote/{id}
+    path: /ezexceed/ngremotemedia/simple_fetch/{id}
     defaults: { _controller: netgen_remote_media.controller.ui:fetchRemoteAction }
     requirements:
         id: .+
+
+netgen_remote_media_generate_variation:
+    path: /ezexceed/ngremotemedia/generate
+    defaults: { _controller: netgen_remote_media.controller.ui:generateVariationAction }
