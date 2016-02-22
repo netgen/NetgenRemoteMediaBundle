@@ -7,11 +7,6 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
     initialize: function(options) {
         options = (options || {});
 
-        this.attribute_id = this.$('[name="ContentObjectAttribute_id[]"]').val(),
-        this.version = RemoteMediaShared.config().version;
-
-        console.log(this.attribute_id, this.version);
-
         if (_(options).has('tinymceEditor')) {
             this.tinymceEditor = options.tinymceEditor;
             this.bookmark = this.tinymceEditor.selection.getBookmark();
@@ -25,8 +20,7 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
 
 
         this.model = new RemoteMedia.models.Attribute({
-            id: 'bla',
-            version: this.version
+            version: RemoteMediaShared.config().version
         });
 
         this.listenTo(this.model, 'version.create', this.updateEditor);
@@ -51,13 +45,11 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
         });
 
         attributes.coords = _.map(attributes.coords.split(','), function(n){ return parseInt(n, 10); });
-        console.log('parse_custom_attributes', attributes);
         return attributes;
     },
 
 
     setup_admin_browser: function() {
-        console.log('setup_admin_browser');
         var modal = new RemoteMedia.views.Modal().insert().render();
 
         this.view = new RemoteMedia.views.Browser({
@@ -112,8 +104,6 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
                 coords: ea.coords
             }] : [];
 
-            console.log("88888888888888", editorToScale, ea);
-
             this.model.set({
                 toScale: editorToScale,
                 available_versions: media.get('available_versions')
@@ -135,8 +125,6 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
         modal.on('close', function(){
             scaler_view.trigger('destruct');
             scaler_view.trigger('stack.popped');
-            // 
-            // this.model.trigger('version.create', [], this.model.get('available_versions')[0] ); //emulate
         }.bind(this));        
 
     },
@@ -171,6 +159,7 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
 
     updateTinyMCE: function(attributes) {
         var ed = this.tinymceEditor,
+            el = ed.selection.getNode(),
             args = {
                 src: '',
                 alt: '',
@@ -184,23 +173,15 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
             };
 
         _(args).extend(attributes);
-
-        if (args.class.length)
-            args.class += ' ';
-        args.class = args.class.concat('ezoeItemCustomTag remotemedia');
+        args['class'] += ' ezoeItemCustomTag remotemedia';
 
         // Fixes crash in Safari
-        if (tinymce.isWebKit)
-            ed.getWin().focus();
+        tinymce.isWebKit && ed.getWin().focus();
+        this.bookmark && ed.selection.moveToBookmark(this.bookmark);
 
-        if (this.bookmark)
-            ed.selection.moveToBookmark(this.bookmark);
-
-        var el = ed.selection.getNode();
-
-        if (el && el.nodeName == 'IMG')
+        if (el && el.nodeName == 'IMG'){
             ed.dom.setAttribs(el, args);
-        else {
+        }else {
             ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {
                 skip_undo: 1
             });

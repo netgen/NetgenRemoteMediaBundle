@@ -102,7 +102,6 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                     selectedClass = this.editorAttributes.cssclass || false;
 
                 if (classes) {
-
                     classes = _(classes).map(function(value) {
                         var s = value.split('|');
                         return {
@@ -111,10 +110,8 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                             selected: s[0] == selectedClass
                         };
                     });
-
-
                 }
-                console.log(this.editorAttributes);
+
                 this.$('.customattributes').html(
                     JST.scalerattributes({
                         classes: classes,
@@ -144,8 +141,6 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 current_version && (current_version.coords = data.coords);
 
                 this.versionSaved = data;
-
-                console.log('bla', this.versions, this.versionSaved);
 
                 if (this.singleVersion){ //For online editor
                     this.finishScaler();
@@ -241,7 +236,6 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
             
             // Checks if both stack animation is finished and version saved to server before adding to tinyMCE            
             finishScaler: function() {
-                console.log('finishScaler', this.versionSaved);
                 if (this.versionSaved && this.poppedFromStack) {
                     /**
                      * Must be wrapped in an timeout function to prevent FireFox from
