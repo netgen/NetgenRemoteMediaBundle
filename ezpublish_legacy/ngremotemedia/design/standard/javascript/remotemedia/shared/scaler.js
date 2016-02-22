@@ -73,8 +73,10 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.$el.append(content);
 
 
-                var classes = this.model.get('classList');
-                var viewModes = this.model.get('viewModes');
+                var classes = media.get('class_list');
+                var viewModes = this.model.get('viewModes'); //TODO: delete this
+
+                console.log("aaaaaaaaaaaaaaaaaaaaaaaa", classes, viewModes);
 
                 if (classes || viewModes) {
                     var selectedClass = false;
@@ -145,17 +147,23 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 var coords = [selection.x, selection.y, selection.x2, selection.y2];
 
                 this.trigger('save');
-                this.model.addVanityUrl(scale.name, coords, scale.size).success(this.versionCreated);
+
+                var method = this.singleVersion ? 'generate' : 'save_version';
+                this.model[method](scale.name, coords).success(this.versionCreated);
             },
 
             versionCreated: function(data) {
                 data.content && (data = data.content);
 
+                this.model.get('media').set('generated_url', data.url);
+
                 var current_version = _.find(this.versions, function(v) { return v.name  === data.name; });
                 current_version && (current_version.coords = data.coords);
-                console.log('bla', this.versions, this.versionSaved);
 
                 this.versionSaved = data;
+
+                console.log('bla', this.versions, this.versionSaved);
+
                 if (this.singleVersion){ //For online editor
                     this.finishScaler();
                 }else {
@@ -267,17 +275,16 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
             
             // Checks if both stack animation is finished and version saved to server before adding to tinyMCE            
             finishScaler: function() {
-                console.log('finishScaler');
+                console.log('finishScaler', this.versionSaved);
                 if (this.versionSaved && this.poppedFromStack) {
-                    var _this = this;
                     /**
                      * Must be wrapped in an timeout function to prevent FireFox from
                      * replacing all content instead of addding image to selected content
                      */
                     _.delay(function() {
-                        _this.model.trigger('version.create', _this.versions, _this.versionSaved);
-                        _this.trigger('saved');
-                    }, 0);
+                        this.model.trigger('version.create', this.versions, this.versionSaved);
+                        this.trigger('saved');
+                    }.bind(this), 0);
                 }
             },
 

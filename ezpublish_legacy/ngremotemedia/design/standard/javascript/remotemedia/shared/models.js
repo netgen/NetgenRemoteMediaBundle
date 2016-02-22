@@ -101,39 +101,51 @@ window.RemoteMediaShared.Models = function() {
         // Create a new vanity url for a version
         // name should be a string to put on the back of the object name
         // coords should be an array [x,y,x2,y2]
-        // size shoudl be an array [width,height]
-        addVanityUrl: function(name, coords, size, options) {
-            options = (options || {});
+        save_version: function(name, coords) {
             var data = {
-                name: name
+                name: name,
+                mediaId: this.get('media').id,
+                user_id: RemoteMediaShared.config().user_id
             };
 
-            if (coords) {
-                data.crop_x = Math.round(coords[0]);
-                data.crop_y = Math.round(coords[1]);
-                data.crop_w = Math.round(coords[2] - coords[0]);
-                data.crop_h = Math.round(coords[3] - coords[1]);
-            }
+            _.extend(data, this.process_coords(coords));
 
-            if (_(options).has('media')) {
-                data.mediaId = options.media.id;
-                data.remotemediaId = options.media.get('remotemediaId');
-            } else {
-                var media = this.get('media');
-                data.mediaId = media.id;
-                data.remotemediaId = media.get('remotemediaId');
-            }
-
-            data.user_id = RemoteMediaShared.config().user_id;
-
-            var url = ["/ezexceed/ngremotemedia/save", RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/'); // /90430/5
+            var url = ["/ezexceed/ngremotemedia/save", RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
 
             return Backbone.sync('create', this, {
                 url: url,
                 data: data,
                 transform: false
             });
+        },
+
+
+        generate: function(name, coords){
+            var data = {
+                name: name,
+                resourceId: this.get('media').id,
+                user_id: RemoteMediaShared.config().user_id
+            };
+
+            _.extend(data, this.process_coords(coords));
+
+            return Backbone.sync('create', this, {
+                url: '/ezexceed/ngremotemedia/generate',
+                data: data,
+                transform: false
+            });
+        },
+
+
+        process_coords: function(coords){
+            var data = {};
+            data.crop_x = Math.round(coords[0]);
+            data.crop_y = Math.round(coords[1]);
+            data.crop_w = Math.round(coords[2] - coords[0]);
+            data.crop_h = Math.round(coords[3] - coords[1]);
+            return data;
         }
+
     });
 
 

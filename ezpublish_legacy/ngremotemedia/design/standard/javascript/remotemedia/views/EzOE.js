@@ -34,7 +34,7 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
         // Preselected image. Show scaler with selected crop
         if (this.is_remotemedia_selected()) {
             this.editorAttributes = this.parse_custom_attributes(this.selectedContent.attr('customattributes'));
-            this.model.get('media').set({id: this.editorAttributes.media_id});
+            this.model.get('media').set({id: this.editorAttributes.resourceId});
             this.scaler();
         } else {
             this.setup_admin_browser();
@@ -49,35 +49,10 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
             tmpArr = value.split('|');
             attributes[tmpArr[0]] = tmpArr[1];
         });
+
+        attributes.coords = _.map(attributes.coords.split(','), function(n){ return parseInt(n, 10); });
+        console.log('parse_custom_attributes', attributes);
         return attributes;
-    },
-
-
-    setup_browser: function(){
-        var options = {
-            model: this.model,
-            collection: this.model.medias,
-            onSelect: this.changeMedia
-        };
-
-        // var headingOptions = {
-        //     icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures.png',
-        //     name: 'Select media',
-        //     quotes: true
-        // };
-
-
-        // this.browser = eZExceed.stack.push(RemoteMedia.views.Browser, options, {
-        //     headingOptions: headingOptions
-        // });
-
-        this.browser = new RemoteMedia.views.Browser(options);
-        this.browser.on('destruct', this.showScaler);
-
-
-        
-        this.model.medias.search('');
-        return this;
     },
 
 
@@ -117,75 +92,6 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
         return this;
     },    
 
-    showScaler: function() {
-        var media = this.model.get('media');
-        var model = this.model;
-        var editorAttributes = this.editorAttributes;
-        console.log('editorAttributes', editorAttributes);
-        var self = this;
-        // Show the editor
-
-        
-
-        var versions = model.get('toScale');
-
-        // var options = {
-        //     model: model,
-        //     media: media,
-        //     trueSize: [media.get('file').width, media.get('file').height],
-        //     className: 'remotemedia-scaler',
-        //     singleVersion: true,
-        //     editorAttributes: editorAttributes
-        // };
-
-
-        var options = {
-            model : this.model,
-            trueSize : [media.get('file').width, media.get('file').height],
-            className : 'remotemedia-scaler',
-            singleVersion : true,
-            editorAttributes : editorAttributes,
-            selectedVersion : (_(this.editorAttributes).has('version')) ? this.editorAttributes.version : null
-        };
-
-        if (editorAttributes && editorAttributes.version) {
-
-                var currentVersion = _(versions).find(function(value) {
-                    return value.name == editorAttributes.version;
-                });
-
-                if (currentVersion) {
-                    options.selectedVersion = editorAttributes.version;
-
-                    if (editorAttributes.x1 && editorAttributes.y1 && editorAttributes.x2 && editorAttributes.y2) {
-                        currentVersion.coords = [editorAttributes.x1, editorAttributes.y1, editorAttributes.x2, editorAttributes.y2];
-                    }
-                }
-
-        }
-
-        // var headingOptions = {
-        //     name: 'Select crop',
-        //     icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures-alt-2b.png',
-        //     quotes: true
-        // };
-
-        // eZExceed.stack.push(RemoteMedia.views.Scaler, options, {
-        //     headingOptions: headingOptions
-        // });
-
-        // new RemoteMedia.views.Scaler(options);
-
-        self.scaler(options);
-
-    
-
-
-
-
-        // this.model.media(this.media.model, ['ezoe', this.media.id]);
-    },
-
 
     // Open a scaling gui
     scaler: function() {
@@ -199,7 +105,19 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
                 user_id: RemoteMediaShared.config().user_id
             }
         }).done(function(){
-            this.model.set({available_versions: media.get('available_versions')});
+
+            var ea = this.editorAttributes;
+            var editorToScale = ea.coords ? [{
+                name: ea.version,
+                coords: ea.coords
+            }] : [];
+
+            console.log("88888888888888", editorToScale, ea);
+
+            this.model.set({
+                toScale: editorToScale,
+                available_versions: media.get('available_versions')
+            });
 
             scaler_view = new RemoteMedia.views.Scaler({
                 el: modal.show().contentEl,
@@ -215,10 +133,10 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
 
 
         modal.on('close', function(){
-            // scaler_view.trigger('destruct');
-            // scaler_view.trigger('stack.popped');
+            scaler_view.trigger('destruct');
+            scaler_view.trigger('stack.popped');
             // 
-            this.model.trigger('version.create', [], this.model.get('available_versions')[0] ); //emulate
+            // this.model.trigger('version.create', [], this.model.get('available_versions')[0] ); //emulate
         }.bind(this));        
 
     },
@@ -226,34 +144,28 @@ RemoteMedia.views.EzOE = Backbone.View.extend({
 
     updateEditor: function(versions, data) {
         var media = this.model.get('media');
-        console.log(media);
-        var values = this.editorAttributes;
 
-        values = _(values).extend({
-            media_id: media.id,
-            remotemedia_id: media.get('id'),
+        var attributes = {
+            resourceId: media.id,
             version: data.name,
-            image_width: data.size[0],
-            image_height: data.size[1],
-            image_url: media.get('url')
-        });
-        if (data.coords) {
-            values.x1 = data.coords[0];
-            values.y1 = data.coords[1];
-            values.x2 = data.coords[2];
-            values.y2 = data.coords[3];
-        }
-        var customAttributes = _(values).map(function(value, key) {
-            return key + '|' + value;
-        });
-        var customAttributesString = customAttributes.join('attribute_separation');
-
-        var imgAttribute = {
-            src: values.image_url,
-            customattributes: customAttributesString
+            coords: data.coords.join(','),
+            image_url: media.get('generated_url')
         };
-        this.updateTinyMCE(imgAttribute);
+    
+        this.updateTinyMCE({
+            src: attributes.image_url,
+            customattributes: this.serialize_custom_attributes(attributes)
+        });
     },
+
+
+    serialize_custom_attributes: function(attributes){
+        return _(attributes).map(function(value, key) {
+            return key + '|' + value;
+        }).join('attribute_separation');
+    },
+
+
 
     updateTinyMCE: function(attributes) {
         var ed = this.tinymceEditor,
