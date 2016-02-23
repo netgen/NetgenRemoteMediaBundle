@@ -1,8 +1,8 @@
 {% trans_default_domain "ezexceed" %}
 
-{% set resourceType = value.metaData.resource_type|default('image') %}
-
-{% if resourceType == 'image' and media %}
+{% if value.metaData.format in documentTypes %}
+    {{ value.resourceId }}
+{% elseif resourceType == 'image' and media %}
     <div class="thumbnail">
         <img src="{{ media.url }}" />
 
@@ -22,5 +22,4 @@
                 name="CustomActionButton[{{ fieldId }}_delete_media]"
                 value="{{ 'ngremotemedia.edit.remove'|trans }}">×</button>
     </div>
-
 {% endif %}

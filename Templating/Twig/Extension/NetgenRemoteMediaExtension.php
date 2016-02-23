@@ -66,6 +66,10 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 'netgen_remote_media_fits',
                 array($this, 'mediaFits')
             ),
+            new Twig_SimpleFunction(
+                'netgen_remote_resource',
+                array($this, 'getResourceDownloadLink')
+            ),
         );
     }
 
@@ -132,5 +136,17 @@ class NetgenRemoteMediaExtension extends Twig_Extension
         }
 
         return true;
+    }
+
+    /**
+     * Returns the link to the remote resource
+     *
+     * @param Value $value
+     *
+     * @return string
+     */
+    public function getResourceDownloadLink(Value $value)
+    {
+        return $this->provider->generateDownloadLink($value);
     }
 }

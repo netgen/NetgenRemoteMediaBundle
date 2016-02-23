@@ -10,7 +10,9 @@
     {% set format = parameters.format|default('') %}
     {% set resourceType = field.value.metaData.resource_type|default('image') %}
 
-    {% if resourceType == 'image' %}
+    {% if field.value.metaData.format in ['pdf', 'doc', 'docx'] %}
+        <a href="{{ netgen_remote_resource(field.value) }}" target="_blank">{{ field.value.resourceId }}</a>
+    {% elseif resourceType == 'image' %}
         {% if parameters.alt_text is defined and parameters.alt_text is not empty %}
             {% set alt_text = parameters.alt_text %}
         {% else %}
@@ -43,7 +45,7 @@
                 {{ block( 'field_attributes' ) }}
             />
         {% endif %}
-    {% else %}
+    {% elseif resourceType == 'video' %}
         {{ netgen_remote_video(field.value, format, fieldSettings.formats )|raw }}
     {% endif %}
 

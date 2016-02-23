@@ -463,6 +463,11 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return $listFormatted;
     }
 
+    /**
+     * Removes the resource from the remote.
+     *
+     * @param $resourceId
+     */
     public function deleteResource($resourceId)
     {
         $this->cloudinaryApi->delete_resources(array($resourceId));
@@ -471,5 +476,17 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     public function getIdentifier()
     {
         return 'cloudinary';
+    }
+
+    /**
+     * Generates the link to the remote resource.
+     *
+     * @param Value $value
+     *
+     * @return string
+     */
+    public function generateDownloadLink(Value $value)
+    {
+        return $this->cloudinary->cloudinary_url($value->resourceId);
     }
 }

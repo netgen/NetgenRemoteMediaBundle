@@ -6,6 +6,7 @@
     {% set media = netgen_remote_media(value, availableFormats, '300x200') %}
 {% endif %}
 
+{% set documentTypes = ['pdf', 'doc', 'docx'] %}
 {% set attribute_base = "ContentObjectAttribute" %}
 
 <div class="attribute-base remotemedia-type"
@@ -17,7 +18,7 @@
     data-bootstrap='{{ value|json_encode }}'
 >
 
-    {% if value.resourceId and resourceType == 'image' and not netgen_remote_media_fits(value, availableFormats) %}
+    {% if value.resourceId and resourceType == 'image' and value.metaData.format not in documentTypes and not netgen_remote_media_fits(value, availableFormats) %}
         <p class="error">{{ "ngremotemedia.edit.media_too_small"|trans }}</p>
     {% endif %}
 

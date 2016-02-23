@@ -174,7 +174,21 @@ interface RemoteMediaProviderInterface
      */
     public function formatBrowseList(array $list);
 
+    /**
+     * Removes the resource from the remote.
+     *
+     * @param $resourceId
+     */
     public function deleteResource($resourceId);
 
     public function getIdentifier();
+
+    /**
+     * Generates the link to the remote resource.
+     *
+     * @param Value $value
+     *
+     * @return string
+     */
+    public function generateDownloadLink(Value $value);
 }
