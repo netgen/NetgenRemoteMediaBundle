@@ -109,24 +109,14 @@ class UIController extends Controller
         $this->setRepositoryUser($userId);
 
         $contentInfo = $this->repository->getContentService()->loadContentInfo($contentId);
-<<<<<<< HEAD
 
         $this->checkPermissions('content', $function, $userId, $contentInfo);
-=======
-        if (!$this->repository->canUser('content', $function, $contentInfo)) {
-            throw new UnauthorizedException('content', $function, array('contentId' => $contentId));
-        }
->>>>>>> 8e5b2abf994580a932eea88cf160d3007382ce10
     }
 
     protected function checkPermissions($module, $function, $userId = null, $valueObject = null)
     {
         $attribute = !empty($valueObject) ?
-<<<<<<< HEAD
             new AuthorizationAttribute($module, $function, array('valueObject' => $valueObject)) :
-=======
-            new AuthorizationAttribute($module, $function, $valueObject) :
->>>>>>> 8e5b2abf994580a932eea88cf160d3007382ce10
             new AuthorizationAttribute($module, $function);
 
         $this->setRepositoryUser($userId);
