@@ -22,40 +22,6 @@
     {foreach ezcssfiles(array('jquery.jcrop.css', 'ngremotemedia.css')) as $file}
     <link rel="stylesheet" type="text/css" href="{$file}?v3.0.0" />
     {/foreach}
-    {ezscript_require( array(
-        'ezjsc::jquery',
-        'libs/lodash.js',
-        'libs/backbone.js'
-    ))}
-    {ezscript( array(
-        'libs/handlebars.runtime.js',
-        'libs/plupload/moxie.js',
-        'libs/plupload/plupload.js',
-        'libs/jquery.jcrop.js',
-
-        'remotemedia/ns.js',
-
-        'remotemedia/shared/templates.js',
-        'remotemedia/shared/models.js',
-        'remotemedia/shared/tagger.js',
-        'remotemedia/shared/browser.js',
-        'remotemedia/shared/upload.js',
-        'remotemedia/shared/scaled_version.js',
-        'remotemedia/shared/scaler.js',
-
-        'remotemedia/models.js',
-
-        'remotemedia/views/Modal.js',
-        'remotemedia/views/RemoteMedia.js',
-        'remotemedia/views/scaled_version.js',
-        'remotemedia/views/Scaler.js',
-        'remotemedia/views/Upload.js',
-        'remotemedia/views/Browser.js',
-        'remotemedia/views/Tagger.js',
-        'remotemedia/views/EzOE.js',
-
-        'remotemedia/run.js'
-    ) )}
 
     {include uri="design:parts/js_templates_1.tpl"}
     {/run-once}

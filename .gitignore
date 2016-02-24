@@ -7,3 +7,4 @@ phpunit.phar
 .php_cs.cache
 **/.sass-cache
 npm-debug.log
+node_modules

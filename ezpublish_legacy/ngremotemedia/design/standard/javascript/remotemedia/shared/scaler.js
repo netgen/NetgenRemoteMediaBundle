@@ -14,8 +14,6 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
             // Will hold the Jcrop API
             cropper: null,
 
-            trueSize: [],
-
             singleVersion: false,
 
             selectedVersion: null,
@@ -31,12 +29,15 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
             initialize: function(options) {
                 options = (options || {});
                 _.bindAll(this);
-                _.extend(this, _.pick(options, ['trueSize', 'singleVersion', 'editorAttributes', 'selectedVersion']));
+                _.extend(this, _.pick(options, ['singleVersion', 'editorAttributes', 'selectedVersion']));
                 this.versionSaved = null;
                 this.poppedFromStack = null;
+                
+                this.trueSize = this.model.get('media').get('true_size');
 
                 // Model is an instance of Attribute
                 this.model.on('scale', this.render, this);
+
 
                 // When I get popped from stack
                 // i save my current scale
