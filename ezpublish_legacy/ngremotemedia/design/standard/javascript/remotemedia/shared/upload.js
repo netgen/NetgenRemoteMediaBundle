@@ -46,6 +46,7 @@ window.RemoteMediaShared.upload = function($, plupload){
 
         added: function(up /*, files*/) {
             up.start();
+            !this.$('.upload-from-disk').closest('[data-bootstrap]').length && this.$el.after('<div class="backdrop upload-backdrop" />');
             this.trigger('uploading');
         },
 

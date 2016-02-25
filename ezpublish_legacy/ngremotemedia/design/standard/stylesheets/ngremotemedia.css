@@ -271,6 +271,16 @@
 #remotemedia-modal .form-search .loader {
   margin: 0px 10px 0px -24px; }
 
+#remotemedia-modal .upload-backdrop, .eze .upload-backdrop {
+  background: #000 url(./remotemedia_upload.svg) no-repeat 50% 50%;
+  z-index: 100000;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0.8; }
+
 .o2k7Skin .mceIcon.mce_remotemedia {
   background: url(./remotemedia.svg) no-repeat 50% 50%; }
 
