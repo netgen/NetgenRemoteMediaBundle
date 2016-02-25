@@ -32,7 +32,7 @@ window.RemoteMediaShared.upload = function($, plupload){
 
             
             this.uploadCallback({
-                id: model_attributes.id,
+                id: model_attributes.id || model_attributes.media.resourceId,
                 model_attributes: model_attributes, //For administration
                 new_image_selected: true
             });
@@ -51,10 +51,10 @@ window.RemoteMediaShared.upload = function($, plupload){
 
 
         upload_url: function(){
-            if (RemoteMediaShared.config().is_admin  && this.model.get('ezoe')) {
-                return '/ezexceed/ngremotemedia/simple_upload';
+            if (this.model.get('ezoe')) {
+                return RemoteMediaShared.url('/ezexceed/ngremotemedia/simple_upload');
             }else{
-                return '/ezexceed/ngremotemedia/upload/' +  RemoteMediaShared.config().currentObjectId;
+                return RemoteMediaShared.url('/ezexceed/ngremotemedia/upload/') +  RemoteMediaShared.config().currentObjectId;
             }
         },
 

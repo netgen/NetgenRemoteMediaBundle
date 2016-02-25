@@ -6,9 +6,6 @@ RemoteMedia.views.Browser = Backbone.View.extend(RemoteMediaShared.browser(Uploa
     },
 
     uplodedMedia: function(data) {
-        data && this.model.set(this.model.parse(data.model_attributes));
-        setTimeout(function(){
-          this.onSelect();
-        }.bind(this), 200);
+      this.onSelect(data);        
     }    
 });
