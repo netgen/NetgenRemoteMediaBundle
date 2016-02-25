@@ -3,6 +3,10 @@
 [ExtensionSettings]
 DesignExtensions[]=ngremotemedia
 
+[StylesheetSettings]
+BackendCSSFileList[]=jquery.jcrop.css
+BackendCSSFileList[]=ngremotemedia.css
+
 [JavaScriptSettings]
 BackendJavaScriptList[]=ezjsc::jquery
 BackendJavaScriptList[]=libs/lodash.js

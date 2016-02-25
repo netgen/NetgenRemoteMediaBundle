@@ -19,10 +19,6 @@
 
 {if not(is_set($ajax))}
     {run-once}
-    {foreach ezcssfiles(array('jquery.jcrop.css', 'ngremotemedia.css')) as $file}
-    <link rel="stylesheet" type="text/css" href="{$file}?v3.0.0" />
-    {/foreach}
-
     {include uri="design:parts/js_templates_1.tpl"}
     {/run-once}
 {/if}

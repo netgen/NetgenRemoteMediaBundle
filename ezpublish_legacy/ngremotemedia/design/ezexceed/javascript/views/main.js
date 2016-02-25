@@ -135,7 +135,6 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
         },
 
         changeMedia: function(data) {
-
             if(!data.new_image_selected){return;}
             data.new_image_selected && this.loader();
 
@@ -146,7 +145,6 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
                 name: 'changeMedia',
                 value: 1
             });
-
             this.trigger('save', this.model.id, data);
         },
 
@@ -210,6 +208,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
                 model: this.model,
                 uploaded: function(resp){
                     this.model.set(this.model.parse(resp.model_attributes));
+                    this.changeMedia(resp);
                 }.bind(this),
                 el: this.$el,
                 version: this.version

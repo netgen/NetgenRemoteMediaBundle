@@ -23,8 +23,12 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
         // prefix = prefix + '/ezjscore/call';
 
 
+        var id = RemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : this.$el.closest('.attribute').data('id');
+
         this.model = new Attribute({
-            version: RemoteMediaShared.config().version
+            id: id,
+            version: RemoteMediaShared.config().version,
+            ezoe: true
         });
 
         this.listenTo(this.model, 'version.create', this.updateEditor);

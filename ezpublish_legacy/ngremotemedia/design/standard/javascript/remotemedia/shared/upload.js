@@ -12,7 +12,6 @@ window.RemoteMediaShared.upload = function($, plupload){
             _.bindAll(this);
             this.options = options;
 
-            this.browseButton = $('.upload-from-disk');
             this.uploadCallback = options.uploaded;
 
             return this;
@@ -33,7 +32,8 @@ window.RemoteMediaShared.upload = function($, plupload){
 
             
             this.uploadCallback({
-                model_attributes: model_attributes,
+                id: model_attributes.id,
+                model_attributes: model_attributes, //For administration
                 new_image_selected: true
             });
 
@@ -49,19 +49,29 @@ window.RemoteMediaShared.upload = function($, plupload){
             this.trigger('uploading');
         },
 
+
+        upload_url: function(){
+            if (RemoteMediaShared.config().is_admin  && this.model.get('ezoe')) {
+                return '/ezexceed/ngremotemedia/simple_upload';
+            }else{
+                return '/ezexceed/ngremotemedia/upload/' +  RemoteMediaShared.config().currentObjectId;
+            }
+        },
+
         render: function(/*response*/) {
-            var id = this.model.id !== "ezoe" ? this.model.id : this.model.get('attributeId');
+            // var id = this.model.id !== "ezoe" ? this.model.id : this.model.get('attributeId');
+            var id = this.model.id;
             var settings = {
                 runtimes: 'html5,flash,html4',
-                browse_button: this.browseButton.get(0),
+                browse_button: this.$('.upload-from-disk').get(0),
                 flash_swf_url: RemoteMediaShared.config().plupload_swf,
                 max_file_size: this.maxSize,
-                url: '/ezexceed/ngremotemedia/upload/' +  RemoteMediaShared.config().currentObjectId,
+                url: this.upload_url(),
                 multipart_params: {
                     legacy: RemoteMediaShared.config().is_admin,
                     user_id: RemoteMediaShared.config().user_id,
                     AttributeID: id,
-                    ContentObjectVersion: this.options.version,
+                    ContentObjectVersion: this.model.get('version'),
                     http_accept: 'json' //Because of some strange failing when html4 is used
                 },
                 headers: this.headers

@@ -8,3 +8,4 @@ phpunit.phar
 **/.sass-cache
 npm-debug.log
 node_modules
+*.css.map

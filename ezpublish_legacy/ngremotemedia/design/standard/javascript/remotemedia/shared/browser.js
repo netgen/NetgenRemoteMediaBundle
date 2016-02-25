@@ -32,7 +32,6 @@ window.RemoteMediaShared.browser = function(UploadView) {
             eZExceed.stack.pop({
                 id: model.id,
                 new_image_selected: true,
-                refresh: true,
                 model: model.toJSON()
             });
         },

@@ -42,7 +42,6 @@ window.RemoteMediaShared.Models = function() {
         },
 
         url: function() {
-            console.log(this);
             return ["/ezexceed/ngremotemedia/fetch", RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
         },
 
