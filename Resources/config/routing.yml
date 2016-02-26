@@ -1,43 +1,43 @@
 netgen_remote_media_upload:
-    path: /ezexceed/ngremotemedia/upload/{contentId}
+    path: /ngremotemedia/upload/{contentId}
     defaults: { _controller: netgen_remote_media.controller.ui:uploadFileAction }
 
 netgen_remote_media_upload_simple:
-    path: /ezexceed/ngremotemedia/simple_upload
+    path: /ngremotemedia/simple_upload
     defaults: { _controller: netgen_remote_media.controller.ui:uploadFileSimpleAction }
 
 netgen_remote_media_fetch:
-    path: /ezexceed/ngremotemedia/fetch/{contentId}/{fieldId}/{contentVersionId}
+    path: /ngremotemedia/fetch/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:fetchAction }
 
 netgen_remote_media_save:
-    path: /ezexceed/ngremotemedia/save/{contentId}/{fieldId}/{contentVersionId}
+    path: /ngremotemedia/save/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:updateCoordinatesAction }
 
 netgen_remote_media_browse:
-    path: /ezexceed/ngremotemedia/browse
+    path: /ngremotemedia/browse
     defaults: { _controller: netgen_remote_media.controller.ui:browseRemoteMediaAction }
 
 netgen_remote_media_add_tag:
-    path: /ezexceed/ngremotemedia/tags/{contentId}/{fieldId}/{contentVersionId}
+    path: /ngremotemedia/tags/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:addTagsAction }
     methods: [POST]
 
 netgen_remote_media_remove_tag:
-    path: /ezexceed/ngremotemedia/tags/{contentId}/{fieldId}/{contentVersionId}
+    path: /ngremotemedia/tags/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:removeTagsAction }
     methods: [DELETE]
 
 netgen_remote_media_legacy_save:
-    path: /standard/ngremotemedia/change/{contentId}/{fieldId}/{contentVersionId}
+    path: /ngremotemedia/change/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeLegacyAction }
 
 netgen_remote_media_fetch_remote:
-    path: /ezexceed/ngremotemedia/simple_fetch/{id}
+    path: /ngremotemedia/simple_fetch/{resourceId}
     defaults: { _controller: netgen_remote_media.controller.ui:fetchRemoteAction }
     requirements:
         id: .+
 
 netgen_remote_media_generate_variation:
-    path: /ezexceed/ngremotemedia/generate
+    path: /ngremotemedia/generate
     defaults: { _controller: netgen_remote_media.controller.ui:generateVariationAction }

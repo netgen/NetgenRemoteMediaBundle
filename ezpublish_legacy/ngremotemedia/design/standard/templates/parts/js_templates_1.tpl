@@ -11,5 +11,11 @@
     next : "{'Next 25 &gt;'}",
     prev : "{'&lt; Previous 25'}"
 {literal} }; {/literal}
+
+{literal} RemoteMediaSettings = { {/literal}
+    'ez_contentobject_id': {$contentObjectId},
+    'ez_contentobject_version': {$version},
+    'url_prefix': {'/'|ezurl}
+    {literal} }; {/literal}
 </script>
 
