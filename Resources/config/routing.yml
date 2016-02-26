@@ -2,6 +2,10 @@ netgen_remote_media_upload:
     path: /ezexceed/ngremotemedia/upload/{contentId}
     defaults: { _controller: netgen_remote_media.controller.ui:uploadFileAction }
 
+netgen_remote_media_upload_simple:
+    path: /ezexceed/ngremotemedia/simple_upload
+    defaults: { _controller: netgen_remote_media.controller.ui:uploadFileSimpleAction }
+
 netgen_remote_media_fetch:
     path: /ezexceed/ngremotemedia/fetch/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:fetchAction }

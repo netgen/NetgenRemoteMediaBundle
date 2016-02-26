@@ -12,9 +12,9 @@
 {if not(is_set($contentObjectId))}
     {def $contentObjectId = $attribute.contentobject_id}
 {/if}
-{if not(is_set($variations))}
+{if not(is_set($availableFormats))}
     {def $contentClassAttribute = $attribute.contentclass_attribute}
-    {def $variations = $contentClassAttribute.data_text4}
+    {def $availableFormats = $contentClassAttribute.content}
 {/if}
 
 {if not(is_set($ajax))}

@@ -178,12 +178,55 @@ class UIController extends Controller
             )
         );
 
-        //$result = json_decode($value->__toString(), true);
-
         $responseData = array(
             'media' => !empty($value->resourceId) ? $value : false,
             'content' => $content,
             'toScale' => $this->getScaling($value),
+        );
+
+        if (!empty($userId)) {
+            $this->setRepositoryUser($this->anonymousUserId);
+        }
+
+        return new JsonResponse($responseData, 200);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     */
+    public function uploadFileSimpleAction(Request $request)
+    {
+        $userId = $request->get('user_id', null);
+        $this->checkPermissions('ng_remote_provider', 'upload', $userId);
+
+        $file = $request->files->get('file', '');
+        $fieldId = $request->get('AttributeID', '');
+        $contentVersionId = $request->get('ContentObjectVersion', '');
+
+        if (empty($file)) {
+            return new JsonResponse(
+                array(
+                    'ok' => false,
+                    'error_text' => 'File is empty or not set',
+                ),
+                400
+            );
+        }
+
+        $value = $this->helper->upload(
+            $file->getRealPath(),
+            pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            $fieldId,
+            $contentVersionId
+        );
+
+        $responseData = array(
+            'media' => !empty($value->resourceId) ? $value : false,
+            //'content' => $content,
+            //'toScale' => $this->getScaling($value),
         );
 
         if (!empty($userId)) {
@@ -513,7 +556,7 @@ class UIController extends Controller
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'variations' => json_encode($this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId)),
+                'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
                 'version' => $contentVersionId,
                 'contentObjectId' => $contentId,
                 'ajax' => true // tells legacy template not to load js

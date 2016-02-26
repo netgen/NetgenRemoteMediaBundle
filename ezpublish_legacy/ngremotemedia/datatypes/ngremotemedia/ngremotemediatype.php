@@ -61,13 +61,8 @@ class NgRemoteMediaType extends eZDataType
         $lines = array();
         $formats = "";
         $versions = json_decode($class->attribute(self::FIELD_FORMATS), true);
-        if (!empty($versions) && is_array($versions)) {
-            foreach($versions as $version_name => $version) {
-                $lines[] = $version_name . ',' . $version;
-            }
-            $formats = join("\n", $lines);
-        }
-        return $formats;
+
+        return $versions;
     }
 
     /**

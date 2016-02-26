@@ -20,3 +20,10 @@ $FunctionList['generate'] = array(
         'extension' => 'ngremotemedia',
     )
 );
+
+$FunctionList['upload'] = array(
+    'RemoteProvider' => array(
+        'name'      => 'RemoteProvider',
+        'extension' => 'ngremotemedia',
+    )
+);
