@@ -29,8 +29,6 @@
     {def $type = 'image'}
 {/if}
 
-{*$attribute.language_code*}
-
 {def $user=fetch( 'user', 'current_user' )}
 
 <div class="remotemedia-type" data-bootstrap-media={$value|json} data-user-id="{$user.contentobject_id}">

@@ -86,16 +86,31 @@ class UIController extends Controller
         $this->authorizationChecker = $authorizationChecker;
     }
 
+    /**
+     * Dynamic settings injection
+     *
+     * @param mixed|null $anonymousUserId
+     */
     public function setAnonymousUserId($anonymousUserId = null)
     {
         $this->anonymousUserId = $anonymousUserId;
     }
 
+    /**
+     * Dynamic settings injection
+     *
+     * @param mixed|null $browseLimit
+     */
     public function setBrowseLimit($browseLimit = null)
     {
         $this->browseLimit = !empty($browseLimit) ? (int) $browseLimit : 1000;
     }
 
+    /**
+     * Set repository user
+     *
+     * @param mixed $userId
+     */
     protected function setRepositoryUser($userId)
     {
         if (!empty($userId)) {
@@ -225,8 +240,6 @@ class UIController extends Controller
 
         $responseData = array(
             'media' => !empty($value->resourceId) ? $value : false,
-            //'content' => $content,
-            //'toScale' => $this->getScaling($value),
         );
 
         if (!empty($userId)) {
@@ -279,7 +292,7 @@ class UIController extends Controller
             array(
                 'value' => $value,
                 'fieldId' => $fieldId,
-                'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId)
+                'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
             )
         );
 
@@ -299,15 +312,14 @@ class UIController extends Controller
     /**
      * EZOE
      *
-     * @param Request $request
-     * @param $id
+     * @param string $resourceId
      *
      * @return JsonResponse
      */
-    public function fetchRemoteAction(Request $request, $id)
+    public function fetchRemoteAction($resourceId)
     {
         try {
-            $resource = $this->provider->getRemoteResource($id, 'image');
+            $value = $this->helper->getValueFromRemoteResource($resourceId, 'image');
         } catch (NotFound $e) {
             return new JsonResponse(
                 array(
@@ -318,6 +330,7 @@ class UIController extends Controller
 
         $versions = $this->configResolver->getParameter('ezoe.variation_list', 'netgen_remote_media');
         $availableVersions = array();
+        // @todo: move this to helper class
         if (!empty($versions) && is_array($versions)) {
             foreach ($versions as $version) {
 
@@ -349,7 +362,7 @@ class UIController extends Controller
         $classList = $this->configResolver->getParameter('ezoe.class_list', 'netgen_remote_media');
 
         $responseData = array(
-            'media' => !empty($resource) ? $resource : false,
+            'media' => !empty($value) ? $value: false,
             'available_versions' => $availableVersions,
             'class_list' => $classList
         );
@@ -389,7 +402,6 @@ class UIController extends Controller
             );
         }
 
-        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
 
         $variationCoords = array(
@@ -413,16 +425,13 @@ class UIController extends Controller
         );
 
         $responseData = array(
-            'error_text' => '',
-            'content' => array(
-                'name' => $variantName,
-                'url' => $variation->url,
-                'coords' => array(
-                    $crop_x,
-                    $crop_y,
-                    $crop_x + $crop_w,
-                    $crop_y + $crop_h,
-                ),
+            'name' => $variantName,
+            'url' => $variation->url,
+            'coords' => array(
+                $crop_x,
+                $crop_y,
+                $crop_x + $crop_w,
+                $crop_y + $crop_h,
             ),
         );
 
@@ -498,17 +507,14 @@ class UIController extends Controller
         );
 
         $responseData = array(
-            'error_text' => '',
-            'content' => array(
-                'name' => $variantName,
-                'url' => $variation->url,
-                'coords' => array(
-                    $crop_x,
-                    $crop_y,
-                    $crop_x + $crop_w,
-                    $crop_y + $crop_h,
-                ),
-            ),
+            'name' => $variantName,
+            'url' => $variation->url,
+            'coords' => array(
+                $crop_x,
+                $crop_y,
+                $crop_x + $crop_w,
+                $crop_y + $crop_h,
+            )
         );
 
 
@@ -597,18 +603,11 @@ class UIController extends Controller
 
         $list = $this->helper->searchResources($query, $offset, $limit, $this->browseLimit);
 
-        $responseData = array(
-            'results' => array(
-                'total' => $list['count'],
-                'hits' => $list['hits'],
-            ),
-        );
-
         if (!empty($userId)) {
             $this->setRepositoryUser($this->anonymousUserId);
         }
 
-        return new JsonResponse($responseData, 200);
+        return new JsonResponse($list, 200);
     }
 
     /**

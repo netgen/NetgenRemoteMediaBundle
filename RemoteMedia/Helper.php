@@ -93,7 +93,7 @@ class Helper
      * @param mixed|null $versionId
      * @param string|null $languageCode
      *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function loadValue($contentId, $fieldId, $versionId = null, $languageCode = null)
     {

@@ -425,7 +425,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     }
 
     /**
-     * Formats browse list to comply with eZExceed.
+     * Formats browse list to comply with javascript.
      *
      * @param array $list
      *
@@ -438,10 +438,10 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             $fileName = explode('/', $hit['public_id']);
             $fileName = $fileName[0];
 
-            $options = array();
-            $options['crop'] = 'fit';
-            $options['width'] = 160;
-            $options['height'] = 120;
+            $thumbOptions = array();
+            $thumbOptions['crop'] = 'fit';
+            $thumbOptions['width'] = 160;
+            $thumbOptions['height'] = 120;
 
             $listFormatted[] = array(
                 'resourceId' => $hit['public_id'],
@@ -451,12 +451,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
                 'width' => $hit['width'],
                 'height' => $hit['height'],
                 'filename' => $fileName,
-                'shared' => array(),
-                'scalesTo' => array('quality' => 100, 'ending' => $hit['format']),
-                'host' => 'cloudinary',
-                'thumb' => array(
-                    'url' => $this->getFormattedUrl($hit['public_id'], $options),
-                ),
+                'url' => $this->getFormattedUrl($hit['public_id'], $thumbOptions),
             );
         }
 

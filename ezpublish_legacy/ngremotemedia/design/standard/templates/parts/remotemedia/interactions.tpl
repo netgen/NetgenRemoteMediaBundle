@@ -1,5 +1,4 @@
 <div id="remotemedia-buttons-{$fieldId}" class="remotemedia-buttons"
-    data-prefix={'/ezjscore/call'|ezurl}
     data-id="{$fieldId}"
     data-contentobject-id="{$contentObjectId}"
     data-version="{$version}">
