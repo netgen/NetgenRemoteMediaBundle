@@ -1,4 +1,4 @@
-/*global eZOeGlobalSettings, RemoteMediaShared*/
+/*global RemoteMediaSettings, RemoteMediaShared*/
 window.RemoteMediaShared || (window.RemoteMediaShared = {});
 
 window.RemoteMediaShared.config = function() {
@@ -10,26 +10,25 @@ window.RemoteMediaShared.config = function() {
         is_admin: is_admin,
         user_id: this.user_id,
         plupload_swf: is_admin ? '/extension/remotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url,
-        currentObjectId: is_admin ? eZOeGlobalSettings.ez_contentobject_id : eZExceed.config.currentObjectId,
-        version: is_admin ? eZOeGlobalSettings.ez_contentobject_version : $('[data-version]').data('version')
+        currentObjectId: is_admin ? RemoteMediaSettings.ez_contentobject_id : eZExceed.config.currentObjectId,
+        version: is_admin ? RemoteMediaSettings.ez_contentobject_version : $('[data-version]').data('version')
     };
 };
 
 window.RemoteMediaShared.is_admin = function(){
-    return typeof eZOeGlobalSettings !== 'undefined';
+    return typeof RemoteMediaSettings !== 'undefined';
 };
 
 
 window.RemoteMediaShared.url = function(url){
-    var prefix = this.is_admin() ?  eZOeGlobalSettings.ez_root_url : eZExceed.urlPrefix;
-    var new_url = [prefix, url].join('/').replace(/\/+/, '/');
+    var prefix = this.is_admin() ?  RemoteMediaSettings.url_prefix : $('.remotemedia-type').data('urlRoot');
+    var new_url = [prefix, url].join('/').replace(/\/+/g, '/');
     return new_url;
 };
 
 window.RemoteMediaShared.Models = function() {
 
     var Attribute = Backbone.Model.extend({
-        urlRoot: null,
         medias: null,
 
         initialize: function() {
@@ -52,7 +51,7 @@ window.RemoteMediaShared.Models = function() {
         },
 
         url: function() {
-            return [RemoteMediaShared.url("/ezexceed/ngremotemedia/fetch"), RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
+            return [RemoteMediaShared.url("/ngremotemedia/fetch"), RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
         },
 
 
@@ -95,7 +94,7 @@ window.RemoteMediaShared.Models = function() {
 
 
         change_media: function(id){
-            var url = [RemoteMediaShared.url("/standard/ngremotemedia/change"), RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
+            var url = [RemoteMediaShared.url("/ngremotemedia/change"), RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
 
             return this.save({}, {
                 url: url,
@@ -113,13 +112,12 @@ window.RemoteMediaShared.Models = function() {
         save_version: function(name, coords) {
             var data = {
                 name: name,
-                mediaId: this.get('media').id,
                 user_id: RemoteMediaShared.config().user_id
             };
 
             _.extend(data, this.process_coords(coords));
 
-            var url = [RemoteMediaShared.url("/ezexceed/ngremotemedia/save"), RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
+            var url = [RemoteMediaShared.url("/ngremotemedia/save"), RemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
 
             return Backbone.sync('create', this, {
                 url: url,
@@ -139,7 +137,7 @@ window.RemoteMediaShared.Models = function() {
             _.extend(data, this.process_coords(coords));
 
             return Backbone.sync('create', this, {
-                url: RemoteMediaShared.url('/ezexceed/ngremotemedia/generate'),
+                url: RemoteMediaShared.url('/ngremotemedia/generate'),
                 data: data,
                 transform: false
             });
@@ -159,15 +157,9 @@ window.RemoteMediaShared.Models = function() {
 
 
     var Media = Backbone.Model.extend({
-        urlRoot: '',
 
         initialize: function(options) {
-            options = (options || {});
             _.bindAll(this);
-            if ('urlRoot' in options) {
-                this.urlRoot = options.urlRoot;
-                delete options.urlRoot;
-            }
         },
 
         parse: function(data) {
@@ -175,8 +167,6 @@ window.RemoteMediaShared.Models = function() {
                 var new_data = data.media;
                 new_data.available_versions = data.available_versions;
                 new_data.class_list = data.class_list;
-                new_data.metaData = data.media;
-                new_data.resourceId = data.media.public_id;
                 data = new_data;
             }
             data.id = data.resourceId;
@@ -194,13 +184,13 @@ window.RemoteMediaShared.Models = function() {
         },
 
         url: function(){
-            return [RemoteMediaShared.url('/ezexceed/ngremotemedia/simple_fetch'), this.id].join('/');
+            return [RemoteMediaShared.url('/ngremotemedia/simple_fetch'), this.id].join('/');
         },
 
 
         tags_url: function() {
             var attr = this.get('attr');
-            return [RemoteMediaShared.url('/ezexceed/ngremotemedia/tags'), RemoteMediaShared.config().currentObjectId, attr.id, attr.get('version')].join('/');
+            return [RemoteMediaShared.url('/ngremotemedia/tags'), RemoteMediaShared.config().currentObjectId, attr.id, attr.get('version')].join('/');
         },
 
 
@@ -232,8 +222,7 @@ window.RemoteMediaShared.Models = function() {
 
 
         // Generate thumb url for a given size
-        thumb: function(width, height, filetype) {
-            filetype = (filetype || 'jpg');
+        thumb: function(width, height) {
             var url = this.get('url').split(/\/v\d+\//);
             return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
         }
@@ -242,13 +231,10 @@ window.RemoteMediaShared.Models = function() {
     var MediaCollection = Backbone.Collection.extend({
         model: Media,
 
-        // Must end in trailing slash
-        urlRoot: '/',
         attr: null,
         total: 0,
         q: '',
         limit: 25,
-        remotemediaId: null,
         xhr: null,
 
         initialize: function() {
@@ -256,7 +242,7 @@ window.RemoteMediaShared.Models = function() {
         },
 
         url: function() {
-            return RemoteMediaShared.url('/ezexceed/ngremotemedia/browse');
+            return RemoteMediaShared.url('/ngremotemedia/browse');
         },
 
         transformUrl: false,
@@ -287,14 +273,8 @@ window.RemoteMediaShared.Models = function() {
         },
 
         parse: function(data) {
-            if ('remotemediaId' in data) {
-                this.remotemediaId = data.remotemediaId;
-            }
-            if ('results' in data) {
-                this.total = data.results.total;
-                data = data.results.hits;
-            }
-            return data;
+            this.total = data.count;
+            return data.hits;
         },
 
         page: function() {

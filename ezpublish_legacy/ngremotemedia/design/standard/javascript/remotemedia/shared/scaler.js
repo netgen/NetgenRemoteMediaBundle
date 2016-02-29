@@ -69,7 +69,7 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.updateScalerSize(media);
 
                 var content = JST.scaler({
-                    media: media.thumb(this.SIZE.w, this.SIZE.h, 'jpg')
+                    media: media.thumb(this.SIZE.w, this.SIZE.h)
                 });
                 this.$el.append(content);
 

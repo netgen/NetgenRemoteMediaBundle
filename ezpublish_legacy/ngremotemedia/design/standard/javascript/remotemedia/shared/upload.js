@@ -53,9 +53,9 @@ window.RemoteMediaShared.upload = function($, plupload){
 
         upload_url: function(){
             if (this.model.get('ezoe')) {
-                return RemoteMediaShared.url('/ezexceed/ngremotemedia/simple_upload');
+                return RemoteMediaShared.url('/ngremotemedia/simple_upload');
             }else{
-                return RemoteMediaShared.url('/ezexceed/ngremotemedia/upload/') +  RemoteMediaShared.config().currentObjectId;
+                return RemoteMediaShared.url('/ngremotemedia/upload/') +  RemoteMediaShared.config().currentObjectId;
             }
         },
 
