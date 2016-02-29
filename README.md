@@ -22,7 +22,7 @@ This repository contains field type (and legacy data type) implementation, and i
 
 **Installation steps**
 * Use composer:
-    * add `"netgen/remote-media-bundle": "~0.*"` to your `composer.json`
+    * add `"netgen/remote-media-bundle": "~0.1"` to your `composer.json`
     * add `git@bitbucket.org:netgen/netgenremotemedia.git` as a composer repository
     * run `composer update netgen/remote-media-bundle`
     
