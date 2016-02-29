@@ -28,7 +28,7 @@ This repository contains field type (and legacy data type) implementation, and i
     
 * Configure the bundle:
     * in `config.yml` add basic configuration:
-    ```yaml
+    ```
     netgen_remote_media:
         provider: cloudinary
         account_name: [your_cloud_name]
@@ -37,14 +37,14 @@ This repository contains field type (and legacy data type) implementation, and i
     ```
     Complete configuration options are available at `Resources/config/config.yml.example`
     * put the following in your `ezpublish/config/routing.yml`
-    ```yml
+    ```
     _netgen_remote_media:
         resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
     ```
     
 * Configure legacy settings:
     * add the following to `ezoe.ini.append.php` (create one if it does not exist)
-    ```ini
+    ```
     [EditorSettings]
     Plugins[]=remotemedia
     
@@ -53,7 +53,7 @@ This repository contains field type (and legacy data type) implementation, and i
     ```
     
 * Activate the bundle:
-    ```php
+    ```
     public function registerBundles()
     {
         ...
@@ -69,7 +69,7 @@ This repository contains field type (and legacy data type) implementation, and i
      
 * Clear the caches
     * run the following command:
-    ```bash
+    ```
     $ php ezpublish/console cache:clear
     ```
     
@@ -94,6 +94,7 @@ This repository contains field type (and legacy data type) implementation, and i
 
 * Copyright (C) 2016 Keyteq. All rights reserved.
 * Copyright (C) 2016 Netgen. All rights reserved.
+
 
 ## License ##
 
