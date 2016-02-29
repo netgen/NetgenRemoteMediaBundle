@@ -58,6 +58,12 @@ class UIController extends Controller
      */
     protected $authorizationChecker;
 
+    protected $ezoeVariationList;
+
+    protected $ezoeClassList;
+
+
+
     /**
      * UIController constructor.
      *
@@ -84,6 +90,16 @@ class UIController extends Controller
         $this->repository = $repository;
         $this->configResolver = $configResolver;
         $this->authorizationChecker = $authorizationChecker;
+    }
+
+    public function setEzoeVariationList($variationList)
+    {
+        $this->ezoeVariationList = $variationList;
+    }
+
+    public function setEzoeClassList($classList)
+    {
+        $this->ezoeClassList = $classList;
     }
 
     /**
@@ -328,7 +344,7 @@ class UIController extends Controller
             );
         }
 
-        $versions = $this->configResolver->getParameter('ezoe.variation_list', 'netgen_remote_media');
+        $versions = $this->ezoeVariationList;
         $availableVersions = array();
         // @todo: move this to helper class
         if (!empty($versions) && is_array($versions)) {
@@ -359,12 +375,10 @@ class UIController extends Controller
             }
         }
 
-        $classList = $this->configResolver->getParameter('ezoe.class_list', 'netgen_remote_media');
-
         $responseData = array(
             'media' => !empty($value) ? $value: false,
             'available_versions' => $availableVersions,
-            'class_list' => $classList
+            'class_list' => $this->ezoeClassList
         );
 
         return new JsonResponse($responseData, 200);
@@ -488,7 +502,7 @@ class UIController extends Controller
         $variations = $variationCoords + $remoteResourceValue->variations;
         $remoteResourceValue->variations = $variations;
 
-        $formatListInitial = $this->configResolver->getParameter('ezoe.variation_list', 'netgen_remote_media');
+        $formatListInitial = $this->ezoeVariationList;
         $formatList = array();
         foreach ($formatListInitial as $format) {
             $format = explode(',', $format);

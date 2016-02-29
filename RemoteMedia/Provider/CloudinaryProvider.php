@@ -32,18 +32,14 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      *
      * @param array $cloudinaryOptions
      */
-    public function __construct($cloudinaryOptions)
+    public function __construct($cloudName, $apiKey, $apiSecret)
     {
-        if (empty($cloudinaryOptions['cloud_name']) || empty($cloudinaryOptions['api_key']) || empty($cloudinaryOptions['api_secret'])) {
-            throw new \InvalidArgumentException('Cloudinary cloud_name, api_key and api_secret must all be set!');
-        }
-
         $this->cloudinary = new Cloudinary();
         $this->cloudinary->config(
             array(
-                'cloud_name' => $cloudinaryOptions['cloud_name'],
-                'api_key' => $cloudinaryOptions['api_key'],
-                'api_secret' => $cloudinaryOptions['api_secret'],
+                'cloud_name' => $cloudName,
+                'api_key' => $apiKey,
+                'api_secret' => $apiSecret,
             )
         );
 

@@ -100,7 +100,7 @@ class NgRemoteMediaType extends eZDataType
         );
 
         $container = ezpKernel::instance()->getServiceContainer();
-        $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
+        $provider = $container->get( 'netgen_remote_media.provider' );
 
         $value = $contentObjectAttribute->Content();
 
@@ -181,7 +181,7 @@ class NgRemoteMediaType extends eZDataType
     function deleteStoredObjectAttribute( $objectAttribute, $version = null )
     {
         $container = ezpKernel::instance()->getServiceContainer();
-        $provider = $container->get( 'netgen_remote_media.remote_media.provider' );
+        $provider = $container->get( 'netgen_remote_media.provider' );
 
         $db = eZDB::instance();
         $result = $db->arrayQuery(

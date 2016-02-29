@@ -36,7 +36,7 @@ netgen_remote_media_fetch_remote:
     path: /ngremotemedia/simple_fetch/{resourceId}
     defaults: { _controller: netgen_remote_media.controller.ui:fetchRemoteAction }
     requirements:
-        id: .+
+        resourceId: .+
 
 netgen_remote_media_generate_variation:
     path: /ngremotemedia/generate

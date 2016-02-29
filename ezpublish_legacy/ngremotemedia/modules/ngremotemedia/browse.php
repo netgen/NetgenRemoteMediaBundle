@@ -8,8 +8,7 @@ $contentVersion = $Params['contentobject_version'];
 
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
-$configResolver = $container->get('ezpublish.config.resolver');
-$browseLimit = $configResolver->getParameter('ezexceed.browse_limit', 'netgen_remote_media');
+$browseLimit = $container->getParameter('netgen_remote_media.browse_limit');
 
 $limit = 25;
 $query = $http->getVariable('q', '');

@@ -15,9 +15,50 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('netgen_remote_media');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->scalarNode('provider')
+                    ->defaultValue('cloudinary')
+                    ->end()
+                ->scalarNode('account_name')
+                    ->isRequired()
+                    ->defaultNull()
+                    ->end()
+                ->scalarNode('account_key')
+                    ->isRequired()
+                    ->defaultNull()
+                    ->end()
+                ->scalarNode('account_secret')
+                    ->isRequired()
+                    ->defaultNull()
+                    ->end()
+                ->integerNode('browse_limit')
+                    ->defaultValue(500)
+                ->end()
+                ->booleanNode('remove_unused')
+                    ->defaultValue(false)
+                ->end()
+                ->arrayNode('ezoe')
+                    ->addDefaultsIfNotSet()
+                    ->treatNullLike(array())
+                    ->children()
+                        ->variableNode('class_list')
+                        ->defaultValue(array(
+                           'pull-left|Left adjusted',
+                           'pull-right|Right adjusted'
+                        ))
+                        ->end()
+                        ->variableNode('variation_list')
+                        ->defaultValue(array(
+                            'Small,200x200',
+                            'Medium,400x400',
+                            'Large,800x600'
+                        ))
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

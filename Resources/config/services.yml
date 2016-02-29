@@ -1,11 +1,11 @@
 parameters:
-    netgen_remote_media.provider: "netgen_remote_media.remote_media.cloudinary"
+    #netgen_remote_media.provider: "netgen_remote_media.remote_media.cloudinary"
 
 services:
     netgen_remote_media.controller.ui:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\UIController
         arguments:
-            - "@netgen_remote_media.remote_media.provider"
+            - "@netgen_remote_media.provider"
             - "@netgen_remote_media.helper"
             - "@templating"
             - "@ezpublish.api.repository"
@@ -13,16 +13,20 @@ services:
             - "@security.authorization_checker"
         calls:
             - [setAnonymousUserId, ["$anonymous_user_id$"]]
-            - [setBrowseLimit, ["$ezexceed.browse_limit;netgen_remote_media$"]]
+            - [setBrowseLimit, ["%netgen_remote_media.browse_limit%"]]
+            - [setEzoeVariationList, ["%netgen_remote_media.ezoe.variation_list%"]]
+            - [setEzoeClassList, ["%netgen_remote_media.ezoe.class_list%"]]
 
-    netgen_remote_media.remote_media.cloudinary:
+    netgen_remote_media.provider.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\CloudinaryProvider
         arguments:
-            - "$cloudinary;netgen_remote_media$"
+            - "%netgen_remote_media.parameters.cloudinary.account_name%"
+            - "%netgen_remote_media.parameters.cloudinary.account_key%"
+            - "%netgen_remote_media.parameters.cloudinary.account_secret%"
 
     netgen_remote_media.helper:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
         arguments:
-            - "@netgen_remote_media.remote_media.provider"
+            - "@netgen_remote_media.provider"
             - "@ezpublish.api.service.content"
             - "@ezpublish.api.service.content_type"

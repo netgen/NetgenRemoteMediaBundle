@@ -21,13 +21,22 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('parameters.yml');
         $loader->load('services.yml');
         $loader->load('templating.yml');
         $loader->load('fieldtypes.yml');
 
-        $provider = $container->getParameter('netgen_remote_media.provider');
-        $container->setAlias('netgen_remote_media.remote_media.provider', $provider);
+        if (!isset($config['provider'])) {
+            throw new \InvalidArgumentException('The "provider" option must be set');
+        }
+
+        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_name", $config['account_name']);
+        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_key", $config['account_key']);
+        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_secret", $config['account_secret']);
+        $container->setParameter("netgen_remote_media.ezoe.variation_list", $config['ezoe']['variation_list']);
+        $container->setParameter("netgen_remote_media.ezoe.class_list", $config['ezoe']['class_list']);
+        $container->setParameter("netgen_remote_media.browse_limit", $config['browse_limit']);
+        $container->setParameter("netgen_remote_media.remove_unused_resources", $config['remove_unused']);
+        $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.' . $config['provider']);
     }
 
     /**
