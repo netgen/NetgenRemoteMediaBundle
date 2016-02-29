@@ -30,9 +30,15 @@ $ViewList['change'] = array(
     'functions' => 'change',
     'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
 );
+$ViewList['tags'] = array(
+    'script' => 'change_tags.php',
+    'functions' => 'tags',
+    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
+);
 
 $FunctionList['fetch'] = array();
 $FunctionList['save'] = array();
 $FunctionList['browse'] = array();
 $FunctionList['upload'] = array();
 $FunctionList['change'] = array();
+$FunctionList['tags'] = array();

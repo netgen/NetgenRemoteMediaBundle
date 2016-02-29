@@ -19,6 +19,7 @@ if (empty($resourceId)) {
             )
         )
     );
+    eZExecution::cleanExit();
 }
 
 $container = ezpKernel::instance()->getServiceContainer();
