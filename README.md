@@ -44,7 +44,7 @@ This repository contains field type (and legacy data type) implementation, and i
     
 * Configure legacy settings:
     * add the following to `ezoe.ini.append.php` (create one if it does not exist)
-    ```
+    ```ini
     [EditorSettings]
     Plugins[]=remotemedia
     
@@ -75,7 +75,7 @@ This repository contains field type (and legacy data type) implementation, and i
     
 * Now you can add the field to your content class and use it:
     * in twig template, you can use the `ez_render_field` function:
-    ```
+    ```php
     {{ ez_render_field(
         content,
         'remote_image',
