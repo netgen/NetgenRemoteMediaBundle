@@ -35,6 +35,16 @@ $ViewList['tags'] = array(
     'functions' => 'tags',
     'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
 );
+$ViewList['simple_fetch'] = array(
+    'script' => 'simple_fetch.php',
+    'functions' => 'fetch',
+    'params' => array( 'resource_id' )
+);
+$ViewList['generate'] = array(
+    'script' => 'generate.php',
+    'functions' => 'generate',
+    'params' => array( 'resource_id' )
+);
 
 $FunctionList['fetch'] = array();
 $FunctionList['save'] = array();
@@ -42,3 +52,4 @@ $FunctionList['browse'] = array();
 $FunctionList['upload'] = array();
 $FunctionList['change'] = array();
 $FunctionList['tags'] = array();
+$FunctionList['generate'] = array();

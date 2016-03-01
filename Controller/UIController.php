@@ -469,7 +469,7 @@ class UIController extends Controller
     {
         $userId = $request->get('user_id', null);
 
-        $this->checkPermissions('ng_remote_provider', 'generate', $userId);
+        $this->checkPermissions('ngremotemedia', 'generate', $userId);
 
         $resourceId = $request->request->get('resourceId', '');
         $variantName = $request->request->getAlnum('name', '');
