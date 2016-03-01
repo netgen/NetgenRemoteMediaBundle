@@ -66,12 +66,14 @@ This repository contains field type (and legacy data type) implementation, and i
     
 * Update the database:
     * run `php ezpublish/console doctrine:schema:update --force` (or run with `--dump-sql` to get the sql needed for creating the table)
-     
+
 * Clear the caches
     * run the following command:
     ```
     $ php ezpublish/console cache:clear
     ```
+
+* Grant proper permissions to editors.
     
 * Now you can add the field to your content class and use it:
     * in twig template, you can use the `ez_render_field` function:
