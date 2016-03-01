@@ -231,7 +231,7 @@ class UIController extends Controller
     public function uploadFileSimpleAction(Request $request)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions('ng_remote_provider', 'upload', $userId);
+        $this->checkPermissions('ngremotemedia', 'upload', $userId);
 
         $file = $request->files->get('file', '');
         $fieldId = $request->get('AttributeID', '');
@@ -609,7 +609,7 @@ class UIController extends Controller
     public function browseRemoteMediaAction(Request $request)
     {
         $userId = $request->get('user_id', null);
-        $this->checkPermissions('ng_remote_provider', 'browse', $userId);
+        $this->checkPermissions('ngremotemedia', 'browse', $userId);
 
         $limit = 25;
         $query = $request->get('q', '');
