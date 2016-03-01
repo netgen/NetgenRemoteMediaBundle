@@ -183,9 +183,10 @@ window.RemoteMediaShared.Models = function() {
         },
 
 
-        tags_url: function() {
+        tags_url: function(method) {
             var attr = this.get('attr');
-            return [RemoteMediaShared.url('/ngremotemedia/tags'), RemoteMediaShared.config().currentObjectId, attr.id, attr.get('version')].join('/');
+            method || (method = "");
+            return [RemoteMediaShared.url('/ngremotemedia/tags'+method), RemoteMediaShared.config().currentObjectId, attr.id, attr.get('version')].join('/');
         },
 
 
@@ -204,8 +205,8 @@ window.RemoteMediaShared.Models = function() {
         remove_tag: function(tag_name) {
             return Backbone.sync('delete', this, {
                 transform: false,
-                method: 'DELETE',
-                url: this.tags_url(),
+                method: 'POST',
+                url: this.tags_url('/delete'),
                 data: {
                     id: this.get('resourceId'),
                     tag: tag_name
