@@ -24,7 +24,7 @@ if (empty($resourceId) || empty($tag)) {
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
 
-$tags = $helper->addTag($contentId, $fieldId, $contentVersionId, $tag);
+$tags = $helper->removeTag($contentId, $fieldId, $contentVersionId, $tag);
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($tags));

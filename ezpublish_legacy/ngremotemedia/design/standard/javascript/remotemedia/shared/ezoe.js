@@ -113,6 +113,7 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
                 resourceId: media.id
             }
         }).done(function(){
+            this.editorAttributes.alttext = this.editorAttributes.alttext || media.get('file').alt_text;
             this.model.set({
                 toScale: editorToScale,
                 available_versions: media.get('available_versions')

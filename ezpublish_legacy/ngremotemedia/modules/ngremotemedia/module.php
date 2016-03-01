@@ -35,6 +35,11 @@ $ViewList['tags'] = array(
     'functions' => 'tags',
     'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
 );
+$ViewList['tags_delete'] = array(
+    'script' => 'remove_tags.php',
+    'functions' => 'tags',
+    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
+);
 $ViewList['simple_fetch'] = array(
     'script' => 'simple_fetch.php',
     'functions' => 'fetch'

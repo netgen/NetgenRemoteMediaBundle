@@ -206,7 +206,7 @@ window.RemoteMediaShared.Models = function() {
             return Backbone.sync('delete', this, {
                 transform: false,
                 method: 'POST',
-                url: this.tags_url('/delete'),
+                url: this.tags_url('_delete'),
                 data: {
                     id: this.get('resourceId'),
                     tag: tag_name

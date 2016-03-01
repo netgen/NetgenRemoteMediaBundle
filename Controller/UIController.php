@@ -499,58 +499,6 @@ class UIController extends Controller
     }
 
     /**
-     * Legacy admin: CHANGE
-     * Called when media is selected from the list of uploaded resources
-     *
-     * @param Request $request
-     * @param $contentId
-     * @param $fieldId
-     * @param $contentVersionId
-     *
-     * @return JsonResponse
-     */
-    public function saveAttributeLegacyAction(Request $request, $contentId, $fieldId, $contentVersionId)
-    {
-        $this->checkContentPermissions($contentId);
-
-        $resourceId = $request->get('resource_id', '');
-        $languageCode = $request->get('language_code', null);
-
-        if (empty($resourceId)) {
-            return new JsonResponse(
-                array(
-                    'error_text' => 'Resource id must not be empty',
-                    'content' => null,
-                ),
-                400
-            );
-        }
-
-        $updatedValue = $this->helper->getValueFromRemoteResource($resourceId, 'image');
-        $value = $this->helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId, $languageCode);
-
-        $content = $this->templating->render(
-            'file:extension/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl',
-            array(
-                'value' => $value,
-                'fieldId' => $fieldId,
-                'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
-                'version' => $contentVersionId,
-                'contentObjectId' => $contentId,
-                'ajax' => true // tells legacy template not to load js
-            )
-        );
-
-        $responseData = array(
-            'media' => !empty($value->resourceId) ? $value : false,
-            'content' => $content,
-            'toScale' => $this->getScaling($value),
-        );
-
-        return new JsonResponse($responseData, 200);
-    }
-
-    /**
      * eZExceed/Admin:
      * Fetches the list of available images from remote provider
      *

@@ -116,7 +116,7 @@ class NgRemoteMediaType extends eZDataType
             }
         }
 
-        if ($updatedValue->metaData['alt_text'] != $data['alttext']) {
+        if ($updatedValue->metaData['alt_text'] != $data['alttext'] && $data['changeMedia'] !== 1) {
             $provider->updateResourceContext(
                 $updatedValue->resourceId,
                 $value->metaData['resource_type'],

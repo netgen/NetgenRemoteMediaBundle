@@ -24,13 +24,9 @@ netgen_remote_media_add_tag:
     methods: [POST]
 
 netgen_remote_media_remove_tag:
-    path: /ngremotemedia/tags/{contentId}/{fieldId}/{contentVersionId}
+    path: /ngremotemedia/tags_delete/{contentId}/{fieldId}/{contentVersionId}
     defaults: { _controller: netgen_remote_media.controller.ui:removeTagsAction }
-    methods: [DELETE]
-
-netgen_remote_media_legacy_save:
-    path: /ngremotemedia/change/{contentId}/{fieldId}/{contentVersionId}
-    defaults: { _controller: netgen_remote_media.controller.ui:saveAttributeLegacyAction }
+    methods: [POST]
 
 netgen_remote_media_fetch_remote:
     path: /ngremotemedia/simple_fetch
