@@ -97,10 +97,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
             scaler_view;
 
         this.model.fetch({
-            transform: false,
-            data: {
-                user_id: RemoteMediaShared.config().user_id
-            }
+            transform: false
         }).done(function(){
 
             scaler_view = new RemoteMedia.views.Scaler({

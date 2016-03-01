@@ -37,8 +37,7 @@ $ViewList['tags'] = array(
 );
 $ViewList['simple_fetch'] = array(
     'script' => 'simple_fetch.php',
-    'functions' => 'fetch',
-    'params' => array( 'resource_id' )
+    'functions' => 'fetch'
 );
 $ViewList['generate'] = array(
     'script' => 'generate.php',

@@ -110,7 +110,7 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
         media.fetch({
             transform: false,
             data: {
-                user_id: RemoteMediaShared.config().user_id
+                resourceId: media.id
             }
         }).done(function(){
             this.model.set({

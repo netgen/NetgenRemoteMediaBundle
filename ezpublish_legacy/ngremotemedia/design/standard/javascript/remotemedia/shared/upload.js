@@ -70,7 +70,6 @@ window.RemoteMediaShared.upload = function($, plupload){
                 url: this.upload_url(),
                 multipart_params: {
                     legacy: RemoteMediaShared.config().is_admin,
-                    user_id: RemoteMediaShared.config().user_id,
                     AttributeID: id,
                     ContentObjectVersion: this.model.get('version'),
                     http_accept: 'json' //Because of some strange failing when html4 is used

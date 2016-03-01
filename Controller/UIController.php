@@ -122,38 +122,21 @@ class UIController extends Controller
         $this->browseLimit = !empty($browseLimit) ? (int) $browseLimit : 1000;
     }
 
-    /**
-     * Set repository user
-     *
-     * @param mixed $userId
-     */
-    protected function setRepositoryUser($userId)
+    protected function checkContentPermissions($contentId, $function = 'edit')
     {
-        if (!empty($userId)) {
-            $user = $this->repository->getUserService()->loadUser($userId);
-            $this->repository->setCurrentUser($user);
-        }
-    }
-
-    protected function checkContentPermissions($contentId, $userId = null,  $function = 'edit')
-    {
-        $this->setRepositoryUser($userId);
-
         $contentInfo = $this->repository->getContentService()->loadContentInfo($contentId);
 
-        $this->checkPermissions('content', $function, $userId, $contentInfo);
+        $this->checkPermissions('content', $function, $contentInfo);
     }
 
-    protected function checkPermissions($module, $function, $userId = null, $valueObject = null)
+    protected function checkPermissions($module, $function, $valueObject = null)
     {
         $attribute = !empty($valueObject) ?
             new AuthorizationAttribute($module, $function, array('valueObject' => $valueObject)) :
             new AuthorizationAttribute($module, $function);
 
-        $this->setRepositoryUser($userId);
-
         if (!$this->authorizationChecker->isGranted($attribute)) {
-            throw new UnauthorizedException('ng_remote_provider', 'browse');
+            throw new UnauthorizedException('ngremotemedia', 'browse');
         }
     }
 
@@ -166,8 +149,8 @@ class UIController extends Controller
      */
     public function uploadFileAction(Request $request, $contentId)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkContentPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId);
+        $this->checkContentPermissions($contentId);
 
         $file = $request->files->get('file', '');
         $fieldId = $request->get('AttributeID', '');
@@ -215,10 +198,6 @@ class UIController extends Controller
             'toScale' => $this->getScaling($value),
         );
 
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
-
         return new JsonResponse($responseData, 200);
     }
 
@@ -230,8 +209,7 @@ class UIController extends Controller
      */
     public function uploadFileSimpleAction(Request $request)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkPermissions('ngremotemedia', 'upload', $userId);
+        $this->checkPermissions('ngremotemedia', 'upload');
 
         $file = $request->files->get('file', '');
         $fieldId = $request->get('AttributeID', '');
@@ -257,10 +235,6 @@ class UIController extends Controller
         $responseData = array(
             'media' => !empty($value->resourceId) ? $value : false,
         );
-
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
 
         return new JsonResponse($responseData, 200);
     }
@@ -297,8 +271,7 @@ class UIController extends Controller
      */
     public function fetchAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkContentPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId);
 
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value */
         $value = $this->helper->loadValue($contentId, $fieldId, $contentVersionId);
@@ -318,10 +291,6 @@ class UIController extends Controller
             'toScale' => $this->getScaling($value),
         );
 
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
-
         return new JsonResponse($responseData, 200);
     }
 
@@ -332,8 +301,10 @@ class UIController extends Controller
      *
      * @return JsonResponse
      */
-    public function fetchRemoteAction($resourceId)
+    public function fetchRemoteAction(Request $request)
     {
+        $resourceId = $request->get('resourceId');
+
         try {
             $value = $this->helper->getValueFromRemoteResource($resourceId, 'image');
         } catch (NotFound $e) {
@@ -397,8 +368,7 @@ class UIController extends Controller
      */
     public function updateCoordinatesAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkContentPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId);
 
         $variantName = $request->request->getAlnum('name', '');
         $crop_x = $request->request->getInt('crop_x');
@@ -449,10 +419,6 @@ class UIController extends Controller
             ),
         );
 
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
-
         return new JsonResponse($responseData, 200);
     }
 
@@ -467,9 +433,7 @@ class UIController extends Controller
      */
     public function generateVariationAction(Request $request)
     {
-        $userId = $request->get('user_id', null);
-
-        $this->checkPermissions('ngremotemedia', 'generate', $userId);
+        $this->checkPermissions('ngremotemedia', 'generate');
 
         $resourceId = $request->request->get('resourceId', '');
         $variantName = $request->request->getAlnum('name', '');
@@ -531,11 +495,6 @@ class UIController extends Controller
             )
         );
 
-
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
-
         return new JsonResponse($responseData, 200);
     }
 
@@ -552,8 +511,7 @@ class UIController extends Controller
      */
     public function saveAttributeLegacyAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkContentPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId);
 
         $resourceId = $request->get('resource_id', '');
         $languageCode = $request->get('language_code', null);
@@ -589,10 +547,6 @@ class UIController extends Controller
             'toScale' => $this->getScaling($value),
         );
 
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
-
         return new JsonResponse($responseData, 200);
     }
 
@@ -608,18 +562,13 @@ class UIController extends Controller
      */
     public function browseRemoteMediaAction(Request $request)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkPermissions('ngremotemedia', 'browse', $userId);
+        $this->checkPermissions('ngremotemedia', 'browse');
 
         $limit = 25;
         $query = $request->get('q', '');
         $offset = $request->get('offset', 0);
 
         $list = $this->helper->searchResources($query, $offset, $limit, $this->browseLimit);
-
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
 
         return new JsonResponse($list, 200);
     }
@@ -635,8 +584,7 @@ class UIController extends Controller
      */
     public function addTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkContentPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId);
 
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
@@ -653,10 +601,6 @@ class UIController extends Controller
 
         $tags = $this->helper->addTag($contentId, $fieldId, $contentVersionId, $tag);
 
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
-
         return new JsonResponse($tags, 200);
     }
 
@@ -671,8 +615,7 @@ class UIController extends Controller
      */
     public function removeTagsAction(Request $request, $contentId, $fieldId, $contentVersionId)
     {
-        $userId = $request->get('user_id', null);
-        $this->checkContentPermissions($contentId, $userId);
+        $this->checkContentPermissions($contentId);
 
         $resourceId = $request->get('id', '');
         $tag = $request->get('tag', '');
@@ -688,10 +631,6 @@ class UIController extends Controller
         }
 
         $tags = $this->helper->removeTag($contentId, $fieldId, $contentVersionId, $tag);
-
-        if (!empty($userId)) {
-            $this->setRepositoryUser($this->anonymousUserId);
-        }
 
         return new JsonResponse($tags, 200);
     }

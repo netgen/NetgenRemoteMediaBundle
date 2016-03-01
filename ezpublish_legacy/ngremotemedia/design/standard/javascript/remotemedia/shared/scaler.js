@@ -162,7 +162,6 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
                     var selection = this.cropper.tellSelect();
 
                     if (!this.hasSelection) {
-                        console.warn("hasSelection", this.hasSelection);
                         selection.x = 0;
                         selection.y = 0;
                         selection.x2 = this.trueSize[0];

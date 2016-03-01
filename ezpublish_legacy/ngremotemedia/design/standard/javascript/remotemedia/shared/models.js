@@ -4,11 +4,9 @@ window.RemoteMediaShared || (window.RemoteMediaShared = {});
 window.RemoteMediaShared.config = function() {
     
     var is_admin = this.is_admin();
-    this.user_id || ( this.user_id = $('[data-user-id]').data('user-id') );
 
     return {
         is_admin: is_admin,
-        user_id: this.user_id,
         plupload_swf: is_admin ? '/extension/remotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url,
         currentObjectId: is_admin ? RemoteMediaSettings.ez_contentobject_id : eZExceed.config.currentObjectId,
         version: is_admin ? RemoteMediaSettings.ez_contentobject_version : $('[data-version]').data('version')
@@ -101,7 +99,6 @@ window.RemoteMediaShared.Models = function() {
                 method: 'POST',
                 data: {
                     resource_id: id, 
-                    user_id: RemoteMediaShared.config().user_id
                 } 
             });
         },
@@ -111,8 +108,7 @@ window.RemoteMediaShared.Models = function() {
         // coords should be an array [x,y,x2,y2]
         save_version: function(name, coords) {
             var data = {
-                name: name,
-                user_id: RemoteMediaShared.config().user_id
+                name: name
             };
 
             _.extend(data, this.process_coords(coords));
@@ -130,8 +126,7 @@ window.RemoteMediaShared.Models = function() {
         generate: function(name, coords){
             var data = {
                 name: name,
-                resourceId: this.get('media').id,
-                user_id: RemoteMediaShared.config().user_id
+                resourceId: this.get('media').id
             };
 
             _.extend(data, this.process_coords(coords));
@@ -158,7 +153,7 @@ window.RemoteMediaShared.Models = function() {
 
     var Media = Backbone.Model.extend({
 
-        initialize: function(options) {
+        initialize: function() {
             _.bindAll(this);
         },
 
@@ -184,7 +179,7 @@ window.RemoteMediaShared.Models = function() {
         },
 
         url: function(){
-            return [RemoteMediaShared.url('/ngremotemedia/simple_fetch'), this.id].join('/');
+            return [RemoteMediaShared.url('/ngremotemedia/simple_fetch')].join('/');
         },
 
 
@@ -199,7 +194,6 @@ window.RemoteMediaShared.Models = function() {
                 transform: false,
                 url: this.tags_url(),
                 data: {
-                    user_id: RemoteMediaShared.config().user_id,
                     id: this.get('resourceId'), 
                     tag: tag_name
                 }
@@ -213,7 +207,6 @@ window.RemoteMediaShared.Models = function() {
                 method: 'DELETE',
                 url: this.tags_url(),
                 data: {
-                    user_id: RemoteMediaShared.config().user_id,
                     id: this.get('resourceId'),
                     tag: tag_name
                 }
@@ -255,7 +248,6 @@ window.RemoteMediaShared.Models = function() {
                 data.q = q;
             }
             data.limit = this.limit;
-            data.user_id = RemoteMediaShared.config().user_id;
             
             if (this.xhr && typeof this.xhr.abort === 'function') {
                 this.xhr.abort();
@@ -280,7 +272,6 @@ window.RemoteMediaShared.Models = function() {
         page: function() {
             if (this.length < this.total) {
                 var data = {
-                    user_id: RemoteMediaShared.config().user_id,
                     limit: this.limit,
                     offset: this.length,
                     q: this.q
