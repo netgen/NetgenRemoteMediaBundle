@@ -53,7 +53,7 @@ define(['ngremotemedia/view', 'ngremotemedia/models', './tagger', './upload'], f
             var files = ['jquery.jcrop', 'ngremotemedia'];
             _.each(files, function(name) {
                 var css = document.createElement('link');
-                css.href = '/extension/ngremotemedia/design/ezexceed/stylesheets/' + name + '.css';
+                css.href = '/extension/ngremotemedia/design/standard/stylesheets/' + name + '.css';
                 css.type = 'text/css';
                 css.rel = 'stylesheet';
                 headEl.appendChild(css);

@@ -1,5 +1,5 @@
 <script type="text/javascript">
-{literal} RemoteMediaTranslations = { {/literal}
+{literal} NgRemoteMediaTranslations = { {/literal}
     'Search for media': "{'Search for medias'|i18n( 'content/ngremotemedia' )}",
     'Load more': "{'Load more'|i18n( 'content/ngremotemedia' )}",
     'Upload new media': "{'Upload new media'|i18n( 'content/ngremotemedia' )}",
