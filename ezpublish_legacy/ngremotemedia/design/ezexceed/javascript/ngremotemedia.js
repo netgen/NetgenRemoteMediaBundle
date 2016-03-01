@@ -1,4 +1,4 @@
-define(['shared/datatype', 'remotemedia/views/main', 'remotemedia/config'], function(Base, MainView) {
+define(['shared/datatype', 'ngremotemedia/views/main', 'ngremotemedia/config'], function(Base, MainView) {
 
     return Base.extend({
         initialize: function(options) {

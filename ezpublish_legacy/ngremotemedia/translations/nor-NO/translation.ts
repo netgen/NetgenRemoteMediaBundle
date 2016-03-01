@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>remotemedia</name>
+    <name>ngremotemedia</name>
     <message>
         <source>Remove current media</source>
         <translation>Fjern media</translation>

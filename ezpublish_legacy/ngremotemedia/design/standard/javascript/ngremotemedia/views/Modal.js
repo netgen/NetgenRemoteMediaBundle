@@ -1,7 +1,7 @@
-RemoteMedia.views.Modal = Backbone.View.extend({
+NgRemoteMedia.views.Modal = Backbone.View.extend({
     // el construction information
     tagName: 'div',
-    id: 'remotemedia-modal',
+    id: 'ngremotemedia-modal',
 
     // Template for containing data
     template: '<div class="backdrop"/><div class="content"><div class="in"></div></div>',

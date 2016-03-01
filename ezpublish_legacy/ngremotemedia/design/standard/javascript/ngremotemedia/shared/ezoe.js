@@ -84,7 +84,7 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
     },    
 
     is_remotemedia_selected: function(){
-      return this.selectedContent && this.selectedContent.is('img') && this.selectedContent.hasClass('remotemedia');
+      return this.selectedContent && this.selectedContent.is('img') && this.selectedContent.hasClass('ngremotemedia');
     },
  
 
@@ -100,7 +100,7 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
 
         var view_options = {
             model : this.model,
-            className : 'remotemedia-scaler',
+            className : 'ngremotemedia-scaler',
             singleVersion : true,
             editorAttributes : ea,
             selectedVersion : ea.version
@@ -132,7 +132,7 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
 
 
     render_scaler_view_in_modal: function(options){
-        var modal = new RemoteMedia.views.Modal().insert().render();
+        var modal = new NgRemoteMedia.views.Modal().insert().render();
         _.extend(options, {el:modal.show().contentEl });
         var scaler_view = new ScalerView(options).render();
 
@@ -203,7 +203,7 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
             };
 
         _(args).extend(attributes);
-        args['class'] += ' ezoeItemCustomTag remotemedia';
+        args['class'] += ' ezoeItemCustomTag ngremotemedia';
 
         // Fixes crash in Safari
         tinymce.isWebKit && ed.getWin().focus();

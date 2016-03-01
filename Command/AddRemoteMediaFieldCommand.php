@@ -11,14 +11,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Example usage:
- * php ezpublish/console netgen:remotemedia:add:field ng_blog_post remote_image "Remote image" --formats=T1,200x200 --formats=T2,250x250.
+ * php ezpublish/console netgen:ngremotemedia:add:field ng_blog_post remote_image "Remote image" --formats=T1,200x200 --formats=T2,250x250.
  */
 class AddRemoteMediaFieldCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
         $this
-            ->setName('netgen:remotemedia:add:field')
+            ->setName('netgen:ngremotemedia:add:field')
             ->setDescription('This command will add ng_remote_media field type to the provided content type')
             ->addArgument(
                 'content_type_identifier',

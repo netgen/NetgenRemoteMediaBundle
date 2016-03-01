@@ -5,7 +5,7 @@
     {def $thumb_url = videoThumbnail($value)}
 {/if}
 
-<div class="remotemedia-image">
+<div class="ngremotemedia-image">
     {if $value.resourceId}
         <div class="image-wrap">
             <img src="{$thumb_url}" />
@@ -15,13 +15,13 @@
             <h3 class="title">{$value.resourceId|wash}</h3>
 
             <div class="tagger">
-                <div class="remotemedia-alttext">
-                    <span class="help-block description">{'Alternate text'|i18n('remotemedia')}</span>
+                <div class="ngremotemedia-alttext">
+                    <span class="help-block description">{'Alternate text'|i18n('ngremotemedia')}</span>
                     <input type="text"
                            name="{$attribute_base}_alttext_{$fieldId}" value="{$value.metaData.alt_text}" class="media-alttext data">
                 </div>
 
-                <div class="remotemedia-tags">
+                <div class="ngremotemedia-tags">
                     <div class="input-append add-tag">
                         <input type="text" class="tag no-autosave" placeholder="{'Add tag'|i18n( 'content/edit' )}" data-autosave="off">
                         <button class="btn tag" disabled type="button">{'Add tag'|i18n( 'content/edit' )}</button>

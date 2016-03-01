@@ -21,7 +21,7 @@ window.RemoteMediaShared.scaler = function(ScaledVersion, $){
             hasSelection: false,
 
             editorAttributes: false,
-            className: 'remotemedia-scaler',
+            className: 'ngremotemedia-scaler',
 
             versionSaved: null,
             poppedFromStack: null,

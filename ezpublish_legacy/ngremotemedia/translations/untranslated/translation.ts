@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>extension/remotemedia/datatype</name>
+    <name>extension/ngremotemedia/datatype</name>
     <message>
         <source>RemoteMedia</source>
         <comment>Datatype name</comment>

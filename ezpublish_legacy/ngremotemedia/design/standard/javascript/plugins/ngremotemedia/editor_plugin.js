@@ -15,22 +15,22 @@
 
             require.config({
                 map: {
-                    'remotemedia/jcrop': {
+                    'ngremotemedia/jcrop': {
                         'jquery': 'jquery-safe'
                     }
                 },
                 paths: {
-                    'remotemedia': '/extension/ngremotemedia/design/ezexceed/javascript',
-                    'remotemedia/jcrop': '/extension/ngremotemedia/design/standard/javascript/libs/jquery.jcrop'
+                    'ngremotemedia': '/extension/ngremotemedia/design/ezexceed/javascript',
+                    'ngremotemedia/jcrop': '/extension/ngremotemedia/design/standard/javascript/libs/jquery.jcrop'
                 }
             });
 
 
-            require(['remotemedia/views/ezoe'], function(View){
+            require(['ngremotemedia/views/ezoe'], function(View){
                 new View(options);
             });
         }else{
-            new RemoteMedia.views.EzOE(options);
+            new NgRemoteMedia.views.EzOE(options);
         }
     };
 
@@ -41,13 +41,13 @@
             ed.addCommand('mceRemotemedia', loadRemoteMedia);
 
             // Register buttons
-            ed.addButton('remotemedia', { title: 'RemoteMedia', cmd: 'mceRemotemedia' });
+            ed.addButton('ngremotemedia', { title: 'NgRemoteMedia', cmd: 'mceRemotemedia' });
 
         },
 
         getInfo: function() {
             return {
-                longname: 'RemoteMedia',
+                longname: 'NgRemoteMedia',
                 author: 'Netgen',
                 authorurl: 'http://www.netgenlabs.com',
                 infourl: 'http://www.netgenlabs.com',
@@ -57,6 +57,6 @@
     });
 
     // Register plugin
-    tinymce.PluginManager.add('remotemedia', tinymce.plugins.RemotemediaPlugin);
+    tinymce.PluginManager.add('ngremotemedia', tinymce.plugins.RemotemediaPlugin);
 
 })(tinymce);

@@ -9,11 +9,11 @@
 {% set documentTypes = ['pdf', 'doc', 'docx'] %}
 {% set attribute_base = "ContentObjectAttribute" %}
 
-<div class="attribute-base remotemedia-type"
-     data-handler='remotemedia/remotemedia'
+<div class="attribute-base ngremotemedia-type"
+     data-handler='ngremotemedia/ngremotemedia'
      data-url-root="/"
      data-paths='{
-        "remotemedia" : "/extension/ngremotemedia/design/ezexceed/javascript/"
+        "ngremotemedia" : "/extension/ngremotemedia/design/ezexceed/javascript/"
     }'
     data-bootstrap='{{ value|json_encode }}'
 >
@@ -31,12 +31,12 @@
             {% include "NetgenRemoteMediaBundle:ezexceed/edit:preview.html.twig" %}
         {% endif %}
 
-        <div class="remotemedia-alttext">
+        <div class="ngremotemedia-alttext">
             <span class="help-block description">{{ 'ngremotemedia.edit.alt_text'|trans }}</span>
             <input type="text"
                    name="{{ attribute_base }}_alttext_{{ fieldId }}" value="{{ value.metaData.alt_text }}" class="media-alttext data">
         </div>
-        <div class="remotemedia-tags">
+        <div class="ngremotemedia-tags">
             <div class="input-append add-tag">
                 <input type="text" class="tag" placeholder="{{ 'ngremotemedia.edit.tag.write'|trans }}" data-autosave="off">
                 <button class="btn tag" disabled type="button">{{ 'ngremotemedia.edit.tag.add'|trans }}</button>
@@ -47,7 +47,7 @@
     {% endif %}
 
     <div class="eze-no-image">
-        <button type="button" class="btn from-remotemedia">
+        <button type="button" class="btn from-ngremotemedia">
             {{ 'ngremotemedia.edit.browse'|trans }}
         </button>
         <span class="upload-container">

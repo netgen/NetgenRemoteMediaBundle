@@ -4,14 +4,14 @@
 
 {run-once}
   {ezscript( array(
-      'remotemedia/shared/templates.js',
-      'remotemedia/shared/models.js',
-      'remotemedia/shared/tagger.js',
-      'remotemedia/shared/browser.js',
-      'remotemedia/shared/upload.js',
-      'remotemedia/shared/scaled_version.js',
-      'remotemedia/shared/scaler.js',
-      'remotemedia/shared/ezoe.js'
+      'ngremotemedia/shared/templates.js',
+      'ngremotemedia/shared/models.js',
+      'ngremotemedia/shared/tagger.js',
+      'ngremotemedia/shared/browser.js',
+      'ngremotemedia/shared/upload.js',
+      'ngremotemedia/shared/scaled_version.js',
+      'ngremotemedia/shared/scaler.js',
+      'ngremotemedia/shared/ezoe.js'
   ))}
 {/run-once}
 

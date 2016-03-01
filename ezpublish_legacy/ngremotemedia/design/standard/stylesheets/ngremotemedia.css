@@ -1,22 +1,22 @@
 /*********************
   EzExceed & admin 
 **********************/
-.remotemedia-type .image-meta {
+.ngremotemedia-type .image-meta {
   float: none;
   overflow: hidden; }
-.remotemedia-type .title {
+.ngremotemedia-type .title {
   margin-bottom: 10px; }
-.remotemedia-type .help-block {
+.ngremotemedia-type .help-block {
   display: block;
   margin: 0 0 5px; }
-.remotemedia-type .remotemedia-alttext {
+.ngremotemedia-type .ngremotemedia-alttext {
   clear: both;
   margin-bottom: 10px; }
-.remotemedia-type .remotemedia-buttons {
+.ngremotemedia-type .ngremotemedia-buttons {
   clear: left; }
-.remotemedia-type .remotemedia-local-file-container {
+.ngremotemedia-type .ngremotemedia-local-file-container {
   display: inline; }
-.remotemedia-type .add-tag .btn {
+.ngremotemedia-type .add-tag .btn {
   padding: 0.3em 1em;
   margin-left: 5px;
   border-radius: 3px;
@@ -29,16 +29,16 @@
   -moz-transition: ease all 0.3s;
   -o-transition: ease all 0.3s;
   transition: ease all 0.3s; }
-  .remotemedia-type .add-tag .btn:hover, .remotemedia-type .add-tag .btn:focus {
+  .ngremotemedia-type .add-tag .btn:hover, .ngremotemedia-type .add-tag .btn:focus {
     background-color: rgba(0, 0, 0, 0.1);
     color: black;
     border: 1px solid #999;
     outline: none; }
-.remotemedia-type .remotemedia-tags {
+.ngremotemedia-type .ngremotemedia-tags {
   font-size: 12px; }
-.remotemedia-type .tags {
+.ngremotemedia-type .tags {
   margin: 10px 0 5px; }
-  .remotemedia-type .tags .label {
+  .ngremotemedia-type .tags .label {
     position: relative;
     display: inline-block;
     margin: 0 8px 5px 0;
@@ -49,7 +49,7 @@
     text-decoration: none;
     border-radius: 4px;
     color: #fff; }
-  .remotemedia-type .tags .close {
+  .ngremotemedia-type .tags .close {
     position: absolute;
     right: 0.2em;
     top: 50%;
@@ -67,25 +67,25 @@
     font-size: 1.09375em;
     line-height: 1em;
     vertical-align: text-top; }
-    .remotemedia-type .tags .close:focus {
+    .ngremotemedia-type .tags .close:focus {
       outline: none; }
-.eze .remotemedia-type .thumbnail {
+.eze .ngremotemedia-type .thumbnail {
   position: relative;
   margin: 0 0 10px 0;
   background: #fff;
   float: left; }
-  .eze .remotemedia-type .thumbnail .edit-image {
+  .eze .ngremotemedia-type .thumbnail .edit-image {
     position: absolute;
     bottom: 10px;
     left: 10px; }
-  .eze .remotemedia-type .thumbnail .close {
+  .eze .ngremotemedia-type .thumbnail .close {
     position: absolute;
     top: 0;
     right: 0;
     padding: 4px 10px 8px 10px;
     color: #fff;
     opacity: 1; }
-  .eze .remotemedia-type .thumbnail:hover .close {
+  .eze .ngremotemedia-type .thumbnail:hover .close {
     -webkit-transition: linear background-color 0.2s;
     -moz-transition: linear background-color 0.2s;
     -o-transition: linear background-color 0.2s;
@@ -93,9 +93,9 @@
     background: #fff;
     border-bottom-left-radius: 4px;
     color: #000; }
-.eze .remotemedia-type .add-tag {
+.eze .ngremotemedia-type .add-tag {
   position: relative; }
-  .eze .remotemedia-type .add-tag .btn {
+  .eze .ngremotemedia-type .add-tag .btn {
     position: absolute;
     top: 0;
     right: 0;
@@ -108,43 +108,43 @@
     background-repeat: repeat-x;
     box-shadow: none;
     background-image: linear-gradient(to bottom, #ffffff, #e6e6e6); }
-    .eze .remotemedia-type .add-tag .btn:hover, .eze .remotemedia-type .add-tag .btn:focus {
+    .eze .ngremotemedia-type .add-tag .btn:hover, .eze .ngremotemedia-type .add-tag .btn:focus {
       background-color: #e6e6e6;
       background-position: 0 -15px;
       -webkit-transition: linear background-position 0.1s;
       -moz-transition: linear background-position 0.1s;
       -o-transition: linear background-position 0.1s;
       transition: linear background-position 0.1s; }
-    .eze .remotemedia-type .add-tag .btn[disabled] {
+    .eze .ngremotemedia-type .add-tag .btn[disabled] {
       background-color: #e6e6e6;
       opacity: 0.65;
       background-image: none; }
-  .eze .remotemedia-type .add-tag input {
+  .eze .ngremotemedia-type .add-tag input {
     display: block;
     width: 100%;
     box-sizing: border-box;
     height: auto; }
-.eze .remotemedia-type .tags .label {
+.eze .ngremotemedia-type .tags .label {
   padding: 0.2em 1.75em 0.2em 0.65em;
   background: #666; }
-.eze .remotemedia-type .tags .close {
+.eze .ngremotemedia-type .tags .close {
   font-size: 1.25em;
   opacity: 1;
   filter: alpha(opacity=100); }
 
-.remotemedia-thumbs {
+.ngremotemedia-thumbs {
   clear: both;
   display: table; }
-  .remotemedia-thumbs .item {
+  .ngremotemedia-thumbs .item {
     float: left;
     width: 100%;
     max-width: 180px;
     cursor: pointer; }
-    .remotemedia-thumbs .item:hover img {
+    .ngremotemedia-thumbs .item:hover img {
       opacity: 1; }
-    .remotemedia-thumbs .item:nth-child(5n+6) {
+    .ngremotemedia-thumbs .item:nth-child(5n+6) {
       clear: left; }
-    .remotemedia-thumbs .item img {
+    .ngremotemedia-thumbs .item img {
       border: 1px solid #fff;
       box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.4);
       opacity: 0.9;
@@ -152,25 +152,25 @@
       -moz-transition: ease-in-out opacity 0.2s;
       -o-transition: ease-in-out opacity 0.2s;
       transition: ease-in-out opacity 0.2s; }
-  .remotemedia-thumbs .pick {
+  .ngremotemedia-thumbs .pick {
     display: block;
     margin-top: 10px;
     padding: 0 10px 0 10px; }
-  .remotemedia-thumbs .meta {
+  .ngremotemedia-thumbs .meta {
     max-width: 160px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     margin-top: 5px; }
 
-.remotemedia-crop .nav-pills {
+.ngremotemedia-crop .nav-pills {
   display: table;
   clear: both;
   margin: 0 0 20px;
   list-style: none; }
-  .remotemedia-crop .nav-pills > li {
+  .ngremotemedia-crop .nav-pills > li {
     float: left; }
-    .remotemedia-crop .nav-pills > li.active a {
+    .ngremotemedia-crop .nav-pills > li.active a {
       color: #000;
       background-color: #ffbb00;
       background-color: #ff8d00;
@@ -181,7 +181,7 @@
       background-image: -o-linear-gradient(top, #ffbb00, #ff8d00);
       background-image: linear-gradient(top, #ffbb00, #ff8d00);
       border-color: transparent; }
-  .remotemedia-crop .nav-pills a {
+  .ngremotemedia-crop .nav-pills a {
     display: block;
     padding: 8px 12px;
     margin: 0 2px;
@@ -193,16 +193,16 @@
     -moz-transition: all 0.2s ease-in-out;
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out; }
-    .remotemedia-crop .nav-pills a:hover, .remotemedia-crop .nav-pills a:focus {
+    .ngremotemedia-crop .nav-pills a:hover, .ngremotemedia-crop .nav-pills a:focus {
       color: #b3b3b3;
       border-color: #b3b3b3; }
 
-#remotemedia-modal {
+#ngremotemedia-modal {
   position: fixed;
   height: 100%;
   width: 100%;
   z-index: 1000; }
-  #remotemedia-modal .backdrop {
+  #ngremotemedia-modal .backdrop {
     z-index: 100000;
     position: absolute;
     top: 0;
@@ -211,7 +211,7 @@
     right: 0;
     background: #fff;
     opacity: 0.6; }
-  #remotemedia-modal .content {
+  #ngremotemedia-modal .content {
     position: absolute;
     top: 50px;
     bottom: 25px;
@@ -223,14 +223,14 @@
     margin-left: -460px;
     background-color: #000;
     font: normal 14px/14px Helvetica, Arial, sans-serif; }
-  #remotemedia-modal .in {
+  #ngremotemedia-modal .in {
     overflow: auto;
     position: absolute;
     top: 50px;
     left: 40px;
     right: 40px;
     bottom: 25px; }
-  #remotemedia-modal .close {
+  #ngremotemedia-modal .close {
     background: #fff url(close.png) center center no-repeat;
     height: 20px;
     width: 20px;
@@ -240,39 +240,39 @@
     position: absolute;
     top: 10px;
     right: 10px; }
-  #remotemedia-modal .form-search {
+  #ngremotemedia-modal .form-search {
     padding-bottom: 10px;
     margin-bottom: 20px;
     border-bottom: 1px solid #555; }
-    #remotemedia-modal .form-search .btn {
+    #ngremotemedia-modal .form-search .btn {
       box-shadow: none;
       line-height: 16px; }
-  #remotemedia-modal .remotemedia-thumbs .item img {
+  #ngremotemedia-modal .ngremotemedia-thumbs .item img {
     border: none;
     width: 100%; }
-  #remotemedia-modal .remotemedia-thumbs .pick {
+  #ngremotemedia-modal .ngremotemedia-thumbs .pick {
     color: rgba(255, 255, 255, 0.75);
     text-decoration: none; }
-  #remotemedia-modal .load-more {
+  #ngremotemedia-modal .load-more {
     display: block;
     margin: 40px auto 0;
     width: 80%;
     box-shadow: none;
     line-height: 16px; }
-  #remotemedia-modal .loader.icon-16 {
+  #ngremotemedia-modal .loader.icon-16 {
     height: 16px;
     width: 16px;
     max-width: 16px;
     vertical-align: middle; }
-  #remotemedia-modal .well {
+  #ngremotemedia-modal .well {
     color: #fff; }
 
 .eze-modal-content .form-search .loader,
-#remotemedia-modal .form-search .loader {
+#ngremotemedia-modal .form-search .loader {
   margin: 0px 10px 0px -24px; }
 
-#remotemedia-modal .upload-backdrop, .eze .upload-backdrop {
-  background: #000 url(./remotemedia_upload.svg) no-repeat 50% 50%;
+#ngremotemedia-modal .upload-backdrop, .eze .upload-backdrop {
+  background: #000 url(./ngremotemedia_upload.svg) no-repeat 50% 50%;
   z-index: 100000;
   position: absolute;
   top: 0;
@@ -281,7 +281,7 @@
   right: 0;
   opacity: 0.8; }
 
-.o2k7Skin .mceIcon.mce_remotemedia {
-  background: url(./remotemedia.svg) no-repeat 50% 50%; }
+.o2k7Skin .mceIcon.mce_ngremotemedia {
+  background: url(./ngremotemedia.svg) no-repeat 50% 50%; }
 
 /*# sourceMappingURL=ngremotemedia.css.map */

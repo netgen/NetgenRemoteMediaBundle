@@ -1,12 +1,12 @@
-RemoteMedia.views.EzOE = Backbone.View.extend(RemoteMediaShared.ezoe($, RemoteMedia.models.Attribute, RemoteMedia.views.Browser, RemoteMedia.views.Scaler)).extend({
+NgRemoteMedia.views.EzOE = Backbone.View.extend(RemoteMediaShared.ezoe($, NgRemoteMedia.models.Attribute, NgRemoteMedia.views.Browser, NgRemoteMedia.views.Scaler)).extend({
   render_scaler_view: function(options){
     this.render_scaler_view_in_modal(options);
   },
 
   browser: function() {
-      var modal = new RemoteMedia.views.Modal().insert().render();
+      var modal = new NgRemoteMedia.views.Modal().insert().render();
 
-      this.view = new RemoteMedia.views.Browser({
+      this.view = new NgRemoteMedia.views.Browser({
           model: this.model,
           collection: this.model.medias,
           onSelect: function(model){ //also used just for close on upload

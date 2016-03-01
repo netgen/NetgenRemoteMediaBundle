@@ -1,8 +1,8 @@
 $(function() {
 
-    $('.remotemedia-type').each(function() {
+    $('.ngremotemedia-type').each(function() {
         var wrapper = $(this);
-        var container = wrapper.find('.remotemedia-buttons');
+        var container = wrapper.find('.ngremotemedia-buttons');
         if (container.length) {
             
             var bootstrapData = wrapper.data('bootstrap-media');
@@ -11,14 +11,14 @@ $(function() {
                 prefix : container.data('prefix')
             });
 
-            var model = new RemoteMedia.models.Attribute({
+            var model = new NgRemoteMedia.models.Attribute({
                 id : container.data('id'),
                 prefix : container.data('prefix'),
                 version : container.data('version'),
                 media: media_attributes
             }, {parse: true});
 
-            var controller = new RemoteMedia.views.RemoteMedia({
+            var controller = new NgRemoteMedia.views.NgRemoteMedia({
                 el : wrapper,
                 model : model
             }).render();

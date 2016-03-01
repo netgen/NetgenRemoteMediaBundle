@@ -20,7 +20,7 @@ window.RemoteMediaShared.scaled_version = function() {
 
             this.$el.html(JST.scaledversion(data))
                 .attr("version_name", data.name.toLowerCase())
-                .attr("id", "eze-remotemedia-scale-version-" + data.name.toLowerCase())
+                .attr("id", "eze-ngremotemedia-scale-version-" + data.name.toLowerCase())
                 .data('scale', this.model);
 
             return this;

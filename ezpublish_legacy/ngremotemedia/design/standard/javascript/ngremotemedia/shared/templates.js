@@ -19,17 +19,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   buffer += "<form onsubmit=\"javascript: return false;\" class=\"form-search\">\n    <input type=\"text\" class=\"q input-long\" placeholder=\""
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Search for media", options) : helperMissing.call(depth0, "translate", "Search for media", options)))
-    + "\">\n    <img class=\"icon-16 hide loader\" src=\"/extension/ezexceed/design/ezexceed/images/loader.gif\" />\n    <span class=\"upload-container\" id=\"remotemedia-browser-local-file-container-";
+    + "\">\n    <img class=\"icon-16 hide loader\" src=\"/extension/ezexceed/design/ezexceed/images/loader.gif\" />\n    <span class=\"upload-container\" id=\"ngremotemedia-browser-local-file-container-";
   if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "\">\n        <button type=\"button\" class=\"btn upload upload-from-disk\" id=\"remotemedia-browser-local-file-";
+    + "\">\n        <button type=\"button\" class=\"btn upload upload-from-disk\" id=\"ngremotemedia-browser-local-file-";
   if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + "\">\n            "
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Upload new media", options) : helperMissing.call(depth0, "translate", "Upload new media", options)))
-    + "\n        </button>\n    </span>\n</form>\n<div class=\"remotemedia-thumbs-scroll\">\n  <div class=\"remotemedia-thumbs\"></div>\n</div>\n<button class=\"btn btn-large btn-block load-more\" type=\"button\">\n    "
+    + "\n        </button>\n    </span>\n</form>\n<div class=\"ngremotemedia-thumbs-scroll\">\n  <div class=\"ngremotemedia-thumbs\"></div>\n</div>\n<button class=\"btn btn-large btn-block load-more\" type=\"button\">\n    "
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Load more", options) : helperMissing.call(depth0, "translate", "Load more", options)))
     + "\n    <img class=\"icon-16 hide loader\" src=\"/extension/ezexceed/design/ezexceed/images/loader.gif\" />\n</button>\n";
   return buffer;
@@ -129,7 +129,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, helper, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"customattributes\"></div>\n\n<section class=\"remotemedia-crop\">\n    <ul class=\"nav nav-pills inverted\"></ul>\n</section>\n\n<div class=\"remotemedia-crop-container\">\n    <div class=\"image-wrap\">\n        <img src=\"";
+  buffer += "<div class=\"customattributes\"></div>\n\n<section class=\"ngremotemedia-crop\">\n    <ul class=\"nav nav-pills inverted\"></ul>\n</section>\n\n<div class=\"ngremotemedia-crop-container\">\n    <div class=\"image-wrap\">\n        <img src=\"";
   if (helper = helpers.media) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.media); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)

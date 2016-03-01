@@ -7,7 +7,7 @@ window.RemoteMediaShared.config = function() {
 
     return {
         is_admin: is_admin,
-        plupload_swf: is_admin ? '/extension/remotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url,
+        plupload_swf: is_admin ? '/extension/ngremotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url,
         currentObjectId: is_admin ? RemoteMediaSettings.ez_contentobject_id : eZExceed.config.currentObjectId,
         version: is_admin ? RemoteMediaSettings.ez_contentobject_version : $('[data-version]').data('version')
     };
@@ -19,7 +19,7 @@ window.RemoteMediaShared.is_admin = function(){
 
 
 window.RemoteMediaShared.url = function(url){
-    var prefix = this.is_admin() ?  RemoteMediaSettings.url_prefix : $('.remotemedia-type').data('urlRoot');
+    var prefix = this.is_admin() ?  RemoteMediaSettings.url_prefix : $('.ngremotemedia-type').data('urlRoot');
     var new_url = [prefix, url].join('/').replace(/\/+/g, '/');
     return new_url;
 };

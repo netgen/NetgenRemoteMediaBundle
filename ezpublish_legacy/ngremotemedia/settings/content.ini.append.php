@@ -5,10 +5,10 @@ ExtensionDirectories[]=ngremotemedia
 AvailableDataTypes[]=ngremotemedia
 
 [CustomTagSettings]
-AvailableCustomTags[]=remotemedia
-IsInline[remotemedia]=image
+AvailableCustomTags[]=ngremotemedia
+IsInline[ngremotemedia]=image
 
-[remotemedia]
+[ngremotemedia]
 CustomAttributes[]
 CustomAttributes[]=alttext
 CustomAttributes[]=cssclass

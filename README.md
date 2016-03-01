@@ -46,10 +46,10 @@ This repository contains field type (and legacy data type) implementation, and i
     * add the following to `ezoe.ini.append.php` (create one if it does not exist)
     ```
     [EditorSettings]
-    Plugins[]=remotemedia
+    Plugins[]=ngremotemedia
     
     [EditorLayout]
-    Buttons[]=remotemedia
+    Buttons[]=ngremotemedia
     ```
     
 * Activate the bundle:

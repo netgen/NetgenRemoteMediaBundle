@@ -1,4 +1,4 @@
-define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], function(View, Models, TaggerView, UploadView) {
+define(['ngremotemedia/view', 'ngremotemedia/models', './tagger', './upload'], function(View, Models, TaggerView, UploadView) {
 
     function convert_versions(versions){
         if(_.isArray(versions)){return versions;}
@@ -61,13 +61,13 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
         },
 
         events: {
-            'click button.from-remotemedia': function(e) {
+            'click button.from-ngremotemedia': function(e) {
                 e.preventDefault();
-                require(['remotemedia/views/browser'], this.browse);
+                require(['ngremotemedia/views/browser'], this.browse);
             },
             'click button.scale': function(e) {
                 e.preventDefault();
-                require(['remotemedia/views/scaler'], this.scale);
+                require(['ngremotemedia/views/scaler'], this.scale);
             },
             'click .remove': 'removeMedia'
         },
@@ -197,7 +197,7 @@ define(['remotemedia/view', 'remotemedia/models', './tagger', './upload'], funct
 
         renderTags: function() {
             new TaggerView({
-                el: this.$('.remotemedia-tags').off(),
+                el: this.$('.ngremotemedia-tags').off(),
                 model: this.model.get('media')
             }).render();
             return this;

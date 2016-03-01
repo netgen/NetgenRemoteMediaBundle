@@ -73,7 +73,7 @@ window.RemoteMediaShared.browser = function(UploadView) {
             this.$el.append(JST.browser(context));
 
             this.$loader = this.$('img.loader');
-            this.$body = this.$('.remotemedia-thumbs');
+            this.$body = this.$('.ngremotemedia-thumbs');
 
             this.renderItems(true);
             this.input = this.$('.q');

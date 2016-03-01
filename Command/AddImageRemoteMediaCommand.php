@@ -18,8 +18,8 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('netgen:remotemedia:add:data')
-            ->setDescription('This command will add item to the remotemedia field on the provided content')
+            ->setName('netgen:ngremotemedia:add:data')
+            ->setDescription('This command will add item to the ngremotemedia field on the provided content')
             ->addArgument(
                 'content_id',
                 InputArgument::REQUIRED,

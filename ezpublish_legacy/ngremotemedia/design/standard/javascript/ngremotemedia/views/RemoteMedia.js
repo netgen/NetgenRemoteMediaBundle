@@ -1,4 +1,4 @@
-RemoteMedia.views.RemoteMedia = Backbone.View.extend({
+NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
     // Holds current active subview
     view: null,
     destination: null,
@@ -22,9 +22,9 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     },
 
     events: {
-        'click .remotemedia-remote-file': 'search',
-        'click .remotemedia-scale': 'scaler',
-        'click .remotemedia-remove-file': 'remove'
+        'click .ngremotemedia-remote-file': 'search',
+        'click .ngremotemedia-scale': 'scaler',
+        'click .ngremotemedia-remove-file': 'remove'
     },
 
     render: function() {
@@ -32,7 +32,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
         this.destination = this.$('.media-id');
         this.renderTags().enableUpload();
 
-        var data = this.$('.remotemedia-scale').data();
+        var data = this.$('.ngremotemedia-scale').data();
 
         var available_versions = this.convert_versions(data.versions);
         this.model.set({available_versions: available_versions, truesize: data.truesize}, {silent: true});
@@ -42,8 +42,8 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
 
 
     renderTags: function() {
-        new RemoteMedia.views.Tagger({
-            el: this.$('.remotemedia-tags').off(),
+        new NgRemoteMedia.views.Tagger({
+            el: this.$('.ngremotemedia-tags').off(),
             model: this.model.get('media')
         }).render();
         return this;
@@ -52,7 +52,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     remove: function(e) {
         e.preventDefault();
         this.destination.attr('value', 'removed');
-        this.$('.remotemedia-image, .remotemedia-scale, .remotemedia-remove-file').remove();
+        this.$('.ngremotemedia-image, .ngremotemedia-scale, .ngremotemedia-remove-file').remove();
         return this;
     },
 
@@ -62,7 +62,7 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     },
 
     enableUpload: function() {
-        this.upload = new RemoteMedia.views.Upload({
+        this.upload = new NgRemoteMedia.views.Upload({
             model: this.model,
             uploaded: function(resp){
                 resp && this.model.set(this.model.parse(resp.model_attributes));
@@ -75,9 +75,9 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
     },
 
     search: function() {
-        var modal = new RemoteMedia.views.Modal().insert().render();
+        var modal = new NgRemoteMedia.views.Modal().insert().render();
 
-        this.view = new RemoteMedia.views.Browser({
+        this.view = new NgRemoteMedia.views.Browser({
             model: this.model,
             collection: this.model.medias,
             onSelect: function(model){ //also used just for close on upload
@@ -93,14 +93,14 @@ RemoteMedia.views.RemoteMedia = Backbone.View.extend({
 
     // Open a scaling gui
     scaler: function() {
-        var modal = new RemoteMedia.views.Modal().insert().render(),
+        var modal = new NgRemoteMedia.views.Modal().insert().render(),
             scaler_view;
 
         this.model.fetch({
             transform: false
         }).done(function(){
 
-            scaler_view = new RemoteMedia.views.Scaler({
+            scaler_view = new NgRemoteMedia.views.Scaler({
                 trueSize: this.model.get('truesize'),
                 model: this.model,
                 el: modal.show().contentEl

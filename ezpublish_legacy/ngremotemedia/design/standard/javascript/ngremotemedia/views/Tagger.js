@@ -1,0 +1,1 @@
+NgRemoteMedia.views.Tagger = Backbone.View.extend(RemoteMediaShared.tagger());

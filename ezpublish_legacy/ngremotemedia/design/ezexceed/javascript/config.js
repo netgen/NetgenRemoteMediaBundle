@@ -1,11 +1,11 @@
 require.config({
     map: {
-        'remotemedia/jcrop': {
+        'ngremotemedia/jcrop': {
             'jquery': 'jquery-safe'
         }
     },
     paths: {
-        'remotemedia': '/extension/ngremotemedia/design/ezexceed/javascript',
-        'remotemedia/jcrop': '/extension/ngremotemedia/design/standard/javascript/libs/jquery.jcrop'
+        'ngremotemedia': '/extension/ngremotemedia/design/ezexceed/javascript',
+        'ngremotemedia/jcrop': '/extension/ngremotemedia/design/standard/javascript/libs/jquery.jcrop'
     }
 });

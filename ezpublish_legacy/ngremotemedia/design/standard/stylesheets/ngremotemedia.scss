@@ -1,26 +1,25 @@
 @import "mixins.sass";
 
-
 /*********************
   EzExceed & admin 
 **********************/
-.remotemedia-type {
+.ngremotemedia-type {
   .image-meta {float: none; overflow: hidden;}
   
   .title {margin-bottom: 10px;}
   .help-block {display: block; margin: 0 0 5px;}
   
-  .remotemedia-alttext {clear: both; margin-bottom: 10px;}
-  .remotemedia-buttons {clear: left;}
+  .ngremotemedia-alttext {clear: both; margin-bottom: 10px;}
+  .ngremotemedia-buttons {clear: left;}
 
-  .remotemedia-local-file-container {display: inline;}
+  .ngremotemedia-local-file-container {display: inline;}
 
   .add-tag .btn {padding: 0.3em 1em; margin-left: 5px; border-radius: 3px; background: #5d7db1; border: 1px solid #5d7db1; box-shadow: 0 2px 0 #445c89; color: #fff; font-size: 1em; @include transition(ease, all, 0.3s);
     &:hover,
     &:focus {background-color: rgba(0,0,0,0.1); color: black; border: 1px solid #999; outline: none;}
   }
   
-  .remotemedia-tags {font-size: 12px;}
+  .ngremotemedia-tags {font-size: 12px;}
   .tags {margin: 10px 0 5px;
     .label {position: relative; display: inline-block; margin: 0 8px 5px 0; padding: 0.166em 1.5em 0.166em 0.65em; font-size: 1em; line-height: 1em; background-color: rgb(86, 115, 165); text-decoration: none; border-radius: 4px; color: #fff;}
     .close {position: absolute; right: 0.2em; top: 50%; @include translate(0, -50%); float: none; padding: 0 2px; background: transparent; color: #fff; border: none; box-shadow: none; font-size: 1.09375em; line-height: 1em; vertical-align: text-top;
@@ -55,7 +54,7 @@
 }
 
 // Remote media thumbs 
-.remotemedia-thumbs {clear: both; display: table;
+.ngremotemedia-thumbs {clear: both; display: table;
   .item {float: left; width: 100%; max-width: 180px; cursor: pointer;
     &:hover img {opacity: 1;}
     &:nth-child(5n+6) {clear:left;}
@@ -66,7 +65,7 @@
 }
 
 // Remote media crop
-.remotemedia-crop {
+.ngremotemedia-crop {
   .nav-pills {display: table; clear: both; margin: 0 0 20px; list-style: none;
     > li {float: left;
       &.active a {color: #000; background-color: #ffbb00; @include gradient(#ffbb00, #ff8d00); border-color: transparent;}
@@ -79,7 +78,7 @@
 }
 
 // remote media admin
-#remotemedia-modal {position: fixed; height: 100%; width: 100%; z-index: 1000;
+#ngremotemedia-modal {position: fixed; height: 100%; width: 100%; z-index: 1000;
   .backdrop { z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: #fff; opacity: 0.6; }
 
   .content { position: absolute; top: 50px; bottom: 25px; z-index: 200000; padding: 40px; border-radius: 4px; width: 920px; left: 50%; margin-left: -460px; background-color: #000; font: normal 14px/14px Helvetica, Arial, sans-serif; }
@@ -90,7 +89,7 @@
     .btn {box-shadow: none; line-height: 16px;}
   }
   
-  .remotemedia-thumbs {
+  .ngremotemedia-thumbs {
     .item {
       img {border: none; width:100%;}
     }
@@ -104,10 +103,10 @@
 }
 
 .eze-modal-content .form-search .loader,
-#remotemedia-modal .form-search .loader{margin:0px 10px 0px -24px;}
+#ngremotemedia-modal .form-search .loader{margin:0px 10px 0px -24px;}
 
-#remotemedia-modal, .eze{
-  .upload-backdrop{background:#000 url(./remotemedia_upload.svg) no-repeat 50% 50%; z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity:0.8;} 
+#ngremotemedia-modal, .eze{
+  .upload-backdrop{background:#000 url(./ngremotemedia_upload.svg) no-repeat 50% 50%; z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity:0.8;} 
 }
 
-.o2k7Skin .mceIcon.mce_remotemedia{background: url(./remotemedia.svg) no-repeat 50% 50%;}
+.o2k7Skin .mceIcon.mce_ngremotemedia{background: url(./ngremotemedia.svg) no-repeat 50% 50%;}

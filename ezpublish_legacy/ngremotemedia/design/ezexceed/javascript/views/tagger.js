@@ -1,3 +1,3 @@
-define(['remotemedia/view'], function(View) {
+define(['ngremotemedia/view'], function(View) {
     return View.extend(RemoteMediaShared.tagger());
 });

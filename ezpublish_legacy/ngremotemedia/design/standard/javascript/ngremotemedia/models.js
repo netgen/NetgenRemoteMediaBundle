@@ -1,10 +1,10 @@
 /*global RemoteMediaShared */
-RemoteMedia.models = RemoteMediaShared.Models();
+NgRemoteMedia.models = RemoteMediaShared.Models();
 
 Backbone.emulateJSON = true;
 Backbone.emulateHTTP = true;
 
-RemoteMedia.models.Attribute = RemoteMedia.models.Attribute.extend({
+NgRemoteMedia.models.Attribute = NgRemoteMedia.models.Attribute.extend({
     scale: function(media) {
         $.getJSON(this.url('scaler', [media]), this.onScale);
     }
