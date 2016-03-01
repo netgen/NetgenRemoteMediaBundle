@@ -18,7 +18,7 @@
                 <div class="ngremotemedia-alttext">
                     <span class="help-block description">{'Alternate text'|i18n('ngremotemedia')}</span>
                     <input type="text"
-                           name="{$attribute_base}_alttext_{$fieldId}" value="{$value.metaData.alt_text}" class="media-alttext data">
+                           name="{$base}_alttext_{$fieldId}" value="{$value.metaData.alt_text}" class="media-alttext data">
                 </div>
 
                 <div class="ngremotemedia-tags">
