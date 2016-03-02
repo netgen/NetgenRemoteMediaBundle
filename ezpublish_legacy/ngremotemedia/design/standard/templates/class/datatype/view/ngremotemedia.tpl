@@ -3,6 +3,6 @@
     <ul>
         {foreach $class_attribute.content as $name => $format}
             <li>{$name},{$format}</li>
-        {/for}
+        {/foreach}
     </ul>
 </div>
