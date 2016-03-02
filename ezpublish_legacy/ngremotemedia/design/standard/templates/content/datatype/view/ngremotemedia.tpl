@@ -1,5 +1,5 @@
 {def $contentClassAttribute = $attribute.contentclass_attribute}
-{def $variations = $contentClassAttribute.data_text4}
+{def $variations = $contentClassAttribute.content}
 
 {def
     $value = $attribute.content
