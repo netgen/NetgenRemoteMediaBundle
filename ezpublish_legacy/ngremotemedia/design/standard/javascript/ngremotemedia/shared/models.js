@@ -239,9 +239,6 @@ window.RemoteMediaShared.Models = function() {
             return RemoteMediaShared.url('/ngremotemedia/browse');
         },
 
-        transformUrl: false,
-
-
         search: function(q, data) {
             data = (data ||  {});
             if (typeof q === 'string') {
@@ -255,6 +252,7 @@ window.RemoteMediaShared.Models = function() {
             }
             this.xhr = this.fetch({
                 data: data,
+                transform: false,
                 reset: true
             });
             return this.xhr;
