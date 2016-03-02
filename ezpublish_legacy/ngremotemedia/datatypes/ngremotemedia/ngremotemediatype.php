@@ -229,6 +229,7 @@ class NgRemoteMediaType extends eZDataType
     public function objectAttributeContent($attribute)
     {
         $attributeValue = json_decode($attribute->attribute(self::FIELD_VALUE), true);
+        $attributeValue = $attributeValue ?: array();
         $value = new Value($attributeValue);
 
         return $value;
