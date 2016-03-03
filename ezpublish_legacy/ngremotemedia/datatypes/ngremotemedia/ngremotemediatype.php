@@ -184,11 +184,19 @@ class NgRemoteMediaType extends eZDataType
         $provider = $container->get( 'netgen_remote_media.provider' );
 
         $db = eZDB::instance();
-        $result = $db->arrayQuery(
-            "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
-            " AND version = " . $version .
-            " AND provider = '". $provider->getIdentifier() ."'"
-        );
+
+        if (!empty($version)) {
+            $result = $db->arrayQuery(
+                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
+                " AND version = " . $version .
+                " AND provider = '" . $provider->getIdentifier() . "'"
+            );
+        } else {
+            $result = $db->arrayQuery(
+                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
+                " AND provider = '" . $provider->getIdentifier() . "'"
+            );
+        }
     }
 
     /**
