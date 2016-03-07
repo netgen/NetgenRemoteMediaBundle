@@ -58,11 +58,7 @@ class NgRemoteMediaType extends eZDataType
      */
     public function classAttributeContent($class)
     {
-        $lines = array();
-        $formats = "";
-        $versions = json_decode($class->attribute(self::FIELD_FORMATS), true);
-
-        return $versions;
+        return json_decode($class->attribute(self::FIELD_FORMATS), true);
     }
 
     /**
@@ -85,7 +81,7 @@ class NgRemoteMediaType extends eZDataType
      *
      * @param $http
      * @param $base
-     * @param $attribute
+     * @param $contentObjectAttribute
      *
      * @return mixed
      */
