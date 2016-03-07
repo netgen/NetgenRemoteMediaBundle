@@ -164,8 +164,8 @@ class NgRemoteMediaType extends eZDataType
                 "INSERT INTO ngremotemedia_field_link (contentobject_id, field_id, version, resource_id, provider)" .
                 " VALUES (" . (int)$contentObjectAttribute->attribute('contentobject_id') . ", " .
                 (int)$contentObjectAttribute->attribute('id') . ", " .
-                (int)$contentObjectAttribute->attribute('version') . ", " .
-                $id . ", '" .
+                (int)$contentObjectAttribute->attribute('version') . ", '" .
+                $id . "', '" .
                 $provider->getIdentifier() .
                 "')"
             );
