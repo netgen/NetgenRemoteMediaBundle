@@ -45,19 +45,6 @@ define(['ngremotemedia/view', 'ngremotemedia/models', './tagger', './upload'], f
 
             this.on('saved', this.update, this);
 
-            this.loadCSS();
-        },
-
-        loadCSS: function() {
-            var headEl = document.getElementsByTagName('head')[0];
-            var files = ['jquery.jcrop', 'ngremotemedia'];
-            _.each(files, function(name) {
-                var css = document.createElement('link');
-                css.href = '/extension/ngremotemedia/design/standard/stylesheets/' + name + '.css';
-                css.type = 'text/css';
-                css.rel = 'stylesheet';
-                headEl.appendChild(css);
-            });
         },
 
         events: {

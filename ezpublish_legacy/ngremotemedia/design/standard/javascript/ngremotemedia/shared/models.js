@@ -24,6 +24,21 @@ window.RemoteMediaShared.url = function(url){
     return new_url;
 };
 
+
+var loadCSS = function() {
+    var headEl = document.getElementsByTagName('head')[0];
+    var files = ['jquery.jcrop', 'ngremotemedia'];
+    _.each(files, function(name) {
+        var css = document.createElement('link');
+        css.href = '/extension/ngremotemedia/design/standard/stylesheets/' + name + '.css';
+        css.type = 'text/css';
+        css.rel = 'stylesheet';
+        headEl.appendChild(css);
+    });
+};
+
+loadCSS();
+
 window.RemoteMediaShared.Models = function() {
 
     var Attribute = Backbone.Model.extend({
