@@ -10,14 +10,14 @@ interface RemoteMediaProviderInterface
     /**
      * Returns the array with options required for the upload.
      *
-     * @param string $id
+     * @param string $fileName
      * @param string $resourceType
      * @param string $altText
      * @param string $caption
      *
      * @return array
      */
-    public function prepareUploadOptions($id, $resourceType = null, $altText = '', $caption = '');
+    public function prepareUploadOptions($fileName, $resourceType = null, $altText = '', $caption = '');
 
     /**
      * Uploads the local resource to remote storage.

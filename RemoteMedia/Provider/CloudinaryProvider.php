@@ -27,10 +27,18 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      */
     protected $cloudinaryUploader;
 
+    protected $folderName = 'default';
+
+    protected $uniqueFilename = false;
+
+    protected $useUpscaling = true;
+
     /**
      * CloudinaryProvider constructor.
      *
-     * @param array $cloudinaryOptions
+     * @param string $cloudName
+     * @param string $apiKey
+     * @param string $apiSecret
      */
     public function __construct($cloudName, $apiKey, $apiSecret)
     {
@@ -47,21 +55,44 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $this->cloudinaryApi = new Api();
     }
 
+    public function setFolderName($folderName = null)
+    {
+        $this->folderName = $folderName;
+    }
+
+    public function setUniqueFilename($uniqueFilename = false)
+    {
+        $this->uniqueFilename = $uniqueFilename;
+    }
+
+    public function setUseUpscaling($useUpscaling = true)
+    {
+        $this->useUpscaling = $useUpscaling;
+    }
+
     /**
      *
      *
-     * @param string $id
+     * @param string $fileName
      * @param string|null $resourceType
      * @param string $altText
      * @param string $caption
      *
      * @return array
      */
-    public function prepareUploadOptions($id, $resourceType = null, $altText = '', $caption = '')
+    public function prepareUploadOptions($fileName, $resourceType = null, $altText = '', $caption = '')
     {
+        $id = $this->folderName . '/' . $fileName;
+        if ($this->uniqueFilename) {
+            $id = $id . '_' . base_convert(uniqid(), 16, 36);
+        }
+
         return array(
             'public_id' => $id,
             'overwrite' => true,
+            //'folder' => $this->folderName,
+            //'use_filename' => true,
+            //'unique_filename' => true,
             'context' => array(
                 'alt' => $altText,
                 'caption' => $caption,
@@ -162,7 +193,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
 
         $options = array(
             'secure' => $secure,
-            'crop' => 'fill',
+            'crop' => $this->useUpscaling ? 'fill' : 'lfill',
             'width' => $sizes[0],
             'height' => $sizes[1]
         );
@@ -180,7 +211,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
                             'crop' => 'crop',
                         ),
                         array(
-                            'crop' => 'fill',
+                            'crop' => $this->useUpscaling ? 'fill' : 'lfill',
                             'width' => $sizes[0],
                             'height' => $sizes[1]
                         )
@@ -239,7 +270,6 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      * Searches for the remote resource containing term in the query.
      *
      * @param string $query
-     * @param string $resourceType
      * @param int $limit
      *
      * @return array
@@ -248,7 +278,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     {
         $result = $this->cloudinaryApi->resources(
             array(
-                'prefix' => $query,
+                'prefix' => $this->folderName . '/'  . $query,
                 'type' => 'upload',
                 'tags' => true,
                 'max_results' => $limit
@@ -432,7 +462,9 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $listFormatted = array();
         foreach ($list as $hit) {
             $fileName = explode('/', $hit['public_id']);
-            $fileName = $fileName[0];
+            if (count($fileName) > 1) {
+                $fileName = $fileName[1]; // first part is the (siteaccess) folder
+            }
 
             $thumbOptions = array();
             $thumbOptions['crop'] = 'fit';
@@ -446,7 +478,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
                 'filesize' => $hit['bytes'],
                 'width' => $hit['width'],
                 'height' => $hit['height'],
-                'filename' => $fileName,
+                'filename' => $hit['public_id'], //$fileName, -> change for Kavli project
                 'url' => $this->getFormattedUrl($hit['public_id'], $thumbOptions),
             );
         }

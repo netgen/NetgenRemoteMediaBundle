@@ -26,6 +26,8 @@ class Helper
      */
     protected $contentTypeService;
 
+    protected $folderName = 'default';
+
     /**
      * Helper constructor.
      *
@@ -42,6 +44,11 @@ class Helper
         $this->provider = $provider;
         $this->contentService = $contentService;
         $this->contentTypeService = $contentTypeService;
+    }
+
+    public function setFolderName($folderName = null)
+    {
+        $this->folderName = $folderName;
     }
 
     /**
@@ -160,16 +167,16 @@ class Helper
      */
     public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
     {
-        if (!empty($fieldId) && !empty($contentVersionId)) {
-            $folder = $fieldId.'/'.$contentVersionId;
-        } else {
-            $folder = '';
-        }
+        // IH: customer request, see:
+        // https://keyteq.atlassian.net/browse/CLOUDINT-1?focusedCommentId=52832&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-52832
+//        if (!empty($fieldId) && !empty($contentVersionId)) {
+//            $folder = $fieldId.'/'.$contentVersionId;
+//        } else {
+//            $folder = '';
+//        }
 
         $fileName = $this->filenameCleanUp($fileName);
-        $id = $fileName.'/'.$folder;
-
-        $options = $this->provider->prepareUploadOptions($id);
+        $options = $this->provider->prepareUploadOptions($fileName);
         $response = $this->provider->upload($fileUri, $options);
 
         return $this->provider->getValueFromResponse($response);
