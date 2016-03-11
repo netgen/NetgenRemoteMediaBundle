@@ -1,7 +1,7 @@
 define(['backbone', 'jquery-safe'], function(Backbone, $) {
 
     //Initialize common models
-    var Models = RemoteMediaShared.Models();
+    var Models = NgRemoteMediaShared.Models();
 
     return {
         media: Models.Media,

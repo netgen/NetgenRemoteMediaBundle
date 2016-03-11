@@ -1,6 +1,6 @@
-window.RemoteMediaShared || (window.RemoteMediaShared = {});
+window.NgRemoteMediaShared || (window.NgRemoteMediaShared = {});
 
-window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) {
+window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) {
   return {
 
     tinymceEditor: null,
@@ -19,11 +19,11 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
 
         _.bindAll(this);
 
-        var id = RemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : this.$el.closest('.attribute').data('id');
+        var id = NgRemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : this.$el.closest('.attribute').data('id');
 
         this.model = new Attribute({
             id: id,
-            version: RemoteMediaShared.config().version,
+            version: NgRemoteMediaShared.config().version,
             ezoe: true
         });
 

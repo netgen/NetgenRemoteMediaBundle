@@ -20,7 +20,7 @@
                 });
 
 
-                if(!window.RemoteMediaShared){
+                if(!window.NgRemoteMediaShared){
                     require([
                         'handlebars',
                         'shared/templates',
@@ -50,7 +50,7 @@
 
             var textarea = this.getElement();
             //.block class is For administration
-            var element = RemoteMediaShared.config().is_admin ? '.block' : '.eze-object-attribute';
+            var element = NgRemoteMediaShared.config().is_admin ? '.block' : '.eze-object-attribute';
 
             var options = {
                 textEl: textarea,

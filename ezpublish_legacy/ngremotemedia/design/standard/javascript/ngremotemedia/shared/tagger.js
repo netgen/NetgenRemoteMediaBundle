@@ -1,6 +1,6 @@
-window.RemoteMediaShared || (window.RemoteMediaShared = {});
+window.NgRemoteMediaShared || (window.NgRemoteMediaShared = {});
 
-window.RemoteMediaShared.tagger = function(){
+window.NgRemoteMediaShared.tagger = function(){
     return {
 
         bindKeysScoped: true,
