@@ -1,6 +1,6 @@
-window.RemoteMediaShared || (window.RemoteMediaShared = {});
+window.NgRemoteMediaShared || (window.NgRemoteMediaShared = {});
 
-window.RemoteMediaShared.scaler = function(ScaledVersion, $){
+window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
   return {
             // size of cropping media
             SIZE: {

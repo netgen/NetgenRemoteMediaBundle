@@ -1,5 +1,5 @@
-/*global RemoteMediaShared */
-NgRemoteMedia.models = RemoteMediaShared.Models();
+/*global NgRemoteMediaShared */
+NgRemoteMedia.models = NgRemoteMediaShared.Models();
 
 Backbone.emulateJSON = true;
 Backbone.emulateHTTP = true;

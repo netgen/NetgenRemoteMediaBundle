@@ -1,6 +1,6 @@
 var UploadView = NgRemoteMedia.views.Upload;
 
-NgRemoteMedia.views.Browser = Backbone.View.extend(RemoteMediaShared.browser(UploadView)).extend({
+NgRemoteMedia.views.Browser = Backbone.View.extend(NgRemoteMediaShared.browser(UploadView)).extend({
     select: function(e) {
         var model = this.find_model(e);
         this.onSelect({

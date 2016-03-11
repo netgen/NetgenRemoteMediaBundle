@@ -1,4 +1,4 @@
-NgRemoteMedia.views.EzOE = Backbone.View.extend(RemoteMediaShared.ezoe($, NgRemoteMedia.models.Attribute, NgRemoteMedia.views.Browser, NgRemoteMedia.views.Scaler)).extend({
+NgRemoteMedia.views.EzOE = Backbone.View.extend(NgRemoteMediaShared.ezoe($, NgRemoteMedia.models.Attribute, NgRemoteMedia.views.Browser, NgRemoteMedia.views.Scaler)).extend({
   render_scaler_view: function(options){
     this.render_scaler_view_in_modal(options);
   },

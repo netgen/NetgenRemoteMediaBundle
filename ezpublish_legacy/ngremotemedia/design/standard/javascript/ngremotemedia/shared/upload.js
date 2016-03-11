@@ -1,6 +1,6 @@
-window.RemoteMediaShared || (window.RemoteMediaShared = {});
+window.NgRemoteMediaShared || (window.NgRemoteMediaShared = {});
 
-window.RemoteMediaShared.upload = function($, plupload){
+window.NgRemoteMediaShared.upload = function($, plupload){
   return {
         maxSize: '25mb',
 
@@ -53,9 +53,9 @@ window.RemoteMediaShared.upload = function($, plupload){
 
         upload_url: function(){
             if (this.model.get('ezoe')) {
-                return RemoteMediaShared.url('/ngremotemedia/simple_upload');
+                return NgRemoteMediaShared.url('/ngremotemedia/simple_upload');
             }else{
-                return RemoteMediaShared.url('/ngremotemedia/upload/') +  RemoteMediaShared.config().currentObjectId;
+                return NgRemoteMediaShared.url('/ngremotemedia/upload/') +  NgRemoteMediaShared.config().currentObjectId;
             }
         },
 
@@ -65,11 +65,11 @@ window.RemoteMediaShared.upload = function($, plupload){
             var settings = {
                 runtimes: 'html5,flash,html4',
                 browse_button: this.$('.upload-from-disk').get(0),
-                flash_swf_url: RemoteMediaShared.config().plupload_swf,
+                flash_swf_url: NgRemoteMediaShared.config().plupload_swf,
                 max_file_size: this.maxSize,
                 url: this.upload_url(),
                 multipart_params: {
-                    legacy: RemoteMediaShared.config().is_admin,
+                    legacy: NgRemoteMediaShared.config().is_admin,
                     AttributeID: id,
                     ContentObjectVersion: this.model.get('version'),
                     http_accept: 'json' //Because of some strange failing when html4 is used

@@ -1,1 +1,1 @@
-NgRemoteMedia.views.ScaledVersion = Backbone.View.extend(RemoteMediaShared.scaled_version());
+NgRemoteMedia.views.ScaledVersion = Backbone.View.extend(NgRemoteMediaShared.scaled_version());

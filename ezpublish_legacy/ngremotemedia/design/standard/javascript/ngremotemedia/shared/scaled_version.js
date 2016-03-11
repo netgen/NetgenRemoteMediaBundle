@@ -1,6 +1,6 @@
-window.RemoteMediaShared || (window.RemoteMediaShared = {});
+window.NgRemoteMediaShared || (window.NgRemoteMediaShared = {});
 
-window.RemoteMediaShared.scaled_version = function() {
+window.NgRemoteMediaShared.scaled_version = function() {
     return {
         tagName: 'li',
 

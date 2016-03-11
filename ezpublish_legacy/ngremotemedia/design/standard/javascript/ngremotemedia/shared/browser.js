@@ -1,6 +1,6 @@
-window.RemoteMediaShared || (window.RemoteMediaShared = {});
+window.NgRemoteMediaShared || (window.NgRemoteMediaShared = {});
 
-window.RemoteMediaShared.browser = function(UploadView) {
+window.NgRemoteMediaShared.browser = function(UploadView) {
     return {
         tpl: null,
         input: null,
