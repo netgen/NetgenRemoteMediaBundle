@@ -278,7 +278,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     {
         $result = $this->cloudinaryApi->resources(
             array(
-                'prefix' => $this->folderName . '/'  . $query,
+                'prefix' => $query,
                 'type' => 'upload',
                 'tags' => true,
                 'max_results' => $limit
