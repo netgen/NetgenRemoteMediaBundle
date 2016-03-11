@@ -19,10 +19,6 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
 
         _.bindAll(this);
 
-        // var prefix = (eZExceed && _(eZExceed).has('urlPrefix')) ? '/' + eZExceed.urlPrefix : '';
-        // prefix = prefix + '/ezjscore/call';
-
-
         var id = RemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : this.$el.closest('.attribute').data('id');
 
         this.model = new Attribute({
@@ -78,8 +74,11 @@ window.RemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView) 
 
 
     changeMedia: function(new_media){
-        this.model.get('media').set({id: new_media.id}); //Update id
-        this.scaler();
+        var media = this.model.get('media');
+        if(new_media.new_image_selected){
+            media.set({id: new_media.id}); //Update id
+            this.scaler();
+        }
         return this;
     },    
 
