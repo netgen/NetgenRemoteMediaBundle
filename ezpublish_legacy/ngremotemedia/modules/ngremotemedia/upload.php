@@ -30,7 +30,9 @@ $value = $helper->upload(
     $contentVersionId
 );
 
-$helper->updateValue($value, $contentId, $fieldId, $contentVersionId);
+$attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
+$attribute->setAttribute('data_text', json_encode($value));
+$attribute->store();
 
 $scaling = array();
 foreach ($variations as $name => $coords) {
