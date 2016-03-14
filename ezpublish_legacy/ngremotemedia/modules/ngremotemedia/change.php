@@ -26,7 +26,10 @@ $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
 
 $updatedValue = $helper->getValueFromRemoteResource($resourceId, 'image');
-$value = $helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId, $languageCode);
+//$value = $helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId, $languageCode);
+$attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
+$attribute->setAttribute('data_text', json_encode($value));
+$attribute->store();
 
 $tpl = eZTemplate::factory();
 $tpl->setVariable( 'value', $value );
