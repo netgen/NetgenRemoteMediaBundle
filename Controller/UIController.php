@@ -370,7 +370,7 @@ class UIController extends Controller
     {
         $this->checkContentPermissions($contentId);
 
-        $variantName = $request->request->getAlnum('name', '');
+        $variantName = $request->request->get('name', '');
         $crop_x = $request->request->getInt('crop_x');
         $crop_y = $request->request->getInt('crop_y');
         $crop_w = $request->request->getInt('crop_w');
@@ -436,7 +436,7 @@ class UIController extends Controller
         $this->checkPermissions('ngremotemedia', 'generate');
 
         $resourceId = $request->request->get('resourceId', '');
-        $variantName = $request->request->getAlnum('name', '');
+        $variantName = $request->request->get('name', '');
         $crop_x = $request->request->getInt('crop_x');
         $crop_y = $request->request->getInt('crop_y');
         $crop_w = $request->request->getInt('crop_w');
