@@ -28,11 +28,11 @@ $helper = $container->get( 'netgen_remote_media.helper' );
 $updatedValue = $helper->getValueFromRemoteResource($resourceId, 'image');
 //$value = $helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId, $languageCode);
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
-$attribute->setAttribute('data_text', json_encode($value));
+$attribute->setAttribute('data_text', json_encode($updatedValue));
 $attribute->store();
 
 $tpl = eZTemplate::factory();
-$tpl->setVariable( 'value', $value );
+$tpl->setVariable( 'value', $updatedValue );
 $tpl->setVariable( 'fieldId', $fieldId );
 $tpl->setVariable( 'availableFormats', $helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId) );
 $tpl->setVariable( 'version', $contentVersionId );
@@ -55,7 +55,7 @@ foreach ($variations as $name => $coords) {
 }
 
 $responseData = array(
-    'media' => !empty($value->resourceId) ? $value : false,
+    'media' => !empty($updatedValue->resourceId) ? $updatedValue : false,
     'content' => $content,
     'toScale' => $scaling,
 );
