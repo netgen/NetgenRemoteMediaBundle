@@ -291,17 +291,13 @@ window.NgRemoteMediaShared.Models = function() {
                     q: this.q
                 };
 
-                return Backbone.sync('read', this, {
+                this.fetch({
                     url: this.url(),
                     data: data,
                     transform: false
-                }).done(this.paged);
+                })
             }
             return false;
-        },
-
-        paged: function(data) {
-            this.add(this.parse(data));
         }
     });
 
