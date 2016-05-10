@@ -16,6 +16,7 @@
         "ngremotemedia" : "/extension/ngremotemedia/design/ezexceed/javascript/"
     }'
     data-bootstrap='{{ value|json_encode }}'
+    data-contentobjectid='{{ contentObjectId }}'
 >
 
     {% if value.resourceId and resourceType == 'image' and value.metaData.format not in documentTypes and not netgen_remote_media_fits(value, availableFormats) %}
