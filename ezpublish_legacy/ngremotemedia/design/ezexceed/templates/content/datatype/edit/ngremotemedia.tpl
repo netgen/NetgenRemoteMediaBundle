@@ -19,7 +19,8 @@
         hash(
             'value', $attribute.content,
             'fieldId', $attribute.id,
-            'availableFormats', $variations
+            'availableFormats', $variations,
+            'contentObjectId', $attribute.contentobject_id
         )
 )}
 

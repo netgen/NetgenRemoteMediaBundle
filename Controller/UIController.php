@@ -282,6 +282,7 @@ class UIController extends Controller
                 'value' => $value,
                 'fieldId' => $fieldId,
                 'availableFormats' => $this->helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId),
+                'contentObjectId' => $contentId
             )
         );
 
