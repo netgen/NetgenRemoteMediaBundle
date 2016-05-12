@@ -290,11 +290,12 @@ window.NgRemoteMediaShared.Models = function() {
                     q: this.q
                 };
 
-                this.fetch({
+                return this.fetch({
                     url: this.url(),
                     data: data,
+                    remove: false,
                     transform: false
-                })
+                });
             }
             return false;
         }
