@@ -19,13 +19,11 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
 
         _.bindAll(this);
 
-        var id = NgRemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : this.$el.closest('.attribute').data('id');
+        var attribute_data =  this.$el.closest('.attribute').data();
+        var id = NgRemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : attribute_data.id;
+        var version = NgRemoteMediaShared.config().is_admin ? RemoteMediaSettings.ez_contentobject_version : attribute_data.version;
 
-        this.model = new Attribute({
-            id: id,
-            version: NgRemoteMediaShared.config().version,
-            ezoe: true
-        });
+        this.model = new Attribute({id: id, version: version, ezoe: true });
 
         this.listenTo(this.model, 'version.create', this.updateEditor);
 
