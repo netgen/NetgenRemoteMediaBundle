@@ -15,7 +15,8 @@ $(function() {
                 id : container.data('id'),
                 prefix : container.data('prefix'),
                 version : container.data('version'),
-                media: media_attributes
+                media: media_attributes,
+                contentObjectId: RemoteMediaSettings.ez_contentobject_id
             }, {parse: true});
 
             var controller = new NgRemoteMedia.views.NgRemoteMedia({
