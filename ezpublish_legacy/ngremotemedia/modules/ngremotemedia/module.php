@@ -49,6 +49,10 @@ $ViewList['generate'] = array(
     'functions' => 'generate',
     'params' => array( 'resource_id' )
 );
+$ViewList['simple_upload'] = array(
+    'script' => 'simple_upload.php',
+    'functions' => 'simple_upload',
+);
 
 $FunctionList['fetch'] = array();
 $FunctionList['save'] = array();
@@ -57,3 +61,4 @@ $FunctionList['upload'] = array();
 $FunctionList['change'] = array();
 $FunctionList['tags'] = array();
 $FunctionList['generate'] = array();
+$FunctionList['simple_upload'] = array();
