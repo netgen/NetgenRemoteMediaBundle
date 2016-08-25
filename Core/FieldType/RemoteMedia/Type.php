@@ -297,6 +297,6 @@ class Type extends FieldType
      */
     public function isSearchable()
     {
-        return false;
+        return true;
     }
 }
