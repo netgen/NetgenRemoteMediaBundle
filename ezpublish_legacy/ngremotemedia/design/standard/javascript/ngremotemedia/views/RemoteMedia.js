@@ -28,14 +28,18 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
     },
 
     render: function() {
-        this.model.get('content') && this.$el.html($(this.model.get('content')).html());
+        var content = this.model.get('content'), html;
+
+        if(content){
+            html = $('<div />').html(content).find('.ngremotemedia-type').html();
+            this.$el.html(html);
+        }
+
         this.destination = this.$('.media-id');
         this.renderTags().enableUpload();
 
         var data = this.$('.ngremotemedia-scale').data();
-
-        var available_versions = this.convert_versions(data.versions);
-        this.model.set({available_versions: available_versions, truesize: data.truesize}, {silent: true});
+        data && this.model.set({available_versions: this.convert_versions(data.versions), truesize: data.truesize}, {silent: true});
 
         return this;
     },

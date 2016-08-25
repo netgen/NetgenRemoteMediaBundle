@@ -43,7 +43,9 @@ $variationCoords = array(
 $variations = $variationCoords + $value->variations;
 $value->variations = $variations;
 
-$helper->updateValue($value, $contentId, $fieldId, $contentVersionId);
+$attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
+$attribute->setAttribute('data_text', json_encode($value));
+$attribute->store();
 
 $variation = $helper->getVariationFromValue(
     $value,

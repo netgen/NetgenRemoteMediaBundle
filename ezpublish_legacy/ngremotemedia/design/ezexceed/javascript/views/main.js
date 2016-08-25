@@ -29,10 +29,12 @@ define(['ngremotemedia/view', 'ngremotemedia/models', './tagger', './upload'], f
             this.model = new Models.attribute({
                 id: data.id,
                 version: this.version,
-                media: data.bootstrap
+                media: data.bootstrap,
+                contentObjectId: data.contentobjectid
             }, {
                 parse: true
             });
+
             this.model.urlRoot = urlRoot;
             this.model
                 .on('change', this.render)

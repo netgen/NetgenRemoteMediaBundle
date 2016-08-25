@@ -7,9 +7,7 @@ window.NgRemoteMediaShared.config = function() {
 
     return {
         is_admin: is_admin,
-        plupload_swf: is_admin ? '/extension/ngremotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url,
-        currentObjectId: is_admin ? RemoteMediaSettings.ez_contentobject_id : eZExceed.config.currentObjectId,
-        version: is_admin ? RemoteMediaSettings.ez_contentobject_version : $('[data-version]').data('version')
+        plupload_swf: is_admin ? '/extension/ngremotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url
     };
 };
 
@@ -40,7 +38,6 @@ var loadCSS = function() {
 loadCSS();
 
 window.NgRemoteMediaShared.Models = function() {
-
     var Attribute = Backbone.Model.extend({
         medias: null,
 
@@ -64,7 +61,7 @@ window.NgRemoteMediaShared.Models = function() {
         },
 
         url: function() {
-            return [NgRemoteMediaShared.url("/ngremotemedia/fetch"), NgRemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
+            return [NgRemoteMediaShared.url("/ngremotemedia/fetch"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
         },
 
 
@@ -107,7 +104,7 @@ window.NgRemoteMediaShared.Models = function() {
 
 
         change_media: function(id){
-            var url = [NgRemoteMediaShared.url("/ngremotemedia/change"), NgRemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
+            var url = [NgRemoteMediaShared.url("/ngremotemedia/change"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
 
             return this.save({}, {
                 url: url,
@@ -128,7 +125,7 @@ window.NgRemoteMediaShared.Models = function() {
 
             _.extend(data, this.process_coords(coords));
 
-            var url = [NgRemoteMediaShared.url("/ngremotemedia/save"), NgRemoteMediaShared.config().currentObjectId, this.id, this.get('version')].join('/');
+            var url = [NgRemoteMediaShared.url("/ngremotemedia/save"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
 
             return Backbone.sync('create', this, {
                 url: url,
@@ -201,7 +198,7 @@ window.NgRemoteMediaShared.Models = function() {
         tags_url: function(method) {
             var attr = this.get('attr');
             method || (method = "");
-            return [NgRemoteMediaShared.url('/ngremotemedia/tags'+method), NgRemoteMediaShared.config().currentObjectId, attr.id, attr.get('version')].join('/');
+            return [NgRemoteMediaShared.url('/ngremotemedia/tags'+method), attr.get('contentObjectId'), attr.id, attr.get('version')].join('/');
         },
 
 
@@ -291,17 +288,14 @@ window.NgRemoteMediaShared.Models = function() {
                     q: this.q
                 };
 
-                return Backbone.sync('read', this, {
+                return this.fetch({
                     url: this.url(),
                     data: data,
+                    remove: false,
                     transform: false
-                }).done(this.paged);
+                });
             }
             return false;
-        },
-
-        paged: function(data) {
-            this.add(this.parse(data));
         }
     });
 

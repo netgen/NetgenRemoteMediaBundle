@@ -160,12 +160,14 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
             );
         }
 
-        $options = array(
-            'secure' => $secure,
-            'crop' => 'fill',
-            'width' => $sizes[0],
-            'height' => $sizes[1]
+        $fillOptions = array(
+            'crop' => $this->useUpscaling ? 'fill' : 'lfill',
         );
+
+        if (!empty($sizes[0])) $fillOptions['width'] = $sizes[0];
+        if (!empty($sizes[1])) $fillOptions['height'] = $sizes[1];
+
+        $options = array( 'secure' => $secure ) + $fillOptions;
 
         if (array_key_exists($format, $value->variations)) {
             $coords = $value->variations[$format];
@@ -179,11 +181,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
                             'height' => (int)$coords['h'],
                             'crop' => 'crop',
                         ),
-                        array(
-                            'crop' => 'fill',
-                            'width' => $sizes[0],
-                            'height' => $sizes[1]
-                        )
+                        $fillOptions
                     ),
                     'secure' => $secure
                 );

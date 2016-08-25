@@ -68,14 +68,16 @@ class Helper
      * @param mixed|null $versionId
      * @param string|null $languageCode
      *
+     * @throws NotFoundException if field is not found
+     *
      * @return \eZ\Publish\API\Repository\Values\Content\Field
      */
     protected function loadField($contentId, $fieldId, $versionId = null, $languageCode = null)
     {
         $content = $this->loadContent($contentId, $versionId, $languageCode);
+        $languageCode = $languageCode ?: $content->getVersionInfo()->initialLanguageCode;
         $contentFields = $content->getFieldsByLanguage($languageCode);
 
-        $currentField = null;
         foreach($contentFields as $field) {
             if ($field->id == $fieldId) {
                 return $field;
@@ -138,6 +140,7 @@ class Helper
     public function updateValue($value, $contentId, $fieldId, $contentVersionId, $languageCode = null)
     {
         $field = $this->loadField($contentId, $fieldId, $contentVersionId, $languageCode);
+
         $versionInfo = $this->contentService->loadVersionInfoById($contentId, $contentVersionId);
 
         $contentUpdateStruct = $this->contentService->newContentUpdateStruct();
@@ -199,9 +202,9 @@ class Helper
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    public function getVariationFromValue($value, $variantName, $availableFormats)
+    public function getVariationFromValue($value, $variantName, $availableFormats, $secure = true)
     {
-        return $this->provider->getVariation($value, $variantName, $availableFormats);
+        return $this->provider->getVariation($value, $variantName, $availableFormats, $secure);
     }
 
     /**

@@ -55,7 +55,7 @@ window.NgRemoteMediaShared.upload = function($, plupload){
             if (this.model.get('ezoe')) {
                 return NgRemoteMediaShared.url('/ngremotemedia/simple_upload');
             }else{
-                return NgRemoteMediaShared.url('/ngremotemedia/upload/') +  NgRemoteMediaShared.config().currentObjectId;
+                return NgRemoteMediaShared.url('/ngremotemedia/upload/') +  this.model.get('contentObjectId');
             }
         },
 
