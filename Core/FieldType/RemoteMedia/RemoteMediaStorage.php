@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
+use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\Core\FieldType\GatewayBasedStorage;
 use eZ\Publish\SPI\FieldType\FieldStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
@@ -21,6 +22,11 @@ class RemoteMediaStorage extends GatewayBasedStorage
      */
     protected $provider;
 
+    /**
+     * @var \eZ\Publish\API\Repository\FieldTypeService
+     */
+    protected $fieldTypeService;
+
     protected $deleteUnused;
 
     /**
@@ -31,10 +37,12 @@ class RemoteMediaStorage extends GatewayBasedStorage
      */
     public function __construct(
         ContentService $contentService,
-        RemoteMediaProviderInterface $provider
+        RemoteMediaProviderInterface $provider,
+        FieldTypeService $fieldTypeService
     ) {
         $this->contentService = $contentService;
         $this->provider = $provider;
+        $this->fieldTypeService = $fieldTypeService;
     }
 
     public function setDeleteUnused($deleteUnused = false)
@@ -58,8 +66,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway $gateway */
         $gateway = $this->getGateway($context);
 
-        if ($data instanceof Value)
-        {
+        if ($data instanceof Value && $data !== $this->fieldTypeService->getFieldType('ngremotemedia')->getEmptyValue()) {
             $gateway->storeFieldData(
                 $field->id,
                 $data->resourceId,
@@ -67,8 +74,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $this->provider->getIdentifier(),
                 $versionInfo->versionNo
             );
-        }
-        else if (is_array($data) && !empty($data)) {
+        } else if (is_array($data) && !empty($data)) {
             $fileUri = $data['input_uri'];
             $folder = $field->id . '/' . $versionInfo->id;
             $id = pathinfo($fileUri, PATHINFO_FILENAME) . '/' . $folder;
