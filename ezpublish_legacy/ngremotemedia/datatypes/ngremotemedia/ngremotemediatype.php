@@ -5,7 +5,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 class NgRemoteMediaType extends eZDataType
 {
 	const DATA_TYPE_STRING = 'ngremotemedia';
-    const FIELD_FORMATS = 'data_text4'; // the only one with length of 255
+    const FIELD_FORMATS = 'data_text5';
     const FIELD_VALUE = 'data_text';
 
     /**
