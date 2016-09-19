@@ -287,6 +287,10 @@ class Type extends FieldType
      */
     public function isEmptyValue( SPIValue $value )
     {
+        if ($value instanceof InputValue && !empty($value->input_uri)) {
+            return false;
+        }
+
         return $value === null || $value == $this->getEmptyValue() || empty($value->resourceId);
     }
 
