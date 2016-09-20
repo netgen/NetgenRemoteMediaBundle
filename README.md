@@ -92,6 +92,17 @@ This repository contains field type (and legacy data type) implementation, and i
     ```
 
 
+## What's next ## 
+Here's the plan for features that should be in place before 1.0 release:
+* drop eZExceed support
+* move image variation defintions to yaml files
+* support both eZ 5.4.*, and eZPlatform with Legacy Bridge
+* add support for Netgen Content Browser(*)
+* add support for Netgen Layouts (*)
+
+(*) Netgen Content Browser and Netgen Layouts are products of Netgen. This bundle will provide support for both if they are already installed and activated on the project.
+
+
 ## Copyright ## 
 
 * Copyright (C) 2016 Keyteq. All rights reserved.
