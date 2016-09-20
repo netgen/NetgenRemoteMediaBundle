@@ -96,6 +96,7 @@ This repository contains field type (and legacy data type) implementation, and i
 Here's the plan for features that should be in place before 1.0 release:
 * drop eZExceed support
 * move image variation defintions to yaml files
+* add option to select folder when uploading the image
 * support both eZ 5.4.*, and eZPlatform with Legacy Bridge
 * add support for Netgen Content Browser(*)
 * add support for Netgen Layouts (*)
