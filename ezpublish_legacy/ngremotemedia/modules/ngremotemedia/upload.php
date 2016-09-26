@@ -48,7 +48,7 @@ foreach ($variations as $name => $coords) {
 }
 
 $tpl = eZTemplate::factory();
-$tpl->setVariable( 'value', $value );
+$tpl->setVariable( 'remote_value', $value );
 $tpl->setVariable( 'fieldId', $fieldId );
 $tpl->setVariable( 'availableFormats', $helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId) );
 $tpl->setVariable( 'version', $contentVersionId );

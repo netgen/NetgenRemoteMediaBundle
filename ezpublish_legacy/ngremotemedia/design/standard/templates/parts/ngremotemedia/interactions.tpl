@@ -3,9 +3,9 @@
     data-contentobject-id="{$contentObjectId}"
     data-version="{$version}">
 
-    <input type="hidden" name="{$base}_media_id_{$fieldId}" value="{$value.resourceId}" class="media-id" />
+    <input type="hidden" name="{$base}_media_id_{$fieldId}" value="{$remote_value.resourceId}" class="media-id" />
 
-    {if $value.resourceId}
+    {if $remote_value.resourceId}
         {if $type|eq('image')}
             {include uri="design:parts/overlay_action_button-1.tpl"}
         {/if}

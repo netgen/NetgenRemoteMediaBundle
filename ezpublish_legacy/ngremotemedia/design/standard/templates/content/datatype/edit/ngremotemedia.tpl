@@ -1,7 +1,7 @@
 {def $base='ContentObjectAttribute'}
 
-{if not(is_set($value))}
-    {def $value = $attribute.content}
+{if not(is_set($remote_value))}
+    {def $remote_value = $attribute.content}
 {/if}
 {if not(is_set($fieldId))}
     {def $fieldId = $attribute.id}
@@ -23,15 +23,15 @@
     {/run-once}
 {/if}
 
-{if is_set($value.metaData.resource_type)}
-    {def $type = $value.metaData.resource_type}
+{if is_set($remote_value.metaData.resource_type)}
+    {def $type = $remote_value.metaData.resource_type}
 {else}
     {def $type = 'image'}
 {/if}
 
 {def $user=fetch( 'user', 'current_user' )}
 
-<div class="ngremotemedia-type" data-bootstrap-media={$value|json} data-user-id="{$user.contentobject_id}">
+<div class="ngremotemedia-type" data-bootstrap-media={$remote_value|json} data-user-id="{$user.contentobject_id}">
     {include uri="design:parts/ngremotemedia/preview.tpl"}
     {include uri="design:parts/ngremotemedia/interactions.tpl"}
 </div>
