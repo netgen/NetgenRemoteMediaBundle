@@ -191,7 +191,7 @@ class Helper
         }
 
         $fileName = $this->filenameCleanUp($fileName);
-	    $id = empty($folder) ? $fileName : $fileName.'/'.$folder;
+        $id = empty($folder) ? $fileName : $fileName.'/'.$folder;
 
         $options = $this->provider->prepareUploadOptions($id);
         $response = $this->provider->upload($fileUri, $options);
