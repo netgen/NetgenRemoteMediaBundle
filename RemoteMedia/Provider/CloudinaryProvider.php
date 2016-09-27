@@ -82,7 +82,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      */
     public function prepareUploadOptions($fileName, $resourceType = null, $altText = '', $caption = '')
     {
-        $id = $this->folderName . '/' . $fileName;
+        $id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
         if ($this->uniqueFilename) {
             $id = $id . '_' . base_convert(uniqid(), 16, 36);
         }
@@ -90,9 +90,6 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return array(
             'public_id' => $id,
             'overwrite' => true,
-            //'folder' => $this->folderName,
-            //'use_filename' => true,
-            //'unique_filename' => true,
             'context' => array(
                 'alt' => $altText,
                 'caption' => $caption,
