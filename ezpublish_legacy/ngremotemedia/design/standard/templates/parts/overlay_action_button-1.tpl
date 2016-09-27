@@ -1,8 +1,8 @@
-{def $width = $value.metaData.width}
-{def $height = $value.metaData.height}
+{def $width = $remote_value.metaData.width}
+{def $height = $remote_value.metaData.height}
 {def $size =  array($width, $height)}
 
-{def $mediaFits = mediaFits($value, $availableFormats)}
+{def $mediaFits = mediaFits($remote_value, $availableFormats)}
 
 <input type="button" class="ngremotemedia-scale hid button"
     data-truesize="{$size|json}"

@@ -9,7 +9,8 @@ $contentVersion = $Params['contentobject_version'];
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
 
-$value = $helper->loadValue($contentObjectId, $attributeId, $contentVersion);
+$attribute = eZContentObjectAttribute::fetch($attributeId, $contentVersion, true);
+$value = $attribute->content();
 
 $variations = $value->variations;
 

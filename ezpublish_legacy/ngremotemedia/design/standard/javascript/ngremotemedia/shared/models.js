@@ -38,7 +38,6 @@ var loadCSS = function() {
 loadCSS();
 
 window.NgRemoteMediaShared.Models = function() {
-
     var Attribute = Backbone.Model.extend({
         medias: null,
 

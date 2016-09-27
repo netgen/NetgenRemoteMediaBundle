@@ -3,8 +3,10 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
 use eZ\Publish\Core\Repository\Values\Content\Content;
+use eZ\Publish\API\Repository\Values\Content\Content as APIContent;
 use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use Twig_Extension;
@@ -82,6 +84,10 @@ class NetgenRemoteMediaExtension extends Twig_Extension
             new Twig_SimpleFunction(
                 'netgen_remote_resource',
                 array($this, 'getResourceDownloadLink')
+            ),
+            new Twig_SimpleFunction(
+                'netgen_remote_variation',
+                array($this, 'getRemoteMediaByVariation')
             ),
         );
     }
@@ -168,5 +174,31 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getResourceDownloadLink(Value $value)
     {
         return $this->provider->generateDownloadLink($value);
+    }
+
+    /**
+     * Returns variation by specified format
+     *
+     * @param APIContent    $content
+     * @param string        $fieldIdentifier
+     * @param string        $format
+     * @param bool          $secure
+     *
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
+     */
+    public function getRemoteMediaByVariation(APIContent $content, $fieldIdentifier, $format, $secure = true)
+    {
+        $emptyVariation = new Variation();
+        $settings = $this->getFieldSettings($content, $fieldIdentifier);
+
+        if (empty($settings)) {
+            return $emptyVariation;
+        }
+
+        $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
+
+        $variation =  $this->getRemoteMediaVariation($field->value, $settings, $format, $secure);
+
+        return $variation;
     }
 }
