@@ -29,6 +29,12 @@ class Helper
     protected $folderName = 'default';
 
     /**
+     * Should content-version and field-id be a part of the filename sent to the remote provider?
+     * @var bool
+     */
+    protected $contentVersionInFileName = true;
+
+    /**
      * Helper constructor.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface $provider
@@ -49,6 +55,11 @@ class Helper
     public function setFolderName($folderName = null)
     {
         $this->folderName = $folderName;
+    }
+    
+    public function setContentVersionInFileName($contentVersionInFileName = null)
+    {
+        $this->contentVersionInFileName = $contentVersionInFileName;
     }
 
     /**
@@ -170,16 +181,17 @@ class Helper
      */
     public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
     {
-        // IH: customer request, see:
-        // https://keyteq.atlassian.net/browse/CLOUDINT-1?focusedCommentId=52832&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-52832
-//        if (!empty($fieldId) && !empty($contentVersionId)) {
-//            $folder = $fieldId.'/'.$contentVersionId;
-//        } else {
-//            $folder = '';
-//        }
+        if ($this->contentVersionInFileName) {
+            if (!empty($fieldId) && !empty($contentVersionId)) {
+                $folder = $fieldId.'/'.$contentVersionId;
+            }
+            else {
+                $folder = '';
+            }
+        }
 
         $fileName = $this->filenameCleanUp($fileName);
-	$id = empty($folder) ? $fileName : $fileName.'/'.$folder;
+	    $id = empty($folder) ? $fileName : $fileName.'/'.$folder;
 
         $options = $this->provider->prepareUploadOptions($id);
         $response = $this->provider->upload($fileUri, $options);
