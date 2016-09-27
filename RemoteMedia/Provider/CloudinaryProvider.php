@@ -27,7 +27,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      */
     protected $cloudinaryUploader;
 
-    protected $folderName = 'default';
+    protected $folderName = '';
 
     protected $uniqueFilename = false;
 
