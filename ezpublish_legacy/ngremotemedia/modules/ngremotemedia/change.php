@@ -32,7 +32,7 @@ $attribute->setAttribute('data_text', json_encode($updatedValue));
 $attribute->store();
 
 $tpl = eZTemplate::factory();
-$tpl->setVariable( 'value', $updatedValue );
+$tpl->setVariable( 'remote_value', $updatedValue );
 $tpl->setVariable( 'fieldId', $fieldId );
 $tpl->setVariable( 'availableFormats', $helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId) );
 $tpl->setVariable( 'version', $contentVersionId );
