@@ -26,8 +26,6 @@ class Helper
      */
     protected $contentTypeService;
 
-    protected $folderName = 'default';
-
     /**
      * Should content-version and field-id be a part of the filename sent to the remote provider?
      * @var bool
@@ -52,11 +50,6 @@ class Helper
         $this->contentTypeService = $contentTypeService;
     }
 
-    public function setFolderName($folderName = null)
-    {
-        $this->folderName = $folderName;
-    }
-    
     public function setContentVersionInFileName($contentVersionInFileName = null)
     {
         $this->contentVersionInFileName = $contentVersionInFileName;

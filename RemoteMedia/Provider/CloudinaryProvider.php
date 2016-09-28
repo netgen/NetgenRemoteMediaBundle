@@ -456,11 +456,6 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     {
         $listFormatted = array();
         foreach ($list as $hit) {
-            $fileName = explode('/', $hit['public_id']);
-            if (count($fileName) > 1) {
-                $fileName = $fileName[1]; // first part is the (siteaccess) folder
-            }
-
             $thumbOptions = array();
             $thumbOptions['crop'] = 'fit';
             $thumbOptions['width'] = 160;
@@ -473,7 +468,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
                 'filesize' => $hit['bytes'],
                 'width' => $hit['width'],
                 'height' => $hit['height'],
-                'filename' => $hit['public_id'], //$fileName, -> change for Kavli project
+                'filename' => $hit['public_id'],
                 'url' => $this->getFormattedUrl($hit['public_id'], $thumbOptions),
             );
         }
