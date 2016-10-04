@@ -196,6 +196,12 @@ class Type extends FieldType
     {
         if ($fieldValue->data === null) {
             return $this->getEmptyValue();
+        } else if ($fieldValue->data == $this->getEmptyValue()) {
+            return $this->getEmptyValue();
+        }
+
+        if ($fieldValue->data instanceof Value) {
+            return $fieldValue->data;
         }
 
         $value = new Value($fieldValue->data);
