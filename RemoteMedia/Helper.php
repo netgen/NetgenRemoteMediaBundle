@@ -177,8 +177,7 @@ class Helper
         if ($this->contentVersionInFileName) {
             if (!empty($fieldId) && !empty($contentVersionId)) {
                 $folder = $fieldId.'/'.$contentVersionId;
-            }
-            else {
+            } else {
                 $folder = '';
             }
         }
