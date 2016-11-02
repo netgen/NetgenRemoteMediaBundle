@@ -308,6 +308,9 @@ class Helper
             $list = $this->provider->listResources($hardLimit);
         } else {
             $list = $this->provider->searchResources($query, $hardLimit);
+            $listByTags = $this->provider->searchResourcesByTag($query);
+
+            $list = array_merge($list, $listByTags);
         }
 
         return array(
