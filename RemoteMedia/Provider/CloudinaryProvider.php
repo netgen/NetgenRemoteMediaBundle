@@ -297,7 +297,7 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     public function searchResourcesByTag($tag)
     {
         $result = $this->cloudinaryApi->resources_by_tag(
-            $tag,
+            urlencode($tag),
             array(
                 'tags' => true,
                 'context' => true,
