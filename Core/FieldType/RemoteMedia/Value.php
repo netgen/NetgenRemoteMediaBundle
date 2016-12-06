@@ -16,7 +16,6 @@ class Value extends BaseValue
         'format' => '',
         'alt_text' => '',
         'caption' => '',
-        'format' => '',
         'width' => '',
         'height' => '',
         'tags' => array(),

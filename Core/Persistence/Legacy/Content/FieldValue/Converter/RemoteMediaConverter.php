@@ -49,11 +49,6 @@ class RemoteMediaConverter implements Converter
      */
     public function toStorageFieldDefinition(FieldDefinition $fieldDef, StorageFieldDefinition $storageDef)
     {
-        $formats = isset($fieldDef->fieldTypeConstraints->fieldSettings['formats']) ?
-            $fieldDef->fieldTypeConstraints->fieldSettings['formats'] :
-            array();
-        $formats = json_encode($formats);
-        $storageDef->dataText5 = $formats;
     }
 
     /**
@@ -64,11 +59,6 @@ class RemoteMediaConverter implements Converter
      */
     public function toFieldDefinition(StorageFieldDefinition $storageDef, FieldDefinition $fieldDef)
     {
-        $fieldDef->fieldTypeConstraints->fieldSettings = new FieldSettings(
-            array(
-                'formats' => json_decode($storageDef->dataText5, true),
-            )
-        );
     }
 
     /**

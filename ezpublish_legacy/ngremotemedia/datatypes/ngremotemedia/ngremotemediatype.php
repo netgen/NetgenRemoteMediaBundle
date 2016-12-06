@@ -5,7 +5,6 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 class NgRemoteMediaType extends eZDataType
 {
 	const DATA_TYPE_STRING = 'ngremotemedia';
-    const FIELD_FORMATS = 'data_text5';
     const FIELD_VALUE = 'data_text';
 
     /**
@@ -21,44 +20,6 @@ class NgRemoteMediaType extends eZDataType
                 'serialize_supported' => true
             )
         );
-    }
-
-    /**
-     * Called when the datatype is added to a content class
-     *
-     * @param eZHTTPTool $http
-     * @param string $base
-     * @param eZContentClassAttribute $classAttribute
-     */
-    public function fetchClassAttributeHTTPInput($http, $base, $class)
-    {
-        $versionsKey = $base . '_versions_' . $class->attribute('id');
-        if ($http->hasPostVariable($versionsKey))
-        {
-            $versions = explode("\n", $http->variable($versionsKey, ''));
-            $versions = array_filter($versions);
-            $versions = array_map('trim', $versions);
-            $versions_array = array();
-
-            foreach($versions as $version) {
-                $tmp = explode(',', $version);
-                $versions_array[$tmp[0]] = $tmp[1];
-            }
-
-            $json = json_encode($versions_array);
-            $class->setAttribute(self::FIELD_FORMATS, $json);
-        }
-        return true;
-    }
-
-    /**
-     * Called on {$class_attribute.content} in content class template
-     *
-     * @return array
-     */
-    public function classAttributeContent($class)
-    {
-        return json_decode($class->attribute(self::FIELD_FORMATS), true);
     }
 
     /**
@@ -237,23 +198,6 @@ class NgRemoteMediaType extends eZDataType
         $value = new Value($attributeValue);
 
         return $value;
-    }
-
-    /**
-     * Performs necessary actions with attribute data after object is published,
-     * it means that you have access to published nodes.
-     *
-     * Should return True if the value was stored correctly.
-     * Might be transaction unsafe.
-     *
-     * @param $attribute
-     * @param $contentObject
-     * @param $publishedNodes
-     */
-    public function onPublish($attribute, $contentObject, $publishedNodes)
-    {
-        //$handler = $this->objectAttributeContent($attribute);
-        //$handler->reportUsage($contentObject);
     }
 }
 

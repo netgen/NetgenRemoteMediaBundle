@@ -12,20 +12,6 @@ use eZ\Publish\SPI\Persistence\Content\FieldValue;
 class Type extends FieldType
 {
     /**
-     * List of settings available for this FieldType.
-     *
-     * The key is the setting name, and the value is the default value for this setting
-     *
-     * @var array
-     */
-    protected $settingsSchema = array(
-        'formats' => array(
-            'type' => 'string',
-            'default' => '',
-        ),
-    );
-
-    /**
      * Returns the field type identifier for this field type.
      *
      * @return string
@@ -219,63 +205,6 @@ class Type extends FieldType
                 $value
             );
         }
-    }
-
-    /**
-     * Validates the fieldSettings of a FieldDefinitionCreateStruct or FieldDefinitionUpdateStruct.
-     *
-     * @param mixed $fieldSettings
-     *
-     * @return \eZ\Publish\SPI\FieldType\ValidationError[]
-     */
-    public function validateFieldSettings($fieldSettings)
-    {
-        $validationErrors = array();
-        if (!is_array($fieldSettings)) {
-            $validationErrors[] = new ValidationError('Field settings must be in form of an array');
-
-            return $validationErrors;
-        }
-        foreach ($fieldSettings as $name => $value) {
-            if (!isset($this->settingsSchema[$name])) {
-                $validationErrors[] = new ValidationError(
-                    "Setting '%setting%' is unknown",
-                    null,
-                    array(
-                        'setting' => $name,
-                    )
-                );
-                continue;
-            }
-            switch ($name) {
-                case 'formats':
-                    if (!is_array($value)) {
-                        $validationErrors[] = new ValidationError(
-                            "Setting '%setting%' value must be array",
-                            null,
-                            array(
-                                'setting' => $name,
-                            )
-                        );
-                    }
-
-                    foreach ($value as $formatName => $format) {
-                        if (empty($format)) {
-                            $validationErrors[] = new ValidationError(
-                                "For setting '%setting%' specification of format %format% must not be empty",
-                                null,
-                                array(
-                                    'setting' => $name,
-                                    'format' => $format,
-                                )
-                            );
-                        }
-                    }
-                    break;
-            }
-        }
-
-        return $validationErrors;
     }
 
     /**
