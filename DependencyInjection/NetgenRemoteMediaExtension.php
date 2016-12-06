@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
+use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\ConfigurationProcessor;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -37,6 +38,9 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $container->setParameter("netgen_remote_media.browse_limit", $config['browse_limit']);
         $container->setParameter("netgen_remote_media.remove_unused_resources", $config['remove_unused']);
         $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.' . $config['provider']);
+
+        $processor = new ConfigurationProcessor($container, 'netgen_remote_media');
+        $processor->mapConfigArray('image_variations', $config);
     }
 
     /**
