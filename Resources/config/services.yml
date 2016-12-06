@@ -1,3 +1,9 @@
+parameters:
+    netgen_remote_media.default.cloudinary.folder_name: ''
+    netgen_remote_media.default.cloudinary.unique_id: false
+    netgen_remote_media.default.cloudinary.use_upscaling: true
+    netgen_remote_media.default.use_content_version_as_part_of_filename: true
+
 services:
     netgen_remote_media.controller.ui:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\UIController
@@ -20,6 +26,10 @@ services:
             - "%netgen_remote_media.parameters.cloudinary.account_name%"
             - "%netgen_remote_media.parameters.cloudinary.account_key%"
             - "%netgen_remote_media.parameters.cloudinary.account_secret%"
+        calls:
+            - [setFolderName, ["$cloudinary.folder_name;netgen_remote_media$"]]
+            - [setUniqueFilename, ["$cloudinary.unique_id;netgen_remote_media$"]]
+            - [setUseUpscaling, ["$cloudinary.use_upscaling;netgen_remote_media$"]]
 
     netgen_remote_media.helper:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
@@ -27,3 +37,5 @@ services:
             - "@netgen_remote_media.provider"
             - "@ezpublish.api.service.content"
             - "@ezpublish.api.service.content_type"
+        calls:
+            - [setContentVersionInFileName, ["$use_content_version_as_part_of_filename;netgen_remote_media$"]]

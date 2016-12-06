@@ -27,6 +27,12 @@ class Helper
     protected $contentTypeService;
 
     /**
+     * Should content-version and field-id be a part of the filename sent to the remote provider?
+     * @var bool
+     */
+    protected $contentVersionInFileName = true;
+
+    /**
      * Helper constructor.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface $provider
@@ -42,6 +48,11 @@ class Helper
         $this->provider = $provider;
         $this->contentService = $contentService;
         $this->contentTypeService = $contentTypeService;
+    }
+
+    public function setContentVersionInFileName($contentVersionInFileName = null)
+    {
+        $this->contentVersionInFileName = $contentVersionInFileName;
     }
 
     /**
@@ -163,14 +174,16 @@ class Helper
      */
     public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
     {
-        if (!empty($fieldId) && !empty($contentVersionId)) {
-            $folder = $fieldId.'/'.$contentVersionId;
-        } else {
-            $folder = '';
+        if ($this->contentVersionInFileName) {
+            if (!empty($fieldId) && !empty($contentVersionId)) {
+                $folder = $fieldId.'/'.$contentVersionId;
+            } else {
+                $folder = '';
+            }
         }
 
         $fileName = $this->filenameCleanUp($fileName);
-	$id = empty($folder) ? $fileName : $fileName.'/'.$folder;
+        $id = empty($folder) ? $fileName : $fileName.'/'.$folder;
 
         $options = $this->provider->prepareUploadOptions($id);
         $response = $this->provider->upload($fileUri, $options);
