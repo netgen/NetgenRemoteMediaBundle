@@ -170,6 +170,13 @@ class CloudinaryProvider extends RemoteMediaProvider
         return $value;
     }
 
+    protected function logError($message)
+    {
+        if ($this->logger instanceof LoggerInterface) {
+            $this->logger->error($message);
+        }
+    }
+
     protected function processManualFormat(Value $value, $sizes, $secure)
     {
         $options = array(
@@ -217,9 +224,7 @@ class CloudinaryProvider extends RemoteMediaProvider
                 return $this->processManualFormat($value, $sizes, $secure);
             }
 
-            if ($this->logger instanceof LoggerInterface) {
-                $this->logger->error("[RemoteMedia] Format {$format} is not configured nor proper manual format ([W]x[H]");
-            }
+            $this->logError("[RemoteMedia] Format {$format} is not configured nor proper manual format ([W]x[H]");
 
             return $variation;
         }
@@ -232,9 +237,7 @@ class CloudinaryProvider extends RemoteMediaProvider
                     $alias, $this->getIdentifier()
                 );
             } catch (TransformationHandlerNotFoundException $e) {
-                if ($this->logger instanceof LoggerInterface) {
-                    $this->logger->error("[RemoteMedia] Transformation handler for alias '{$alias}' does not exist.");
-                }
+                $this->logError("[RemoteMedia] Transformation handler for alias '{$alias}' does not exist.");
 
                 continue;
             }
