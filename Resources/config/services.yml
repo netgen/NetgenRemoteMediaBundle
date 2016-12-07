@@ -26,6 +26,8 @@ services:
     netgen_remote_media.provider.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider
         arguments:
+            - "@netgen_remote_media.handler_registry"
+            - "@?logger"
             - "%netgen_remote_media.parameters.cloudinary.account_name%"
             - "%netgen_remote_media.parameters.cloudinary.account_key%"
             - "%netgen_remote_media.parameters.cloudinary.account_secret%"

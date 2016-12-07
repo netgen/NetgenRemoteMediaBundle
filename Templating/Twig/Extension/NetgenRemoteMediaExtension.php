@@ -7,7 +7,7 @@ use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Twig_Extension;
 use Twig_SimpleFunction;
 
@@ -31,11 +31,11 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * NetgenRemoteMediaExtension constructor.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface $provider
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
      * @param \eZ\Publish\Core\Helper\TranslationHelper $translationHelper
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
      */
-    public function __construct(RemoteMediaProviderInterface $provider, TranslationHelper $translationHelper, Helper $helper)
+    public function __construct(RemoteMediaProvider $provider, TranslationHelper $translationHelper, Helper $helper)
     {
         $this->provider = $provider;
         $this->translationHelper = $translationHelper;

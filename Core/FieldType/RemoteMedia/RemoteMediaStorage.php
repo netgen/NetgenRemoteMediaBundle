@@ -8,7 +8,7 @@ use eZ\Publish\SPI\FieldType\FieldStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 
 class RemoteMediaStorage extends GatewayBasedStorage
 {
@@ -33,11 +33,11 @@ class RemoteMediaStorage extends GatewayBasedStorage
      * Constructor.
 
      * @param \eZ\Publish\API\Repository\ContentService $contentService
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
      */
     public function __construct(
         ContentService $contentService,
-        RemoteMediaProviderInterface $provider,
+        RemoteMediaProvider $provider,
         FieldTypeService $fieldTypeService
     ) {
         $this->contentService = $contentService;

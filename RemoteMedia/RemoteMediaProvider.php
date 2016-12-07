@@ -4,9 +4,25 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
+use Psr\Log\LoggerInterface;
 
-interface RemoteMediaProviderInterface
+abstract class RemoteMediaProvider
 {
+    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry  */
+    protected $registry;
+
+    /** @var \Psr\Log\LoggerInterface  */
+    protected $logger;
+
+    public function __construct(Registry $registry, LoggerInterface $logger)
+    {
+        $this->registry = $registry;
+        $this->logger = $logger;
+    }
+
     /**
      * Returns the array with options required for the upload.
      *
@@ -17,7 +33,7 @@ interface RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function prepareUploadOptions($fileName, $resourceType = null, $altText = '', $caption = '');
+    abstract public function prepareUploadOptions($fileName, $resourceType = null, $altText = '', $caption = '');
 
     /**
      * Uploads the local resource to remote storage.
@@ -27,7 +43,7 @@ interface RemoteMediaProviderInterface
      *
      * @return mixed
      */
-    public function upload($fileUri, $options = array());
+    abstract public function upload($fileUri, $options = array());
 
     /**
      * Gets the absolute url of the remote resource formatted according to options provided.
@@ -37,7 +53,7 @@ interface RemoteMediaProviderInterface
      *
      * @return string
      */
-    public function getFormattedUrl($source, $options = array());
+    abstract public function getFormattedUrl($source, $options = array());
 
     /**
      * Transforms response from the remote storage to field type value.
@@ -46,7 +62,7 @@ interface RemoteMediaProviderInterface
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
-    public function getValueFromResponse($response);
+    abstract public function getValueFromResponse($response);
 
     /**
      * Gets the remote media Variation.
@@ -58,7 +74,7 @@ interface RemoteMediaProviderInterface
      * @param bool $secure
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    public function getVariation(Value $value, $format, $secure = true);
+    abstract public function getVariation(Value $value, $format, $secure = true);
 
     /**
      * Lists all available resources from the remote storage.
@@ -67,25 +83,24 @@ interface RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function listResources($limit = 10);
+    abstract public function listResources($limit = 10);
 
     /**
      * Counts available resources from the remote storage.
      *
      * @return int
      */
-    public function countResources();
+    abstract public function countResources();
 
     /**
      * Searches for the remote resource containing term in the query.
      *
      * @param string $query
-     * @param string $resourceType
      * @param int $limit
      *
      * @return array
      */
-    public function searchResources($query, $limit = 10);
+    abstract public function searchResources($query, $limit = 10);
 
     /**
      * Searches for the remote resource tagged with a provided tag.
@@ -94,7 +109,7 @@ interface RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function searchResourcesByTag($tag);
+    abstract public function searchResourcesByTag($tag);
 
     /**
      * Returns the remote resource with provided id and type.
@@ -104,7 +119,7 @@ interface RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function getRemoteResource($resourceId, $resourceType);
+    abstract public function getRemoteResource($resourceId, $resourceType);
 
     /**
      * Adds tag to remote resource.
@@ -114,7 +129,7 @@ interface RemoteMediaProviderInterface
      *
      * @return mixed
      */
-    public function addTagToResource($resourceId, $tag);
+    abstract public function addTagToResource($resourceId, $tag);
 
     /**
      * Removes tag from remote resource.
@@ -124,7 +139,7 @@ interface RemoteMediaProviderInterface
      *
      * @return mixed
      */
-    public function removeTagFromResource($resourceId, $tag);
+    abstract public function removeTagFromResource($resourceId, $tag);
 
     /**
      * Updates the resource context.
@@ -140,7 +155,7 @@ interface RemoteMediaProviderInterface
      *
      * @return mixed
      */
-    public function updateResourceContext($resourceId, $resourceType, $context);
+    abstract public function updateResourceContext($resourceId, $resourceType, $context);
 
     /**
      * Returns thumbnail url for the video with provided id.
@@ -150,7 +165,7 @@ interface RemoteMediaProviderInterface
      *
      * @return string
      */
-    public function getVideoThumbnail($resourceId, $offset = null);
+    abstract public function getVideoThumbnail($resourceId, $offset = null);
 
     /**
      * Generates html5 video tag for the video with provided id.
@@ -161,7 +176,7 @@ interface RemoteMediaProviderInterface
      *
      * @return string
      */
-    public function generateVideoTag($resourceId, $format = '', $namedFormats = array());
+    abstract public function generateVideoTag($resourceId, $format = '', $namedFormats = array());
 
     /**
      * Formats browse list to comply with eZExceed.
@@ -171,16 +186,16 @@ interface RemoteMediaProviderInterface
      *
      * @return array
      */
-    public function formatBrowseList(array $list);
+    abstract public function formatBrowseList(array $list);
 
     /**
      * Removes the resource from the remote.
      *
      * @param $resourceId
      */
-    public function deleteResource($resourceId);
+    abstract public function deleteResource($resourceId);
 
-    public function getIdentifier();
+    abstract public function getIdentifier();
 
     /**
      * Generates the link to the remote resource.
@@ -189,5 +204,5 @@ interface RemoteMediaProviderInterface
      *
      * @return string
      */
-    public function generateDownloadLink(Value $value);
+    abstract public function generateDownloadLink(Value $value);
 }

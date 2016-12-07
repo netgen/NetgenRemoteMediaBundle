@@ -6,11 +6,16 @@ use \Cloudinary;
 use \Cloudinary\Uploader;
 use \Cloudinary\Api;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
+use Psr\Log\LoggerInterface;
 
 
-class CloudinaryProvider implements RemoteMediaProviderInterface
+class CloudinaryProvider extends RemoteMediaProvider
 {
     /**
      * @var \Cloudinary
@@ -31,19 +36,21 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
 
     protected $uniqueFilename = false;
 
-    protected $useUpscaling = true;
-
     protected $transformations = array();
 
     /**
      * CloudinaryProvider constructor.
      *
+     * @param Registry $registry
+     * @param LoggerInterface $logger
      * @param string $cloudName
      * @param string $apiKey
      * @param string $apiSecret
      */
-    public function __construct($cloudName, $apiKey, $apiSecret)
+    public function __construct(Registry $registry, LoggerInterface $logger = null, $cloudName, $apiKey, $apiSecret)
     {
+        parent::__construct($registry, $logger);
+
         $this->cloudinary = new Cloudinary();
         $this->cloudinary->config(
             array(
@@ -162,6 +169,29 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         return $value;
     }
 
+    protected function processManualFormat(Value $value, $sizes, $secure)
+    {
+        $options = array(
+            'secure' => $secure,
+            'transformations' => array(
+                'crop' => 'fill',
+                'width' => $sizes[0],
+                'height' => $sizes[1]
+            )
+        );
+
+        $variation = new Variation();
+        $url = $this->getFormattedUrl(
+            $value->resourceId, $options
+        );
+
+        $variation->width = $sizes[0];
+        $variation->height = $sizes[1];
+        $variation->url = $url;
+
+        return $variation;
+    }
+
     /**
      * Gets the remote media Variation.
      *
@@ -174,51 +204,64 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;
+        $variation->url = $url;
 
         if (empty($format)) {
-            $variation->url = $url;
+            return $variation;
+        }
+
+        if (!isset($this->transformations[$format])) {
+            $sizes = explode('x', $format);
+            if (count($sizes) === 2) {
+                return $this->processManualFormat($value, $sizes, $secure);
+            }
+
+            if ($this->logger instanceof LoggerInterface) {
+                $this->logger->error("[RemoteMedia] Format {$format} is not configured nor proper manual format ([W]x[H]");
+            }
 
             return $variation;
         }
 
-        die(dump($this->transformations));
-        die(dump($value, $format));
-
-        $sizes = array_key_exists($format, $namedFormats) ? explode('x', $namedFormats[$format]) : explode('x', $format);
-
-        if (count($sizes) !== 2) {
-            throw new \InvalidArgumentException(
-                "Format has to be either name of one of configured formats or '[W]x[H]' (eg. '200x200'), {$format} given"
-            );
-        }
-
-        $fillOptions = array(
-            'crop' => $this->useUpscaling ? 'fill' : 'lfill',
-        );
-
-        if (!empty($sizes[0])) $fillOptions['width'] = $sizes[0];
-        if (!empty($sizes[1])) $fillOptions['height'] = $sizes[1];
-
-        $options = array( 'secure' => $secure ) + $fillOptions;
-
-        if (array_key_exists($format, $value->variations)) {
-            $coords = $value->variations[$format];
-            if (count($coords) > 2 && (int)$coords['w'] !== 0) {
-                $options = array(
-                    'transformation' => array(
-                        array(
-                            'x' => (int)$coords['x'],
-                            'y' => (int)$coords['y'],
-                            'width' => (int)$coords['w'],
-                            'height' => (int)$coords['h'],
-                            'crop' => 'crop',
-                        ),
-                        $fillOptions
-                    ),
-                    'secure' => $secure
+        $options = array();
+        $formatConfiguration = $this->transformations[$format];
+        foreach ($formatConfiguration['transformations'] as $alias => $config) {
+            try {
+                $transformationHandler = $this->registry->getHandler(
+                    $alias, $this->getIdentifier()
                 );
+            } catch (TransformationHandlerNotFoundException $e) {
+                if ($this->logger instanceof LoggerInterface) {
+                    $this->logger->error("[RemoteMedia] Transformation handler for alias '{$alias}' does not exist.");
+                }
+
+                continue;
             }
+
+            $options[] = $transformationHandler->process($config);
         }
+
+        $options['transformation'] = $options;
+        $options['secure'] = $secure;
+
+//        if (array_key_exists($format, $value->variations)) {
+//            $coords = $value->variations[$format];
+//            if (count($coords) > 2 && (int)$coords['w'] !== 0) {
+//                $options = array(
+//                    'transformation' => array(
+//                        array(
+//                            'x' => (int)$coords['x'],
+//                            'y' => (int)$coords['y'],
+//                            'width' => (int)$coords['w'],
+//                            'height' => (int)$coords['h'],
+//                            'crop' => 'crop',
+//                        ),
+//                        $fillOptions
+//                    ),
+//                    'secure' => $secure
+//                );
+//            }
+//        }
 
         $url = $this->getFormattedUrl(
             $value->resourceId, $options

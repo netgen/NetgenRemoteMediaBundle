@@ -6,7 +6,6 @@ use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 class Helper
@@ -35,12 +34,12 @@ class Helper
     /**
      * Helper constructor.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface $provider
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
      * @param \eZ\Publish\API\Repository\ContentService $contentService
      * @param \eZ\Publish\API\Repository\ContentTypeService $contentTypeService
      */
     public function __construct(
-        RemoteMediaProviderInterface $provider,
+        RemoteMediaProvider $provider,
         ContentService $contentService,
         ContentTypeService $contentTypeService
     )

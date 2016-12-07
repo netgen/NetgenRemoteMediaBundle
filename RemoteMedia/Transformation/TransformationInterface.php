@@ -4,7 +4,13 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation;
 
 interface TransformationInterface
 {
-    public function supports($options);
+    /**
+     * If transformation is supported in the admin interface
+     * for cropping.
+     *
+     * @return bool
+     */
+    public function isCroppable();
 
     /**
      * Takes options from the configuration and returns
