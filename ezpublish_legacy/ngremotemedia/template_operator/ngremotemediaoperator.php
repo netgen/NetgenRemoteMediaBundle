@@ -11,7 +11,7 @@ class NgRemoteMediaOperator
      */
     function operatorList()
     {
-        return array('ngremotemedia', 'mediaFits', 'videoThumbnail');
+        return array('ngremotemedia', 'mediaFits', 'videoThumbnail', 'ng_image_variations');
     }
 
     /**
@@ -28,6 +28,8 @@ class NgRemoteMediaOperator
     function namedParameterList()
     {
         return array(
+            'ng_image_variations' => array(
+            ),
             'ngremotemedia' => array(
                 'value' => array(
                     'type' => 'Value',
@@ -35,10 +37,6 @@ class NgRemoteMediaOperator
                 ),
                 'format' => array(
                     'type' => 'string',
-                    'required' => true
-                ),
-                'availableFormats' => array(
-                    'type' => 'array',
                     'required' => true
                 ),
                 'secure' => array(
@@ -83,16 +81,9 @@ class NgRemoteMediaOperator
     function modify($tpl, $operatorName, $operatorParameters, $rootNamespace, $currentNamespace, &$operatorValue, $namedParameters, $placement)
     {
         if ($operatorName === 'ngremotemedia') {
-            if (empty($namedParameters['value'])) {
-                $operatorValue = null;
-
-                return;
-            }
-
             $operatorValue = $this->ngremotemedia(
                 $namedParameters['value'],
                 $namedParameters['format'],
-                $namedParameters['availableFormats'],
                 $namedParameters['secure']
             );
         } elseif ($operatorName === 'mediaFits') {
@@ -105,15 +96,24 @@ class NgRemoteMediaOperator
                 $namedParameters['availableFormats'],
                 $namedParameters['format']
             );
+        } elseif ($operatorName === 'ng_image_variations') {
+            $operatorValue = $this->getImageVariations();
         }
     }
 
-    function ngremotemedia($value, $format, $availableFormats, $secure = true)
+    function getImageVariations()
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+
+        return $container->get('ezpublish.config.resolver')->getParameter('image_variations', 'netgen_remote_media');
+    }
+
+    function ngremotemedia($value, $format, $secure = true)
     {
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.provider' );
 
-        return $provider->getVariation($value, $format, $availableFormats, $secure);
+        return $provider->getVariation($value, $format, $secure);
     }
 
     function mediaFits($value, $variations)

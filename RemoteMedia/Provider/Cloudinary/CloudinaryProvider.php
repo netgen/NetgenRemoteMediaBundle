@@ -181,7 +181,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $options = array(
             'secure' => $secure,
-            'transformations' => array(
+            'transformation' => array(
                 'crop' => 'fill',
                 'width' => $sizes[0],
                 'height' => $sizes[1]
@@ -189,6 +189,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         );
 
         $variation = new Variation();
+
         $url = $this->getFormattedUrl(
             $value->resourceId, $options
         );
@@ -220,6 +221,7 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         if (!isset($this->transformations[$format])) {
             $sizes = explode('x', $format);
+
             if (count($sizes) === 2) {
                 return $this->processManualFormat($value, $sizes, $secure);
             }
