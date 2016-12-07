@@ -6,15 +6,19 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
 
 /**
- * Class Fill
+ * Class Mpad
  *
- * Create an image with the exact given width and height while
- * retaining the original aspect ratio, using only part of the
- * image that fills the given dimensions if necessary (only part
- * of the original image might be visible if the requested aspect
- * ratio is different from the original aspect ratio).
+ * Same as the pad mode but only if the original image is smaller than
+ * the given minimum (width and height), in which case the image is
+ * scaled up to fill the given width and height while retaining the
+ * original aspect ratio and with all of the original image visible.
+ * This mode doesn't scale down the image if your requested dimensions
+ * are smaller than the original image's. If the proportions of the
+ * original image do not match the given width and height, padding is
+ * added to the image to reach the required size.
+ * You can also specify the color of the background in the case that padding is added.
  */
-class Fill implements TransformationInterface
+class Mpad implements TransformationInterface
 {
     /**
      * Takes options from the configuration and returns
@@ -29,7 +33,7 @@ class Fill implements TransformationInterface
     public function process(Value $value, $alias, array $config = array())
     {
         $options = array(
-            'crop' => 'fill'
+            'crop' => 'mpad'
         );
 
         if ($config[0] !== 0) {
@@ -38,6 +42,10 @@ class Fill implements TransformationInterface
 
         if ($config[1] !== 0) {
             $options['height'] = $config[1];
+        }
+
+        if (!empty($config[2])) {
+            $options['background'] = $config[2];
         }
 
         return $options;

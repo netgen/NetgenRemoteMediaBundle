@@ -6,15 +6,17 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
 
 /**
- * Class Fill
+ * Class Mfit
  *
- * Create an image with the exact given width and height while
- * retaining the original aspect ratio, using only part of the
- * image that fills the given dimensions if necessary (only part
- * of the original image might be visible if the requested aspect
- * ratio is different from the original aspect ratio).
+ * Same as the fit mode but only if the original image is smaller
+ * than the given minimum (width and height), in which case the image
+ * is scaled up so that it takes up as much space as possible within
+ * a bounding box defined by the given width and height parameters.
+ * The original aspect ratio is retained and all of the original image
+ * is visible. This mode doesn't scale down the image if your requested
+ * dimensions are smaller than the original image's.
  */
-class Fill implements TransformationInterface
+class Mfit implements TransformationInterface
 {
     /**
      * Takes options from the configuration and returns
@@ -29,7 +31,7 @@ class Fill implements TransformationInterface
     public function process(Value $value, $alias, array $config = array())
     {
         $options = array(
-            'crop' => 'fill'
+            'crop' => 'mfit'
         );
 
         if ($config[0] !== 0) {

@@ -6,6 +6,7 @@ use \Cloudinary;
 use \Cloudinary\Uploader;
 use \Cloudinary\Api;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface;
@@ -238,33 +239,18 @@ class CloudinaryProvider extends RemoteMediaProvider
                 continue;
             }
 
-            $options[] = $transformationHandler->process($config);
+            try {
+                $options[] = $transformationHandler->process($value, $alias, $config);
+            } catch (TransformationHandlerFailedException $e) {
+                // do nothing
+                continue;
+            }
         }
 
-        $options['transformation'] = $options;
-        $options['secure'] = $secure;
-
-//        if (array_key_exists($format, $value->variations)) {
-//            $coords = $value->variations[$format];
-//            if (count($coords) > 2 && (int)$coords['w'] !== 0) {
-//                $options = array(
-//                    'transformation' => array(
-//                        array(
-//                            'x' => (int)$coords['x'],
-//                            'y' => (int)$coords['y'],
-//                            'width' => (int)$coords['w'],
-//                            'height' => (int)$coords['h'],
-//                            'crop' => 'crop',
-//                        ),
-//                        $fillOptions
-//                    ),
-//                    'secure' => $secure
-//                );
-//            }
-//        }
-
+        $finalOptions['transformation'] = $options;
+        $finalOptions['secure'] = $secure;
         $url = $this->getFormattedUrl(
-            $value->resourceId, $options
+            $value->resourceId, $finalOptions
         );
 
         $variation->width = $sizes[0];

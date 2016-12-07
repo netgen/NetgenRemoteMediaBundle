@@ -1,6 +1,60 @@
 services:
+    netgen_remote_media.handler.cloudinary.scale:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Scale
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: scale, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.fit:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Fit
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: fit, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.limit:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Limit
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: limit, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.mfit:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Mfit
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: mfit, provider: cloudinary }
+
     netgen_remote_media.handler.cloudinary.fill:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Fill
         lazy: true
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: fill, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.lfill:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Lfill
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: lfill, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.pad:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Pad
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: pad, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.lpad:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Lpad
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: lpad, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.mpad:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Mpad
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: mpad, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.crop:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Crop
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: crop, provider: cloudinary }
