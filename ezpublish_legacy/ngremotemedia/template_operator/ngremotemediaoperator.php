@@ -11,7 +11,7 @@ class NgRemoteMediaOperator
      */
     function operatorList()
     {
-        return array('ngremotemedia', 'mediaFits', 'videoThumbnail', 'ng_image_variations');
+        return array('ngremotemedia', 'ng_remote_croppable', 'videoThumbnail', 'ng_image_variations');
     }
 
     /**
@@ -29,6 +29,10 @@ class NgRemoteMediaOperator
     {
         return array(
             'ng_image_variations' => array(
+                'only_croppable' => array(
+                    'type' => 'boolean',
+                    'required' => false
+                )
             ),
             'ngremotemedia' => array(
                 'value' => array(
@@ -45,13 +49,9 @@ class NgRemoteMediaOperator
                     'default' => true
                 )
             ),
-            'mediaFits' => array(
+            'ng_remote_croppable' => array(
                 'value' => array(
                     'type' => 'Value',
-                    'required' => true
-                ),
-                'variations' => array(
-                    'type' => 'array',
                     'required' => true
                 )
             ),
@@ -86,8 +86,9 @@ class NgRemoteMediaOperator
                 $namedParameters['format'],
                 $namedParameters['secure']
             );
-        } elseif ($operatorName === 'mediaFits') {
-            $operatorValue = $this->mediaFits($namedParameters['value'], $namedParameters['variations']);
+        } elseif ($operatorName === 'ng_remote_croppable') {
+            $onlyCroppable = isset($namedParameters['only_croppable']) ? $namedParameters['only_croppable'] : false;
+            $operatorValue = $this->isCroppable($namedParameters['value'], $onlyCroppable);
         } elseif ($operatorName === 'videoThumbnail') {
             $operatorValue = $this->videoThumbnail($namedParameters['value']);
         } elseif ($operatorName === 'ngremotevideo') {
@@ -101,7 +102,7 @@ class NgRemoteMediaOperator
         }
     }
 
-    function getImageVariations()
+    function getImageVariations($onlyCroppable = false)
     {
         $container = ezpKernel::instance()->getServiceContainer();
 
@@ -116,22 +117,22 @@ class NgRemoteMediaOperator
         return $provider->getVariation($value, $format, $secure);
     }
 
-    function mediaFits($value, $variations)
+    function isCroppable($value)
     {
         $valueWidth = $value.metaData.width;
         $valueHeight = $value.metaData.height;
 
-        $variations = json_decode($variations, true);
+        $aliases = $this->getImageVariations();
 
-        foreach($variations as $variationName => $variationSize) {
-            $variationSizeArray = explode('x', $variationSize);
-
-            if ($valueWidth < $variationSizeArray[0] || $valueHeight < $variationSizeArray[1]) {
-                return false;
+        foreach ($aliases as $alias => $configuration) {
+            foreach ($configuration['transformations'] as $transformationName => $transformationOptions) {
+                if ($transformationName === 'crop') {
+                    return true;
+                }
             }
         }
 
-        return true;
+        return false;
     }
 
     function videoThumbnail($value)
