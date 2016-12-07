@@ -4,6 +4,7 @@ services:
         arguments:
             - "@netgen_remote_media.provider"
             - "@ezpublish.translation_helper"
+            - "@ezpublish.api.service.content_type"
             - "@netgen_remote_media.helper"
         tags:
             - { name: twig.extension }

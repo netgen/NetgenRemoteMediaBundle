@@ -10,7 +10,8 @@
         {if not(is_set($format))}
             {def $format = '300x200'}
         {/if}
-        {def $variation = ngremotemedia($value, $format)}
+
+        {def $variation = ngremotemedia($value, $attribute.object.class_identifier, $format)}
 
         {if not(is_set($alt_text))}
             {def alt_text = $value.metaData.alt_text|default('')}

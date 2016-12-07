@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
+use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Repository\Values\Content\Content;
 use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -24,6 +25,11 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     protected $translationHelper;
 
     /**
+     * @var \eZ\Publish\API\Repository\ContentTypeService
+     */
+    protected $contentTypeService;
+
+    /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
      */
     protected $helper;
@@ -33,12 +39,18 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
      * @param \eZ\Publish\Core\Helper\TranslationHelper $translationHelper
+     * @param \eZ\Publish\API\Repository\ContentTypeService $contentTypeService
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
      */
-    public function __construct(RemoteMediaProvider $provider, TranslationHelper $translationHelper, Helper $helper)
-    {
+    public function __construct(
+        RemoteMediaProvider $provider,
+        TranslationHelper $translationHelper,
+        ContentTypeService $contentTypeService,
+        Helper $helper
+    ) {
         $this->provider = $provider;
         $this->translationHelper = $translationHelper;
+        $this->contentTypeService = $contentTypeService;
         $this->helper = $helper;
     }
 
@@ -162,7 +174,8 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getRemoteImageVariation(Content $content, $fieldIdentifier, $format, $secure = true)
     {
         $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
+        $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
 
-        return $this->provider->getVariation($field->value, $format, $secure);
+        return $this->provider->getVariation($field->value, $contentTypeIdentifier, $format, $secure);
     }
 }

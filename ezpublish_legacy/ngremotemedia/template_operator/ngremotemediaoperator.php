@@ -39,6 +39,10 @@ class NgRemoteMediaOperator
                     'type' => 'Value',
                     'required' => true
                 ),
+                'content_type_identifier' => array(
+                    'type' => 'string',
+                    'required' => true
+                ),
                 'format' => array(
                     'type' => 'string',
                     'required' => true
@@ -83,6 +87,7 @@ class NgRemoteMediaOperator
         if ($operatorName === 'ngremotemedia') {
             $operatorValue = $this->ngremotemedia(
                 $namedParameters['value'],
+                $namedParameters['content_type_identifier'],
                 $namedParameters['format'],
                 $namedParameters['secure']
             );
@@ -109,12 +114,12 @@ class NgRemoteMediaOperator
         return $container->get('ezpublish.config.resolver')->getParameter('image_variations', 'netgen_remote_media');
     }
 
-    function ngremotemedia($value, $format, $secure = true)
+    function ngremotemedia($value, $content_type_identifier, $format, $secure = true)
     {
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.provider' );
 
-        return $provider->getVariation($value, $format, $secure);
+        return $provider->getVariation($value, $content_type_identifier, $format, $secure);
     }
 
     function isCroppable($value)
