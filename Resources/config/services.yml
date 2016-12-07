@@ -5,6 +5,9 @@ parameters:
     netgen_remote_media.default.use_content_version_as_part_of_filename: true
 
 services:
+    netgen_remote_media.handler_registry:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry
+
     netgen_remote_media.controller.ui:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\UIController
         arguments:
@@ -21,7 +24,7 @@ services:
             - [setEzoeClassList, ["%netgen_remote_media.ezoe.class_list%"]]
 
     netgen_remote_media.provider.cloudinary:
-        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\CloudinaryProvider
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider
         arguments:
             - "%netgen_remote_media.parameters.cloudinary.account_name%"
             - "%netgen_remote_media.parameters.cloudinary.account_key%"
@@ -29,7 +32,7 @@ services:
         calls:
             - [setFolderName, ["$cloudinary.folder_name;netgen_remote_media$"]]
             - [setUniqueFilename, ["$cloudinary.unique_id;netgen_remote_media$"]]
-            - [setUseUpscaling, ["$cloudinary.use_upscaling;netgen_remote_media$"]]
+            - [setTransformations, ["$image_variations;netgen_remote_media$"]]
 
     netgen_remote_media.helper:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper

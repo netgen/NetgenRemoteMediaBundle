@@ -27,7 +27,7 @@
         {% endif %}
 
         {% if format is not empty %}
-            {% set variation = netgen_remote_media(field.value, fieldSettings.formats, format) %}
+            {% set variation = netgen_remote_media(field.value, format) %}
         {% endif %}
 
         {% if variation is defined and variation.url%}

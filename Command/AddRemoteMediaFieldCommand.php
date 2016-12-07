@@ -42,13 +42,6 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
                 'Position of the field on the content type',
                 0
             )
-            ->addOption(
-                'formats',
-                'f',
-                InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'Variations in the format [variationName,WxH]',
-                array()
-            )
         ;
     }
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -57,15 +50,8 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $fieldDefIdentifier = $input->getArgument('field_identifier');
         $fieldName = $input->getArgument('field_name');
         $fieldPosition = (int)$input->getOption('field_position');
-        $formats = $input->getOption('formats');
 
         $repository = $this->getContainer()->get('ezpublish.api.repository');
-
-        $variations = array();
-        foreach ($formats as $format) {
-            $exploded = explode(',', $format);
-            $variations[$exploded[0]] = $exploded[1];
-        }
 
         $contentTypeService = $repository->getContentTypeService();
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
@@ -87,11 +73,6 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $fieldDefCreate = $contentTypeService->newFieldDefinitionCreateStruct($fieldDefIdentifier, 'ngremotemedia');
         $fieldDefCreate->position = $fieldPosition;
         $fieldDefCreate->names = $names;
-        if (!empty($variations)) {
-            $fieldDefCreate->fieldSettings = array(
-                'formats' => $variations,
-            );
-        }
 
         try {
             $repository->sudo(

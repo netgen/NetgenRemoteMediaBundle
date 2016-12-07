@@ -3,7 +3,6 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
 use eZ\Publish\Core\Repository\Values\Content\Content;
-use eZ\Publish\API\Repository\Values\Content\Content as APIContent;
 use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
@@ -62,10 +61,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     {
         return array(
             new Twig_SimpleFunction(
-                'netgen_remote_media',
-                array($this, 'getRemoteMediaVariation')
-            ),
-            new Twig_SimpleFunction(
                 'ng_field_settings',
                 array($this, 'getFieldSettings')
             ),
@@ -87,31 +82,9 @@ class NetgenRemoteMediaExtension extends Twig_Extension
             ),
             new Twig_SimpleFunction(
                 'netgen_remote_variation',
-                array($this, 'getRemoteMediaByVariation')
+                array($this, 'getRemoteImageVariation')
             ),
         );
-    }
-
-    /**
-     * Returns the Variation with the provided format
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param array                            $availableFormats
-     * @param string                           $format
-     * @param bool                             $secure
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
-     */
-    public function getRemoteMediaVariation(Value $value, array $availableFormats, $format, $secure = true)
-    {
-        return $this->provider->getVariation($value, $format, $availableFormats, $secure);
-    }
-
-    public function getFieldSettings(Content $content, $fieldIdentifier)
-    {
-        $field = $content->getField($fieldIdentifier);
-
-        return $this->helper->loadAvailableFormats($content->id, $field->id);
     }
 
     /**
@@ -179,26 +152,17 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Returns variation by specified format
      *
-     * @param APIContent    $content
+     * @param Content    $content
      * @param string        $fieldIdentifier
      * @param string        $format
      * @param bool          $secure
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    public function getRemoteMediaByVariation(APIContent $content, $fieldIdentifier, $format, $secure = true)
+    public function getRemoteImageVariation(Content $content, $fieldIdentifier, $format, $secure = true)
     {
-        $emptyVariation = new Variation();
-        $settings = $this->getFieldSettings($content, $fieldIdentifier);
-
-        if (empty($settings)) {
-            return $emptyVariation;
-        }
-
         $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
 
-        $variation =  $this->getRemoteMediaVariation($field->value, $settings, $format, $secure);
-
-        return $variation;
+        return $this->provider->getVariation($field->value, $format, $secure);
     }
 }

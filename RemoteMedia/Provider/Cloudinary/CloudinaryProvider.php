@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider;
+namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
 use \Cloudinary;
 use \Cloudinary\Uploader;
@@ -32,6 +32,8 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
     protected $uniqueFilename = false;
 
     protected $useUpscaling = true;
+
+    protected $transformations = array();
 
     /**
      * CloudinaryProvider constructor.
@@ -65,9 +67,9 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
         $this->uniqueFilename = $uniqueFilename;
     }
 
-    public function setUseUpscaling($useUpscaling = true)
+    public function setTransformations($transformations = array())
     {
-        $this->useUpscaling = $useUpscaling;
+        $this->transformations = $transformations;
     }
 
     /**
@@ -165,11 +167,10 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $format
-     * @param array $namedFormats
      * @param bool $secure
      * @return Variation
      */
-    public function getVariation(Value $value, $format, array $namedFormats, $secure = true)
+    public function getVariation(Value $value, $format, $secure = true)
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;
@@ -179,6 +180,9 @@ class CloudinaryProvider implements RemoteMediaProviderInterface
 
             return $variation;
         }
+
+        die(dump($this->transformations));
+        die(dump($value, $format));
 
         $sizes = array_key_exists($format, $namedFormats) ? explode('x', $namedFormats[$format]) : explode('x', $format);
 

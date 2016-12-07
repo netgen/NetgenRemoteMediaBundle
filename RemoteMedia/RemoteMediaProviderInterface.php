@@ -55,11 +55,10 @@ interface RemoteMediaProviderInterface
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $format
-     * @param array $namedFormats
      * @param bool $secure
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    public function getVariation(Value $value, $format, array $namedFormats, $secure = true);
+    public function getVariation(Value $value, $format, $secure = true);
 
     /**
      * Lists all available resources from the remote storage.
