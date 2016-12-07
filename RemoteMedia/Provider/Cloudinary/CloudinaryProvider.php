@@ -37,8 +37,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     protected $uniqueFilename = false;
 
-    protected $transformations = array();
-
     /**
      * CloudinaryProvider constructor.
      *
@@ -73,11 +71,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function setUniqueFilename($uniqueFilename = false)
     {
         $this->uniqueFilename = $uniqueFilename;
-    }
-
-    public function setTransformations($transformations = array())
-    {
-        $this->transformations = $transformations;
     }
 
     /**
@@ -209,7 +202,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param bool $secure
      * @return Variation
      */
-    public function getVariation(Value $value, $format, $secure = true)
+    public function getVariation(Value $value, $contentTypeIdentifier, $format, $secure = true)
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;
@@ -219,7 +212,9 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $variation;
         }
 
-        if (!isset($this->transformations[$format])) {
+        $availableTransformations = $this->getTransformationsForContentType($contentTypeIdentifier);
+
+        if (!isset($availableTransformations[$format])) {
             $sizes = explode('x', $format);
 
             if (count($sizes) === 2) {
@@ -232,7 +227,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         }
 
         $options = array();
-        $formatConfiguration = $this->transformations[$format];
+        $formatConfiguration = $availableTransformations[$format];
         foreach ($formatConfiguration['transformations'] as $alias => $config) {
             try {
                 $transformationHandler = $this->registry->getHandler(
@@ -258,8 +253,8 @@ class CloudinaryProvider extends RemoteMediaProvider
             $value->resourceId, $finalOptions
         );
 
-        $variation->width = $sizes[0];
-        $variation->height = $sizes[1];
+        //$variation->width = $sizes[0];
+        //$variation->height = $sizes[1];
         $variation->url = $url;
 
         return $variation;

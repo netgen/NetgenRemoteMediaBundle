@@ -17,10 +17,33 @@ abstract class RemoteMediaProvider
     /** @var \Psr\Log\LoggerInterface  */
     protected $logger;
 
+    protected $transformations = array();
+
     public function __construct(Registry $registry, LoggerInterface $logger)
     {
         $this->registry = $registry;
         $this->logger = $logger;
+    }
+
+    public function setTransformations($transformations = array())
+    {
+        $this->transformations = $transformations;
+    }
+
+    /**
+     * Return merged transformations defined for a provided content type and default ones.
+     *
+     * @param string $contentTypeIdentifier
+     *
+     * @return array
+     */
+    protected function getTransformationsForContentType($contentTypeIdentifier)
+    {
+        $defaultTransformations = $this->transformations['default'];
+        $contentTypeTransformations = isset($this->transformations[$contentTypeIdentifier]) ?
+            $this->transformations[$contentTypeIdentifier] : array();
+
+        return array_merge($defaultTransformations, $contentTypeTransformations);
     }
 
     /**
@@ -74,7 +97,7 @@ abstract class RemoteMediaProvider
      * @param bool $secure
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    abstract public function getVariation(Value $value, $format, $secure = true);
+    abstract public function getVariation(Value $value, $contentTypeIdentifier, $format, $secure = true);
 
     /**
      * Lists all available resources from the remote storage.

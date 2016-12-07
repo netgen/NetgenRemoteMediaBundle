@@ -114,29 +114,33 @@ class Configuration extends SiteAccessConfiguration
                 ->useAttributeAsKey('variation_name')
                 ->normalizeKeys(false)
                 ->prototype('array')
-                    ->children()
-                        ->arrayNode('transformations')
-                            ->info('A list of transformations to apply to the image')
-                            ->useAttributeAsKey('name')
-                            ->normalizeKeys(false)
-                            ->prototype('array')
-                            ->info('Array/Hash of parameters to pass to the filter')
-                                ->useAttributeAsKey('options')
-                                ->beforeNormalization()
-                                    ->ifTrue(
-                                        function ($v) {
-                                            // Check if passed array only contains a "params" key (BC with <=5.3).
-                                            return is_array($v) && count($v) === 1 && isset($v['params']);
-                                        }
-                                    )
-                                    ->then(
-                                        function ($v) {
-                                            // If we have the "params" key, just use the value.
-                                            return $v['params'];
-                                        }
-                                    )
+                    ->useAttributeAsKey('content_type_identifier')
+                    ->normalizeKeys(false)
+                    ->prototype('array')
+                        ->children()
+                            ->arrayNode('transformations')
+                                ->info('A list of transformations to apply to the image')
+                                ->useAttributeAsKey('name')
+                                ->normalizeKeys(false)
+                                ->prototype('array')
+                                ->info('Array/Hash of parameters to pass to the filter')
+                                    ->useAttributeAsKey('options')
+                                    ->beforeNormalization()
+                                        ->ifTrue(
+                                            function ($v) {
+                                                // Check if passed array only contains a "params" key (BC with <=5.3).
+                                                return is_array($v) && count($v) === 1 && isset($v['params']);
+                                            }
+                                        )
+                                        ->then(
+                                            function ($v) {
+                                                // If we have the "params" key, just use the value.
+                                                return $v['params'];
+                                            }
+                                        )
+                                    ->end()
+                                    ->prototype('variable')->end()
                                 ->end()
-                                ->prototype('variable')->end()
                             ->end()
                         ->end()
                     ->end()
