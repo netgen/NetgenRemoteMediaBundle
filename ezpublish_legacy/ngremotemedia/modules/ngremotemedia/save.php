@@ -29,7 +29,8 @@ if (empty($variantName) || empty($crop_w) || empty($crop_h)) {
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
 
-$value = $helper->loadValue($contentId, $fieldId, $contentVersionId);
+$attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId, true);
+$value = $attribute->content();
 
 $variationCoords = array(
     $variantName => array(
