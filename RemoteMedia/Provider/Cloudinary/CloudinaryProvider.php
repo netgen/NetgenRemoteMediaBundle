@@ -198,49 +198,50 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Gets the remote media Variation.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param string $format
+     * @param string $contentTypeIdentifier
+     * @param string $variationName
      * @param bool $secure
      * @return Variation
      */
-    public function getVariation(Value $value, $contentTypeIdentifier, $format, $secure = true)
+    public function getVariation(Value $value, $contentTypeIdentifier, $variationName, $secure = true)
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;
         $variation->url = $url;
 
-        if (empty($format)) {
+        if (empty($variationName)) {
             return $variation;
         }
 
         $availableTransformations = $this->getTransformationsForContentType($contentTypeIdentifier);
 
-        if (!isset($availableTransformations[$format])) {
-            $sizes = explode('x', $format);
+        if (!isset($availableTransformations[$variationName])) {
+            $sizes = explode('x', $variationName);
 
             if (count($sizes) === 2) {
                 return $this->processManualFormat($value, $sizes, $secure);
             }
 
-            $this->logError("[RemoteMedia] Format {$format} is not configured nor proper manual format ([W]x[H]");
+            $this->logError("[RemoteMedia] Format {$variationName} is not configured nor proper manual format ([W]x[H]");
 
             return $variation;
         }
 
         $options = array();
-        $formatConfiguration = $availableTransformations[$format];
-        foreach ($formatConfiguration['transformations'] as $alias => $config) {
+        $formatConfiguration = $availableTransformations[$variationName];
+        foreach ($formatConfiguration['transformations'] as $transformationIdentifier => $config) {
             try {
                 $transformationHandler = $this->registry->getHandler(
-                    $alias, $this->getIdentifier()
+                    $transformationIdentifier, $this->getIdentifier()
                 );
             } catch (TransformationHandlerNotFoundException $e) {
-                $this->logError("[RemoteMedia] Transformation handler for alias '{$alias}' does not exist.");
+                $this->logError("[RemoteMedia] Transformation handler for '{$transformationIdentifier}' does not exist.");
 
                 continue;
             }
 
             try {
-                $options[] = $transformationHandler->process($value, $alias, $config);
+                $options[] = $transformationHandler->process($value, $variationName, $config);
             } catch (TransformationHandlerFailedException $e) {
                 // do nothing
                 continue;
@@ -253,8 +254,6 @@ class CloudinaryProvider extends RemoteMediaProvider
             $value->resourceId, $finalOptions
         );
 
-        //$variation->width = $sizes[0];
-        //$variation->height = $sizes[1];
         $variation->url = $url;
 
         return $variation;
