@@ -63,14 +63,7 @@ class NgRemoteMediaType extends eZDataType
 
         $updatedValue = new Value();
         if ($data['mediaRemove'] !== 1 && $data['id'] !== 'removed') {
-            if (!empty($data['id']) && $data['id'] !== $value->resourceId) {
-                // let's presume we're looking for an image for now
-                // ezexceed - when selecting image from browse
-                $response = $provider->getRemoteResource($data['id'], 'image');
-                $updatedValue = $provider->getValueFromResponse($response);
-            } else {
-                $updatedValue = $value;
-            }
+            $updatedValue = $value;
         }
 
         if ($updatedValue->metaData['alt_text'] != $data['alttext'] && $data['changeMedia'] !== 1) {

@@ -351,7 +351,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param mixed $resourceId
      * @param string $resourceType
      *
-     * @return array
+     * @return Value
      */
     public function getRemoteResource($resourceId, $resourceType)
     {
@@ -365,7 +365,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             )
         )->getIterator()->current();
 
-        return $response[0];
+        return $this->getValueFromResponse($response[0]);
     }
 
     /**

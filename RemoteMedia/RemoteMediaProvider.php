@@ -142,7 +142,7 @@ abstract class RemoteMediaProvider
      * @param mixed $resourceId
      * @param string $resourceType
      *
-     * @return array
+     * @return Value
      */
     abstract public function getRemoteResource($resourceId, $resourceType);
 

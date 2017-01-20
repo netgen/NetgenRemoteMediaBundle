@@ -176,9 +176,7 @@ class Helper
      */
     public function getValueFromRemoteResource($resourceId, $resourceType)
     {
-        $response = $this->provider->getRemoteResource($resourceId, $resourceType);
-
-        return $this->provider->getValueFromResponse($response);
+        return $this->provider->getRemoteResource($resourceId, $resourceType);
     }
 
     /**
