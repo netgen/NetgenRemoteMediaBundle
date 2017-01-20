@@ -1,7 +1,6 @@
 parameters:
     netgen_remote_media.default.cloudinary.folder_name: ''
     netgen_remote_media.default.cloudinary.unique_id: false
-    netgen_remote_media.default.cloudinary.use_upscaling: true
     netgen_remote_media.default.use_content_version_as_part_of_filename: true
 
 services:
