@@ -93,7 +93,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         }
 
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
-        dump($contentType);
+        $output->writeln("<info>Added new field {$fieldDefIdentifier} to content type {$contentTypeIdentifier}</info>");
 
         return;
     }

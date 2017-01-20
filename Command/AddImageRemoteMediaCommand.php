@@ -112,7 +112,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
             return;
         }
 
-        dump($content);
+        $output->writeln("<info>Uploaded image {$imagePath} to {$fieldIdentifier} to content with id {$contentId}</info>");
 
         return;
     }
