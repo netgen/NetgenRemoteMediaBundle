@@ -246,7 +246,8 @@ class CloudinaryProvider extends RemoteMediaProvider
             try {
                 $options[] = $transformationHandler->process($value, $variationName, $config);
             } catch (TransformationHandlerFailedException $e) {
-                // do nothing
+                $this->logError($e->getMessage());
+
                 continue;
             }
         }
