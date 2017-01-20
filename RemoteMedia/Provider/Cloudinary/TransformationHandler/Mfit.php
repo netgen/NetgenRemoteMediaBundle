@@ -23,12 +23,12 @@ class Mfit implements TransformationInterface
      * properly configured array of options
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param string $alias
+     * @param string $variationName name of the configured image variation configuration
      * @param array $config
      *
      * @return array
      */
-    public function process(Value $value, $alias, array $config = array())
+    public function process(Value $value, $variationName, array $config = array())
     {
         $options = array(
             'crop' => 'mfit'

@@ -21,15 +21,17 @@ class Crop implements TransformationInterface
      * properly configured array of options
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param string $alias
+     * @param string $variationName name of the configured image variation configuration
      * @param array $config
      *
      * @return array
+     *
+     * @throws \Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException
      */
-    public function process(Value $value, $alias, array $config = array())
+    public function process(Value $value, $variationName, array $config = array())
     {
-        if (array_key_exists($alias, $value->variations)) {
-            $coords = $value->variations[$alias];
+        if (array_key_exists($variationName, $value->variations)) {
+            $coords = $value->variations[$variationName];
             $options[] = array(
                 'x' => (int)$coords['x'],
                 'y' => (int)$coords['y'],
