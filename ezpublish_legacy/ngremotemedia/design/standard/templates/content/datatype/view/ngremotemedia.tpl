@@ -14,11 +14,11 @@
         {def $variation = ngremotemedia($value, $attribute.object.class_identifier, $format)}
 
         {if not(is_set($alt_text))}
-            {def alt_text = $value.metaData.alt_text|default('')}
+            {def $alt_text = $value.metaData.alt_text|default('')}
         {/if}
 
         {if not(is_set($title))}
-            {def title = $value.metaData.caption|default('')}
+            {def $title = $value.metaData.caption|default('')}
         {/if}
 
         <img src="{$variation.url}"
