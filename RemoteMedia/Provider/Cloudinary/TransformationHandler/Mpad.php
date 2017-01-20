@@ -3,7 +3,7 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
  * Class Mpad
@@ -18,7 +18,7 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInt
  * added to the image to reach the required size.
  * You can also specify the color of the background in the case that padding is added.
  */
-class Mpad implements TransformationInterface
+class Mpad implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

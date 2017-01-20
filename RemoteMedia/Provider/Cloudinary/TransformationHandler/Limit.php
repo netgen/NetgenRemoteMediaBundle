@@ -3,7 +3,7 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
  * Class Limit
@@ -16,7 +16,7 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInt
  * is visible. This mode doesn't scale up the image if your requested
  * dimensions are larger than the original image's.
  */
-class Limit implements TransformationInterface
+class Limit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

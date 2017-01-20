@@ -3,7 +3,7 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
  * Class Fit
@@ -12,7 +12,7 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInt
  * within a bounding box defined by the given width and height parameters.
  * The original aspect ratio is retained and all of the original image is visible.
  */
-class Fit implements TransformationInterface
+class Fit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

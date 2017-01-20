@@ -3,7 +3,7 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
  * Class Scale
@@ -14,7 +14,7 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInt
  * shrunk. If only the width or height is given, then the image is
  * scaled to the new dimension while retaining the original aspect ratio
  */
-class Scale implements TransformationInterface
+class Scale implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

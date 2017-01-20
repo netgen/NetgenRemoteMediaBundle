@@ -16,9 +16,9 @@ class Registry
      *
      * @param string $provider
      * @param string $identifier
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface $transformationHandler
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface $transformationHandler
      */
-    public function addHandler($provider, $identifier, TransformationInterface $transformationHandler)
+    public function addHandler($provider, $identifier, HandlerInterface $transformationHandler)
     {
         if (!isset($this->transformationHandlers[$provider][$identifier])) {
             $this->transformationHandlers[$provider][$identifier] = $transformationHandler;
@@ -33,7 +33,7 @@ class Registry
      *
      * @throws \Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException If the handler is not found
      *
-     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface
+     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface
      */
     public function getHandler($identifier, $provider)
     {

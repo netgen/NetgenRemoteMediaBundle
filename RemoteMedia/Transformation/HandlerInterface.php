@@ -4,7 +4,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
-interface TransformationInterface
+interface HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

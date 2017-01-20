@@ -6,7 +6,7 @@ use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\TransformationInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 use Psr\Log\LoggerInterface;
 
 abstract class RemoteMediaProvider
@@ -32,8 +32,6 @@ abstract class RemoteMediaProvider
 
     /**
      * Return merged transformations defined for a provided content type and default ones.
-     *
-     * @todo: add this to the abstract class
      *
      * @param string $contentTypeIdentifier
      *
