@@ -133,26 +133,13 @@ class NgRemoteMediaOperator
     function getImageVariations($class_identifier, $onlyCroppable = false)
     {
         $container = ezpKernel::instance()->getServiceContainer();
-
-        $formats = $container->get('ezpublish.config.resolver')->getParameter('image_variations', 'netgen_remote_media');
-
-        $defaultFormats = $formats['default'] ?: array();
-        $contentTypeFormats = $formats[$class_identifier] ?: array();
-
-        $formats = array_merge($defaultFormats, $contentTypeFormats);
+        $variationResolver = $container->get('netgen_remote_media.variation.resolver');
 
         if (!$onlyCroppable) {
-            return $formats;
+            return $variationResolver->getVariationsForContentType($class_identifier);
+        } else {
+            return $variationResolver->getCroppbableVariations($class_identifier);
         }
-
-        $croppableFormats = array();
-        foreach ($formats as $formatName => $transformations) {
-            if (isset($transformations['transformations']['crop'])) {
-                $croppableFormats[$formatName] = $transformations;
-            }
-        }
-
-        return $croppableFormats;
     }
 
     function ngremotemedia($value, $content_type_identifier, $format, $secure = true)
@@ -165,9 +152,10 @@ class NgRemoteMediaOperator
 
     function isCroppable($class_identifier)
     {
-        $formats = $this->getImageVariations($class_identifier, true);
+        $container = ezpKernel::instance()->getServiceContainer();
+        $variationResolver = $container->get('netgen_remote_media.variation.resolver');
 
-        return !empty($formats);
+        return !empty($variationResolver->getCroppbableVariations($class_identifier));
     }
 
     function videoThumbnail($value)

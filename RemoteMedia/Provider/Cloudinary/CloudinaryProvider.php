@@ -168,8 +168,29 @@ class CloudinaryProvider extends RemoteMediaProvider
         }
     }
 
-    protected function processManualFormat(Value $value, $sizes, $secure)
+    /**
+     * @todo: !!!
+     *
+     * @param Value $value
+     * @param $variationName
+     * @param $secure
+     *
+     * @return Variation
+     */
+    protected function processManualFormat(Value $value, $variationName, $secure)
     {
+        $variation = new Variation();
+        $url = $secure ? $value->secure_url : $value->url;
+        $variation->url = $url;
+
+        $sizes = explode('x', $variationName);
+
+        if (count($sizes) !== 2) {
+            $this->logError("[RemoteMedia] Format {$variationName} is not configured nor proper manual format ([W]x[H]");
+
+            return $variation;
+        }
+
         $options = array(
             'secure' => $secure,
             'transformation' => array(
@@ -178,8 +199,6 @@ class CloudinaryProvider extends RemoteMediaProvider
                 'height' => $sizes[1]
             )
         );
-
-        $variation = new Variation();
 
         $url = $this->getFormattedUrl(
             $value->resourceId, $options
@@ -211,23 +230,15 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $variation;
         }
 
-        $availableTransformations = $this->getTransformationsForContentType($contentTypeIdentifier);
+        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
-        if (!isset($availableTransformations[$variationName])) {
-            $sizes = explode('x', $variationName);
-
-            if (count($sizes) === 2) {
-                return $this->processManualFormat($value, $sizes, $secure);
-            }
-
-            $this->logError("[RemoteMedia] Format {$variationName} is not configured nor proper manual format ([W]x[H]");
-
-            return $variation;
+        if (!isset($configuredVariations[$variationName])) {
+            return $this->processManualFormat($value, $variationName, $secure);
         }
 
         $options = array();
-        $formatConfiguration = $availableTransformations[$variationName];
-        foreach ($formatConfiguration['transformations'] as $transformationIdentifier => $config) {
+        $variationConfiguration = $configuredVariations[$variationName];
+        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
             try {
                 $transformationHandler = $this->registry->getHandler(
                     $transformationIdentifier, $this->getIdentifier()

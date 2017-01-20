@@ -14,36 +14,17 @@ abstract class RemoteMediaProvider
     /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry  */
     protected $registry;
 
+    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver  */
+    protected $variationResolver;
+
     /** @var \Psr\Log\LoggerInterface  */
     protected $logger;
 
-    protected $transformations = array();
-
-    public function __construct(Registry $registry, LoggerInterface $logger)
+    public function __construct(Registry $registry, VariationResolver $variationsResolver, LoggerInterface $logger = null)
     {
         $this->registry = $registry;
+        $this->variationResolver = $variationsResolver;
         $this->logger = $logger;
-    }
-
-    public function setTransformations($transformations = array())
-    {
-        $this->transformations = $transformations;
-    }
-
-    /**
-     * Return merged transformations defined for a provided content type and default ones.
-     *
-     * @param string $contentTypeIdentifier
-     *
-     * @return array
-     */
-    public function getTransformationsForContentType($contentTypeIdentifier)
-    {
-        $defaultTransformations = $this->transformations['default'];
-        $contentTypeTransformations = isset($this->transformations[$contentTypeIdentifier]) ?
-            $this->transformations[$contentTypeIdentifier] : array();
-
-        return array_merge($defaultTransformations, $contentTypeTransformations);
     }
 
     /**
