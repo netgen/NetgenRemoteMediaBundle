@@ -33,7 +33,8 @@ class RemoteMediaStorage extends GatewayBasedStorage
      * Constructor.
 
      * @param \eZ\Publish\API\Repository\ContentService $contentService
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
+     * @param \eZ\Publish\API\Repository\FieldTypeService $fieldTypeService
      */
     public function __construct(
         ContentService $contentService,
