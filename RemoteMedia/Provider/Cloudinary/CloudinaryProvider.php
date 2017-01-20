@@ -121,7 +121,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return string
      */
-    public function getFormattedUrl($source, $options = array())
+    protected function getFormattedUrl($source, $options = array())
     {
         return cloudinary_url_internal($source, $options);
     }

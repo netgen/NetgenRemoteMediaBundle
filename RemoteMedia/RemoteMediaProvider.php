@@ -39,16 +39,6 @@ abstract class RemoteMediaProvider
     abstract public function upload($fileUri, $fileName, $options = array());
 
     /**
-     * Gets the absolute url of the remote resource formatted according to options provided.
-     *
-     * @param string $source
-     * @param array $options
-     *
-     * @return string
-     */
-    abstract public function getFormattedUrl($source, $options = array());
-
-    /**
      * Transforms response from the remote storage to field type value.
      *
      * @param mixed $response
