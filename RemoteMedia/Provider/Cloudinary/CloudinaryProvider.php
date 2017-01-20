@@ -238,7 +238,7 @@ class CloudinaryProvider extends RemoteMediaProvider
                     $transformationIdentifier, $this->getIdentifier()
                 );
             } catch (TransformationHandlerNotFoundException $e) {
-                $this->logError("[RemoteMedia] Transformation handler for '{$transformationIdentifier}' does not exist.");
+                $this->logError($e->getMessage());
 
                 continue;
             }
