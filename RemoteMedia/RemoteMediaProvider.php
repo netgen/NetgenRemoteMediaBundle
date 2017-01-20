@@ -178,8 +178,6 @@ abstract class RemoteMediaProvider
      */
     abstract public function deleteResource($resourceId);
 
-    abstract public function getIdentifier();
-
     /**
      * Generates the link to the remote resource.
      *
@@ -188,4 +186,11 @@ abstract class RemoteMediaProvider
      * @return string
      */
     abstract public function generateDownloadLink(Value $value);
+
+    /**
+     * Returns unique identifier of the provided
+     *
+     * @return string
+     */
+    abstract public function getIdentifier();
 }

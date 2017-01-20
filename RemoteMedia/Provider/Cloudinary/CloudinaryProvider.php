@@ -548,6 +548,11 @@ class CloudinaryProvider extends RemoteMediaProvider
         $this->cloudinaryApi->delete_resources(array($resourceId));
     }
 
+    /**
+     * Returns unique identifier of the provided
+     *
+     * @return string
+     */
     public function getIdentifier()
     {
         return 'cloudinary';
