@@ -12,7 +12,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
                 this.collection.search(this.q);
             }, 250);
 
-            options && _.extend(this, _.pick(options, ['onSelect'])); 
+            options && _.extend(this, _.pick(options, ['onSelect']));
             this.collection.on('reset add', this.renderItems);
         },
 
@@ -65,7 +65,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
 
         render: function() {
             var context = {
-                icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures.png',
+                icon: '/extension/ngremotemedia/design/standard/images/pictures32x32.png',
                 heading: 'Select media',
                 id: this.model.id,
                 attribute: this.model.attributes
@@ -87,7 +87,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             if (this.collection.length) {
                 html = this.collection.map(function(item) {
                     return JST.item(item.attributes);
-                }, this); 
+                }, this);
             } else {
                 html = JST.nohits();
             }

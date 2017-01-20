@@ -204,8 +204,7 @@ abstract class RemoteMediaProvider
     abstract public function generateVideoTag($resourceId, $format = '', $namedFormats = array());
 
     /**
-     * Formats browse list to comply with eZExceed.
-     * If eZExceed is not used, this method can be left blank.
+     * Formats browse list.
      *
      * @param array $list
      *

@@ -30,6 +30,7 @@ $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
 $provider = $container->get( 'netgen_remote_media.provider' );
 
+// @todo: this should be done legacy style
 $value = $helper->loadValue($contentId, $fieldId, $contentVersionId);
 
 $variationCoords = array(

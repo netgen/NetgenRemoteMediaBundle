@@ -51,9 +51,7 @@ class NgRemoteMediaType extends eZDataType
         $attributeId = $contentObjectAttribute->attribute('id');
         $data = array(
             'id' =>  $http->variable($base . '_media_id_' . $attributeId),
-            'alttext' => $http->variable($base . '_alttext_' . $attributeId, ''),
-            'mediaRemove' => (int)$http->variable('mediaRemove', 0), // ezexceed specific
-            'changeMedia' => (int)$http->variable('changeMedia', 0)  // ezexceed specific
+            'alttext' => $http->variable($base . '_alttext_' . $attributeId, '')
         );
 
         $container = ezpKernel::instance()->getServiceContainer();

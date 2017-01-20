@@ -58,7 +58,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
         };
 
         var context = {
-            icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures.png',
+            icon: '/extension/ngremotemedia/design/standard/images/pictures32x32.png',
             heading: 'Select media',
             render: true
         };
@@ -78,12 +78,12 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             this.scaler();
         }
         return this;
-    },    
+    },
 
     is_remotemedia_selected: function(){
       return this.selectedContent && this.selectedContent.is('img') && this.selectedContent.hasClass('ngremotemedia');
     },
- 
+
 
 
     // Open a scaling gui
@@ -93,7 +93,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             editorToScale = ea.coords ? [{
                 name: ea.version,
                 coords: ea.coords
-            }] : [];           
+            }] : [];
 
         var view_options = {
             model : this.model,
@@ -115,7 +115,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
                 toScale: editorToScale,
                 available_versions: media.get('available_versions')
             });
-            
+
             this.render_scaler_view(view_options);
 
         }.bind(this));
@@ -136,23 +136,23 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
         modal.on('close', function(){
             scaler_view.trigger('destruct');
             scaler_view.trigger('stack.popped');
-        }); 
+        });
     },
 
 
     render_scaler_view_in_stack: function(options){
         var context = {
-            icon: '/extension/ezexceed/design/ezexceed/images/kp/32x32/Pictures-alt-2b.png',
+            icon: '/extension/ngremotemedia/design/standard/images/pictures-alt32x32.png',
             className: 'dark',
             heading: 'Select crops',
             render: true
         };
-        
+
         eZExceed.stack.push(
             ScalerView,
             options,
             context
-        );    
+        );
     },
 
 
@@ -168,7 +168,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             coords: data.coords.join(','),
             image_url: media.get('generated_url')
         };
-    
+
         this.updateTinyMCE({
             src: attributes.image_url,
             customattributes: this.serialize_custom_attributes(attributes)
@@ -216,7 +216,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             ed.dom.setAttrib('__mce_tmp', 'id', '');
             ed.undoManager.add();
         }
-        
+
         // Trigger eZExceed autosave
         ed.execCommand('mceRepaint');
         ed.save();
