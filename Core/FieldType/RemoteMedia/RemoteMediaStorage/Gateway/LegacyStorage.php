@@ -55,8 +55,11 @@ class LegacyStorage extends Gateway
     /**
      * Stores the data in the database based on the given field data
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @param int $productId
+     * @param $fieldId
+     * @param $resourceId
+     * @param $contentId
+     * @param $providerIdentifier
+     * @param $version
      */
     public function storeFieldData($fieldId, $resourceId, $contentId, $providerIdentifier, $version)
     {
@@ -141,6 +144,8 @@ class LegacyStorage extends Gateway
 
     /**
      * Deletes field data for content id identified by $versionInfo.
+     *
+     * @todo: finish and test this method
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param array $fieldIds
