@@ -11,7 +11,7 @@ class NgRemoteMediaOperator
      */
     function operatorList()
     {
-        return array('ngremotemedia', 'ng_remote_croppable', 'videoThumbnail', 'ng_image_variations');
+        return array('ngremotemedia', 'ng_remote_croppable', 'videoThumbnail', 'ng_image_variations', 'scaling_format');
     }
 
     /**
@@ -29,6 +29,10 @@ class NgRemoteMediaOperator
     {
         return array(
             'ng_image_variations' => array(
+                'class_identifier' => array(
+                    'type' => 'string',
+                    'required' => true
+                ),
                 'only_croppable' => array(
                     'type' => 'boolean',
                     'required' => false
@@ -54,8 +58,14 @@ class NgRemoteMediaOperator
                 )
             ),
             'ng_remote_croppable' => array(
-                'value' => array(
-                    'type' => 'Value',
+                'class_identifier' => array(
+                    'type' => 'string',
+                    'required' => true
+                )
+            ),
+            'scaling_format' => array(
+                'formats' => array(
+                    'type' => 'array',
                     'required' => true
                 )
             ),
@@ -92,8 +102,7 @@ class NgRemoteMediaOperator
                 $namedParameters['secure']
             );
         } elseif ($operatorName === 'ng_remote_croppable') {
-            $onlyCroppable = isset($namedParameters['only_croppable']) ? $namedParameters['only_croppable'] : false;
-            $operatorValue = $this->isCroppable($namedParameters['value'], $onlyCroppable);
+            $operatorValue = $this->isCroppable($namedParameters['class_identifier']);
         } elseif ($operatorName === 'videoThumbnail') {
             $operatorValue = $this->videoThumbnail($namedParameters['value']);
         } elseif ($operatorName === 'ngremotevideo') {
@@ -103,15 +112,47 @@ class NgRemoteMediaOperator
                 $namedParameters['format']
             );
         } elseif ($operatorName === 'ng_image_variations') {
-            $operatorValue = $this->getImageVariations();
+            $onlyCroppable = $namedParameters['only_croppable'] ?: false;
+            $operatorValue = $this->getImageVariations($namedParameters['class_identifier'], $onlyCroppable);
+        } elseif ($operatorName === 'scaling_format') {
+            $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
         }
     }
 
-    function getImageVariations($onlyCroppable = false)
+    function formatAliasForScaling($formats) {
+        $returnValue = array();
+        foreach ($formats as $formatName => $formatOptions) {
+            $options = $formatOptions['transformations']['crop'];
+            $options = empty($options) ? '1x1' : $options[0] . 'x' . $options[1];
+            $returnValue[$formatName] = $options;
+        }
+
+        return $returnValue;
+    }
+
+    function getImageVariations($class_identifier, $onlyCroppable = false)
     {
         $container = ezpKernel::instance()->getServiceContainer();
 
-        return $container->get('ezpublish.config.resolver')->getParameter('image_variations', 'netgen_remote_media');
+        $formats = $container->get('ezpublish.config.resolver')->getParameter('image_variations', 'netgen_remote_media');
+
+        $defaultFormats = $formats['default'] ?: array();
+        $contentTypeFormats = $formats[$class_identifier] ?: array();
+
+        $formats = array_merge($defaultFormats, $contentTypeFormats);
+
+        if (!$onlyCroppable) {
+            return $formats;
+        }
+
+        $croppableFormats = array();
+        foreach ($formats as $formatName => $transformations) {
+            if (isset($transformations['transformations']['crop'])) {
+                $croppableFormats[$formatName] = $transformations;
+            }
+        }
+
+        return $croppableFormats;
     }
 
     function ngremotemedia($value, $content_type_identifier, $format, $secure = true)
@@ -122,22 +163,11 @@ class NgRemoteMediaOperator
         return $provider->getVariation($value, $content_type_identifier, $format, $secure);
     }
 
-    function isCroppable($value)
+    function isCroppable($class_identifier)
     {
-        $valueWidth = $value.metaData.width;
-        $valueHeight = $value.metaData.height;
+        $formats = $this->getImageVariations($class_identifier, true);
 
-        $aliases = $this->getImageVariations();
-
-        foreach ($aliases as $alias => $configuration) {
-            foreach ($configuration['transformations'] as $transformationName => $transformationOptions) {
-                if ($transformationName === 'crop') {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return !empty($formats);
     }
 
     function videoThumbnail($value)

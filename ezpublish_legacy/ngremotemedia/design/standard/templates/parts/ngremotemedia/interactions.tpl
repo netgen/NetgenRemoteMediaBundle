@@ -7,7 +7,7 @@
 
     {if $remote_value.resourceId}
         {if $type|eq('image')}
-            {include uri="design:parts/overlay_action_button-1.tpl"}
+            {include uri="design:parts/scale_button.tpl"}
         {/if}
         <input type="button" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'content/edit' )}">
     {/if}

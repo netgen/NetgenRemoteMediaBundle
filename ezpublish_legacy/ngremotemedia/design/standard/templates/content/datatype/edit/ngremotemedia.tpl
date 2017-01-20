@@ -13,7 +13,7 @@
     {def $contentObjectId = $attribute.contentobject_id}
 {/if}
 {if not(is_set($availableFormats))}
-    {def $availableFormats = ng_image_variations()}
+    {def $availableFormats = ng_image_variations($attribute.object.class_identifier)}
 {/if}
 
 {if not(is_set($ajax))}
