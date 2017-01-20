@@ -36,11 +36,6 @@ This repository contains field type (and legacy data type) implementation, and i
         account_secret: [your_secret]
     ```
     Complete configuration options are available at `Resources/config/config.yml.example`
-    * put the following in your `ezpublish/config/routing.yml`
-    ```
-    _netgen_remote_media:
-        resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
-    ```
     
 * Configure legacy settings:
     * add the following to `ezoe.ini.append.php` (create one if it does not exist)
