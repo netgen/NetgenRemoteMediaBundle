@@ -13,6 +13,6 @@ class TransformationHandlerNotFoundException extends Exception
      */
     public function __construct($provider, $handlerIdentifier)
     {
-        parent::__construct("Transformation handler with '$handlerIdentifier' identifier for '$provider' provider not found.");
+        parent::__construct("[NgRemoteMedia] Transformation handler with '$handlerIdentifier' identifier for '$provider' provider not found.");
     }
 }
