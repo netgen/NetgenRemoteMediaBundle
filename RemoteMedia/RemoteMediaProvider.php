@@ -28,26 +28,15 @@ abstract class RemoteMediaProvider
     }
 
     /**
-     * Returns the array with options required for the upload.
-     *
-     * @param string $fileName
-     * @param string $resourceType
-     * @param string $altText
-     * @param string $caption
-     *
-     * @return array
-     */
-    abstract public function prepareUploadOptions($fileName, $resourceType = null, $altText = '', $caption = '');
-
-    /**
      * Uploads the local resource to remote storage.
      *
      * @param string $fileUri
+     * @param string $fileName
      * @param array $options
      *
      * @return mixed
      */
-    abstract public function upload($fileUri, $options = array());
+    abstract public function upload($fileUri, $fileName, $options = array());
 
     /**
      * Gets the absolute url of the remote resource formatted according to options provided.

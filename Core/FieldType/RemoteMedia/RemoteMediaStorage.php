@@ -80,9 +80,11 @@ class RemoteMediaStorage extends GatewayBasedStorage
             $folder = $field->id . '/' . $versionInfo->id;
             $id = pathinfo($fileUri, PATHINFO_FILENAME) . '/' . $folder;
 
-            $options = $this->provider->prepareUploadOptions($id, null, $data['alt_text'], $data['caption']);
+            $options['alt_text'] = $data['alt_text'];
+            $options['caption'] = $data['caption'];
             $response = $this->provider->upload(
                 $fileUri,
+                $id,
                 $options
             );
 

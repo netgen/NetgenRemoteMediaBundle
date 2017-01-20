@@ -75,13 +75,11 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      *
      * @param string $fileName
-     * @param string|null $resourceType
-     * @param string $altText
-     * @param string $caption
+     * @param array $options
      *
      * @return array
      */
-    public function prepareUploadOptions($fileName, $resourceType = null, $altText = '', $caption = '')
+    protected function prepareUploadOptions($fileName, $options = array())
     {
         $id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
         if ($this->uniqueFilename) {
@@ -92,10 +90,10 @@ class CloudinaryProvider extends RemoteMediaProvider
             'public_id' => $id,
             'overwrite' => true,
             'context' => array(
-                'alt' => $altText,
-                'caption' => $caption,
+                'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
+                'caption' => !empty($options['caption']) ? $options['caption'] : '',
             ),
-            'resource_type' => $resourceType ?: 'auto'
+            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto'
         );
     }
 
@@ -103,12 +101,15 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Uploads the local resource to remote storage.
      *
      * @param string $fileUri
+     * @param string $fileName
      * @param array $options
      *
      * @return mixed
      */
-    public function upload($fileUri, $options = array())
+    public function upload($fileUri, $fileName, $options = array())
     {
+        $options = $this->prepareUploadOptions($fileName, $options);
+
         return $this->cloudinaryUploader->upload($fileUri, $options);
     }
 
