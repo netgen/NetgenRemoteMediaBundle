@@ -160,9 +160,7 @@ class Helper
         $fileName = $this->filenameCleanUp($fileName);
         $id = empty($folder) ? $fileName : $fileName.'/'.$folder;
 
-        $response = $this->provider->upload($fileUri, $id);
-
-        return $this->provider->getValueFromResponse($response);
+        return $this->provider->upload($fileUri, $id);
     }
 
     /**

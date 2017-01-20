@@ -28,13 +28,13 @@ abstract class RemoteMediaProvider
     }
 
     /**
-     * Uploads the local resource to remote storage.
+     * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
      * @param string $fileName
      * @param array $options
      *
-     * @return mixed
+     * @return Value
      */
     abstract public function upload($fileUri, $fileName, $options = array());
 

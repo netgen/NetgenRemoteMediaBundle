@@ -88,19 +88,21 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Uploads the local resource to remote storage.
+     * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
      * @param string $fileName
      * @param array $options
      *
-     * @return mixed
+     * @return Value
      */
     public function upload($fileUri, $fileName, $options = array())
     {
         $options = $this->prepareUploadOptions($fileName, $options);
 
-        return $this->cloudinaryUploader->upload($fileUri, $options);
+        $response = $this->cloudinaryUploader->upload($fileUri, $options);
+
+        return $this->getValueFromResponse($response);
     }
 
     /**

@@ -82,15 +82,13 @@ class RemoteMediaStorage extends GatewayBasedStorage
 
             $options['alt_text'] = $data['alt_text'];
             $options['caption'] = $data['caption'];
-            $response = $this->provider->upload(
+            $value = $this->provider->upload(
                 $fileUri,
                 $id,
                 $options
             );
 
-            $response['variations'] = $data['variations'];
-
-            $value = $this->provider->getValueFromResponse($response);
+            $value->variations = $data['variations'];
 
             $field->value->data = $value;
             $gateway->storeFieldData(
