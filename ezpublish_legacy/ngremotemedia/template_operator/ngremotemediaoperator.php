@@ -147,7 +147,7 @@ class NgRemoteMediaOperator
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.provider' );
 
-        return $provider->getVariation($value, $content_type_identifier, $format, $secure);
+        return $provider->buildVariation($value, $content_type_identifier, $format, $secure);
     }
 
     function isCroppable($class_identifier)
