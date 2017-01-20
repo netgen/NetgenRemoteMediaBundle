@@ -8,21 +8,6 @@ services:
     netgen_remote_media.handler_registry:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry
 
-    netgen_remote_media.controller.ui:
-        class: Netgen\Bundle\RemoteMediaBundle\Controller\UIController
-        arguments:
-            - "@netgen_remote_media.provider"
-            - "@netgen_remote_media.helper"
-            - "@templating"
-            - "@ezpublish.api.repository"
-            - "@ezpublish.config.resolver"
-            - "@security.authorization_checker"
-        calls:
-            - [setAnonymousUserId, ["$anonymous_user_id$"]]
-            - [setBrowseLimit, ["%netgen_remote_media.browse_limit%"]]
-            - [setEzoeVariationList, ["%netgen_remote_media.ezoe.variation_list%"]]
-            - [setEzoeClassList, ["%netgen_remote_media.ezoe.class_list%"]]
-
     netgen_remote_media.variation.resolver:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
         calls:
