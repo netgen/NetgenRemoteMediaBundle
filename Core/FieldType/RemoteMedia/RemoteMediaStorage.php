@@ -135,8 +135,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                     // 1) remove entry in the database connecting field/version and remote resource
                     /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway $gateway */
                     $gateway = $this->getGateway($context);
-                    $gateway->deleteFieldData($field->value->resourceId, $versionInfo->contentInfo->id, $this->provider->getIdentifier(),
-                        $versionInfo->versionNo);
+                    $gateway->deleteFieldData($field->id, $field->value->resourceId, $versionInfo->contentInfo->id, $this->provider->getIdentifier(), $versionInfo->versionNo);
 
                     // 2) check whether the remote resource is no longer in the database
                     if (!$gateway->remoteResourceConnected($field->value->resourceId)) {
