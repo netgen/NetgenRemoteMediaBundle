@@ -4,14 +4,12 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
-use eZ\Publish\SPI\Persistence\Content\Field;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 
 class Helper
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
      */
     protected $provider;
 

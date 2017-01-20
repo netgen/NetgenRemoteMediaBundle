@@ -262,6 +262,8 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Lists all available resources from the remote storage.
      *
+     * @param int $limit
+     *
      * @return array
      */
     public function listResources($limit = 10)
@@ -423,6 +425,8 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param mixed $resourceId
      * @param mixed|null $offset
      *
+     * @todo: enable setting width and height for the thumbnail
+     *
      * @return string
      */
     public function getVideoThumbnail($resourceId, $offset = null)
@@ -445,6 +449,8 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param mixed $resourceId
      * @param string $format
      * @param array $namedFormats
+     *
+     * @todo: figure out using the variations for the videos
      *
      * @return string
      */
@@ -480,6 +486,8 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Formats browse list to comply with javascript.
      *
+     * @todo: check if can be removed/refractored
+     *
      * @param array $list
      *
      * @return array
@@ -509,6 +517,18 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Generates the link to the remote resource.
+     *
+     * @param Value $value
+     *
+     * @return string
+     */
+    public function generateDownloadLink(Value $value)
+    {
+        return $this->cloudinary->cloudinary_url($value->resourceId);
+    }
+
+    /**
      * Removes the resource from the remote.
      *
      * @param $resourceId
@@ -521,17 +541,5 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function getIdentifier()
     {
         return 'cloudinary';
-    }
-
-    /**
-     * Generates the link to the remote resource.
-     *
-     * @param Value $value
-     *
-     * @return string
-     */
-    public function generateDownloadLink(Value $value)
-    {
-        return $this->cloudinary->cloudinary_url($value->resourceId);
     }
 }
