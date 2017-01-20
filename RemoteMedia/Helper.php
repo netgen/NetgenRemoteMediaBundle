@@ -113,28 +113,6 @@ class Helper
     }
 
     /**
-     * Loads available variation formats for the field.
-     *
-     * @param mixed $contentId
-     * @param mixed $fieldId
-     * @param mixed|null $versionId
-     * @param string|null $languageCode
-     *
-     * @return array
-     */
-    public function loadAvailableFormats($contentId, $fieldId, $versionId = null, $languageCode = null)
-    {
-        $field = $this->loadField($contentId, $fieldId, $versionId, $languageCode);
-
-        $content = $this->loadContent($contentId, $versionId, $languageCode);
-        $contentType = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId);
-        $fieldDefinition = $contentType->getFieldDefinition($field->fieldDefIdentifier);
-        $fieldSettings = $fieldDefinition->getFieldSettings();
-
-        return !empty($fieldSettings['formats']) ? $fieldSettings['formats'] : array();
-    }
-
-    /**
      * Updates the field value.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value

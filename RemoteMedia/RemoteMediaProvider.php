@@ -33,11 +33,13 @@ abstract class RemoteMediaProvider
     /**
      * Return merged transformations defined for a provided content type and default ones.
      *
+     * @todo: add this to the abstract class
+     *
      * @param string $contentTypeIdentifier
      *
      * @return array
      */
-    protected function getTransformationsForContentType($contentTypeIdentifier)
+    public function getTransformationsForContentType($contentTypeIdentifier)
     {
         $defaultTransformations = $this->transformations['default'];
         $contentTypeTransformations = isset($this->transformations[$contentTypeIdentifier]) ?

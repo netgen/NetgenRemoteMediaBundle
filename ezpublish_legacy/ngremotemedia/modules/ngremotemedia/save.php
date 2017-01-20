@@ -28,6 +28,7 @@ if (empty($variantName) || empty($crop_w) || empty($crop_h)) {
 
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
+$provider = $container->get( 'netgen_remote_media.provider' );
 
 $value = $helper->loadValue($contentId, $fieldId, $contentVersionId);
 
@@ -47,10 +48,12 @@ $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
 $attribute->setAttribute('data_text', json_encode($value));
 $attribute->store();
 
+$content = eZContentObject::fetch($contentId);
+
 $variation = $helper->getVariationFromValue(
     $value,
     $variantName,
-    $helper->loadAvailableFormats($contentId, $fieldId, $contentVersionId)
+    $provider->getTransformationsForContentType($content->attribute('class_identifier'));
 );
 
 $responseData = array(

@@ -27,13 +27,6 @@ foreach ($variations as $name => $coords) {
     );
 }
 
-//$tpl = eZTemplate::factory();
-//$tpl->setVariable('value', $value);
-//$tpl->setVariable('fieldId', $attributeId);
-//$tpl->setVariable('availableFormats', $helper->loadAvailableFormats($contentObjectId, $attributeId, $contentVersion));
-
-//$content = $tpl->fetch('design:mymodule/myview.tpl');
-
 $responseData = array(
     'media' => !empty($value->resourceId) ? $value : false,
     //'content' => $content,
