@@ -39,7 +39,7 @@ class VariationResolver
         $croppableVariations = array();
         foreach ($variations as $variationName => $variationOptions) {
             if (isset($variationOptions['transformations']['crop'])) {
-                $croppableFormats[$variationName] = $variationOptions;
+                $croppableVariations[$variationName] = $variationOptions;
             }
         }
 
