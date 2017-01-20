@@ -1,4 +1,10 @@
 services:
+    netgen_remote_media.handler.cloudinary.resize:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Resize
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: resize, provider: cloudinary }
+
     netgen_remote_media.handler.cloudinary.scale:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Scale
         lazy: true
