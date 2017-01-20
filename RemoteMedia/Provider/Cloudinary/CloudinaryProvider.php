@@ -160,7 +160,8 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * @todo: !!!
+     * Enables simple variation without defining proper configuration.
+     * Only supported format is WIDTHxHEIGHT
      *
      * @param Value $value
      * @param $variationName
