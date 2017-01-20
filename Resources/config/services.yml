@@ -33,11 +33,10 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider
         arguments:
             - "@netgen_remote_media.handler_registry"
+            - "@netgen_remote_media.variation.resolver"
             - "@?logger"
-            - "%netgen_remote_media.parameters.cloudinary.account_name%"
-            - "%netgen_remote_media.parameters.cloudinary.account_key%"
-            - "%netgen_remote_media.parameters.cloudinary.account_secret%"
         calls:
+            - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%"]]
             - [setFolderName, ["$cloudinary.folder_name;netgen_remote_media$"]]
             - [setUniqueFilename, ["$cloudinary.unique_id;netgen_remote_media$"]]
 

@@ -11,6 +11,7 @@ use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundExcep
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Psr\Log\LoggerInterface;
 
 
@@ -35,19 +36,8 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     protected $uniqueFilename = false;
 
-    /**
-     * CloudinaryProvider constructor.
-     *
-     * @param Registry $registry
-     * @param LoggerInterface $logger
-     * @param string $cloudName
-     * @param string $apiKey
-     * @param string $apiSecret
-     */
-    public function __construct(Registry $registry, LoggerInterface $logger = null, $cloudName, $apiKey, $apiSecret)
+    public function initCloudinary($cloudName, $apiKey, $apiSecret)
     {
-        parent::__construct($registry, $logger);
-
         $this->cloudinary = new Cloudinary();
         $this->cloudinary->config(
             array(
