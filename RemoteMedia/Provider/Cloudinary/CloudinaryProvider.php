@@ -221,7 +221,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param bool $secure
      * @return Variation
      */
-    public function getVariation(Value $value, $contentTypeIdentifier, $variationName, $secure = true)
+    public function buildVariation(Value $value, $contentTypeIdentifier, $variationName, $secure = true)
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;

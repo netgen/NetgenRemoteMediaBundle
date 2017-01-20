@@ -53,11 +53,12 @@ abstract class RemoteMediaProvider
      * with the url set to original resource.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param string $contentTypeIdentifier
      * @param string $format
      * @param bool $secure
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    abstract public function getVariation(Value $value, $contentTypeIdentifier, $format, $secure = true);
+    abstract public function buildVariation(Value $value, $contentTypeIdentifier, $format, $secure = true);
 
     /**
      * Lists all available resources from the remote storage.

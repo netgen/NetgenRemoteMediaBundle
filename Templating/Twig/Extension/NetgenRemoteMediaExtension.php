@@ -176,6 +176,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
         $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
         $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
 
-        return $this->provider->getVariation($field->value, $contentTypeIdentifier, $format, $secure);
+        return $this->provider->buildVariation($field->value, $contentTypeIdentifier, $format, $secure);
     }
 }

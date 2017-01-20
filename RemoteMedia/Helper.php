@@ -189,7 +189,7 @@ class Helper
      */
     public function getVariationFromValue($value, $variantName, $availableFormats, $secure = true)
     {
-        return $this->provider->getVariation($value, $variantName, $availableFormats, $secure);
+        return $this->provider->buildVariation($value, $variantName, $availableFormats, $secure);
     }
 
     /**
