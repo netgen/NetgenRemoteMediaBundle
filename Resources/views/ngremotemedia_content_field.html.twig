@@ -50,7 +50,7 @@
             />
         {% endif %}
     {% elseif resourceType == 'video' %}
-        {{ netgen_remote_video(field.value, format, fieldSettings.formats )|raw }}
+        {{ netgen_remote_video(field.value, format)|raw }}
     {% else %}
         <a href="{{ netgen_remote_resource(field.value) }}" target="_blank">{{ field.value.resourceId }}</a>
     {% endif %}

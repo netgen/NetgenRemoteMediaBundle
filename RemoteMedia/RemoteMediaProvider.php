@@ -156,11 +156,10 @@ abstract class RemoteMediaProvider
      *
      * @param mixed $resourceId
      * @param string $format
-     * @param array $namedFormats
      *
      * @return string
      */
-    abstract public function generateVideoTag($resourceId, $format = '', $namedFormats = array());
+    abstract public function generateVideoTag($resourceId, $format = '');
 
     /**
      * Formats browse list.

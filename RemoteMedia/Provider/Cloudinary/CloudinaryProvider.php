@@ -453,13 +453,12 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @param mixed $resourceId
      * @param string $format
-     * @param array $namedFormats
      *
      * @todo: figure out using the variations for the videos
      *
      * @return string
      */
-    public function generateVideoTag($resourceId, $format = '', $namedFormats = array())
+    public function generateVideoTag($resourceId, $format = '')
     {
         $options = array(
             'controls' => true,
@@ -467,12 +466,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         );
 
         if (!empty($format)) {
-            if (array_key_exists($format, $namedFormats)) {
-                $selectedFormat = $namedFormats[$format];
-                $sizes = explode('x', $selectedFormat);
-            } else {
-                $sizes = explode('x', $format);
-            }
+            $sizes = explode('x', $format);
 
             if ($sizes[0] !== 0) {
                 $options['width'] = $sizes[0];
