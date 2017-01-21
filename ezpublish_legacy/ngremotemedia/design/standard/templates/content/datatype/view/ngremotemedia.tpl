@@ -2,11 +2,10 @@
 
 {def
     $value = $attribute.content
-    $type = $value.metaData.resource_type|default('image')
 }
 
 {if $value.resourceId}
-    {if $type|eq('image')}
+    {if and($value.metaData['resource_type']|eq('image'), array('pdf', 'doc', 'docx')|contains($$value|metaData['format'])|not)}
         {if not(is_set($format))}
             {def $format = '300x200'}
         {/if}
@@ -27,8 +26,11 @@
              {if $alt_text}alt="{$alt_text}"{/if}
              {if $title}title="{$title}"{/if}
         />
-
-    {elseif $type|eq('video')}
-        {ngremotevideo($value, $variations, $format)}
+    {elseif $value.metaData['resource_type']|eq('video')}
+        {* TODO: show video thumbnai *}
+        <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
+    {else}
+        {* TODO: maybe show download link here? *}
+        <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />
     {/if}
 {/if}
