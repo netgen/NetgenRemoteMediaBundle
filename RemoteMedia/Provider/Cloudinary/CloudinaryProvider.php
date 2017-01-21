@@ -62,7 +62,8 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     *
+     * Prepares upload options for Cloudinary.
+     * Every image with the same name will be overwritten.
      *
      * @param string $fileName
      * @param array $options
@@ -79,6 +80,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         return array(
             'public_id' => $id,
             'overwrite' => true,
+            'invalidate' => true,
             'context' => array(
                 'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
                 'caption' => !empty($options['caption']) ? $options['caption'] : '',
