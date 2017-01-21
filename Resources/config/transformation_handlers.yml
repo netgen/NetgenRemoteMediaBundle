@@ -64,3 +64,9 @@ services:
         lazy: true
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: crop, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.quality:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Quality
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: quality, provider: cloudinary }
