@@ -8,7 +8,11 @@
 <div class="ngremotemedia-image">
     {if $remote_value.resourceId}
         <div class="image-wrap">
-            <img src="{$thumb_url}" />
+            {if and($remote_value.metaData['resource_type']|eq('image'), array('pdf', 'doc', 'docx')|contain($remote_value|metaData['format'])|not)}
+                <img src="{$thumb_url}" />
+            {else}
+                <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />
+            {/if}
         </div>
 
         <div class="image-meta">

@@ -80,6 +80,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         return array(
             'public_id' => $id,
             'overwrite' => false,
+            'discard_original_filename' => true,
             'context' => array(
                 'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
                 'caption' => !empty($options['caption']) ? $options['caption'] : '',
@@ -100,7 +101,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function upload($fileUri, $fileName, $options = array())
     {
         $options = $this->prepareUploadOptions($fileName, $options);
-
         $response = $this->cloudinaryUploader->upload($fileUri, $options);
 
         return $this->getValueFromResponse($response);
@@ -530,7 +530,13 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function generateDownloadLink(Value $value)
     {
-        return $this->cloudinary->cloudinary_url($value->resourceId);
+        $options = array(
+            'type' => $value->metaData['type'],
+            'resource_type' => $value->metaData['resource_type'],
+            'flags' => 'attachment'
+        );
+
+        return $this->cloudinary->cloudinary_url($value->resourceId, $options);
     }
 
     /**
