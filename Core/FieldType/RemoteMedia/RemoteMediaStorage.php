@@ -77,8 +77,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
             );
         } else if (is_array($data) && !empty($data)) {
             $fileUri = $data['input_uri'];
-            $folder = $field->id . '/' . $versionInfo->id;
-            $id = pathinfo($fileUri, PATHINFO_FILENAME) . '/' . $folder;
+            $id = pathinfo($fileUri, PATHINFO_FILENAME);
 
             $options['alt_text'] = $data['alt_text'];
             $options['caption'] = $data['caption'];

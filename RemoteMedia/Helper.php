@@ -149,16 +149,8 @@ class Helper
      */
     public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
     {
-        if ($this->contentVersionInFileName) {
-            if (!empty($fieldId) && !empty($contentVersionId)) {
-                $folder = $fieldId.'/'.$contentVersionId;
-            } else {
-                $folder = '';
-            }
-        }
-
         $fileName = $this->filenameCleanUp($fileName);
-        $id = empty($folder) ? $fileName : $fileName.'/'.$folder;
+        $id = $fileName;
 
         return $this->provider->upload($fileUri, $id);
     }

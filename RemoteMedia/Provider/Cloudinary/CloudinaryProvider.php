@@ -72,15 +72,14 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     protected function prepareUploadOptions($fileName, $options = array())
     {
+        // @todo: folders should be handled differently, not through siteacess parameter
         $id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
-        if ($this->uniqueFilename) {
-            $id = $id . '_' . base_convert(uniqid(), 16, 36);
-        }
+
+        $id = $id . '_' . base_convert(uniqid(), 16, 36);
 
         return array(
             'public_id' => $id,
-            'overwrite' => true,
-            'invalidate' => true,
+            'overwrite' => false,
             'context' => array(
                 'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
                 'caption' => !empty($options['caption']) ? $options['caption'] : '',
