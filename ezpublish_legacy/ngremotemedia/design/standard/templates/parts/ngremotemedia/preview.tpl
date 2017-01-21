@@ -10,6 +10,8 @@
         <div class="image-wrap">
             {if and($remote_value.metaData['resource_type']|eq('image'), array('pdf', 'doc', 'docx')|contain($remote_value|metaData['format'])|not)}
                 <img src="{$thumb_url}" />
+            {elseif $remote_value.metaData['resource_type']|eq('video')}
+                <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
             {else}
                 <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />
             {/if}
