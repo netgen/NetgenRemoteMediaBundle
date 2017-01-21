@@ -70,3 +70,9 @@ services:
         lazy: true
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: quality, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.effect:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Effect
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: effect, provider: cloudinary }
