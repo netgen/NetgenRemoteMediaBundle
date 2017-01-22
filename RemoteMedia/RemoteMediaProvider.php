@@ -154,12 +154,13 @@ abstract class RemoteMediaProvider
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param mixed $resourceId
+     * @param Value $value
+     * @param string $contentTypeIdentifier
      * @param string $format
      *
      * @return string
      */
-    abstract public function generateVideoTag($resourceId, $format = '');
+    abstract public function generateVideoTag(Value $value, $contentTypeIdentifier, $format = '');
 
     /**
      * Formats browse list.

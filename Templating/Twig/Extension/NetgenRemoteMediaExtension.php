@@ -110,14 +110,18 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Generates html5 video tag for the video with provided id
      *
-     * @param Value $value
+     * @param Content $content
+     * @param string $fieldIdentifier
      * @param string $format
      *
      * @return mixed
      */
-    public function getRemoteVideoTag(Value $value, $format = '')
+    public function getRemoteVideoTag(Content $content, $fieldIdentifier, $format = '')
     {
-        return $this->provider->generateVideoTag($value->resourceId, $format);
+        $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
+        $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
+
+        return $this->provider->generateVideoTag($field->value, $contentTypeIdentifier, $format);
     }
 
     /**

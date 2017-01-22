@@ -472,44 +472,84 @@ class CloudinaryProvider extends RemoteMediaProvider
         return cl_video_thumbnail_path($resourceId, $options);
     }
 
+    protected function processManualVideoFormat(Value $value, $variatnName)
+    {
+        $sizes = explode('x', $variatnName);
+
+        if ($sizes[0] !== 0) {
+            $options['width'] = $sizes[0];
+        }
+        if ($sizes[1] !== 0) {
+            $options['height'] = $sizes[1];
+        }
+
+        $options['background'] = 'black';
+        $options['crop'] = 'pad';
+
+        return cl_video_tag($value->resourceId, $options);
+    }
+
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param mixed $resourceId
-     * @param string $format
+     * @param Value $value
+     * @param string $contentTypeIdentifier
+     * @param string $variationName
      *
      * @todo: figure out using the variations for the videos
      *
      * @return string
      */
-    public function generateVideoTag($resourceId, $format = '')
+    public function generateVideoTag(Value $value, $contentTypeIdentifier, $variationName = '')
     {
-        $options = array(
+        $finalOptions = array(
             'controls' => true,
             'fallback_content' => 'Your browser does not support HTML5 video tags'
         );
 
-        if (!empty($format)) {
-            $sizes = explode('x', $format);
-
-            if ($sizes[0] !== 0) {
-                $options['width'] = $sizes[0];
-            }
-            if ($sizes[1] !== 0) {
-                $options['height'] = $sizes[1];
-            }
-
-            $options['background'] = 'black';
-            $options['crop'] = 'pad';
+        if (empty($variationName)) {
+            return cl_video_tag($value->resourceId, $finalOptions);
         }
 
-        return cl_video_tag($resourceId, $options);
+        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
+
+        if (!isset($configuredVariations[$variationName])) {
+            return $this->processManualVideoFormat($value, $variationName);
+        }
+
+        $options = array();
+        $variationConfiguration = $configuredVariations[$variationName];
+        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
+            try {
+                $transformationHandler = $this->registry->getHandler(
+                    $transformationIdentifier, $this->getIdentifier()
+                );
+            } catch (TransformationHandlerNotFoundException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+
+            try {
+                $options[] = $transformationHandler->process($value, $variationName, $config);
+            } catch (TransformationHandlerFailedException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+        }
+
+        $finalOptions['transformation'] = $options;
+        $finalOptions['secure'] = true;
+
+        return cl_video_tag($value->resourceId, $finalOptions);
     }
 
     /**
      * Formats browse list to comply with javascript.
      *
      * @todo: check if can be removed/refractored
+     * @todo: make use of the 'next_cursor' parametar in the API
      *
      * @param array $list
      *
