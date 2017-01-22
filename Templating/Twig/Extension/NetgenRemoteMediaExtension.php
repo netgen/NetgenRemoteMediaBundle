@@ -81,10 +81,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 array($this, 'getRemoteVideoTag')
             ),
             new Twig_SimpleFunction(
-                'netgen_remote_media_fits',
-                array($this, 'mediaFits')
-            ),
-            new Twig_SimpleFunction(
                 'netgen_remote_resource',
                 array($this, 'getResourceDownloadLink')
             ),
@@ -122,30 +118,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
         $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
 
         return $this->provider->generateVideoTag($field->value, $contentTypeIdentifier, $format);
-    }
-
-    /**
-     * Calculates whether the remote image fits into all variations
-     *
-     * @param Value $value
-     * @param $variations
-     *
-     * @return bool
-     */
-    public function mediaFits(Value $value, $variations)
-    {
-        $valueWidth = $value->metaData['width'];
-        $valueHeight = $value->metaData['height'];
-
-        foreach ($variations as $variationName => $variationSize) {
-            $variationSizeArray = explode('x', $variationSize);
-
-            if ($valueWidth < $variationSizeArray[0] || $valueHeight < $variationSizeArray[1]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /**
