@@ -196,7 +196,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return Variation
      */
-    protected function processManualFormat(Value $value, $variationName, $secure)
+    protected function processManualVariation(Value $value, $variationName, $secure)
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;
@@ -230,6 +230,33 @@ class CloudinaryProvider extends RemoteMediaProvider
         return $variation;
     }
 
+    protected function processConfiguredVariation(Value $value, $variationName, array $configuredVariations)
+    {
+        $options = array();
+        $variationConfiguration = $configuredVariations[$variationName];
+        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
+            try {
+                $transformationHandler = $this->registry->getHandler(
+                    $transformationIdentifier, $this->getIdentifier()
+                );
+            } catch (TransformationHandlerNotFoundException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+
+            try {
+                $options[] = $transformationHandler->process($value, $variationName, $config);
+            } catch (TransformationHandlerFailedException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+        }
+
+        return $options;
+    }
+
     /**
      * Gets the remote media Variation.
      *
@@ -252,30 +279,10 @@ class CloudinaryProvider extends RemoteMediaProvider
         $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
         if (!isset($configuredVariations[$variationName])) {
-            return $this->processManualFormat($value, $variationName, $secure);
+            return $this->processManualVariation($value, $variationName, $secure);
         }
 
-        $options = array();
-        $variationConfiguration = $configuredVariations[$variationName];
-        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
-            try {
-                $transformationHandler = $this->registry->getHandler(
-                    $transformationIdentifier, $this->getIdentifier()
-                );
-            } catch (TransformationHandlerNotFoundException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-
-            try {
-                $options[] = $transformationHandler->process($value, $variationName, $config);
-            } catch (TransformationHandlerFailedException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-        }
+        $options = $this->processConfiguredVariation($value, $variationName, $configuredVariations);
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = $secure;
@@ -472,7 +479,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         return cl_video_thumbnail_path($resourceId, $options);
     }
 
-    protected function processManualVideoFormat(Value $value, $variatnName)
+    protected function processManualVideoVariation(Value $value, $variatnName)
     {
         $sizes = explode('x', $variatnName);
 
@@ -496,8 +503,6 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param string $contentTypeIdentifier
      * @param string $variationName
      *
-     * @todo: figure out using the variations for the videos
-     *
      * @return string
      */
     public function generateVideoTag(Value $value, $contentTypeIdentifier, $variationName = '')
@@ -514,30 +519,10 @@ class CloudinaryProvider extends RemoteMediaProvider
         $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
         if (!isset($configuredVariations[$variationName])) {
-            return $this->processManualVideoFormat($value, $variationName);
+            return $this->processManualVideoVariation($value, $variationName);
         }
 
-        $options = array();
-        $variationConfiguration = $configuredVariations[$variationName];
-        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
-            try {
-                $transformationHandler = $this->registry->getHandler(
-                    $transformationIdentifier, $this->getIdentifier()
-                );
-            } catch (TransformationHandlerNotFoundException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-
-            try {
-                $options[] = $transformationHandler->process($value, $variationName, $config);
-            } catch (TransformationHandlerFailedException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-        }
+        $options = $this->processConfiguredVariation($value, $variationName, $configuredVariations);
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = true;
