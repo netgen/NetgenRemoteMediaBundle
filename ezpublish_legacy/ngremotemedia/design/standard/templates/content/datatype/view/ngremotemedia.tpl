@@ -5,7 +5,7 @@
 }
 
 {if $value.resourceId}
-    {if and($value.metaData['resource_type']|eq('image'), array('pdf', 'doc', 'docx')|contains($$value|metaData['format'])|not)}
+    {if $value.mediaType|eq('image')}
         {if not(is_set($format))}
             {def $format = '300x200'}
         {/if}
@@ -26,7 +26,7 @@
              {if $alt_text}alt="{$alt_text}"{/if}
              {if $title}title="{$title}"{/if}
         />
-    {elseif $value.metaData['resource_type']|eq('video')}
+    {elseif $value.mediaType|eq('video')}
         {* TODO: show video thumbnai *}
         <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
     {else}

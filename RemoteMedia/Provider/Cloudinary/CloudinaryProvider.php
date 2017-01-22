@@ -152,6 +152,14 @@ class CloudinaryProvider extends RemoteMediaProvider
         $value->metaData = $metaData;
         $value->variations = !empty($response['variations']) ? $response['variations'] : array();
 
+        if ($response['resource_type'] == 'video') {
+            $value->mediaType = Value::TYPE_VIDEO;
+        } else if ($response['resource_type'] == 'image' && !in_array($response['format'], array('pdf', 'doc', 'docx'))) {
+            $value->mediaType = Value::TYPE_IMAGE;
+        } else {
+            $value->mediaType = Value::TYPE_OTHER;
+        }
+
         return $value;
     }
 

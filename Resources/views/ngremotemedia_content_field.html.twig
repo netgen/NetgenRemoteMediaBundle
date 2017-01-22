@@ -12,7 +12,11 @@
     {% set dimensions = parameters.dimensions|default(false) %}
     {% set resourceType = field.value.metaData.resource_type|default('image') %}
 
-    {% if resourceType == 'image' and field.value.metaData.format not in ['pdf', 'doc', 'docx'] %}
+    {% set videoConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_VIDEO') %}
+    {% set imageConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_IMAGE') %}
+    {% set otherConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_OTHER') %}
+
+    {% if field.value.mediaType == imageConst %}
         {% if parameters.alt_text is defined and parameters.alt_text is not empty %}
             {% set alt_text = parameters.alt_text %}
         {% else %}
@@ -49,7 +53,7 @@
                     {{ block( 'field_attributes' ) }}
             />
         {% endif %}
-    {% elseif resourceType == 'video' %}
+    {% elseif field.value.mediaType == videoConst %}
         {{ netgen_remote_video(field.value, format)|raw }}
     {% else %}
         <a href="{{ netgen_remote_resource(field.value) }}" target="_blank">{{ field.value.resourceId }}</a>

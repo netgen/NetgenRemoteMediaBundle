@@ -8,9 +8,9 @@
 <div class="ngremotemedia-image">
     {if $remote_value.resourceId}
         <div class="image-wrap">
-            {if and($remote_value.metaData['resource_type']|eq('image'), array('pdf', 'doc', 'docx')|contains($remote_value|metaData['format'])|not)}
+            {if $remote_value.mediaType|eq('image')}
                 <img src="{$thumb_url}" />
-            {elseif $remote_value.metaData['resource_type']|eq('video')}
+            {elseif $remote_value.mediaType|eq('video')}
                 <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
             {else}
                 <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />

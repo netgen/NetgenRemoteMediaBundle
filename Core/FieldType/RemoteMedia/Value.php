@@ -6,10 +6,16 @@ use eZ\Publish\Core\FieldType\Value as BaseValue;
 
 class Value extends BaseValue
 {
+    const TYPE_IMAGE = 'image';
+    const TYPE_VIDEO = 'video';
+    const TYPE_OTHER = 'other';
+
     public $resourceId = null;
     public $url = null;
     public $secure_url = null;
     public $size = null;
+
+    public $mediaType = 'image';
 
     public $variations = array();
     public $metaData = array(
