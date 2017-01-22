@@ -10,8 +10,6 @@ use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedExcepti
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Psr\Log\LoggerInterface;
 
 
@@ -34,8 +32,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     protected $folderName = '';
 
-    protected $uniqueFilename = false;
-
     public function initCloudinary($cloudName, $apiKey, $apiSecret)
     {
         $this->cloudinary = new Cloudinary();
@@ -54,11 +50,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function setFolderName($folderName = null)
     {
         $this->folderName = $folderName;
-    }
-
-    public function setUniqueFilename($uniqueFilename = false)
-    {
-        $this->uniqueFilename = $uniqueFilename;
     }
 
     /**
