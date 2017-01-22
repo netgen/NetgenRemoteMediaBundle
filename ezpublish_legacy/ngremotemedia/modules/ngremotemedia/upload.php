@@ -8,7 +8,7 @@ $fieldId = $http->postVariable('AttributeID', '');
 $contentVersionId = $http->postVariable('ContentObjectVersion', '');
 
 $container = ezpKernel::instance()->getServiceContainer();
-$helper = $container->get( 'netgen_remote_media.helper' );
+$provider = $container->get( 'netgen_remote_media.provider' );
 
 if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
     eZHTTPTool::headerVariable( 'Content-Type', 'text/html; charset=utf-8' );
@@ -23,11 +23,9 @@ if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
     eZExecution::cleanExit();
 }
 
-$value = $helper->upload(
+$value = $provider->upload(
     $file->Filename,
-    pathinfo($file->OriginalFilename, PATHINFO_FILENAME),
-    $fieldId,
-    $contentVersionId
+    pathinfo($file->OriginalFilename, PATHINFO_FILENAME)
 );
 
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);

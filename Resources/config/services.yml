@@ -30,5 +30,3 @@ services:
             - "@netgen_remote_media.provider"
             - "@ezpublish.api.service.content"
             - "@ezpublish.api.service.content_type"
-        calls:
-            - [setContentVersionInFileName, ["$use_content_version_as_part_of_filename;netgen_remote_media$"]]

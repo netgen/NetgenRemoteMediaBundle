@@ -20,13 +20,11 @@ if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
 }
 
 $container = ezpKernel::instance()->getServiceContainer();
-$helper = $container->get( 'netgen_remote_media.helper' );
+$provider = $container->get( 'netgen_remote_media.provider' );
 
-$value = $helper->upload(
+$value = $provider->upload(
     $file->Filename,
-    pathinfo($file->OriginalFilename, PATHINFO_FILENAME),
-    $fieldId,
-    $contentVersionId
+    pathinfo($file->OriginalFilename, PATHINFO_FILENAME)
 );
 
 $responseData = array(

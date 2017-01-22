@@ -11,9 +11,9 @@ $crop_h = $http->postVariable('crop_h', 0);
 
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
-$ezoeVariationList = $container->getParameter('netgen_remote_media.ezoe.variation_list');
+$provider = $container->get( 'netgen_remote_media.provider' );
 
-$remoteResourceValue = $helper->getValueFromRemoteResource($resourceId, 'image');
+$remoteResourceValue = $provider->getRemoteResource($resourceId, 'image');
 
 $variationCoords = array(
     $variantName => array(
@@ -27,22 +27,10 @@ $variationCoords = array(
 $variations = $variationCoords + $remoteResourceValue->variations;
 $remoteResourceValue->variations = $variations;
 
-$formatListInitial = $ezoeVariationList;
-$formatList = array();
-foreach ($formatListInitial as $format) {
-    $format = explode(',', $format);
-
-    if (count($format) != 2) {
-        continue;
-    }
-
-    $formatList[$format[0]] = $format[1];
-}
-
-$variation = $helper->getVariationFromValue(
+$variation = $provider->buildVariation(
     $remoteResourceValue,
-    $variantName,
-    $formatList
+    'ezoe',
+    $variantName
 );
 
 $responseData = array(

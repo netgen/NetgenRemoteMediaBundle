@@ -24,12 +24,6 @@ class Helper
     protected $contentTypeService;
 
     /**
-     * Should content-version and field-id be a part of the filename sent to the remote provider?
-     * @var bool
-     */
-    protected $contentVersionInFileName = true;
-
-    /**
      * Helper constructor.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
@@ -45,11 +39,6 @@ class Helper
         $this->provider = $provider;
         $this->contentService = $contentService;
         $this->contentTypeService = $contentTypeService;
-    }
-
-    public function setContentVersionInFileName($contentVersionInFileName = null)
-    {
-        $this->contentVersionInFileName = $contentVersionInFileName;
     }
 
     /**
@@ -137,52 +126,6 @@ class Helper
     }
 
     /**
-     * Uploads the local file to the remote provider and returns new Value.
-     * This method DOES NOT save the new Value!
-     *
-     * @param string $fileUri
-     * @param string $fileName
-     * @param mixed|null $fieldId
-     * @param mixed|null $contentVersionId
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
-     */
-    public function upload($fileUri, $fileName, $fieldId = null, $contentVersionId = null)
-    {
-        $fileName = $this->filenameCleanUp($fileName);
-        $id = $fileName;
-
-        return $this->provider->upload($fileUri, $id);
-    }
-
-    /**
-     * Fetches remote resource and creates new Value with it.
-     *
-     * @param string $resourceId
-     * @param string $resourceType
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
-     */
-    public function getValueFromRemoteResource($resourceId, $resourceType)
-    {
-        return $this->provider->getRemoteResource($resourceId, $resourceType);
-    }
-
-    /**
-     * Returns the Variation for the value.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param string $variantName
-     * @param array $availableFormats
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
-     */
-    public function getVariationFromValue($value, $variantName, $availableFormats, $secure = true)
-    {
-        return $this->provider->buildVariation($value, $variantName, $availableFormats, $secure);
-    }
-
-    /**
      * Adds the tag to the field value.
      *
      * @param mixed $contentId
@@ -237,21 +180,6 @@ class Helper
 
         return $attributeTags;
 
-    }
-
-    /**
-     * Cleans up the file name for uploading.
-     *
-     * @param string $fileName
-     *
-     * @return string
-     */
-    protected function filenameCleanUp($fileName)
-    {
-        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
-        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
-
-        return rtrim($cleanFileName, '_');
     }
 
     /**

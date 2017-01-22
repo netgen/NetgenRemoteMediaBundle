@@ -23,10 +23,9 @@ if (empty($resourceId)) {
 }
 
 $container = ezpKernel::instance()->getServiceContainer();
-$helper = $container->get( 'netgen_remote_media.helper' );
+$provider = $container->get( 'netgen_remote_media.provider' );
 
-$updatedValue = $helper->getValueFromRemoteResource($resourceId, 'image');
-//$value = $helper->updateValue($updatedValue, $contentId, $fieldId, $contentVersionId, $languageCode);
+$updatedValue = $provider->getRemoteResource($resourceId, 'image');
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
 $attribute->setAttribute('data_text', json_encode($updatedValue));
 $attribute->store();

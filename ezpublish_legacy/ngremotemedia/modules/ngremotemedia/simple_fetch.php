@@ -6,9 +6,10 @@ $resourceId = $http->getVariable('resourceId', '');
 
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
+$provider = $container->get('netgen_remote_media.provider');
 $ezoeVariationList = $container->getParameter('netgen_remote_media.ezoe.variation_list');
 
-$value = $helper->getValueFromRemoteResource($resourceId, 'image');
+$value = $provider->getRemoteResource($resourceId, 'image');
 
 $versions = $ezoeVariationList;
 $availableVersions = array();
