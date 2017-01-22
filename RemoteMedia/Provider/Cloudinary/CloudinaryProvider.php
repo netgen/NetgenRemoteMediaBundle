@@ -182,40 +182,23 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Only supported format is WIDTHxHEIGHT
      *
      * @param Value $value
-     * @param $variationName
+     * @param $variationConfig
      * @param $secure
      *
      * @return Variation
      */
-    protected function processManualVariation(Value $value, $variationName, $secure)
+    protected function processManualVariation(Value $value, $variationConfig, $secure)
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;
         $variation->url = $url;
 
-        $sizes = explode('x', $variationName);
-
-        if (count($sizes) !== 2) {
-            $this->logError("[RemoteMedia] Format {$variationName} is not configured nor proper manual format ([W]x[H]");
-
-            return $variation;
-        }
-
-        $options = array(
-            'secure' => $secure,
-            'transformation' => array(
-                'crop' => 'fill',
-                'width' => $sizes[0],
-                'height' => $sizes[1]
-            )
-        );
+        $variationConfig['secure'] = $secure;
 
         $url = $this->getFormattedUrl(
-            $value->resourceId, $options
+            $value->resourceId, $variationConfig
         );
 
-        $variation->width = $sizes[0];
-        $variation->height = $sizes[1];
         $variation->url = $url;
 
         return $variation;
@@ -267,12 +250,11 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $variation;
         }
 
-        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
-
-        if (!isset($configuredVariations[$variationName])) {
+        if (is_array($variationName)) {
             return $this->processManualVariation($value, $variationName, $secure);
         }
 
+        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
         $options = $this->processConfiguredVariation($value, $variationName, $configuredVariations);
 
         $finalOptions['transformation'] = $options;
@@ -473,19 +455,20 @@ class CloudinaryProvider extends RemoteMediaProvider
         return cl_video_thumbnail_path($value->resourceId, $options);
     }
 
-    protected function processManualVideoVariation(Value $value, $variatnName)
+    /**
+     * Builds video tag based on manually entered configuration.
+     * Look up cloudinary php API for reference what options are
+     * accepted.
+     *
+     * @param Value $value
+     * @param $variationConfig
+     * @param $defaultOptions
+     *
+     * @return string
+     */
+    protected function processManualVideoVariation(Value $value, $variationConfig, $defaultOptions)
     {
-        $sizes = explode('x', $variatnName);
-
-        if ($sizes[0] !== 0) {
-            $options['width'] = $sizes[0];
-        }
-        if ($sizes[1] !== 0) {
-            $options['height'] = $sizes[1];
-        }
-
-        $options['background'] = 'black';
-        $options['crop'] = 'pad';
+        $options = $defaultOptions + $variationConfig;
 
         return cl_video_tag($value->resourceId, $options);
     }
@@ -510,11 +493,11 @@ class CloudinaryProvider extends RemoteMediaProvider
             return cl_video_tag($value->resourceId, $finalOptions);
         }
 
-        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
-
-        if (!isset($configuredVariations[$variationName])) {
-            return $this->processManualVideoVariation($value, $variationName);
+        if (is_array($variationName)) {
+            return $this->processManualVideoVariation($value, $variationName, $finalOptions);
         }
+
+        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
         $options = $this->processConfiguredVariation($value, $variationName, $configuredVariations);
 
