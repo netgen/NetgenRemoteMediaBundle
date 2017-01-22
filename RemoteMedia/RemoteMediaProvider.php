@@ -144,12 +144,12 @@ abstract class RemoteMediaProvider
     /**
      * Returns thumbnail url for the video with provided id.
      *
-     * @param mixed $resourceId
-     * @param mixed|null $offset
+     * @param Value $value
+     * @param array $options
      *
      * @return string
      */
-    abstract public function getVideoThumbnail($resourceId, $offset = null);
+    abstract public function getVideoThumbnail(Value $value, $options = array());
 
     /**
      * Generates html5 video tag for the video with provided id.

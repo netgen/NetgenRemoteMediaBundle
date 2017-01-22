@@ -73,34 +73,42 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     {
         return array(
             new Twig_SimpleFunction(
-                'netgen_remote_thumbnail',
-                array($this, 'getVideoThumbnail')
+                'netgen_remote_variation',
+                array($this, 'getRemoteImageVariation')
             ),
             new Twig_SimpleFunction(
                 'netgen_remote_video',
                 array($this, 'getRemoteVideoTag')
             ),
             new Twig_SimpleFunction(
-                'netgen_remote_resource',
-                array($this, 'getResourceDownloadLink')
+                'netgen_remote_video_thumbnail',
+                array($this, 'getVideoThumbnail')
             ),
             new Twig_SimpleFunction(
-                'netgen_remote_variation',
-                array($this, 'getRemoteImageVariation')
+                'netgen_remote_download',
+                array($this, 'getResourceDownloadLink')
             ),
+
         );
     }
 
+
     /**
-     * Returns thumbnail url
+     * Returns variation by specified format
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param Content $content
+     * @param string $fieldIdentifier
+     * @param string $format
+     * @param bool $secure
      *
-     * @return string
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    public function getVideoThumbnail(Value $value)
+    public function getRemoteImageVariation(Content $content, $fieldIdentifier, $format, $secure = true)
     {
-        return $this->provider->getVideoThumbnail($value->resourceId);
+        $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
+        $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
+
+        return $this->provider->buildVariation($field->value, $contentTypeIdentifier, $format, $secure);
     }
 
     /**
@@ -121,6 +129,19 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
+     * Returns thumbnail url
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param array $options
+     *
+     * @return string
+     */
+    public function getVideoThumbnail(Value $value, $options)
+    {
+        return $this->provider->getVideoThumbnail($value, $options);
+    }
+
+    /**
      * Returns the link to the remote resource
      *
      * @param Value $value
@@ -130,23 +151,5 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getResourceDownloadLink(Value $value)
     {
         return $this->provider->generateDownloadLink($value);
-    }
-
-    /**
-     * Returns variation by specified format
-     *
-     * @param Content    $content
-     * @param string        $fieldIdentifier
-     * @param string        $format
-     * @param bool          $secure
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
-     */
-    public function getRemoteImageVariation(Content $content, $fieldIdentifier, $format, $secure = true)
-    {
-        $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
-        $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
-
-        return $this->provider->buildVariation($field->value, $contentTypeIdentifier, $format, $secure);
     }
 }

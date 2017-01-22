@@ -449,25 +449,28 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Returns thumbnail url for the video with provided id.
      *
-     * @param mixed $resourceId
-     * @param mixed|null $offset
-     *
-     * @todo: enable setting width and height for the thumbnail
+     * @param Value $value
+     * @param array $options
      *
      * @return string
      */
-    public function getVideoThumbnail($resourceId, $offset = null)
+    public function getVideoThumbnail(Value $value, $options = array())
     {
-        $offset = $offset ?: 'auto';
+        if (!empty($options)) {
+            $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
+            $options['resource_type'] = 'video';
 
-        $options = array();
+            return cl_video_tag($value->resourceId, $options);
+        }
+
+        $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
+
         $options['crop'] = 'fit';
-        $options['width'] = 160;
-        $options['height'] = 120;
+        $options['width'] = 320;
+        $options['height'] = 240;
         $options['resource_type'] = 'video';
-        $options['start_offset'] = $offset;
 
-        return cl_video_thumbnail_path($resourceId, $options);
+        return cl_video_thumbnail_path($value->resourceId, $options);
     }
 
     protected function processManualVideoVariation(Value $value, $variatnName)
