@@ -73,10 +73,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     {
         return array(
             new Twig_SimpleFunction(
-                'ng_field_settings',
-                array($this, 'getFieldSettings')
-            ),
-            new Twig_SimpleFunction(
                 'netgen_remote_thumbnail',
                 array($this, 'getVideoThumbnail')
             ),
