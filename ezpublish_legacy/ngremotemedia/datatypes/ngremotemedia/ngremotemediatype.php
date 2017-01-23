@@ -120,6 +120,44 @@ class NgRemoteMediaType extends eZDataType
         }
     }
 
+    function removeFromFieldLinkTable($provider, $objectAttribute, $version = null)
+    {
+        $db = eZDB::instance();
+
+        if (!empty($version)) {
+            $result = $db->query(
+                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
+                " AND version = " . $version .
+                " AND provider = '" . $provider->getIdentifier() . "'"
+            );
+        } else {
+            $result = $db->query(
+                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
+                " AND provider = '" . $provider->getIdentifier() . "'"
+            );
+        }
+    }
+
+    function removeFromRemoteMedia(array $resource_ids, $provider)
+    {
+        foreach($resource_ids as $resource_id) {
+            $db = eZDB::instance();
+
+            $sqlString = "SELECT COUNT(*) as count FROM ngremotemedia_field_link WHERE resource_id = '" . $resource_id .
+                "' AND provider = '". $provider->getIdentifier() ."'";
+
+            $result = $db->arrayQuery($sqlString);
+            $count = $result[0]['count'];
+
+            // make sure resource_id is not connected to anything else
+            if ($count > 0) {
+                continue;
+            }
+
+            $provider->deleteResource($resource_id);
+        }
+    }
+
     /**
      * Deletes $objectAttribute datatype data, optionally in version $version.
      *
@@ -133,18 +171,39 @@ class NgRemoteMediaType extends eZDataType
 
         $db = eZDB::instance();
 
+        $deleteNotUsed = $container->getParameter('netgen_remote_media.cloudinary.delete_not_used');
+
+        // check if it's configured to remove not used media
+        if (!$deleteNotUsed) {
+            $this->removeFromFieldLinkTable($provider, $objectAttribute, $version);
+
+            return;
+        }
+
         if (!empty($version)) {
-            $result = $db->arrayQuery(
-                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
-                " AND version = " . $version .
+            $results = $db->arrayQuery(
+                "SELECT DISTINCT resource_id FROM ngremotemedia_field_link WHERE contentobject_id = " . (int)$objectAttribute->attribute('contentobject_id') .
+                " AND version = " . (int)$objectAttribute->attribute('version') .
                 " AND provider = '" . $provider->getIdentifier() . "'"
             );
         } else {
-            $result = $db->arrayQuery(
-                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
+            $results = $db->arrayQuery(
+                "SELECT DISTINCT resource_id FROM ngremotemedia_field_link WHERE contentobject_id = " . (int)$objectAttribute->attribute('contentobject_id') .
                 " AND provider = '" . $provider->getIdentifier() . "'"
             );
         }
+
+        $resourceIdsToDelete = array_map(
+            function ($item)
+            {
+                return $item['resource_id'];
+            },
+            $results
+        );
+
+        $this->removeFromFieldLinkTable($provider, $objectAttribute, $version);
+
+        $this->removeFromRemoteMedia($resourceIdsToDelete, $provider);
     }
 
     /**
