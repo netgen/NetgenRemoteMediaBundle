@@ -47,10 +47,10 @@ class CloudinaryProvider extends RemoteMediaProvider
         $this->cloudinaryApi = new Api();
     }
 
-    public function setFolderName($folderName = null)
-    {
-        $this->folderName = $folderName;
-    }
+//    public function setFolderName($folderName = null)
+//    {
+//        $this->folderName = $folderName;
+//    }
 
     /**
      * Prepares upload options for Cloudinary.
@@ -64,12 +64,12 @@ class CloudinaryProvider extends RemoteMediaProvider
     protected function prepareUploadOptions($fileName, $options = array())
     {
         // @todo: folders should be handled differently, not through siteacess parameter
-        $id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
+        //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
 
-        $id = $id . '_' . base_convert(uniqid(), 16, 36);
+        $publicId = $fileName . '_' . base_convert(uniqid(), 16, 36);
 
         return array(
-            'public_id' => $id,
+            'public_id' => $publicId,
             'overwrite' => false,
             'discard_original_filename' => true,
             'context' => array(

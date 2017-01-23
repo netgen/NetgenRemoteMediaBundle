@@ -1,5 +1,5 @@
 parameters:
-    netgen_remote_media.default.cloudinary.folder_name: ''
+    #netgen_remote_media.default.cloudinary.folder_name: ''
 
 services:
     netgen_remote_media.handler_registry:
@@ -19,7 +19,6 @@ services:
             - "@?logger"
         calls:
             - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%"]]
-            - [setFolderName, ["$cloudinary.folder_name;netgen_remote_media$"]]
 
     netgen_remote_media.helper:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
