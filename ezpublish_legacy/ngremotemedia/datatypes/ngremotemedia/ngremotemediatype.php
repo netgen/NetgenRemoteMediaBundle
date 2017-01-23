@@ -140,16 +140,16 @@ class NgRemoteMediaType extends eZDataType
 
     function removeFromRemoteMedia(array $resource_ids, $provider)
     {
-        foreach($resource_ids as $resource_id) {
+        foreach ($resource_ids as $resource_id) {
             $db = eZDB::instance();
 
+            // make sure resource_id is not connected to anything else
             $sqlString = "SELECT COUNT(*) as count FROM ngremotemedia_field_link WHERE resource_id = '" . $resource_id .
                 "' AND provider = '". $provider->getIdentifier() ."'";
 
             $result = $db->arrayQuery($sqlString);
             $count = $result[0]['count'];
 
-            // make sure resource_id is not connected to anything else
             if ($count > 0) {
                 continue;
             }

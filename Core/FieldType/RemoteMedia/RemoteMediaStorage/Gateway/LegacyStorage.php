@@ -143,38 +143,103 @@ class LegacyStorage extends Gateway
     }*/
 
     /**
-     * Deletes field data for content id identified by $versionInfo.
+     * Deletes the entry in the link table for the provided field id and version.
      *
-     * @todo: finish and test this method
+     * @param $contentId
+     * @param $fieldId
+     * @param $versionNo
+     * @param $providerIdentifier
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @param array $fieldIds
+     * @return mixed
      */
-    public function deleteFieldData($fieldId, $resourceId, $contentId, $providerIdentifier, $version)
+    public function deleteFieldData($contentId, $fieldId, $versionNo, $providerIdentifier)
     {
         $connection = $this->getConnection();
-        $contentId = $versionInfo->contentInfo->id;
         $query = $connection->createDeleteQuery();
         $query
             ->deleteFrom($connection->quoteTable("ngremotemedia_field_link"))
             ->where(
                 $query->expr->eq(
                     $connection->quoteColumn("field_id"),
+                    $query->bindValue($fieldId, null, PDO::PARAM_INT)
+                ),
+                $query->expr->eq(
+                    $connection->quoteColumn("contentobject_id"),
                     $query->bindValue($contentId, null, PDO::PARAM_INT)
                 ),
                 $query->expr->eq(
                     $connection->quoteColumn("version"),
-                    $query->bindValue($version, null, PDO::PARAM_INT)
+                    $query->bindValue($versionNo, null, PDO::PARAM_INT)
                 ),
                 $query->expr->eq(
                     $connection->quoteColumn("provider"),
                     $query->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 )
             );
+
         $query->prepare()->execute();
     }
 
-    public function remoteResourceConnected($resourceId)
+    /**
+     * Loads resource id for the provided field id and version.
+     *
+     * @param $contentId
+     * @param $fieldId
+     * @param $versionNo
+     * @param $providerIdentifier
+     *
+     * @return array
+     */
+    public function loadFromTable($contentId, $fieldId, $versionNo, $providerIdentifier)
+    {
+        $connection = $this->getConnection();
+        $selectQuery = $connection->createSelectQuery();
+
+        $selectQuery
+            ->selectDistinct($connection->quoteColumn("resource_id"))
+            ->from($connection->quoteTable("ngremotemedia_field_link"))
+            ->where(
+                $selectQuery->expr->eq(
+                    $connection->quoteColumn("field_id"),
+                    $selectQuery->bindValue($fieldId, null, PDO::PARAM_INT)
+                ),
+                $selectQuery->expr->eq(
+                    $connection->quoteColumn("contentobject_id"),
+                    $selectQuery->bindValue($contentId, null, PDO::PARAM_INT)
+                ),
+                $selectQuery->expr->eq(
+                    $connection->quoteColumn("version"),
+                    $selectQuery->bindValue($versionNo, null, PDO::PARAM_INT)
+                ),
+                $selectQuery->expr->eq(
+                    $connection->quoteColumn("provider"),
+                    $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
+                )
+            );
+
+        $statement = $selectQuery->prepare();
+        $statement->execute();
+
+        $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(
+            function ($item)
+            {
+                return $item['resource_id'];
+            },
+            $rows
+        );
+    }
+
+    /**
+     * Checks if the remote resource is connected to any content.
+     *
+     * @param $resourceId
+     * @param $providerIdentifier
+     *
+     * @return bool
+     */
+    public function remoteResourceConnected($resourceId, $providerIdentifier)
     {
         $connection = $this->getConnection();
         $selectQuery = $connection->createSelectQuery();
@@ -185,6 +250,10 @@ class LegacyStorage extends Gateway
                 $selectQuery->expr->eq(
                     $connection->quoteColumn("resource_id"),
                     $selectQuery->bindValue($resourceId, null, PDO::PARAM_STR)
+                ),
+                $selectQuery->expr->eq(
+                    $connection->quoteColumn("provider"),
+                    $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 )
             );
         $statement = $selectQuery->prepare();

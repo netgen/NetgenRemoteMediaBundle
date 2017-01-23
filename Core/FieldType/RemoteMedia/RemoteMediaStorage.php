@@ -18,7 +18,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
     protected $contentService;
 
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
      */
     protected $provider;
 
@@ -127,21 +127,42 @@ class RemoteMediaStorage extends GatewayBasedStorage
      */
     public function deleteFieldData(VersionInfo $versionInfo, array $fieldIds, array $context)
     {
+        $versionNo = $versionInfo->versionNo;
+        $content = $this->contentService->loadContent($versionInfo->contentInfo->id, null, $versionNo);
+        $fields = $content->getFields();
+
+        $gateway = $this->getGateway($context);
+
         if ($this->deleteUnused) {
-            $fields = $this->contentService->loadContentByVersionInfo($versionInfo)->getFields();
+            $resourceIdsToDelete = array();
             foreach ($fields as $field) {
                 if (in_array($field->id, $fieldIds)) {
-                    // 1) remove entry in the database connecting field/version and remote resource
-                    /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway $gateway */
-                    $gateway = $this->getGateway($context);
-                    $gateway->deleteFieldData($field->id, $field->value->resourceId, $versionInfo->contentInfo->id, $this->provider->getIdentifier(), $versionInfo->versionNo);
+                    // load resource_id from table
+                    $resourceIdsToDelete = array_merge(
+                        $resourceIdsToDelete,
+                        $gateway->loadFromTable($content->id, $field->id, $versionNo, $this->provider->getIdentifier())
+                    );
 
-                    // 2) check whether the remote resource is no longer in the database
-                    if (!$gateway->remoteResourceConnected($field->value->resourceId)) {
-                        // 3) remove from remote provider
-                        $this->provider->deleteResource($field->value->resourceId);
-                    }
+                    // delete for current version
+                    $gateway->deleteFieldData($content->id, $field->id, $versionNo, $this->provider->getIdentifier());
                 }
+            }
+
+            foreach ($resourceIdsToDelete as $resourceId) {
+                // check if resource_id is used anywhere else
+                if (!$gateway->remoteResourceConnected($resourceId)) {
+                    // delete from remote provider
+                    $this->provider->deleteResource($resourceId);
+                }
+            }
+        } else {
+            // remove from link table entry just for that version
+            foreach ($fields as $field) {
+                if (!in_array($field->id, $fieldIds)) {
+                    continue;
+                }
+
+                $gateway->deleteFieldData($content->id, $field->id, $versionNo, $this->provider->getIdentifier());
             }
         }
     }

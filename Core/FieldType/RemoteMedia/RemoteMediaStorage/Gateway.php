@@ -24,13 +24,26 @@ abstract class Gateway extends StorageGateway
      */
     //abstract public function getFieldData(VersionInfo $versionInfo);
 
-    /**
-     * Deletes field data for content id identified by $versionInfo.
-     *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @param array $fieldIds
-     */
-    abstract public function deleteFieldData($fieldId, $resourceId, $contentId, $providerIdentifier, $version);
 
-    abstract public function remoteResourceConnected($resourceId);
+    /**
+     * Deletes the entry in the link table for the provided field id and version.
+     *
+     * @param $contentId
+     * @param $fieldId
+     * @param $versionNo
+     * @param $providerIdentifier
+     *
+     * @return mixed
+     */
+    abstract public function deleteFieldData($contentId, $fieldId, $versionNo, $providerIdentifier);
+
+    /**
+     * Checks if the remote resource is connected to any content.
+     *
+     * @param $resourceId
+     * @param $providerIdentifier
+     *
+     * @return bool
+     */
+    abstract public function remoteResourceConnected($resourceId, $providerIdentifier);
 }
