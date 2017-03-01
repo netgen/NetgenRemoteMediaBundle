@@ -39,15 +39,6 @@ abstract class RemoteMediaProvider
     abstract public function upload($fileUri, $fileName, $options = array());
 
     /**
-     * Transforms response from the remote storage to field type value.
-     *
-     * @param mixed $response
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
-     */
-    abstract public function getValueFromResponse($response);
-
-    /**
      * Gets the remote media Variation.
      * If the remote media does not support variations, this method should return the Variation
      * with the url set to original resource.

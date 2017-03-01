@@ -133,7 +133,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
-    public function getValueFromResponse($response)
+    protected function getValueFromResponse($response)
     {
         $metaData = array(
             'version' => !empty($response['version']) ? $response['version'] : '',
@@ -204,8 +204,10 @@ class CloudinaryProvider extends RemoteMediaProvider
         return $variation;
     }
 
-    protected function processConfiguredVariation(Value $value, $variationName, array $configuredVariations)
+    protected function processConfiguredVariation(Value $value, $variationName)
     {
+        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
+
         $options = array();
         $variationConfiguration = $configuredVariations[$variationName];
         foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
@@ -254,8 +256,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $this->processManualVariation($value, $variationName, $secure);
         }
 
-        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
-        $options = $this->processConfiguredVariation($value, $variationName, $configuredVariations);
+        $options = $this->processConfiguredVariation($value, $variationName);
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = $secure;
@@ -497,9 +498,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $this->processManualVideoVariation($value, $variationName, $finalOptions);
         }
 
-        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
-
-        $options = $this->processConfiguredVariation($value, $variationName, $configuredVariations);
+        $options = $this->processConfiguredVariation($value, $variationName);
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = true;
