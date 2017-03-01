@@ -1,21 +1,24 @@
 {
-  "name": "netgen/remote-media-bundle",
-  "description": "Remote media field type implementation",
-  "license": "GPL-2.0",
-  "authors": [
-    {
-      "name": "Netgen",
-      "homepage": "http://www.netgenlabs.com",
-      "email": "info@netgen.hr"
-    }
-  ],
-  "require": {
-    "ezsystems/ezpublish-kernel": "*",
-    "doctrine/orm": "~2.4",
-    "cloudinary/cloudinary_php": "~1.2.0"
-  },
-  "target-dir": "Netgen/Bundle/RemoteMediaBundle",
-  "autoload": {
-    "psr-0": { "Netgen\\Bundle\\RemoteMediaBundle": "" }
+    "name": "netgen/remote-media-bundle",
+    "description": "Remote media field type implementation",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Netgen",
+            "homepage": "http://www.netgenlabs.com",
+            "email": "info@netgen.hr"
+        }
+    ],
+    "require": {
+        "ezsystems/ezpublish-kernel": "*",
+        "doctrine/orm": "~2.4",
+        "cloudinary/cloudinary_php": "~1.2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "target-dir": "Netgen/Bundle/RemoteMediaBundle",
+    "autoload": {
+        "psr-0": { "Netgen\\Bundle\\RemoteMediaBundle": "" }
   }
 }
