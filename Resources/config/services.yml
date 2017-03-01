@@ -8,6 +8,7 @@ services:
 
     netgen_remote_media.variation.resolver:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
+        lazy: true
         calls:
             - [setVariations, ["$image_variations;netgen_remote_media$"]]
 
