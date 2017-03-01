@@ -197,6 +197,14 @@ class CloudinaryProvider extends RemoteMediaProvider
         return $variation;
     }
 
+    /**
+     * Builds transformation options for the provider to consume.
+     *
+     * @param Value $value
+     * @param $variationName
+     *
+     * @return array options of the total sum of transformations for the provider to use
+     */
     protected function processConfiguredVariation(Value $value, $variationName)
     {
         $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
@@ -228,10 +236,11 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Gets the remote media Variation.
+     * If $variationName is an array, it is treated as an explicit set of options to build the variation.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
-     * @param string $variationName
+     * @param string|array $variationName
      * @param bool $secure
      * @return Variation
      */
