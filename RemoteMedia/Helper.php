@@ -94,7 +94,7 @@ class Helper
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
-    public function loadValue($contentId, $fieldId, $versionId = null, $languageCode = null)
+    protected function loadValue($contentId, $fieldId, $versionId = null, $languageCode = null)
     {
         $field = $this->loadField($contentId, $fieldId, $versionId, $languageCode);
 
@@ -112,7 +112,7 @@ class Helper
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
-    public function updateValue($value, $contentId, $fieldId, $contentVersionId, $languageCode = null)
+    protected function updateValue($value, $contentId, $fieldId, $contentVersionId, $languageCode = null)
     {
         $field = $this->loadField($contentId, $fieldId, $contentVersionId, $languageCode);
 
