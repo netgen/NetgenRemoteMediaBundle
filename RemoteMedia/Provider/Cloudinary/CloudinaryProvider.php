@@ -170,13 +170,6 @@ class CloudinaryProvider extends RemoteMediaProvider
         return $value;
     }
 
-    protected function logError($message)
-    {
-        if ($this->logger instanceof LoggerInterface) {
-            $this->logger->error($message);
-        }
-    }
-
     /**
      * Enables simple variation without defining proper configuration.
      * Only supported format is WIDTHxHEIGHT

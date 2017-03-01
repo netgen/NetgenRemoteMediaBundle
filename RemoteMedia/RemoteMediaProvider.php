@@ -28,6 +28,18 @@ abstract class RemoteMediaProvider
     }
 
     /**
+     * Logs the error if the logger is available
+     *
+     * @param $message
+     */
+    protected function logError($message)
+    {
+        if ($this->logger instanceof LoggerInterface) {
+            $this->logger->error($message);
+        }
+    }
+
+    /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
