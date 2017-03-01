@@ -1,5 +1,6 @@
 {if $type|eq('image')}
-    {def $media = ngremotemedia($remote_value, $attribute.object.class_identifier, '300x200', true)}
+    {def $format = hash('height', 400, 'width', 600)}
+    {def $media = ngremotemedia($remote_value, $attribute.object.class_identifier, $format, true)}
     {def $thumb_url = $media.url}
 {else}
     {def $thumb_url = videoThumbnail($remote_value)}
