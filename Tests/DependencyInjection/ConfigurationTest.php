@@ -29,6 +29,55 @@ class ConfigurationTest extends TestCase
         );
     }
 
+    public function testCompleteConfigurationIsOkAndValid()
+    {
+        $this->assertConfigurationIsValid(
+            [
+                'netgen_remote_media' => [
+                    'provider' => 'cloudinary',
+                    'account_name' => 'examplename',
+                    'account_key' => 'examplekey',
+                    'account_secret' => 'examplesecret',
+                    'system' => [
+                        'default' => [
+                            'image_variations' => [
+                                'default' => [
+                                    'full' => [
+                                        'transformations' => [
+                                            [
+                                                'name' => 'crop',
+                                                'params' => [2, 1]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ],
+                        'testsiteaccess' => [
+                            'image_variations' => [
+                                'test_content_type' => [
+                                    'medium' => [
+                                        'transformations' => [
+                                            [
+                                                'name' => 'crop',
+                                                'params' => [2,1]
+                                            ],
+                                            [
+                                                'name' => 'test_transformation',
+                                                'params' => ['test']
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+            ]
+        );
+
+    }
+
     public function testEmptyAccountNameIsInvalid()
     {
         $this->assertConfigurationIsInvalid(
