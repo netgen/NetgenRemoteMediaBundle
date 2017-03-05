@@ -15,6 +15,7 @@
         <whitelist>
             <directory>.</directory>
             <exclude>
+                <directory>ezpublish_legacy</directory>
                 <directory>Resources</directory>
                 <directory>Tests</directory>
                 <directory>vendor</directory>
