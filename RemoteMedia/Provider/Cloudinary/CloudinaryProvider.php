@@ -201,11 +201,12 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Builds transformation options for the provider to consume.
      *
      * @param Value $value
-     * @param $variationName
+     * @param string $variationName
+     * @param string $contentTypeIdentifier
      *
      * @return array options of the total sum of transformations for the provider to use
      */
-    protected function processConfiguredVariation(Value $value, $variationName)
+    protected function processConfiguredVariation(Value $value, $variationName, $contentTypeIdentifier)
     {
         $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
@@ -258,7 +259,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $this->processManualVariation($value, $variationName, $secure);
         }
 
-        $options = $this->processConfiguredVariation($value, $variationName);
+        $options = $this->processConfiguredVariation($value, $variationName, $contentTypeIdentifier);
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = $secure;
