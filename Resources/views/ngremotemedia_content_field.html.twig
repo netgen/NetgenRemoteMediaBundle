@@ -6,6 +6,7 @@
  # - string alt_text: if set, overrides the alternative text from the image
  # - string title: used as title if set, otherwise caption from the image is used
  # - bool   dimensions: if set to true, will add width and height to img tag. false by default.
+ # - string link_href: if set, will wrap img tag with link (<a> tag)
  #}
 {% block ngremotemedia_field %}
     {% set format = parameters.format|default('') %}
@@ -15,6 +16,8 @@
     {% set videoConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_VIDEO') %}
     {% set imageConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_IMAGE') %}
     {% set otherConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_OTHER') %}
+
+    {% set link_href = parameters.link_href|default('') %}
 
     {% if field.value.mediaType == imageConst %}
         {% if parameters.alt_text is defined and parameters.alt_text is not empty %}
@@ -32,27 +35,36 @@
             {% set variation = netgen_remote_variation(content, field.fieldDefIdentifier, format) %}
         {% endif %}
 
-        {% if variation is defined and variation.url%}
-            <img src="{{ variation.url }}"
-                    {% if dimensions %}
-                        {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
-                        {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
-                    {% endif %}
-                    {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
-                    {% if title is not empty %}title="{{ title }}"{% endif %}
-                    {{ block( 'field_attributes' ) }}
-            />
-        {% elseif field.value.secure_url is defined and field.value.secure_url is not empty %}
-            <img src="{{ field.value.secure_url }}"
-                    {% if dimensions %}
-                        {% if field.value.metaData.width is not empty %} width="{{ field.value.metaData.width }}"{% endif %}
-                        {% if field.value.metaData.height is not empty %} height="{{ field.value.metaData.height }}"{% endif %}
-                    {% endif %}
-                    {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
-                    {% if title is not empty %}title="{{ title }}"{% endif %}
-                    {{ block( 'field_attributes' ) }}
-            />
+        {% if link_href is not empty %}
+        <a href="{{ link_href }}">
         {% endif %}
+
+            {% if variation is defined and variation.url%}
+                <img src="{{ variation.url }}"
+                        {% if dimensions %}
+                            {% if variation.width is not empty %} width="{{ variation.width }}"{% endif %}
+                            {% if variation.height is not empty %} height="{{ variation.height }}"{% endif %}
+                        {% endif %}
+                        {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
+                        {% if title is not empty %}title="{{ title }}"{% endif %}
+                        {{ block( 'field_attributes' ) }}
+                />
+            {% elseif field.value.secure_url is defined and field.value.secure_url is not empty %}
+                <img src="{{ field.value.secure_url }}"
+                        {% if dimensions %}
+                            {% if field.value.metaData.width is not empty %} width="{{ field.value.metaData.width }}"{% endif %}
+                            {% if field.value.metaData.height is not empty %} height="{{ field.value.metaData.height }}"{% endif %}
+                        {% endif %}
+                        {% if alt_text is not empty %}alt="{{ alt_text }}"{% endif %}
+                        {% if title is not empty %}title="{{ title }}"{% endif %}
+                        {{ block( 'field_attributes' ) }}
+                />
+            {% endif %}
+
+        {% if link_href is not empty %}
+        </a>
+        {% endif %}
+
     {% elseif field.value.mediaType == videoConst %}
         {{ netgen_remote_video(content, field.fieldDefIdentifier, format)|raw }}
     {% else %}
