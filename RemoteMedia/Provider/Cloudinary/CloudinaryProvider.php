@@ -82,31 +82,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Enables simple variation without defining proper configuration.
-     * Only supported format is WIDTHxHEIGHT
-     *
-     * @param Value $value
-     * @param $variationConfig
-     * @param $secure
-     *
-     * @return Variation
-     */
-    protected function processManualVariation(Value $value, $variationConfig, $secure)
-    {
-        $variation = new Variation();
-        $url = $secure ? $value->secure_url : $value->url;
-        $variation->url = $url;
-
-        $variationConfig['secure'] = $secure;
-
-        $url = $this->gateway->getVariationUrl($value->resourceId, $variationConfig);
-
-        $variation->url = $url;
-
-        return $variation;
-    }
-
-    /**
      * Builds transformation options for the provider to consume.
      *
      * @param Value $value
@@ -165,10 +140,14 @@ class CloudinaryProvider extends RemoteMediaProvider
         }
 
         if (is_array($variationName)) {
-            return $this->processManualVariation($value, $variationName, $secure);
+            /*
+             * This means the 'variationName' is actually an array with all the configuration
+             * options provided, and we can pass those directly to the cloudinary
+             */
+            $options = $variationName;
+        } else {
+            $options = $this->processConfiguredVariation($value, $variationName, $contentTypeIdentifier);
         }
-
-        $options = $this->processConfiguredVariation($value, $variationName, $contentTypeIdentifier);
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = $secure;
