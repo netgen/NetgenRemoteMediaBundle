@@ -42,6 +42,12 @@ class CloudinaryProvider extends RemoteMediaProvider
         // @todo: folders should be handled differently, not through siteacess parameter
         //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
 
+        // clean up the filename
+        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
+        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
+
+        $fileName = rtrim($cleanFileName, '_');
+
         $publicId = $fileName . '_' . base_convert(uniqid(), 16, 36);
 
         return array(
@@ -57,21 +63,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Cleans up the file name for uploading.
-     *
-     * @param string $fileName
-     *
-     * @return string
-     */
-    protected function filenameCleanUp($fileName)
-    {
-        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
-        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
-
-        return rtrim($cleanFileName, '_');
-    }
-
-    /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
@@ -82,7 +73,6 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function upload($fileUri, $fileName, $options = array())
     {
-        $fileName = $this->filenameCleanUp($fileName);
         $options = $this->prepareUploadOptions($fileName, $options);
 
         $response = $this->gateway->upload($fileUri, $options);
