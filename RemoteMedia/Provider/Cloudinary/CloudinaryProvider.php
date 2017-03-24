@@ -3,7 +3,6 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
@@ -320,24 +319,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Builds video tag based on manually entered configuration.
-     * Look up cloudinary php API for reference what options are
-     * accepted.
-     *
-     * @param Value $value
-     * @param $variationConfig
-     * @param $defaultOptions
-     *
-     * @return string
-     */
-    protected function processManualVideoVariation(Value $value, $variationConfig, $defaultOptions)
-    {
-        $options = $defaultOptions + $variationConfig;
-
-        return $this->gateway->getVideoTag($value->resourceId, $options);
-    }
-
-    /**
      * Generates html5 video tag for the video with provided id.
      *
      * @param Value $value
@@ -358,10 +339,10 @@ class CloudinaryProvider extends RemoteMediaProvider
         }
 
         if (is_array($variationName)) {
-            return $this->processManualVideoVariation($value, $variationName, $finalOptions);
+            $options = $variationName + $finalOptions;
+        } else {
+            $options = $this->processConfiguredVariation($value, $variationName, 'video');
         }
-
-        $options = $this->processConfiguredVariation($value, $variationName, 'video');
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = true;
