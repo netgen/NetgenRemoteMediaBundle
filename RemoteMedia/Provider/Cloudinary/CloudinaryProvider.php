@@ -305,7 +305,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
             $options['resource_type'] = 'video';
 
-            return cl_video_tag($value->resourceId, $options);
+            return $this->gateway->getVideoThumbnail($value->resourceId, $options);
         }
 
         $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
