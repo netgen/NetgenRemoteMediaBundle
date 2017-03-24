@@ -52,8 +52,9 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         return array(
             'public_id' => $publicId,
-            'overwrite' => false,
-            'discard_original_filename' => true,
+            'overwrite' => isset($options['overwrite']) ? $options['overwrite'] : false,
+            'discard_original_filename' =>
+                isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
             'context' => array(
                 'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
                 'caption' => !empty($options['caption']) ? $options['caption'] : '',
