@@ -2,9 +2,9 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
-use \Cloudinary;
-use \Cloudinary\Uploader;
-use \Cloudinary\Api;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
@@ -12,45 +12,21 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Psr\Log\LoggerInterface;
 
-
 class CloudinaryProvider extends RemoteMediaProvider
 {
-    /**
-     * @var \Cloudinary
-     */
-    protected $cloudinary;
+    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway */
+    protected $gateway;
 
-    /**
-     * @var \Cloudinary\Api
-     */
-    protected $cloudinaryApi;
+    public function __construct(
+        Registry $registry,
+        VariationResolver $variationsResolver,
+        Gateway $gateway,
+        LoggerInterface $logger = null
+    ) {
+        $this->gateway = $gateway;
 
-    /**
-     * @var \Cloudinary\Uploader
-     */
-    protected $cloudinaryUploader;
-
-    protected $folderName = '';
-
-    public function initCloudinary($cloudName, $apiKey, $apiSecret)
-    {
-        $this->cloudinary = new Cloudinary();
-        $this->cloudinary->config(
-            array(
-                'cloud_name' => $cloudName,
-                'api_key' => $apiKey,
-                'api_secret' => $apiSecret,
-            )
-        );
-
-        $this->cloudinaryUploader = new Uploader();
-        $this->cloudinaryApi = new Api();
+        parent::__construct($registry, $variationsResolver, $logger);
     }
-
-//    public function setFolderName($folderName = null)
-//    {
-//        $this->folderName = $folderName;
-//    }
 
     /**
      * Prepares upload options for Cloudinary.
@@ -108,22 +84,10 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $fileName = $this->filenameCleanUp($fileName);
         $options = $this->prepareUploadOptions($fileName, $options);
-        $response = $this->cloudinaryUploader->upload($fileUri, $options);
+
+        $response = $this->gateway->upload($fileUri, $options);
 
         return $this->getValueFromResponse($response);
-    }
-
-    /**
-     * Gets the absolute url of the remote resource formatted according to options provided.
-     *
-     * @param string $source
-     * @param array $options
-     *
-     * @return string
-     */
-    protected function getFormattedUrl($source, $options = array())
-    {
-        return cloudinary_url_internal($source, $options);
     }
 
     /**
@@ -188,9 +152,7 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $variationConfig['secure'] = $secure;
 
-        $url = $this->getFormattedUrl(
-            $value->resourceId, $variationConfig
-        );
+        $url = $this->gateway->getVariationUrl($value->resourceId, $variationConfig);
 
         $variation->url = $url;
 
@@ -263,10 +225,8 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = $secure;
-        $url = $this->getFormattedUrl(
-            $value->resourceId, $finalOptions
-        );
 
+        $url = $this->gateway->getVariationUrl($value->resourceId, $finalOptions);
         $variation->url = $url;
 
         return $variation;
@@ -281,19 +241,13 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function listResources($limit = 10)
     {
-        $resources = $this->cloudinaryApi->resources(
-            array(
-                'tags' => true,
-                'context' => true,
-                'max_results' => $limit,
-            )
-        )->getArrayCopy();
+        $options = array(
+            'tags' => true,
+            'context' => true,
+            'max_results' => $limit,
+        );
 
-        if (!empty($resources['resources'])) {
-            return $resources['resources'];
-        }
-
-        return array();
+        return $this->gateway->listResources($options);
     }
 
     /**
@@ -303,9 +257,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function countResources()
     {
-        $usage = $this->cloudinaryApi->usage();
-
-        return $usage['resources'];
+        return $this->gateway->countResources();
     }
 
     /**
@@ -318,20 +270,12 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function searchResources($query, $limit = 10)
     {
-        $result = $this->cloudinaryApi->resources(
-            array(
-                'prefix' => $query,
-                'type' => 'upload',
-                'tags' => true,
-                'max_results' => $limit
-            )
-        )->getArrayCopy();
+        $options = array(
+            'SearchByTags' => false,
+            'type' => 'upload',
+        );
 
-        if (!empty($result['resources'])) {
-            return $result['resources'];
-        }
-
-        return array();
+        return $this->gateway->search($query, $options);
     }
 
     /**
@@ -343,19 +287,11 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function searchResourcesByTag($tag)
     {
-        $result = $this->cloudinaryApi->resources_by_tag(
-            urlencode($tag),
-            array(
-                'tags' => true,
-                'context' => true,
-            )
+        $options = array(
+            'SearchByTags' => true
         );
 
-        if (!empty($result['resources'])) {
-            return $result['resources'];
-        }
-
-        return array();
+        return $this->gateway->search(urlencode($tag), $options);
     }
 
     /**
@@ -368,17 +304,16 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function getRemoteResource($resourceId, $resourceType)
     {
-        $response = $this->cloudinaryApi->resources_by_ids(
-            array($resourceId),
-            array(
-                'resource_type' => $resourceType,
-                'max_results' => 1,
-                'tags' => true,
-                'context' => true,
-            )
-        )->getIterator()->current();
+        $options = array(
+            'resource_type' => $resourceType,
+            'max_results' => 1,
+            'tags' => true,
+            'context' => true,
+        );
 
-        return $this->getValueFromResponse($response[0]);
+        $response = $this->gateway->get($resourceId, $options);
+
+        return $this->getValueFromResponse($response);
     }
 
     /**
@@ -391,7 +326,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function addTagToResource($resourceId, $tag)
     {
-        return $this->cloudinaryUploader->add_tag($tag, array($resourceId));
+        return $this->gateway->addTag($resourceId, $tag);
     }
 
     /**
@@ -404,7 +339,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function removeTagFromResource($resourceId, $tag)
     {
-        return $this->cloudinaryUploader->remove_tag($tag, array($resourceId));
+        return $this->gateway->removeTag($resourceId, $tag);
     }
 
     /**
@@ -423,13 +358,12 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function updateResourceContext($resourceId, $resourceType, $context)
     {
-        $this->cloudinaryApi->update(
-            $resourceId,
-            array(
-                "context" => $context,
-                "resource_type" => $resourceType
-            )
+        $options = array(
+            "context" => $context,
+            "resource_type" => $resourceType
         );
+
+        $this->gateway->update($resourceId, $options);
     }
 
     /**
@@ -456,7 +390,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         $options['height'] = 240;
         $options['resource_type'] = 'video';
 
-        return cl_video_thumbnail_path($value->resourceId, $options);
+        return $this->gateway->getVideoThumbnail($value->resourceId, $options);
     }
 
     /**
@@ -474,7 +408,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $options = $defaultOptions + $variationConfig;
 
-        return cl_video_tag($value->resourceId, $options);
+        return $this->gateway->getVideoTag($value->resourceId, $options);
     }
 
     /**
@@ -494,19 +428,19 @@ class CloudinaryProvider extends RemoteMediaProvider
         );
 
         if (empty($variationName)) {
-            return cl_video_tag($value->resourceId, $finalOptions);
+            return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
         }
 
         if (is_array($variationName)) {
             return $this->processManualVideoVariation($value, $variationName, $finalOptions);
         }
 
-        $options = $this->processConfiguredVariation($value, $variationName);
+        $options = $this->processConfiguredVariation($value, $variationName, 'video');
 
         $finalOptions['transformation'] = $options;
         $finalOptions['secure'] = true;
 
-        return cl_video_tag($value->resourceId, $finalOptions);
+        return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
     }
 
     /**
@@ -536,7 +470,7 @@ class CloudinaryProvider extends RemoteMediaProvider
                 'width' => $hit['width'],
                 'height' => $hit['height'],
                 'filename' => $hit['public_id'],
-                'url' => $this->getFormattedUrl($hit['public_id'], $thumbOptions),
+                'url' => $this->gateway->getVariationUrl($hit['public_id'], $thumbOptions),
             );
         }
 
@@ -558,7 +492,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             'flags' => 'attachment'
         );
 
-        return $this->cloudinary->cloudinary_url($value->resourceId, $options);
+        return $this->gateway->getDownloadLink($value->resourceId, $options);
     }
 
     /**
@@ -568,7 +502,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function deleteResource($resourceId)
     {
-        $this->cloudinaryApi->delete_resources(array($resourceId));
+        $this->gateway->delete($resourceId);
     }
 
     /**

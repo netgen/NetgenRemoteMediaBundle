@@ -12,15 +12,18 @@ services:
         calls:
             - [setVariations, ["$image_variations;netgen_remote_media$"]]
 
+    netgen_remote_media.provider.cloudinary.gateway:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway
+        calls:
+            - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%"]]
 
     netgen_remote_media.provider.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider
         arguments:
             - "@netgen_remote_media.handler_registry"
             - "@netgen_remote_media.variation.resolver"
+            - "@netgen_remote_media.provider.cloudinary.gateway"
             - "@?logger"
-        calls:
-            - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%"]]
 
     netgen_remote_media.helper:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
