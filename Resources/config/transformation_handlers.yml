@@ -82,3 +82,9 @@ services:
         lazy: true
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: format, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.named_transformation:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\NamedTransformation
+        lazy: true
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: transformation, provider: cloudinary }
