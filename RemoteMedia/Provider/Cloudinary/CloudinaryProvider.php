@@ -77,51 +77,7 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $response = $this->gateway->upload($fileUri, $options);
 
-        return $this->getValueFromResponse($response);
-    }
-
-    /**
-     * Transforms response from the remote storage to field type value.
-     *
-     * @param mixed $response
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
-     */
-    protected function getValueFromResponse($response)
-    {
-        $metaData = array(
-            'version' => !empty($response['version']) ? $response['version'] : '',
-            'width' => !empty($response['width']) ? $response['width'] : '',
-            'height' => !empty($response['height']) ? $response['height'] : '',
-            'format' => !empty($response['format']) ? $response['format'] : '',
-            'resource_type' => !empty($response['resource_type']) ? $response['resource_type'] : '',
-            'created' => !empty($response['created_at']) ? $response['created_at'] : '',
-            'tags' => $response['tags'] ?: array(),
-            'signature' => !empty($response['signature']) ? $response['signature'] : '',
-            'type' => !empty($response['type']) ? $response['type'] : '',
-            'etag' => !empty($response['etag']) ? $response['etag'] : '',
-            'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
-            'alt_text' => !empty($response['context']['custom']['alt']) ? $response['context']['custom']['alt'] : '',
-            'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
-        );
-
-        $value = new Value();
-        $value->resourceId = $response['public_id'];
-        $value->url = $response['url'];
-        $value->secure_url = $response['secure_url'];
-        $value->size = $response['bytes'];
-        $value->metaData = $metaData;
-        $value->variations = !empty($response['variations']) ? $response['variations'] : array();
-
-        if ($response['resource_type'] == 'video') {
-            $value->mediaType = Value::TYPE_VIDEO;
-        } else if ($response['resource_type'] == 'image' && !in_array($response['format'], array('pdf', 'doc', 'docx'))) {
-            $value->mediaType = Value::TYPE_IMAGE;
-        } else {
-            $value->mediaType = Value::TYPE_OTHER;
-        }
-
-        return $value;
+        return Value::createFromCloudinaryResponse($response);
     }
 
     /**
@@ -303,7 +259,7 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $response = $this->gateway->get($resourceId, $options);
 
-        return $this->getValueFromResponse($response);
+        return Value::createFromCloudinaryResponse($response);
     }
 
     /**
