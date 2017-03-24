@@ -5,6 +5,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
 class Helper
 {
@@ -183,6 +184,41 @@ class Helper
     }
 
     /**
+     * Formats browse list to comply with javascript.
+     *
+     * @todo: check if can be removed/refractored
+     *
+     * @param array $list
+     *
+     * @return array
+     */
+    protected function formatBrowseList(array $list)
+    {
+        $listFormatted = array();
+        foreach ($list as $hit) {
+            $thumbOptions = array();
+            $thumbOptions['crop'] = 'fit';
+            $thumbOptions['width'] = 160;
+            $thumbOptions['height'] = 120;
+
+            $value = Value::createFromCloudinaryResponse($hit);
+
+            $listFormatted[] = array(
+                'resourceId' => $hit['public_id'],
+                'tags' => $hit['tags'],
+                'type' => $hit['resource_type'],
+                'filesize' => $hit['bytes'],
+                'width' => $hit['width'],
+                'height' => $hit['height'],
+                'filename' => $hit['public_id'],
+                'url' => $this->provider->buildVariation($value, 'admin', $thumbOptions)->url,
+            );
+        }
+
+        return $listFormatted;
+    }
+
+    /**
      * Performs the search for the available remote resources.
      *
      * @param $query
@@ -204,7 +240,7 @@ class Helper
         }
 
         return array(
-            'hits' => $this->provider->formatBrowseList(array_slice($list, $offset, $limit)),
+            'hits' => $this->formatBrowseList(array_slice($list, $offset, $limit)),
             'count' => count($list),
         );
     }

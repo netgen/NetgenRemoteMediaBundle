@@ -188,6 +188,8 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Searches for the remote resource containing term in the query.
      *
+     * @todo: make use of the 'next_cursor' parametar in the API
+     *
      * @param string $query
      * @param int $limit
      *
@@ -348,40 +350,6 @@ class CloudinaryProvider extends RemoteMediaProvider
         $finalOptions['secure'] = true;
 
         return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
-    }
-
-    /**
-     * Formats browse list to comply with javascript.
-     *
-     * @todo: check if can be removed/refractored
-     * @todo: make use of the 'next_cursor' parametar in the API
-     *
-     * @param array $list
-     *
-     * @return array
-     */
-    public function formatBrowseList(array $list)
-    {
-        $listFormatted = array();
-        foreach ($list as $hit) {
-            $thumbOptions = array();
-            $thumbOptions['crop'] = 'fit';
-            $thumbOptions['width'] = 160;
-            $thumbOptions['height'] = 120;
-
-            $listFormatted[] = array(
-                'resourceId' => $hit['public_id'],
-                'tags' => $hit['tags'],
-                'type' => $hit['resource_type'],
-                'filesize' => $hit['bytes'],
-                'width' => $hit['width'],
-                'height' => $hit['height'],
-                'filename' => $hit['public_id'],
-                'url' => $this->gateway->getVariationUrl($hit['public_id'], $thumbOptions),
-            );
-        }
-
-        return $listFormatted;
     }
 
     /**

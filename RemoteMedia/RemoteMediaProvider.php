@@ -167,15 +167,6 @@ abstract class RemoteMediaProvider
     abstract public function generateVideoTag(Value $value, $contentTypeIdentifier, $format = '');
 
     /**
-     * Formats browse list.
-     *
-     * @param array $list
-     *
-     * @return array
-     */
-    abstract public function formatBrowseList(array $list);
-
-    /**
      * Removes the resource from the remote.
      *
      * @param $resourceId
