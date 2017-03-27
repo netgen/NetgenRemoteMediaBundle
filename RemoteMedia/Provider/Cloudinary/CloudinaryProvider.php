@@ -341,13 +341,13 @@ class CloudinaryProvider extends RemoteMediaProvider
         }
 
         if (is_array($variationName)) {
-            $options = $variationName + $finalOptions;
+            $finalOptions = $variationName + $finalOptions;
         } else {
-            $options = $this->processConfiguredVariation($value, $variationName, 'video');
-        }
+            $options = $this->processConfiguredVariation($value, $variationName, $contentTypeIdentifier);
 
-        $finalOptions['transformation'] = $options;
-        $finalOptions['secure'] = true;
+            $finalOptions['transformation'] = $options;
+            $finalOptions['secure'] = true;
+        }
 
         return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
     }
