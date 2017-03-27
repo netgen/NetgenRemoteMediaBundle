@@ -7,7 +7,7 @@
 {if $value.resourceId}
     {if $value.mediaType|eq('image')}
         {if not(is_set($format))}
-            {def $format = hash('height', 400, 'width', 600)
+            {def $format = hash('height', 400, 'width', 600)}
         {/if}
 
         {def $variation = ngremotemedia($value, $attribute.object.class_identifier, $format)}
