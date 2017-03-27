@@ -14,20 +14,20 @@ This repository contains field type (and legacy data type) implementation, and i
 
 ## Licence and installation instructions ##
 
-[License](LICENSE)
+[Licence](LICENCE)
 
-[Installation instructions](Resources/doc/INSTALL.md)
+[Installation instructions](Resources/docs/INSTALL.md)
 
 
 ## Documentation ##
 
-For usage documentation see [USAGE.md](Resources/doc/USAGE.md)
+For usage documentation see [USAGE.md](Resources/docs/USAGE.md)
 
 
 ## What's next ## 
 Here's the plan for features that should be in place before 1.0 release:
-- [x] drop eZExceed support
 - [x] move image variation defintions to yaml files
+- [x] add option to pass any option to cloudinary directly from template
 - [ ] add option to select folder when uploading the image
 - [ ] support both eZ 5.4.*, and eZPlatform with Legacy Bridge
 - [ ] add support for Netgen Content Browser(*) - on roadmap for 1.x
