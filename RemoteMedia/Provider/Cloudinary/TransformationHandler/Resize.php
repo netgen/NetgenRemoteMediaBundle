@@ -3,6 +3,7 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
@@ -23,16 +24,24 @@ class Resize implements HandlerInterface
      * @param string $variationName name of the configured image variation configuration
      * @param array $config
      *
+     * @throws \Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException
+     *
      * @return array
      */
     public function process(Value $value, $variationName, array $config = array())
     {
+        $options = array();
+
         if ($config[0] !== 0) {
             $options['width'] = $config[0];
         }
 
         if ($config[1] !== 0) {
             $options['height'] = $config[1];
+        }
+
+        if (empty($options)) {
+            throw new TransformationHandlerFailedException(self::class);
         }
 
         return $options;
