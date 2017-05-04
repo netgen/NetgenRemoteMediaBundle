@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * example usage php ezpublish/console netgen:remote:add:data 5230 test_image example.jpg
+ * example usage php ezpublish/console netgen:remote:add:data 5230 test_image example.jpg.
  */
 class AddImageRemoteMediaCommand extends ContainerAwareCommand
 {
@@ -57,6 +57,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
             )
         ;
     }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $contentId = $input->getArgument('content_id');
@@ -95,10 +96,10 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         $contentUpdateStruct->setField($fieldIdentifier, $imageInput);
         try {
             $content = $repository->sudo(
-                function (Repository $repository) use ($contentInfo, $contentUpdateStruct)
-                {
+                function (Repository $repository) use ($contentInfo, $contentUpdateStruct) {
                     $contentDraft = $repository->getContentService()->createContentDraft($contentInfo);
                     $contentDraft = $repository->getContentService()->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
+
                     return $repository->getContentService()->publishVersion($contentDraft->versionInfo);
                 }
             );
@@ -113,7 +114,5 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         }
 
         $output->writeln("<info>Uploaded image {$imagePath} to {$fieldIdentifier} to content with id {$contentId}</info>");
-
-        return;
     }
 }

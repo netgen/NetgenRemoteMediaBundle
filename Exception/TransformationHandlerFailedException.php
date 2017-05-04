@@ -10,6 +10,7 @@ class TransformationHandlerFailedException extends Exception
      * Constructor.
      *
      * @param string $handlerIdentifier
+     * @param mixed $handlerClass
      */
     public function __construct($handlerClass)
     {

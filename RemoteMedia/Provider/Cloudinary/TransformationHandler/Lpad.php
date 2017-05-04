@@ -6,7 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Lpad
+ * Class Lpad.
  *
  * Same as the pad mode but only if the original image is larger than the
  * given limit (width and height), in which case the image is scaled down
@@ -21,7 +21,7 @@ class Lpad implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -32,7 +32,7 @@ class Lpad implements HandlerInterface
     public function process(Value $value, $variationName, array $config = array())
     {
         $options = array(
-            'crop' => 'lpad'
+            'crop' => 'lpad',
         );
 
         if ($config[0] !== 0) {

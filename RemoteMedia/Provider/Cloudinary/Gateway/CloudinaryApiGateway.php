@@ -2,10 +2,10 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 
+use Cloudinary;
+use Cloudinary\Api;
+use Cloudinary\Uploader;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
-use \Cloudinary;
-use \Cloudinary\Uploader;
-use \Cloudinary\Api;
 
 class CloudinaryApiGateway extends Gateway
 {
@@ -65,7 +65,7 @@ class CloudinaryApiGateway extends Gateway
                     'prefix' => $query,
                     'type' => $options['type'],
                     'tags' => true,
-                    'max_results' => $limit
+                    'max_results' => $limit,
                 )
             )->getArrayCopy();
         }
@@ -73,8 +73,8 @@ class CloudinaryApiGateway extends Gateway
         if (!empty($result['resources'])) {
             return $result['resources'];
         }
-
-        return array();    }
+        return array();
+    }
 
     public function listResources($options)
     {
@@ -83,18 +83,18 @@ class CloudinaryApiGateway extends Gateway
         if (!empty($resources['resources'])) {
             return $resources['resources'];
         }
-
-        return array();    }
+        return array();
+    }
 
     public function countResources()
     {
         $usage = $this->cloudinaryApi->usage();
-
-        return $usage['resources'];    }
+        return $usage['resources'];
+    }
 
     public function get($id, $options)
     {
-        $response =  $this->cloudinaryApi->resources_by_ids(
+        $response = $this->cloudinaryApi->resources_by_ids(
             array($id),
             $options
         )->getIterator()->current();

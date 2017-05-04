@@ -10,11 +10,6 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    protected function registerCompilerPass(ContainerBuilder $container)
-    {
-        $container->addCompilerPass(new TransformationHandlersCompilerPass());
-    }
-
     public function testCompilerPassCollectsValidServices()
     {
         $registry = new Definition();
@@ -27,9 +22,9 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
             'netgen_remote_media.transformation_handler' => array(
                 array(
                     'alias' => 'testalias',
-                    'provider' => 'testprovider'
-                )
-            )
+                    'provider' => 'testprovider',
+                ),
+            ),
         );
 
         $transformationHandler->setTags($tags);
@@ -40,11 +35,11 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
         $this->assertContainerBuilderHasServiceDefinitionWithMethodCall(
             'netgen_remote_media.handler_registry',
             'addHandler',
-            [
+            array(
                 'testprovider',
                 'testalias',
                 new Reference('custom_handler'),
-            ]
+            )
         );
     }
 
@@ -63,9 +58,9 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
         $tags = array(
             'netgen_remote_media.transformation_handler' => array(
                 array(
-                    'provider' => 'testprovider'
-                )
-            )
+                    'provider' => 'testprovider',
+                ),
+            ),
         );
 
         $transformationHandler->setTags($tags);
@@ -89,14 +84,19 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
         $tags = array(
             'netgen_remote_media.transformation_handler' => array(
                 array(
-                    'alias' => 'testalias'
-                )
-            )
+                    'alias' => 'testalias',
+                ),
+            ),
         );
 
         $transformationHandler->setTags($tags);
         $this->setDefinition('custom_handler', $transformationHandler);
 
         $this->compile();
+    }
+
+    protected function registerCompilerPass(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new TransformationHandlersCompilerPass());
     }
 }

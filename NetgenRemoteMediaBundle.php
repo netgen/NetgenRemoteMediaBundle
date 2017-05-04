@@ -2,10 +2,10 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler\XslRegisterPass;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler\TransformationHandlersCompilerPass;
+use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler\XslRegisterPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 class NetgenRemoteMediaBundle extends Bundle
 {
@@ -18,7 +18,7 @@ class NetgenRemoteMediaBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass( new XslRegisterPass() );
+        $container->addCompilerPass(new XslRegisterPass());
         $container->addCompilerPass(new TransformationHandlersCompilerPass());
     }
 }

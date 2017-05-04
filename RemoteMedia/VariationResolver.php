@@ -7,7 +7,7 @@ class VariationResolver
     protected $variations = array();
 
     /**
-     * Dynamic injection of configured transformations
+     * Dynamic injection of configured transformations.
      *
      * @param array $variations
      */
@@ -26,7 +26,7 @@ class VariationResolver
     public function getVariationsForContentType($contentTypeIdentifier)
     {
         $defaultVariations = $this->variations['default'];
-        $contentTypeVariations= isset($this->variations[$contentTypeIdentifier]) ?
+        $contentTypeVariations = isset($this->variations[$contentTypeIdentifier]) ?
             $this->variations[$contentTypeIdentifier] : array();
 
         return array_merge($defaultVariations, $contentTypeVariations);

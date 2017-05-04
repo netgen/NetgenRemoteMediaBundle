@@ -2,10 +2,10 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler;
 
+use LogicException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use LogicException;
 
 class TransformationHandlersCompilerPass implements CompilerPassInterface
 {

@@ -3,8 +3,8 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
 use eZ\Publish\API\Repository\ContentTypeService;
-use eZ\Publish\Core\Repository\Values\Content\Content;
 use eZ\Publish\Core\Helper\TranslationHelper;
+use eZ\Publish\Core\Repository\Values\Content\Content;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
@@ -88,13 +88,11 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 'netgen_remote_download',
                 array($this, 'getResourceDownloadLink')
             ),
-
         );
     }
 
-
     /**
-     * Returns variation by specified format
+     * Returns variation by specified format.
      *
      * @param Content $content
      * @param string $fieldIdentifier
@@ -112,7 +110,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
-     * Generates html5 video tag for the video with provided id
+     * Generates html5 video tag for the video with provided id.
      *
      * @param Content $content
      * @param string $fieldIdentifier
@@ -129,7 +127,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
-     * Returns thumbnail url
+     * Returns thumbnail url.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param array $options
@@ -142,7 +140,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
-     * Returns the link to the remote resource
+     * Returns the link to the remote resource.
      *
      * @param Value $value
      *

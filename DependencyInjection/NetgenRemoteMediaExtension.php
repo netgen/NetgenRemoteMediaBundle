@@ -3,13 +3,13 @@
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\ConfigurationProcessor;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\Yaml\Yaml;
 
 class NetgenRemoteMediaExtension extends Extension implements PrependExtensionInterface
 {
@@ -34,10 +34,10 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_name", $config['account_name']);
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_key", $config['account_key']);
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_secret", $config['account_secret']);
-        $container->setParameter("netgen_remote_media.ezoe.variation_list", $config['ezoe']['variation_list']);
-        $container->setParameter("netgen_remote_media.ezoe.class_list", $config['ezoe']['class_list']);
-        $container->setParameter("netgen_remote_media.browse_limit", $config['browse_limit']);
-        $container->setParameter("netgen_remote_media.remove_unused_resources", $config['remove_unused']);
+        $container->setParameter('netgen_remote_media.ezoe.variation_list', $config['ezoe']['variation_list']);
+        $container->setParameter('netgen_remote_media.ezoe.class_list', $config['ezoe']['class_list']);
+        $container->setParameter('netgen_remote_media.browse_limit', $config['browse_limit']);
+        $container->setParameter('netgen_remote_media.remove_unused_resources', $config['remove_unused']);
         $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.' . $config['provider']);
 
         $processor = new ConfigurationProcessor($container, 'netgen_remote_media');
