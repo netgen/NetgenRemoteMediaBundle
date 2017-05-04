@@ -1,6 +1,15 @@
 {
     "name": "netgen/remote-media-bundle",
     "description": "Remote media field type implementation",
+    "type": "ezplatform-bundle",
+    "keywords": [
+        "ezpublish",
+        "ezplatform",
+        "remote media",
+        "netgen",
+        "remote-media-bundle"
+    ],
+    "homepage": "https://github.com/netgen/NetgenRemoteMediaBundle",
     "license": "GPL-2.0",
     "authors": [
         {
@@ -17,10 +26,17 @@
     "require-dev": {
         "matthiasnoback/symfony-config-test": "~2.0",
         "matthiasnoback/symfony-dependency-injection-test": "~1.0",
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^5.7",
+        "friendsofphp/php-cs-fixer": "~2.0"
     },
     "target-dir": "Netgen/Bundle/RemoteMediaBundle",
     "autoload": {
-        "psr-0": { "Netgen\\Bundle\\RemoteMediaBundle": "" }
+        "psr-0": {
+            "Netgen\\Bundle\\RemoteMediaBundle": ""
+        }
+    },
+    "scripts": {
+        "test": "@php vendor/bin/phpunit --colors=always",
+        "fix": "@php vendor/bin/php-cs-fixer fix"
     }
 }

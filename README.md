@@ -1,5 +1,11 @@
 # Netgen Remote Media Bundle #
 
+[![Build Status](https://img.shields.io/travis/netgen/NetgenRemoteMediaBundle.svg?style=flat-square)](https://travis-ci.org/netgen/NetgenRemoteMediaBundle)
+[![Code Coverage](https://img.shields.io/codecov/c/github/netgen/NetgenRemoteMediaBundle.svg?style=flat-square)](https://codecov.io/gh/netgen/NetgenRemoteMediaBundle)
+[![Downloads](https://img.shields.io/packagist/dt/netgen/remote-media-bundle.svg?style=flat-square)](https://packagist.org/packages/netgen/remote-media-bundle)
+[![Latest stable](https://img.shields.io/packagist/v/netgen/remote-media-bundle.svg?style=flat-square)](https://packagist.org/packages/netgen/remote-media-bundle)
+[![License](https://img.shields.io/packagist/l/netgen/remote-media-bundle.svg?style=flat-square)](https://packagist.org/packages/netgen/remote-media-bundle)
+
 Netgen Remote Media Bundle is an eZ Publish bundle providing field type which supports remote resource providers, such as [Cloudinary](http://cloudinary.com/).
 
 This repository contains field type (and legacy data type) implementation, and it provides the interface for legacy administration. 

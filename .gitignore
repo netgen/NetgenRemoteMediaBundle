@@ -9,3 +9,4 @@ phpunit.phar
 npm-debug.log
 node_modules
 *.css.map
+build
