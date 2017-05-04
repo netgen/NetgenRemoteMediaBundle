@@ -2,28 +2,36 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage;
 
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\Core\FieldType\StorageGateway;
+use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 
 abstract class Gateway extends StorageGateway
 {
     /**
-     * Stores the data in the database based on the given field data
+     * Stores the data in the database based on the given field data.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param int $productId
+     * @param mixed $fieldId
+     * @param mixed $resourceId
+     * @param mixed $contentId
+     * @param mixed $providerIdentifier
+     * @param mixed $version
      */
     abstract public function storeFieldData($fieldId, $resourceId, $contentId, $providerIdentifier, $version);
 
     /**
-     * Gets the product ID stored in the field
+     * Gets the product ID stored in the field.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
+     * @param mixed $contentId
+     * @param mixed $fieldId
+     * @param mixed $versionNo
+     * @param mixed $providerIdentifier
      *
      * @return int product ID
      */
     //abstract public function getFieldData(VersionInfo $versionInfo);
-
 
     /**
      * Deletes the entry in the link table for the provided field id and version.

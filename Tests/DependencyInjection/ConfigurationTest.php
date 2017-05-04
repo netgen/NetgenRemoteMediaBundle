@@ -3,132 +3,131 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection;
 
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
-use PHPUnit\Framework\TestCase;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration;
+use PHPUnit\Framework\TestCase;
 
 class ConfigurationTest extends TestCase
 {
     use ConfigurationTestCaseTrait;
 
-    protected function getConfiguration()
-    {
-        return new Configuration();
-    }
-
     public function testBasicConfigurationValuesAreOkAndValid()
     {
         $this->assertConfigurationIsValid(
-            [
-                'netgen_remote_media' => [
+            array(
+                'netgen_remote_media' => array(
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
                     'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret'
-                ],
-            ]
+                    'account_secret' => 'examplesecret',
+                ),
+            )
         );
     }
 
     public function testCompleteConfigurationIsOkAndValid()
     {
         $this->assertConfigurationIsValid(
-            [
-                'netgen_remote_media' => [
+            array(
+                'netgen_remote_media' => array(
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
                     'account_key' => 'examplekey',
                     'account_secret' => 'examplesecret',
-                    'system' => [
-                        'default' => [
-                            'image_variations' => [
-                                'default' => [
-                                    'full' => [
-                                        'transformations' => [
-                                            [
+                    'system' => array(
+                        'default' => array(
+                            'image_variations' => array(
+                                'default' => array(
+                                    'full' => array(
+                                        'transformations' => array(
+                                            array(
                                                 'name' => 'crop',
-                                                'params' => [2, 1]
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ],
-                        'testsiteaccess' => [
-                            'image_variations' => [
-                                'test_content_type' => [
-                                    'medium' => [
-                                        'transformations' => [
-                                            [
+                                                'params' => array(2, 1),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                        'testsiteaccess' => array(
+                            'image_variations' => array(
+                                'test_content_type' => array(
+                                    'medium' => array(
+                                        'transformations' => array(
+                                            array(
                                                 'name' => 'crop',
-                                                'params' => [2,1]
-                                            ],
-                                            [
+                                                'params' => array(2, 1),
+                                            ),
+                                            array(
                                                 'name' => 'test_transformation',
-                                                'params' => ['test']
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
-            ]
+                                                'params' => array('test'),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            )
         );
-
     }
 
     public function testEmptyAccountNameIsInvalid()
     {
         $this->assertConfigurationIsInvalid(
-            [
-                'netgen_remote_media' => [
+            array(
+                'netgen_remote_media' => array(
                     'provider' => 'cloudinary',
                     'account_name' => '',
                     'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret'
-                ],
-            ]
+                    'account_secret' => 'examplesecret',
+                ),
+            )
         );
     }
 
     public function testEmptyAccountKeyIsInvalid()
     {
         $this->assertConfigurationIsInvalid(
-            [
-                'netgen_remote_media' => [
+            array(
+                'netgen_remote_media' => array(
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
                     'account_key' => '',
-                    'account_secret' => 'examplesecret'
-                ],
-            ]
+                    'account_secret' => 'examplesecret',
+                ),
+            )
         );
     }
 
     public function testMissingAccountNameIsInvalid()
     {
         $this->assertConfigurationIsInvalid(
-            [
-                'netgen_remote_media' => [
+            array(
+                'netgen_remote_media' => array(
                     'provider' => 'cloudinary',
                     'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret'
-                ],
-            ]
+                    'account_secret' => 'examplesecret',
+                ),
+            )
         );
     }
 
     public function testMissingAccountKeyIsInvalid()
     {
         $this->assertConfigurationIsInvalid(
-            [
-                'netgen_remote_media' => [
+            array(
+                'netgen_remote_media' => array(
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
-                    'account_secret' => 'examplesecret'
-                ],
-            ]
+                    'account_secret' => 'examplesecret',
+                ),
+            )
         );
+    }
+
+    protected function getConfiguration()
+    {
+        return new Configuration();
     }
 }

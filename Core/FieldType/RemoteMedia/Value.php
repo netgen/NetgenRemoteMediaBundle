@@ -38,7 +38,7 @@ class Value extends BaseValue
     }
 
     /**
-     * Creates a value from cloudinary response array
+     * Creates a value from cloudinary response array.
      *
      * @param array $response
      *
@@ -70,12 +70,12 @@ class Value extends BaseValue
         $value->metaData = $metaData;
         $value->variations = !empty($response['variations']) ? $response['variations'] : array();
 
-        if ($response['resource_type'] == 'video') {
-            $value->mediaType = Value::TYPE_VIDEO;
-        } else if ($response['resource_type'] == 'image' && !in_array($response['format'], array('pdf', 'doc', 'docx'))) {
-            $value->mediaType = Value::TYPE_IMAGE;
+        if ($response['resource_type'] === 'video') {
+            $value->mediaType = self::TYPE_VIDEO;
+        } elseif ($response['resource_type'] === 'image' && !in_array($response['format'], array('pdf', 'doc', 'docx'), true)) {
+            $value->mediaType = self::TYPE_IMAGE;
         } else {
-            $value->mediaType = Value::TYPE_OTHER;
+            $value->mediaType = self::TYPE_OTHER;
         }
 
         return $value;

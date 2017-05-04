@@ -2,12 +2,11 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
+use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\Core\FieldType\GatewayBasedStorage;
-use eZ\Publish\SPI\FieldType\FieldStorage;
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
-use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 
 class RemoteMediaStorage extends GatewayBasedStorage
@@ -32,6 +31,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
     /**
      * Constructor.
 
+     *
      * @param \eZ\Publish\API\Repository\ContentService $contentService
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
      * @param \eZ\Publish\API\Repository\FieldTypeService $fieldTypeService
@@ -67,7 +67,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway $gateway */
         $gateway = $this->getGateway($context);
 
-        if ($data instanceof Value && $data != $this->fieldTypeService->getFieldType('ngremotemedia')->getEmptyValue()) {
+        if ($data instanceof Value && $data !== $this->fieldTypeService->getFieldType('ngremotemedia')->getEmptyValue()) {
             $gateway->storeFieldData(
                 $field->id,
                 $data->resourceId,
@@ -75,7 +75,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $this->provider->getIdentifier(),
                 $versionInfo->versionNo
             );
-        } else if (is_array($data) && !empty($data)) {
+        } elseif (is_array($data) && !empty($data)) {
             $fileUri = $data['input_uri'];
             $id = pathinfo($fileUri, PATHINFO_FILENAME);
 
@@ -136,7 +136,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
         if ($this->deleteUnused) {
             $resourceIdsToDelete = array();
             foreach ($fields as $field) {
-                if (in_array($field->id, $fieldIds)) {
+                if (in_array($field->id, $fieldIds, true)) {
                     // load resource_id from table
                     $resourceIdsToDelete = array_merge(
                         $resourceIdsToDelete,
@@ -158,7 +158,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
         } else {
             // remove from link table entry just for that version
             foreach ($fields as $field) {
-                if (!in_array($field->id, $fieldIds)) {
+                if (!in_array($field->id, $fieldIds, true)) {
                     continue;
                 }
 
@@ -203,7 +203,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
      * @param \eZ\Publish\SPI\Persistence\Content\Field $originalField
      * @param array $context
      *
-     * @return null|bool Same as {@link \eZ\Publish\SPI\FieldType\FieldStorage::storeFieldData()}.
+     * @return null|bool same as {@link \eZ\Publish\SPI\FieldType\FieldStorage::storeFieldData()}
      */
     public function copyLegacyField(VersionInfo $versionInfo, Field $field, Field $originalField, array $context)
     {

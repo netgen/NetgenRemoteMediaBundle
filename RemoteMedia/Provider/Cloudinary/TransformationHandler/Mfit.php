@@ -6,7 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Mfit
+ * Class Mfit.
  *
  * Same as the fit mode but only if the original image is smaller
  * than the given minimum (width and height), in which case the image
@@ -20,7 +20,7 @@ class Mfit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -31,7 +31,7 @@ class Mfit implements HandlerInterface
     public function process(Value $value, $variationName, array $config = array())
     {
         $options = array(
-            'crop' => 'mfit'
+            'crop' => 'mfit',
         );
 
         if ($config[0] !== 0) {

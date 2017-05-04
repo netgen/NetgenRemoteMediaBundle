@@ -2,28 +2,29 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
 
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
-use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
-use RuntimeException;
+use eZ\Publish\SPI\Persistence\Content\VersionInfo;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
 use PDO;
+use RuntimeException;
 
 class LegacyStorage extends Gateway
 {
     /**
-     * Connection
+     * Connection.
      *
      * @var \eZ\Publish\Core\Persistence\Database\DatabaseHandler
      */
     protected $connection;
 
     /**
-     * Sets the data storage connection to use
+     * Sets the data storage connection to use.
+     *
+     *
+     * @param \eZ\Publish\Core\Persistence\Database\DatabaseHandler $connection
      *
      * @throws \RuntimeException if $connection is not an instance of
      *         {@link \eZ\Publish\Core\Persistence\Database\DatabaseHandler}
-     *
-     * @param \eZ\Publish\Core\Persistence\Database\DatabaseHandler $connection
      */
     public function setConnection($connection)
     {
@@ -32,28 +33,13 @@ class LegacyStorage extends Gateway
         // dbHandler *should* be passed to the constructor, and there should
         // not be the need to post-inject it.
         if (!$connection instanceof DatabaseHandler) {
-            throw new RuntimeException("Invalid connection passed");
+            throw new RuntimeException('Invalid connection passed');
         }
         $this->connection = $connection;
     }
 
     /**
-     * Returns the active connection
-     *
-     * @throws \RuntimeException if no connection has been set, yet.
-     *
-     * @return \eZ\Publish\Core\Persistence\Database\DatabaseHandler
-     */
-    protected function getConnection()
-    {
-        if ($this->connection === null) {
-            throw new RuntimeException("Missing database connection.");
-        }
-        return $this->connection;
-    }
-
-    /**
-     * Stores the data in the database based on the given field data
+     * Stores the data in the database based on the given field data.
      *
      * @param $fieldId
      * @param $resourceId
@@ -67,19 +53,19 @@ class LegacyStorage extends Gateway
 
         $selectQuery = $connection->createSelectQuery();
         $selectQuery
-            ->selectDistinct($connection->quoteColumn("resource_id"))
-            ->from($connection->quoteTable("ngremotemedia_field_link"))
+            ->selectDistinct($connection->quoteColumn('resource_id'))
+            ->from($connection->quoteTable('ngremotemedia_field_link'))
             ->where(
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("field_id"),
+                    $connection->quoteColumn('field_id'),
                     $selectQuery->bindValue($fieldId, null, PDO::PARAM_INT)
                 ),
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("version"),
+                    $connection->quoteColumn('version'),
                     $selectQuery->bindValue($version, null, PDO::PARAM_INT)
                 ),
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("provider"),
+                    $connection->quoteColumn('provider'),
                     $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 )
             );
@@ -90,18 +76,18 @@ class LegacyStorage extends Gateway
         if (count($rows) > 0) {
             $updateQuery = $connection->createUpdateQuery();
             $updateQuery
-                ->update("ngremotemedia_field_link")
+                ->update('ngremotemedia_field_link')
                 ->set(
-                    $connection->quoteColumn("resource_id"),
+                    $connection->quoteColumn('resource_id'),
                     $updateQuery->bindValue($resourceId, null, PDO::PARAM_STR)
                 )
                 ->where(
                     $updateQuery->expr->eq(
-                        $connection->quoteColumn("field_id"),
+                        $connection->quoteColumn('field_id'),
                         $updateQuery->bindValue($fieldId, null, PDO::PARAM_INT)
                     ),
                     $updateQuery->expr->eq(
-                        $connection->quoteColumn("version"),
+                        $connection->quoteColumn('version'),
                         $updateQuery->bindValue($version, null, PDO::PARAM_INT)
                     )
                 );
@@ -109,21 +95,21 @@ class LegacyStorage extends Gateway
         } else {
             $insertQuery = $connection->createInsertQuery();
             $insertQuery
-                ->insertInto($connection->quoteTable("ngremotemedia_field_link"))
+                ->insertInto($connection->quoteTable('ngremotemedia_field_link'))
                 ->set(
-                    $connection->quoteColumn("contentobject_id"),
+                    $connection->quoteColumn('contentobject_id'),
                     $insertQuery->bindValue($contentId, null, PDO::PARAM_INT)
                 )->set(
-                    $connection->quoteColumn("field_id"),
+                    $connection->quoteColumn('field_id'),
                     $insertQuery->bindValue($fieldId, null, PDO::PARAM_INT)
                 )->set(
-                    $connection->quoteColumn("version"),
+                    $connection->quoteColumn('version'),
                     $insertQuery->bindValue($version, null, PDO::PARAM_INT)
                 )->set(
-                    $connection->quoteColumn("resource_id"),
+                    $connection->quoteColumn('resource_id'),
                     $insertQuery->bindValue($resourceId, null, PDO::PARAM_STR)
                 )->set(
-                    $connection->quoteColumn("provider"),
+                    $connection->quoteColumn('provider'),
                     $insertQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 );
             $insertQuery->prepare()->execute();
@@ -131,9 +117,13 @@ class LegacyStorage extends Gateway
     }
 
     /**
-     * Gets the resource ID stored in the field
+     * Gets the resource ID stored in the field.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
+     * @param mixed $contentId
+     * @param mixed $fieldId
+     * @param mixed $versionNo
+     * @param mixed $providerIdentifier
      *
      * @return int product ID
      */
@@ -157,22 +147,22 @@ class LegacyStorage extends Gateway
         $connection = $this->getConnection();
         $query = $connection->createDeleteQuery();
         $query
-            ->deleteFrom($connection->quoteTable("ngremotemedia_field_link"))
+            ->deleteFrom($connection->quoteTable('ngremotemedia_field_link'))
             ->where(
                 $query->expr->eq(
-                    $connection->quoteColumn("field_id"),
+                    $connection->quoteColumn('field_id'),
                     $query->bindValue($fieldId, null, PDO::PARAM_INT)
                 ),
                 $query->expr->eq(
-                    $connection->quoteColumn("contentobject_id"),
+                    $connection->quoteColumn('contentobject_id'),
                     $query->bindValue($contentId, null, PDO::PARAM_INT)
                 ),
                 $query->expr->eq(
-                    $connection->quoteColumn("version"),
+                    $connection->quoteColumn('version'),
                     $query->bindValue($versionNo, null, PDO::PARAM_INT)
                 ),
                 $query->expr->eq(
-                    $connection->quoteColumn("provider"),
+                    $connection->quoteColumn('provider'),
                     $query->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 )
             );
@@ -196,23 +186,23 @@ class LegacyStorage extends Gateway
         $selectQuery = $connection->createSelectQuery();
 
         $selectQuery
-            ->selectDistinct($connection->quoteColumn("resource_id"))
-            ->from($connection->quoteTable("ngremotemedia_field_link"))
+            ->selectDistinct($connection->quoteColumn('resource_id'))
+            ->from($connection->quoteTable('ngremotemedia_field_link'))
             ->where(
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("field_id"),
+                    $connection->quoteColumn('field_id'),
                     $selectQuery->bindValue($fieldId, null, PDO::PARAM_INT)
                 ),
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("contentobject_id"),
+                    $connection->quoteColumn('contentobject_id'),
                     $selectQuery->bindValue($contentId, null, PDO::PARAM_INT)
                 ),
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("version"),
+                    $connection->quoteColumn('version'),
                     $selectQuery->bindValue($versionNo, null, PDO::PARAM_INT)
                 ),
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("provider"),
+                    $connection->quoteColumn('provider'),
                     $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 )
             );
@@ -223,8 +213,7 @@ class LegacyStorage extends Gateway
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(
-            function ($item)
-            {
+            function ($item) {
                 return $item['resource_id'];
             },
             $rows
@@ -244,15 +233,15 @@ class LegacyStorage extends Gateway
         $connection = $this->getConnection();
         $selectQuery = $connection->createSelectQuery();
         $selectQuery
-            ->selectDistinct($connection->quoteColumn("resource_id"))
-            ->from($connection->quoteTable("ngremotemedia_field_link"))
+            ->selectDistinct($connection->quoteColumn('resource_id'))
+            ->from($connection->quoteTable('ngremotemedia_field_link'))
             ->where(
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("resource_id"),
+                    $connection->quoteColumn('resource_id'),
                     $selectQuery->bindValue($resourceId, null, PDO::PARAM_STR)
                 ),
                 $selectQuery->expr->eq(
-                    $connection->quoteColumn("provider"),
+                    $connection->quoteColumn('provider'),
                     $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 )
             );
@@ -265,5 +254,21 @@ class LegacyStorage extends Gateway
         }
 
         return false;
+    }
+
+    /**
+     * Returns the active connection.
+     *
+     * @throws \RuntimeException if no connection has been set, yet
+     *
+     * @return \eZ\Publish\Core\Persistence\Database\DatabaseHandler
+     */
+    protected function getConnection()
+    {
+        if ($this->connection === null) {
+            throw new RuntimeException('Missing database connection.');
+        }
+
+        return $this->connection;
     }
 }

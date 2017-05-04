@@ -2,8 +2,8 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Converter;
 
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use eZ\Publish\Core\MVC\Legacy\Templating\Converter\ObjectConverter;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
 class RemoteMediaValueConverter implements ObjectConverter
 {

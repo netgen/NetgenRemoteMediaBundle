@@ -7,7 +7,7 @@ use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedExcepti
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Format
+ * Class Format.
  *
  * Sets the in which format should the media be delivered.
  * Images can be uploaded to Cloudinary in various formats, and these images can be converted
@@ -18,13 +18,12 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
  * browsers. The best format will be delivered to the supported browser.
  * If a browser does not support either of these formats then the image is delivered in the format
  * specified by the file extension.
- *
  */
 class Format implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -42,7 +41,7 @@ class Format implements HandlerInterface
 
         if (!empty($config[0])) {
             return array(
-                'fetch_format' => $config[0]
+                'fetch_format' => $config[0],
             );
         }
 

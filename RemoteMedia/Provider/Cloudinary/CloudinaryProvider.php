@@ -2,13 +2,13 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Psr\Log\LoggerInterface;
 
 class CloudinaryProvider extends RemoteMediaProvider
@@ -25,41 +25,6 @@ class CloudinaryProvider extends RemoteMediaProvider
         $this->gateway = $gateway;
 
         parent::__construct($registry, $variationsResolver, $logger);
-    }
-
-    /**
-     * Prepares upload options for Cloudinary.
-     * Every image with the same name will be overwritten.
-     *
-     * @param string $fileName
-     * @param array $options
-     *
-     * @return array
-     */
-    protected function prepareUploadOptions($fileName, $options = array())
-    {
-        // @todo: folders should be handled differently, not through siteacess parameter
-        //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
-
-        // clean up the filename
-        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
-        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
-
-        $fileName = rtrim($cleanFileName, '_');
-
-        $publicId = $fileName . '_' . base_convert(uniqid(), 16, 36);
-
-        return array(
-            'public_id' => $publicId,
-            'overwrite' => isset($options['overwrite']) ? $options['overwrite'] : false,
-            'discard_original_filename' =>
-                isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
-            'context' => array(
-                'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
-                'caption' => !empty($options['caption']) ? $options['caption'] : '',
-            ),
-            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto'
-        );
     }
 
     /**
@@ -81,44 +46,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Builds transformation options for the provider to consume.
-     *
-     * @param Value $value
-     * @param string $variationName
-     * @param string $contentTypeIdentifier
-     *
-     * @return array options of the total sum of transformations for the provider to use
-     */
-    protected function processConfiguredVariation(Value $value, $variationName, $contentTypeIdentifier)
-    {
-        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
-
-        $options = array();
-        $variationConfiguration = $configuredVariations[$variationName];
-        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
-            try {
-                $transformationHandler = $this->registry->getHandler(
-                    $transformationIdentifier, $this->getIdentifier()
-                );
-            } catch (TransformationHandlerNotFoundException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-
-            try {
-                $options[] = $transformationHandler->process($value, $variationName, $config);
-            } catch (TransformationHandlerFailedException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-        }
-
-        return $options;
-    }
-
-    /**
      * Gets the remote media Variation.
      * If $variationName is an array, it is treated as an explicit set of options to build the variation.
      *
@@ -126,6 +53,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param string $contentTypeIdentifier
      * @param string|array $variationName
      * @param bool $secure
+     *
      * @return Variation
      */
     public function buildVariation(Value $value, $contentTypeIdentifier, $variationName, $secure = true)
@@ -215,7 +143,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function searchResourcesByTag($tag)
     {
         $options = array(
-            'SearchByTags' => true
+            'SearchByTags' => true,
         );
 
         return $this->gateway->search(urlencode($tag), $options);
@@ -275,7 +203,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * context = array(
      *      'caption' => 'new caption'
      *      'alt' => 'alt text'
-     * );
+     * );.
      *
      * @param mixed $resourceId
      * @param string $resourceType
@@ -286,8 +214,8 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function updateResourceContext($resourceId, $resourceType, $context)
     {
         $options = array(
-            "context" => $context,
-            "resource_type" => $resourceType
+            'context' => $context,
+            'resource_type' => $resourceType,
         );
 
         $this->gateway->update($resourceId, $options);
@@ -333,7 +261,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $finalOptions = array(
             'controls' => true,
-            'fallback_content' => 'Your browser does not support HTML5 video tags'
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
         );
 
         if (empty($variationName)) {
@@ -364,7 +292,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         $options = array(
             'type' => $value->metaData['type'],
             'resource_type' => $value->metaData['resource_type'],
-            'flags' => 'attachment'
+            'flags' => 'attachment',
         );
 
         return $this->gateway->getDownloadLink($value->resourceId, $options);
@@ -381,12 +309,84 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Returns unique identifier of the provided
+     * Returns unique identifier of the provided.
      *
      * @return string
      */
     public function getIdentifier()
     {
         return 'cloudinary';
+    }
+
+    /**
+     * Prepares upload options for Cloudinary.
+     * Every image with the same name will be overwritten.
+     *
+     * @param string $fileName
+     * @param array $options
+     *
+     * @return array
+     */
+    protected function prepareUploadOptions($fileName, $options = array())
+    {
+        // @todo: folders should be handled differently, not through siteacess parameter
+        //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
+
+        // clean up the filename
+        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
+        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
+
+        $fileName = rtrim($cleanFileName, '_');
+
+        $publicId = $fileName . '_' . base_convert(uniqid(), 16, 36);
+
+        return array(
+            'public_id' => $publicId,
+            'overwrite' => isset($options['overwrite']) ? $options['overwrite'] : false,
+            'discard_original_filename' => isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
+            'context' => array(
+                'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
+                'caption' => !empty($options['caption']) ? $options['caption'] : '',
+            ),
+            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto',
+        );
+    }
+
+    /**
+     * Builds transformation options for the provider to consume.
+     *
+     * @param Value $value
+     * @param string $variationName
+     * @param string $contentTypeIdentifier
+     *
+     * @return array options of the total sum of transformations for the provider to use
+     */
+    protected function processConfiguredVariation(Value $value, $variationName, $contentTypeIdentifier)
+    {
+        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
+
+        $options = array();
+        $variationConfiguration = $configuredVariations[$variationName];
+        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
+            try {
+                $transformationHandler = $this->registry->getHandler(
+                    $transformationIdentifier, $this->getIdentifier()
+                );
+            } catch (TransformationHandlerNotFoundException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+
+            try {
+                $options[] = $transformationHandler->process($value, $variationName, $config);
+            } catch (TransformationHandlerFailedException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+        }
+
+        return $options;
     }
 }

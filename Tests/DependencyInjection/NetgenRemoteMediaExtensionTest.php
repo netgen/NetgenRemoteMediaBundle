@@ -7,39 +7,39 @@ use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtensi
 
 class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
 {
-    protected function getContainerExtensions()
-    {
-        return [
-            new NetgenRemoteMediaExtension(),
-        ];
-    }
-
     public function testItSetsValidContainerParameters()
     {
         $this->load();
     }
 
+    protected function getContainerExtensions()
+    {
+        return array(
+            new NetgenRemoteMediaExtension(),
+        );
+    }
+
     protected function getMinimalConfiguration()
     {
-        return [
+        return array(
             'provider' => 'testprovider',
             'account_name' => 'testname',
             'account_key' => 'testkey',
             'account_secret' => 'testsecret',
-            'system' => [
-                'default' => [
-                    'image_variations' => [
-                        'ng_frontpage' => [
-                            'small' => [
-                                'transformations' => [
-                                    'name' => ['Crop'],
-                                    'params' => [200,200]
-                                ]
-                            ]
-                        ],
-                    ]
-                ],
-            ],
-        ];
+            'system' => array(
+                'default' => array(
+                    'image_variations' => array(
+                        'ng_frontpage' => array(
+                            'small' => array(
+                                'transformations' => array(
+                                    'name' => array('Crop'),
+                                    'params' => array(200, 200),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        );
     }
 }

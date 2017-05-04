@@ -10,6 +10,7 @@ class TransformationHandlerNotFoundException extends Exception
      * Constructor.
      *
      * @param string $handlerIdentifier
+     * @param mixed $provider
      */
     public function __construct($provider, $handlerIdentifier)
     {

@@ -6,7 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Pad
+ * Class Pad.
  *
  * Resize the image to fill the given width and height while retaining
  * the original aspect ratio and with all of the original image visible.
@@ -18,7 +18,7 @@ class Pad implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -29,7 +29,7 @@ class Pad implements HandlerInterface
     public function process(Value $value, $variationName, array $config = array())
     {
         $options = array(
-            'crop' => 'pad'
+            'crop' => 'pad',
         );
 
         if ($config[0] !== 0) {

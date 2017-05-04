@@ -6,7 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Mpad
+ * Class Mpad.
  *
  * Same as the pad mode but only if the original image is smaller than
  * the given minimum (width and height), in which case the image is
@@ -22,7 +22,7 @@ class Mpad implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -33,7 +33,7 @@ class Mpad implements HandlerInterface
     public function process(Value $value, $variationName, array $config = array())
     {
         $options = array(
-            'crop' => 'mpad'
+            'crop' => 'mpad',
         );
 
         if ($config[0] !== 0) {

@@ -4,29 +4,29 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
 abstract class Gateway
 {
-    public abstract function upload($fileUri, $options);
+    abstract public function upload($fileUri, $options);
 
-    public abstract function getVariationUrl($source, $options);
+    abstract public function getVariationUrl($source, $options);
 
-    public abstract function search($query, $options = array(), $limit = 10);
+    abstract public function search($query, $options = array(), $limit = 10);
 
-    public abstract function listResources($options);
+    abstract public function listResources($options);
 
-    public abstract function countResources();
+    abstract public function countResources();
 
-    public abstract function get($id, $options);
+    abstract public function get($id, $options);
 
-    public abstract function addTag($id, $tag);
+    abstract public function addTag($id, $tag);
 
-    public abstract function removeTag($id, $tag);
+    abstract public function removeTag($id, $tag);
 
-    public abstract function update($id, $options);
+    abstract public function update($id, $options);
 
-    public abstract function getVideoThumbnail($id, $options = array());
+    abstract public function getVideoThumbnail($id, $options = array());
 
-    public abstract function getVideoTag($id, $options = array());
+    abstract public function getVideoTag($id, $options = array());
 
-    public abstract function getDownloadLink($id, $options);
+    abstract public function getDownloadLink($id, $options);
 
-    public abstract function delete($id);
+    abstract public function delete($id);
 }
