@@ -25,7 +25,7 @@ class VariationResolver
      */
     public function getVariationsForContentType($contentTypeIdentifier)
     {
-        $defaultVariations = $this->variations['default'];
+        $defaultVariations = isset($this->variations['default']) ? $this->variations['default'] : array();
         $contentTypeVariations= isset($this->variations[$contentTypeIdentifier]) ?
             $this->variations[$contentTypeIdentifier] : array();
 
