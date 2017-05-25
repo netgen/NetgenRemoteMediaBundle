@@ -41,18 +41,20 @@ class CloudinaryProvider extends RemoteMediaProvider
         // @todo: folders should be handled differently, not through siteacess parameter
         //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
 
-        // clean up the filename
         $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
         $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
-
         $fileName = rtrim($cleanFileName, '_');
 
-        $publicId = $fileName . '_' . base_convert(uniqid(), 16, 36);
+        // check if overwrite is set, if it is, do not append random string
+        $overwrite = isset($options['overwrite']) ? $options['overwrite'] : false;
+        $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
+
+        $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
 
         return array(
             'public_id' => $publicId,
-            'overwrite' => isset($options['overwrite']) ? $options['overwrite'] : false,
-            'invalidate' => isset($options['invalidate']) ? $options['invalidate'] : false,
+            'overwrite' => $overwrite,
+            'invalidate' => $invalidate,
             'discard_original_filename' =>
                 isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
             'context' => array(
