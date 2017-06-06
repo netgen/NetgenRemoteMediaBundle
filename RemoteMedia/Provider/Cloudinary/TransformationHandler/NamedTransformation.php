@@ -38,12 +38,8 @@ class NamedTransformation implements HandlerInterface
             throw new TransformationHandlerFailedException(self::class);
         }
 
-        if (!empty($config[0])) {
-            return array(
-                'transformation' => $config[0]
-            );
-        }
-
-        throw new TransformationHandlerFailedException(self::class);
+        return array(
+            'transformation' => $config[0]
+        );
     }
 }

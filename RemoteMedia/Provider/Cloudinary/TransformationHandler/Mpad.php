@@ -36,16 +36,12 @@ class Mpad implements HandlerInterface
             'crop' => 'mpad'
         );
 
-        if ($config[0] !== 0) {
+        if (isset($config[0]) && $config[0] !== 0) {
             $options['width'] = $config[0];
         }
 
-        if ($config[1] !== 0) {
+        if (isset($config[1]) && $config[1] !== 0) {
             $options['height'] = $config[1];
-        }
-
-        if (!empty($config[2])) {
-            $options['background'] = $config[2];
         }
 
         return $options;

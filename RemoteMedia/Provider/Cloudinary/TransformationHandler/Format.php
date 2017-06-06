@@ -40,12 +40,8 @@ class Format implements HandlerInterface
             throw new TransformationHandlerFailedException(self::class);
         }
 
-        if (!empty($config[0])) {
-            return array(
-                'fetch_format' => $config[0]
-            );
-        }
-
-        throw new TransformationHandlerFailedException(self::class);
+        return array(
+            'fetch_format' => $config[0]
+        );
     }
 }
