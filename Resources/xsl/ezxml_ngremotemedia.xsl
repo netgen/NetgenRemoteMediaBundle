@@ -14,6 +14,6 @@
             <xsl:attribute name="src"><xsl:value-of select="@custom:image_url"/></xsl:attribute>
             <xsl:attribute name="class"><xsl:value-of select="@custom:cssclass"/></xsl:attribute>
             <xsl:attribute name="alt"><xsl:value-of select="@custom:alttext"/></xsl:attribute>
-        </img>
+        </img><div class="img-caption"><xsl:value-of select="@custom:caption" /></div>
     </xsl:template>
 </xsl:stylesheet>

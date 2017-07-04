@@ -163,6 +163,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
         var attributes = {
             resourceId: media.id,
             version: data.name,
+            caption: media.get('file').caption,
             alttext: this.editorAttributes.alttext,
             cssclass: this.editorAttributes.cssclass,
             coords: data.coords.join(','),
