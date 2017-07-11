@@ -1,4 +1,9 @@
-{% extends 'EzPublishCoreBundle::content_fields.html.twig' %}
+{% block field_attributes %}
+    {% spaceless %}
+        {% set attr = attr|default( {} ) %}
+        {% for attrname, attrvalue in attr %}{{ attrname }}="{{ attrvalue }}" {% endfor %}
+    {% endspaceless %}
+{% endblock %}
 
 {##
  # This field type block accepts the following parameters:
