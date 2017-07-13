@@ -1,14 +1,14 @@
 @import "mixins.sass";
 
 /*********************
-  EzExceed & admin 
+  EzExceed & admin
 **********************/
 .ngremotemedia-type {
   .image-meta {float: none; overflow: hidden;}
-  
+
   .title {margin-bottom: 10px;}
   .help-block {display: block; margin: 0 0 5px;}
-  
+
   .ngremotemedia-alttext {clear: both; margin-bottom: 10px;}
   .ngremotemedia-buttons {clear: left;}
 
@@ -18,7 +18,7 @@
     &:hover,
     &:focus {background-color: rgba(0,0,0,0.1); color: black; border: 1px solid #999; outline: none;}
   }
-  
+
   .ngremotemedia-tags {font-size: 12px;}
   .tags {margin: 10px 0 5px;
     .label {position: relative; display: inline-block; margin: 0 8px 5px 0; padding: 0.166em 1.5em 0.166em 0.65em; font-size: 1em; line-height: 1em; background-color: rgb(86, 115, 165); text-decoration: none; border-radius: 4px; color: #fff;}
@@ -26,7 +26,7 @@
       &:focus {outline: none;}
     }
   }
-  
+
   // EzExceed only
   .eze & {
     .thumbnail { position: relative; margin: 0 0 10px 0; background: #fff; float: left;
@@ -53,9 +53,9 @@
 
 }
 
-// Remote media thumbs 
+// Remote media thumbs
 .ngremotemedia-thumbs {clear: both; display: table;
-  .item {float: left; width: 100%; max-width: 180px; cursor: pointer;
+  .item {float: left; width: 100%; max-width: 160px; cursor: pointer;
     &:hover img {opacity: 1;}
     &:nth-child(5n+6) {clear:left;}
     img {border: 1px solid #fff; box-shadow: 3px 3px 5px 0px rgba(0, 0, 0, 0.4); opacity: 0.9; @include transition(ease-in-out, opacity, 0.2s);}
@@ -88,14 +88,14 @@
   .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
     .btn {box-shadow: none; line-height: 16px;}
   }
-  
+
   .ngremotemedia-thumbs {
     .item {
       img {border: none; width:100%;}
     }
     .pick {color: rgba(#fff, 0.75); text-decoration: none;}
   }
-  .load-more {display: block; margin:40px auto 0; width:80%; box-shadow: none; line-height: 16px;} 
+  .load-more {display: block; margin:40px auto 0; width:80%; box-shadow: none; line-height: 16px;}
   .loader {
     &.icon-16 {height: 16px; width: 16px; max-width: 16px; vertical-align:middle;}
   }
@@ -106,7 +106,7 @@
 #ngremotemedia-modal .form-search .loader{margin:0px 10px 0px -24px;}
 
 #ngremotemedia-modal, .eze{
-  .upload-backdrop{background:#000 url(./ngremotemedia_upload.svg) no-repeat 50% 50%; z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity:0.8;} 
+  .upload-backdrop{background:#000 url(./ngremotemedia_upload.svg) no-repeat 50% 50%; z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity:0.8;}
 }
 
 .o2k7Skin .mceIcon.mce_ngremotemedia{background: url(./ngremotemedia.svg) no-repeat 50% 50%;}

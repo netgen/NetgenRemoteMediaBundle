@@ -1,5 +1,5 @@
 /*********************
-  EzExceed & admin 
+  EzExceed & admin
 **********************/
 .ngremotemedia-type .image-meta {
   float: none;
@@ -138,7 +138,7 @@
   .ngremotemedia-thumbs .item {
     float: left;
     width: 100%;
-    max-width: 180px;
+    max-width: 160px;
     cursor: pointer; }
     .ngremotemedia-thumbs .item:hover img {
       opacity: 1; }
