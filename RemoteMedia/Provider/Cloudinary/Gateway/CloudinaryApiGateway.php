@@ -6,6 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 use \Cloudinary;
 use \Cloudinary\Uploader;
 use \Cloudinary\Api;
+use \Cloudinary\Search;
 
 class CloudinaryApiGateway extends Gateway
 {
@@ -24,6 +25,11 @@ class CloudinaryApiGateway extends Gateway
      */
     protected $cloudinaryUploader;
 
+    /**
+     * @var \Cloudinary\Search
+     */
+    protected $cloudinarySearch;
+
     public function initCloudinary($cloudName, $apiKey, $apiSecret)
     {
         $this->cloudinary = new Cloudinary();
@@ -37,6 +43,8 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
+
+        $this->cloudinarySearch = new Search();
     }
 
     public function upload($fileUri, $options)
@@ -74,7 +82,8 @@ class CloudinaryApiGateway extends Gateway
             return $result['resources'];
         }
 
-        return array();    }
+        return array();
+    }
 
     public function listResources($options)
     {
@@ -84,17 +93,33 @@ class CloudinaryApiGateway extends Gateway
             return $resources['resources'];
         }
 
-        return array();    }
+        return array();
+    }
 
     public function countResources()
     {
         $usage = $this->cloudinaryApi->usage();
 
-        return $usage['resources'];    }
+        return $usage['resources'];
+    }
+
+    // @todo: check if more than 500
+    public function countResourcesInFolder($folder)
+    {
+        $options = array('type' => 'upload', 'max_results' => 500);
+
+        if (!empty($folder)) {
+            $options['prefix'] = $folder;
+        }
+
+        $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+
+        return count($resources['resources']);
+    }
 
     public function get($id, $options)
     {
-        $response =  $this->cloudinaryApi->resources_by_ids(
+        $response = $this->cloudinaryApi->resources_by_ids(
             array($id),
             $options
         )->getIterator()->current();
@@ -135,5 +160,10 @@ class CloudinaryApiGateway extends Gateway
     public function delete($id)
     {
         $this->cloudinaryApi->delete_resources(array($id));
+    }
+
+    public function listFolders()
+    {
+        return $this->cloudinaryApi->root_folders()->getArrayCopy()['folders'];
     }
 }

@@ -11,7 +11,14 @@ class NgRemoteMediaOperator
      */
     function operatorList()
     {
-        return array('ngremotemedia', 'ng_remote_croppable', 'videoThumbnail', 'ng_image_variations', 'scaling_format');
+        return array(
+            'ngremotemedia',
+            'ng_remote_croppable',
+            'videoThumbnail',
+            'ng_image_variations',
+            'scaling_format',
+            'is_content_browser_active'
+        );
     }
 
     /**
@@ -88,12 +95,21 @@ class NgRemoteMediaOperator
                     'type' => 'string',
                     'required' => false
                 )
-            )
+            ),
+            'is_content_browser_active' => array()
         );
     }
 
-    function modify($tpl, $operatorName, $operatorParameters, $rootNamespace, $currentNamespace, &$operatorValue, $namedParameters, $placement)
-    {
+    function modify(
+        $tpl,
+        $operatorName,
+        $operatorParameters,
+        $rootNamespace,
+        $currentNamespace,
+        &$operatorValue,
+        $namedParameters,
+        $placement
+    ) {
         if ($operatorName === 'ngremotemedia') {
             $operatorValue = $this->ngremotemedia(
                 $namedParameters['value'],
@@ -116,10 +132,21 @@ class NgRemoteMediaOperator
             $operatorValue = $this->getImageVariations($namedParameters['class_identifier'], $onlyCroppable);
         } elseif ($operatorName === 'scaling_format') {
             $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
+        } elseif ($operatorName === 'is_content_browser_active') {
+            $operatorValue = $this->isContentBrowserActive();
         }
     }
 
-    function formatAliasForScaling($formats) {
+    function isContentBrowserActive()
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+
+        return $container->getParameter('netgen_remote_media.content_browser.activated');
+
+    }
+
+    function formatAliasForScaling($formats)
+    {
         $returnValue = array();
         foreach ($formats as $formatName => $formatOptions) {
             $options = $formatOptions['transformations']['crop'];

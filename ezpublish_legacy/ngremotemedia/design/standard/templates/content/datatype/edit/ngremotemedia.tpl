@@ -34,4 +34,3 @@
     {include uri="design:parts/ngremotemedia/preview.tpl"}
     {include uri="design:parts/ngremotemedia/interactions.tpl"}
 </div>
-

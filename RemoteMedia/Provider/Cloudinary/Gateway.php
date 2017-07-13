@@ -14,6 +14,8 @@ abstract class Gateway
 
     public abstract function countResources();
 
+    public abstract function countResourcesInFolder($folder);
+
     public abstract function get($id, $options);
 
     public abstract function addTag($id, $tag);
@@ -29,4 +31,6 @@ abstract class Gateway
     public abstract function getDownloadLink($id, $options);
 
     public abstract function delete($id);
+
+    public abstract function listFolders();
 }

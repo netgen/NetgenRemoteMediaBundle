@@ -31,3 +31,20 @@ services:
             - "@netgen_remote_media.provider"
             - "@ezpublish.api.service.content"
             - "@ezpublish.api.service.content_type"
+
+    # content browser specifics
+    netgen_remote_media.ngadminui.menu_plugin.ngremotemedia:
+        class: Netgen\Bundle\RemoteMediaBundle\MenuPlugin\RemoteMediaMenuPlugin
+        tags:
+            - { name: "netgen_admin_ui.menu_plugin" }
+
+    netgen_remote_media.provider.cloudinary.admin:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\AdminProvider
+        parent: netgen_remote_media.provider.cloudinary
+
+    netgen_remote_media.content_browser.backend.cloudinary:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\Backend\CloudinaryBackend
+        arguments:
+            - "@netgen_remote_media.provider.cloudinary.admin"
+        tags:
+            -  { name: netgen_content_browser.backend, item_type: cloudinary }

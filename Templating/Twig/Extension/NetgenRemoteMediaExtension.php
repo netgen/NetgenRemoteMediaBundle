@@ -15,7 +15,7 @@ use Twig_SimpleFunction;
 class NetgenRemoteMediaExtension extends Twig_Extension
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProviderInterface
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
      */
     protected $provider;
 
@@ -88,7 +88,10 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 'netgen_remote_download',
                 array($this, 'getResourceDownloadLink')
             ),
-
+            new Twig_SimpleFunction(
+                'netgen_remote_media',
+                array($this, 'getRemoteResource')
+            ),
         );
     }
 
@@ -151,5 +154,18 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getResourceDownloadLink(Value $value)
     {
         return $this->provider->generateDownloadLink($value);
+    }
+
+    /**
+     * Creates variation directly form Value, without the need for Content.
+     *
+     * @param Value $value
+     * @param $format
+     *
+     * @return Variation
+     */
+    public function getRemoteResource(Value $value, $format)
+    {
+        return $this->provider->buildVariation($value, 'custom', $format, true);
     }
 }

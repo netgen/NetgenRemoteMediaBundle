@@ -42,6 +42,14 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
 
         $processor = new ConfigurationProcessor($container, 'netgen_remote_media');
         $processor->mapConfigArray('image_variations', $config, ContextualizerInterface::MERGE_FROM_SECOND_LEVEL);
+
+        $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
+        if (in_array('NetgenContentBrowserBundle', $activatedBundles, true)) {
+            $container->setParameter('netgen_remote_media.content_browser.activated', true);
+            $this->doPrepend($container, 'content_browser/cloudinary.yml', 'netgen_content_browser');
+        } else {
+            $container->setParameter('netgen_remote_media.content_browser.activated', false);
+        }
     }
 
     /**
@@ -59,6 +67,21 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $configFile = __DIR__ . '/../Resources/config/ezpublish.yml';
         $config = Yaml::parse(file_get_contents($configFile));
         $container->prependExtensionConfig('ezpublish', $config);
+        $container->addResource(new FileResource($configFile));
+    }
+
+    /**
+     * Allow an extension to prepend the extension configurations.
+     *
+     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
+     * @param string $fileName
+     * @param string $configName
+     */
+    protected function doPrepend(ContainerBuilder $container, $fileName, $configName)
+    {
+        $configFile = __DIR__ . '/../Resources/config/' . $fileName;
+        $config = Yaml::parse(file_get_contents($configFile));
+        $container->prependExtensionConfig($configName, $config);
         $container->addResource(new FileResource($configFile));
     }
 }
