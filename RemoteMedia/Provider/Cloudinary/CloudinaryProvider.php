@@ -54,9 +54,6 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     protected function prepareUploadOptions($fileName, $options = array())
     {
-        // @todo: folders should be handled differently, not through siteacess parameter
-        //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
-
         $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
         $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
         $fileName = rtrim($cleanFileName, '_');
