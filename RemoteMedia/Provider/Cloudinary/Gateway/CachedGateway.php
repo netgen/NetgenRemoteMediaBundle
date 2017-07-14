@@ -35,7 +35,11 @@ class CachedGateway extends Gateway
 
     public function upload($fileUri, $options)
     {
-        return $this->gateway->upload($fileUri, $options);
+        $uploadResult = $this->gateway->upload($fileUri, $options);
+
+        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY);
+
+        return $uploadResult;
     }
 
     public function getVariationUrl($source, $options)
