@@ -6,9 +6,6 @@ $contentObjectId = $Params['contentobject_id'];
 $attributeId = $Params['contentobjectattribute_id'];
 $contentVersion = $Params['contentobject_version'];
 
-$container = ezpKernel::instance()->getServiceContainer();
-$helper = $container->get( 'netgen_remote_media.helper' );
-
 $attribute = eZContentObjectAttribute::fetch($attributeId, $contentVersion, true);
 $value = $attribute->content();
 

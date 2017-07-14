@@ -10,7 +10,6 @@ $crop_w = $http->postVariable('crop_w', 0);
 $crop_h = $http->postVariable('crop_h', 0);
 
 $container = ezpKernel::instance()->getServiceContainer();
-$helper = $container->get( 'netgen_remote_media.helper' );
 $provider = $container->get( 'netgen_remote_media.provider' );
 
 $remoteResourceValue = $provider->getRemoteResource($resourceId, 'image');

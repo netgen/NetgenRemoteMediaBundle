@@ -5,7 +5,6 @@ $http = eZHTTPTool::instance();
 $resourceId = $http->getVariable('resourceId', '');
 
 $container = ezpKernel::instance()->getServiceContainer();
-$helper = $container->get( 'netgen_remote_media.helper' );
 $provider = $container->get('netgen_remote_media.provider');
 $variationResolver = $container->get('netgen_remote_media.variation.resolver');
 
