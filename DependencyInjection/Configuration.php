@@ -18,7 +18,6 @@ class Configuration extends SiteAccessConfiguration
         $rootNode = $treeBuilder->root('netgen_remote_media');
 
         $this->addProviderSection($rootNode);
-        $this->addEzoeSection($rootNode);
 
         $systemNode = $this->generateScopeBaseNode($rootNode);
         $this->addImageConfiguration($systemNode);
@@ -49,26 +48,6 @@ class Configuration extends SiteAccessConfiguration
                 ->end()
                 ->booleanNode('remove_unused')
                     ->defaultValue(false)
-                ->end()
-            ->end()
-        ;
-    }
-
-    protected function addEzoeSection(ArrayNodeDefinition $rootNode)
-    {
-        $rootNode
-            ->children()
-                ->arrayNode('ezoe')
-                    ->addDefaultsIfNotSet()
-                    ->treatNullLike(array())
-                    ->children()
-                        ->variableNode('class_list')
-                            ->defaultValue(array(
-                                'pull-left|Left adjusted',
-                                'pull-right|Right adjusted'
-                            ))
-                        ->end()
-                    ->end()
                 ->end()
             ->end()
         ;

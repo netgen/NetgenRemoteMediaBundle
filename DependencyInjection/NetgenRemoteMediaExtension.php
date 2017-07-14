@@ -35,7 +35,7 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_name", $config['account_name']);
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_key", $config['account_key']);
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_secret", $config['account_secret']);
-        $container->setParameter("netgen_remote_media.ezoe.class_list", $config['ezoe']['class_list']);
+
         $container->setParameter("netgen_remote_media.remove_unused_resources", $config['remove_unused']);
         $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.' . $config['provider']);
 
