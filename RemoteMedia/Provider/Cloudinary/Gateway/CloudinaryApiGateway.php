@@ -57,43 +57,95 @@ class CloudinaryApiGateway extends Gateway
         return cloudinary_url_internal($source, $options);
     }
 
-    public function search($query, $options = array(), $limit = 10)
+    protected function searchByTags($query)
     {
-        if ($options['SearchByTags']) {
-            $result = $this->cloudinaryApi->resources_by_tag(
-                $query,
-                array(
-                    'tags' => true,
-                    'context' => true,
-                )
-            );
-        } else {
-            $result = $this->cloudinaryApi->resources(
-                array(
-                    'prefix' => $query,
-                    'type' => $options['type'],
-                    'tags' => true,
-                    'max_results' => $limit
-                )
-            )->getArrayCopy();
-        }
+        $resources = $this->cloudinaryApi->resources_by_tag(
+            $query,
+            array(
+                'tags' => true,
+                'context' => true,
+            )
+        );
 
-        if (!empty($result['resources'])) {
-            return $result['resources'];
-        }
-
-        return array();
+        return !empty($resources['resources']) ? $resources['resources'] : array();
     }
 
-    public function listResources($options)
+    protected function searchByPrefix($query, $options)
     {
-        $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+        $apiOptions = array(
+            'prefix' => $query,
+            'type' => $options['type'],
+            'tags' => true,
+            'max_results' => 500
+        );
 
-        if (!empty($resources['resources'])) {
-            return $resources['resources'];
+        $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
+
+        $items = $resources['resources'];
+        while (!empty($resources['next_cursor'])) {
+            $options['next_cursor'] = $resources['next_cursor'];
+            $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+
+            if (!empty($resources['resources'])) {
+                $items = array_merge($items, $resources['resources']);
+            }
         }
 
-        return array();
+        return !empty($items) ? $items : array();
+    }
+
+    /**
+     * Offset and limit are ignored here, as cloudinary API does not support pagination.
+     * All search results will be returned here, and caching layer takes care of slicing
+     * the result.
+     * Max limit for this endpoint is 500.
+     *
+     * @param $query
+     * @param array $options
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return array
+     */
+    public function search($query, $options = array(), $limit = 10, $offset = 0)
+    {
+        if ($options['SearchByTags']) {
+            return $this->searchByTags($query);
+        }
+
+        return $this->searchByPrefix($query, $options);
+
+    }
+
+    /**
+     * Offset and limit are ignored here, as cloudinary API does not support
+     * pagination. Everything is fetched here, and caching layer takes care of slicing
+     * the result.
+     * Max limit for this endpoint is 500.
+     *
+     * @param $options
+     * @param $offset
+     * @param $limit
+     *
+     * @return array
+     */
+    public function listResources($options, $offset, $limit)
+    {
+        $options['max_results'] = 500;
+
+        $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+
+        $items = $resources['resources'];
+        while (!empty($resources['next_cursor'])) {
+            $options['next_cursor'] = $resources['next_cursor'];
+            $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+
+            if (!empty($resources['resources'])) {
+                $items = array_merge($items, $resources['resources']);
+            }
+        }
+
+        return !empty($items) ? $items : array();
     }
 
     public function countResources()
@@ -103,7 +155,6 @@ class CloudinaryApiGateway extends Gateway
         return $usage['resources'];
     }
 
-    // @todo: check if more than 500
     public function countResourcesInFolder($folder)
     {
         $options = array('type' => 'upload', 'max_results' => 500);
@@ -114,7 +165,16 @@ class CloudinaryApiGateway extends Gateway
 
         $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
 
-        return count($resources['resources']);
+        $count = count($resources['resources']);
+
+        while (!empty($resources['next_cursor'])) {
+            $options['next_cursor'] = $resources['next_cursor'];
+            $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+
+            $count += count($resources['resources']);
+        }
+
+        return $count;
     }
 
     public function get($id, $options)

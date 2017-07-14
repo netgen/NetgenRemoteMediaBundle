@@ -164,18 +164,18 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Lists all available resources from the remote storage.
      *
      * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    public function listResources($limit = 10)
+    public function listResources($limit = 10, $offset = 0)
     {
         $options = array(
             'tags' => true,
             'context' => true,
-            'max_results' => $limit,
         );
 
-        return $this->gateway->listResources($options);
+        return $this->gateway->listResources($options, $limit, $offset);
     }
 
     /**
@@ -191,21 +191,21 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Searches for the remote resource containing term in the query.
      *
-     * @todo: make use of the 'next_cursor' parametar in the API
      *
      * @param string $query
      * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    public function searchResources($query, $limit = 10)
+    public function searchResources($query, $limit = 10, $offset = 0)
     {
         $options = array(
             'SearchByTags' => false,
             'type' => 'upload',
         );
 
-        return $this->gateway->search($query, $options);
+        return $this->gateway->search($query, $options, $limit, $offset);
     }
 
     /**

@@ -1,5 +1,4 @@
 parameters:
-    #netgen_remote_media.default.cloudinary.folder_name: ''
     netgen_remote_media.cloudinary.delete_not_used: true
 
 services:
@@ -17,12 +16,18 @@ services:
         calls:
             - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%"]]
 
+    netgen_remote_media.provider.cloudinary.gateway.cached:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway
+        arguments:
+            - "@netgen_remote_media.provider.cloudinary.gateway"
+            - "@ezpublish.cache_pool"
+
     netgen_remote_media.provider.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider
         arguments:
             - "@netgen_remote_media.handler_registry"
             - "@netgen_remote_media.variation.resolver"
-            - "@netgen_remote_media.provider.cloudinary.gateway"
+            - "@netgen_remote_media.provider.cloudinary.gateway.cached"
             - "@?logger"
 
     netgen_remote_media.helper:

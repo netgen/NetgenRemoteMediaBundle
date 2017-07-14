@@ -8,9 +8,9 @@ abstract class Gateway
 
     public abstract function getVariationUrl($source, $options);
 
-    public abstract function search($query, $options = array(), $limit = 10);
+    public abstract function search($query, $options = array(), $limit = 10, $offset = 0);
 
-    public abstract function listResources($options);
+    public abstract function listResources($options, $offset, $limit);
 
     public abstract function countResources();
 

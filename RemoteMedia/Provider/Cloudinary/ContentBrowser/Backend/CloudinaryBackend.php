@@ -110,9 +110,9 @@ class CloudinaryBackend implements BackendInterface
     public function getSubItems(LocationInterface $location, $offset = 0, $limit = 25)
     {
         if ($location->getLocationId() === "0") {
-            $resources = $this->adminProvider->listResources($limit);
+            $resources = $this->adminProvider->listResources($offset, $limit);
         } else {
-            $resources = $this->adminProvider->searchResources($location->getLocationId(), $limit);
+            $resources = $this->adminProvider->searchResources($location->getLocationId(), $limit, $offset);
         }
 
         return $this->buildItems($resources);
@@ -128,7 +128,7 @@ class CloudinaryBackend implements BackendInterface
     public function getSubItemsCount(LocationInterface $location)
     {
         if ($location->getLocationId() === "0") {
-            return $this->adminProvider->countResourcesInFolder('');
+            return $this->adminProvider->countResources();
         }
 
         return $this->adminProvider->countResourcesInFolder($location->getLocationId());

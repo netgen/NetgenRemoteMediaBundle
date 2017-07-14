@@ -7,6 +7,10 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Base\Exceptions\NotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
+/**
+ * Class Helper
+ * @internal
+ */
 class Helper
 {
     /**
