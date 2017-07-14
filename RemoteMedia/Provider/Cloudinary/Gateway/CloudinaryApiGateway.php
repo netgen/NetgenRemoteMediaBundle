@@ -25,11 +25,6 @@ class CloudinaryApiGateway extends Gateway
      */
     protected $cloudinaryUploader;
 
-    /**
-     * @var \Cloudinary\Search
-     */
-    protected $cloudinarySearch;
-
     public function initCloudinary($cloudName, $apiKey, $apiSecret)
     {
         $this->cloudinary = new Cloudinary();
@@ -43,8 +38,6 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
-
-        $this->cloudinarySearch = new Search();
     }
 
     /**
