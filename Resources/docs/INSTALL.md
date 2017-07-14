@@ -1,9 +1,12 @@
-## Installation instructions for Netgen Remote Media Bundle ##
+# Installation instructions for Netgen Remote Media Bundle #
 
-**Requirements**
-* eZ Publish 5.4.*
+## Requirements ##
+* eZ Publish 5.4. or eZ Platform
 
-**Installation steps**
+**Suggested**
+* this package works best with NetgenAdminUI and, optionally, Netgen Content Browser
+
+## Installation steps ##
 
 * Run the following from your website root folder:
 	`$ composer require netgen/remote-media-bundle:^1.0@alpha`
@@ -19,6 +22,8 @@
     ```
     
 * Configure legacy settings:
+    * activate legacy extension
+    
     * add the following to `ezoe.ini.append.php` (create one if it does not exist)
     ```
     [EditorSettings]

@@ -1,9 +1,9 @@
-## Usage instructions for Netgen Remote Media Bundle ##
+# Usage instructions for Netgen Remote Media Bundle #
 
-**Content class definition**
+## Content class definition ##
 You can add the remote media content field to your content type. There is no additional configuration needed.
 
-**Image variation definitions**
+## Image variation definitions ##
 Image variations are defined through yaml configuration, in the similar way it is defined in eZPublish. Configuration is siteaccess aware, and furthermore, you can define variations per content type, meaning you can have two variations that are named the same, but use different transformations depending on the content type where they are used.
 Example:
 ```yaml
@@ -33,7 +33,7 @@ netgen_remote_media:
 ```
 You can check the list of available tranformations [here](Resources/docs/Transfromations.md). Further details on what which transformation does is available on [Cloudinary web](http://cloudinary.com/documentation/image_transformations).
 
-**In templates**
+## In templates ##
 If you have added the field to your content class, now you can use it with normal `ez_render_field` function:
 ```php
 {{ ez_render_field(
@@ -73,5 +73,5 @@ Note that not all parameters will be applicable always, it depends on the type o
 
 If you need to get just the url of the image, you can get the `Variation` object by using twig function `netgen_remote_variation`:
 ```php
-{% set variation = netgen_remote_variation(content, 'image', 'ng_article', 'full') %}
+{% set variation = netgen_remote_variation(content, 'image', 'article', 'full') %}
 ```
