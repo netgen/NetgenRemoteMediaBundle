@@ -151,12 +151,12 @@ class CloudinaryApiGateway extends Gateway
      * @see \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway.php
      *
      * @param $options
-     * @param $offset
      * @param $limit
+     * @param $offset
      *
      * @return array
      */
-    public function listResources($options, $offset, $limit)
+    public function listResources($options, $limit, $offset)
     {
         $options['max_results'] = 500;
 

@@ -94,18 +94,18 @@ class CachedGateway extends Gateway
      * List all available resources.
      *
      * @param $options
-     * @param $offset
      * @param $limit
+     * @param $offset
      *
      * @return array
      */
-    public function listResources($options, $offset, $limit)
+    public function listResources($options, $limit, $offset)
     {
         $cache = $this->cache->getItem(self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST);
 
         $list = $cache->get();
         if ($cache->isMiss()) {
-            $list = $this->gateway->listResources($options, $offset, $limit);
+            $list = $this->gateway->listResources($options, $limit, $offset);
             $cache->set($list, self::TTL);
         }
 

@@ -68,7 +68,7 @@ abstract class RemoteMediaProvider
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
-     * @param string $format
+     * @param string|array $format
      * @param bool $secure
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */

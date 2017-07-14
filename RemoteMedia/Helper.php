@@ -196,7 +196,7 @@ class Helper
      *
      * @return array
      */
-    protected function formatBrowseList(array $list)
+    public function formatBrowseList(array $list)
     {
         $listFormatted = array();
         foreach ($list as $hit) {
@@ -220,32 +220,5 @@ class Helper
         }
 
         return $listFormatted;
-    }
-
-    /**
-     * Performs the search for the available remote resources.
-     *
-     * @param $query
-     * @param $offset
-     * @param $limit
-     * @param $hardLimit
-     *
-     * @return array
-     */
-    public function searchResources($query, $offset, $limit, $hardLimit)
-    {
-        if (empty($query)) {
-            $list = $this->provider->listResources($hardLimit);
-        } else {
-            $list = $this->provider->searchResources($query, $hardLimit);
-            $listByTags = $this->provider->searchResourcesByTag($query);
-
-            $list = array_merge($list, $listByTags);
-        }
-
-        return array(
-            'hits' => $this->formatBrowseList(array_slice($list, $offset, $limit)),
-            'count' => count($list),
-        );
     }
 }
