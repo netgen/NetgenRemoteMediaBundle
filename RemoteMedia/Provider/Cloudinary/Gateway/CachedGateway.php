@@ -15,6 +15,8 @@ class CachedGateway extends Gateway
     const COUNT = 'resources_count';
     const FOLDER_COUNT = 'folder_count';
 
+    const TTL = 7200;
+
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway
      */
@@ -47,7 +49,7 @@ class CachedGateway extends Gateway
         $searchResult = $cache->get();
         if ($cache->isMiss()) {
             $searchResult = $this->gateway->search($query, $options, $limit);
-            $cache->set($searchResult);
+            $cache->set($searchResult, self::TTL);
         }
 
         return array_slice($searchResult, $offset, $limit);
@@ -60,7 +62,7 @@ class CachedGateway extends Gateway
         $list = $cache->get();
         if ($cache->isMiss()) {
             $list = $this->gateway->listResources($options, $offset, $limit);
-            $cache->set($list);
+            $cache->set($list, self::TTL);
         }
 
         return array_slice($list, $offset, $limit);
@@ -73,7 +75,7 @@ class CachedGateway extends Gateway
         $list = $cache->get();
         if ($cache->isMiss()) {
             $list = $this->gateway->listFolders();
-            $cache->set($list);
+            $cache->set($list, self::TTL);
         }
 
         return $list;
@@ -91,7 +93,7 @@ class CachedGateway extends Gateway
         $count = $cache->get();
         if ($cache->isMiss()) {
             $count = $this->gateway->countResourcesInFolder($folder);
-            $cache->set($count);
+            $cache->set($count, self::TTL);
         }
 
         return $count;
