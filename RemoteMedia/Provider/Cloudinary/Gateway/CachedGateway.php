@@ -27,12 +27,25 @@ class CachedGateway extends Gateway
      */
     protected $cache;
 
+    /**
+     * CachedGateway constructor.
+     * @param Gateway $gateway
+     * @param CacheService $cache
+     */
     public function __construct(Gateway $gateway, CacheService $cache)
     {
         $this->gateway = $gateway;
         $this->cache = $cache;
     }
 
+    /**
+     * Uploads file to cloudinary.
+     *
+     * @param string $fileUri
+     * @param array $options
+     *
+     * @return array
+     */
     public function upload($fileUri, $options)
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
@@ -42,11 +55,29 @@ class CachedGateway extends Gateway
         return $uploadResult;
     }
 
+    /**
+     * Generates url to the media with provided options
+     *
+     * @param string $source
+     * @param array $options
+     *
+     * @return string
+     */
     public function getVariationUrl($source, $options)
     {
         return $this->gateway->getVariationUrl($source, $options);
     }
 
+    /**
+     * Perform search.
+     *
+     * @param string $query
+     * @param array $options
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return array
+     */
     public function search($query, $options = array(), $limit = 10, $offset = 0)
     {
         $cache = $this->cache->getItem(self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode( '|', $options));
@@ -59,6 +90,15 @@ class CachedGateway extends Gateway
         return array_slice($searchResult, $offset, $limit);
     }
 
+    /**
+     * List all available resources.
+     *
+     * @param $options
+     * @param $offset
+     * @param $limit
+     *
+     * @return array
+     */
     public function listResources($options, $offset, $limit)
     {
         $cache = $this->cache->getItem(self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST);
@@ -72,6 +112,11 @@ class CachedGateway extends Gateway
         return array_slice($list, $offset, $limit);
     }
 
+    /**
+     * Lists all available folders.
+     *
+     * @return array
+     */
     public function listFolders()
     {
         $cache = $this->cache->getItem(self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST);
@@ -85,11 +130,23 @@ class CachedGateway extends Gateway
         return $list;
     }
 
+    /**
+     * Returns the overall resources usage on the cloudinary account.
+     *
+     * @return int
+     */
     public function countResources()
     {
         return $this->gateway->countResources();
     }
 
+    /**
+     * Returns the number of resources in the provided folder.
+     *
+     * @param $folder
+     *
+     * @return int
+     */
     public function countResourcesInFolder($folder)
     {
         $cache = $this->cache->getItem(self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder);
@@ -103,41 +160,100 @@ class CachedGateway extends Gateway
         return $count;
     }
 
+    /**
+     * Fetches the remote resource by id.
+     *
+     * @param $id
+     * @param $options
+     *
+     * @return array
+     */
     public function get($id, $options)
     {
         return $this->gateway->get($id, $options);
     }
 
+    /**
+     * Adds new tag to the remote resource.
+     *
+     * @param $id
+     * @param $tag
+     *
+     * @return array
+     */
     public function addTag($id, $tag)
     {
         return $this->gateway->addTag($id, $tag);
     }
 
+    /**
+     * Removes the tag from the remote resource.
+     *
+     * @param $id
+     * @param $tag
+     *
+     * @return array
+     */
     public function removeTag($id, $tag)
     {
         return $this->gateway->removeTag($id, $tag);
     }
 
+    /**
+     * Updates the remote resource.
+     *
+     * @param $id
+     * @param $options
+     */
     public function update($id, $options)
     {
         return $this->gateway->update($id, $options);
     }
 
+    /**
+     * Returns the url for the thumbnail of video with the provided id.
+     *
+     * @param $id
+     * @param array $options
+     *
+     * @return string
+     */
     public function getVideoThumbnail($id, $options = array())
     {
         return $this->gateway->getVideoThumbnail($id, $options);
     }
 
+    /**
+     * Generates video tag for the video with the provided id.
+     *
+     * @param $id
+     * @param array $options
+     *
+     * @return string
+     */
     public function getVideoTag($id, $options = array())
     {
         return $this->gateway->getVideoTag($id, $options);
     }
 
+    /**
+     * Generates download link for the remote resource.
+     *
+     * @param $id
+     * @param $options
+     *
+     * @return string
+     */
     public function getDownloadLink($id, $options)
     {
         return $this->gateway->getDownloadLink($id, $options);
     }
 
+    /**
+     * Deletes the resource from the cloudinary.
+     *
+     * @param $id
+     */
     public function delete($id)
     {
         return $this->gateway->delete($id);
