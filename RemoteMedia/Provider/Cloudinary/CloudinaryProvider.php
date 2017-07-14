@@ -28,6 +28,22 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * @return bool
+     */
+    public function supportsContentBrowser()
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function supportsFolders()
+    {
+        return true;
+    }
+
+    /**
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
@@ -186,6 +202,28 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function countResources()
     {
         return $this->gateway->countResources();
+    }
+
+    /**
+     * Lists all available folders.
+     *
+     * @return array
+     */
+    public function listFolders()
+    {
+        $list = $this->gateway->listFolders();
+
+        return $list;
+    }
+
+    /**
+     * @param $folder
+     *
+     * @return int
+     */
+    public function countResourcesInFolder($folder)
+    {
+        return $this->gateway->countResourcesInFolder($folder);
     }
 
     /**

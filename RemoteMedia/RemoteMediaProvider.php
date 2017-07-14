@@ -41,6 +41,16 @@ abstract class RemoteMediaProvider
     }
 
     /**
+     * @return bool
+     */
+    abstract public function supportsContentBrowser();
+
+    /**
+     * @return bool
+     */
+    abstract public function supportsFolders();
+
+    /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
@@ -68,10 +78,19 @@ abstract class RemoteMediaProvider
      * Lists all available resources from the remote storage.
      *
      * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    abstract public function listResources($limit = 10);
+    abstract public function listResources($limit = 10, $offset = 0);
+
+    /**
+     * Lists all available folders.
+     * If folders are not supported, should return empty array.
+     *
+     * @return array
+     */
+    abstract public function listFolders();
 
     /**
      * Counts available resources from the remote storage.
@@ -85,10 +104,11 @@ abstract class RemoteMediaProvider
      *
      * @param string $query
      * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    abstract public function searchResources($query, $limit = 10);
+    abstract public function searchResources($query, $limit = 10, $offset = 0);
 
     /**
      * Searches for the remote resource tagged with a provided tag.

@@ -43,13 +43,9 @@ services:
         tags:
             - { name: "netgen_admin_ui.menu_plugin" }
 
-    netgen_remote_media.provider.cloudinary.admin:
-        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\AdminProvider
-        parent: netgen_remote_media.provider.cloudinary
-
     netgen_remote_media.content_browser.backend.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\Backend\CloudinaryBackend
         arguments:
-            - "@netgen_remote_media.provider.cloudinary.admin"
+            - "@netgen_remote_media.provider.cloudinary"
         tags:
             -  { name: netgen_content_browser.backend, item_type: cloudinary }

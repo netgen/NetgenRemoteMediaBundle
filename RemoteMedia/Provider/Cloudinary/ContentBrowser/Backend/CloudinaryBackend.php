@@ -3,19 +3,22 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\Backend;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\AdminProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\Item\Item;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\Item\Location;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\ContentBrowser\Backend\BackendInterface;
 use Netgen\ContentBrowser\Item\LocationInterface;
 
 class CloudinaryBackend implements BackendInterface
 {
-    protected $adminProvider;
+    /** @var CloudinaryProvider */
+    protected $provider;
 
-    public function __construct(AdminProvider $adminProvider)
+    public function __construct(RemoteMediaProvider $provider)
     {
-        $this->adminProvider = $adminProvider;
+        $this->provider = $provider;
     }
 
     /**
@@ -61,7 +64,7 @@ class CloudinaryBackend implements BackendInterface
             return $this->buildRootItem();
         }
 
-        $resource = $this->adminProvider->getRemoteResource($id, 'image');
+        $resource = $this->provider->getRemoteResource($id, 'image');
 
         return $this->buildItem($resource);
     }
@@ -75,7 +78,7 @@ class CloudinaryBackend implements BackendInterface
      */
     public function getSubLocations(LocationInterface $location)
     {
-        $folders = $this->adminProvider->listFolders();
+        $folders = $this->provider->listFolders();
 
         return $this->buildLocations($folders);
     }
@@ -93,7 +96,7 @@ class CloudinaryBackend implements BackendInterface
             return 0;
         }
 
-        $folders = $this->adminProvider->listFolders();
+        $folders = $this->provider->listFolders();
 
         return count($folders);
     }
@@ -110,9 +113,9 @@ class CloudinaryBackend implements BackendInterface
     public function getSubItems(LocationInterface $location, $offset = 0, $limit = 25)
     {
         if ($location->getLocationId() === "0") {
-            $resources = $this->adminProvider->listResources($offset, $limit);
+            $resources = $this->provider->listResources($offset, $limit);
         } else {
-            $resources = $this->adminProvider->searchResources($location->getLocationId(), $limit, $offset);
+            $resources = $this->provider->searchResources($location->getLocationId(), $limit, $offset);
         }
 
         return $this->buildItems($resources);
@@ -128,10 +131,10 @@ class CloudinaryBackend implements BackendInterface
     public function getSubItemsCount(LocationInterface $location)
     {
         if ($location->getLocationId() === "0") {
-            return $this->adminProvider->countResources();
+            return $this->provider->countResources();
         }
 
-        return $this->adminProvider->countResourcesInFolder($location->getLocationId());
+        return $this->provider->countResourcesInFolder($location->getLocationId());
     }
 
     /**
