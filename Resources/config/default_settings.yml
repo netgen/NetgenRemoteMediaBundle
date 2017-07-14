@@ -1,16 +1,16 @@
 system:
     default:
         image_variations:
-            ezoe:
-                Small:
+            embedded:
+                small:
                     transformations:
-                        - { name: crop, params: [1, 1] }
+                        - { name: crop, params: [200, 200] }
                         - { name: resize, params: [200, 200] }
-                Medium:
+                medium:
                     transformations:
-                        - { name: crop, params: [1, 1] }
-                        - { name: resize, params: [400, 400] }
-                Large:
+                        - { name: crop, params: [800, 450] }
+                        - { name: resize, params: [800, 450] }
+                large:
                     transformations:
-                        - { name: crop, params: [1, 1] }
-                        - { name: resize, params: [800, 800] }
+                        - { name: crop, params: [1600, 900] }
+                        - { name: resize, params: [1600, 900] }

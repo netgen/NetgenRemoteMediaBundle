@@ -29,7 +29,7 @@ $remoteResourceValue->variations = $variations;
 
 $variation = $provider->buildVariation(
     $remoteResourceValue,
-    'ezoe',
+    'embedded',
     $variantName
 );
 

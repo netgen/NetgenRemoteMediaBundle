@@ -17,7 +17,7 @@ class VariationResolver
     }
 
     /**
-     * Return merged transformations defined for a provided content type and default ones.
+     * Return merged variations defined for a provided content type and default ones.
      *
      * @param string $contentTypeIdentifier
      *
@@ -32,9 +32,36 @@ class VariationResolver
         return array_merge($defaultVariations, $contentTypeVariations);
     }
 
+    /**
+     * Returns variations for a provided content type which have 'crop' transformation configured
+     *
+     * @param $contentTypeIdentifier
+     *
+     * @return array
+     */
     public function getCroppbableVariations($contentTypeIdentifier)
     {
         $variations = $this->getVariationsForContentType($contentTypeIdentifier);
+
+        $croppableVariations = array();
+        foreach ($variations as $variationName => $variationOptions) {
+            if (isset($variationOptions['transformations']['crop'])) {
+                $croppableVariations[$variationName] = $variationOptions;
+            }
+        }
+
+        return $croppableVariations;
+    }
+
+    /**
+     * Returns variations to be used when embedding image into ezxml text.
+     *
+     * @return array
+     */
+    public function getEmbedVariations()
+    {
+        $variations= isset($this->variations['embedded']) ?
+            $this->variations['embedded'] : array();
 
         $croppableVariations = array();
         foreach ($variations as $variationName => $variationOptions) {

@@ -71,13 +71,6 @@ class Configuration extends SiteAccessConfiguration
                                 'pull-right|Right adjusted'
                             ))
                         ->end()
-                        ->variableNode('variation_list')
-                            ->defaultValue(array(
-                                'Small,200x200',
-                                'Medium,400x400',
-                                'Large,800x600'
-                            ))
-                        ->end()
                     ->end()
                 ->end()
             ->end()

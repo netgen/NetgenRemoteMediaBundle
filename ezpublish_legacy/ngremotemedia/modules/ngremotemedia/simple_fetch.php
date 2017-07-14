@@ -7,44 +7,31 @@ $resourceId = $http->getVariable('resourceId', '');
 $container = ezpKernel::instance()->getServiceContainer();
 $helper = $container->get( 'netgen_remote_media.helper' );
 $provider = $container->get('netgen_remote_media.provider');
-$ezoeVariationList = $container->getParameter('netgen_remote_media.ezoe.variation_list');
+$variationResolver = $container->get('netgen_remote_media.variation.resolver');
 
-$value = $provider->getRemoteResource($resourceId, 'image');
+$ezoeVariationList = $variationResolver->getEmbedVariations();
 
-$versions = $ezoeVariationList;
 $availableVersions = array();
-if (!empty($versions) && is_array($versions)) {
-    foreach ($versions as $version) {
+if (!empty($ezoeVariationList)) {
+    foreach ($ezoeVariationList as $aliasName => $aliasConfig) {
 
-        $format = explode(',', $version);
-
-        if (count($format) != 2) {
-            continue;
+        foreach($aliasConfig['transformations'] as $name => $config) {
+            if ($name === 'crop') {
+                $availableVersions[] = array(
+                    'name' => $aliasName,
+                    'size' => $config,
+                );
+            }
         }
-
-        $size = explode('x', $format[1]);
-        if (count($size) != 2) {
-            continue;
-        }
-
-        /*
-         * Both dimensions can't be unbound
-         */
-        if ($size[0] == 0 && $size[1] == 0) {
-            continue;
-        }
-
-        $availableVersions[] = array(
-            'name' => $format[0],
-            'size' => $size,
-        );
     }
 }
+
+$value = $provider->getRemoteResource($resourceId, 'image');
 
 $responseData = array(
     'media' => !empty($value) ? $value: false,
     'available_versions' => $availableVersions,
-    'class_list' => $this->ezoeClassList
+    'class_list' => ''
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
