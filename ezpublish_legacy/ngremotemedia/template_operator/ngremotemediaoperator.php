@@ -17,7 +17,8 @@ class NgRemoteMediaOperator
             'videoThumbnail',
             'ng_image_variations',
             'scaling_format',
-            'is_content_browser_active'
+            'is_content_browser_active',
+            'remote_folders'
         );
     }
 
@@ -96,7 +97,8 @@ class NgRemoteMediaOperator
                     'required' => false
                 )
             ),
-            'is_content_browser_active' => array()
+            'is_content_browser_active' => array(),
+            'remote_folders' => array()
         );
     }
 
@@ -134,14 +136,31 @@ class NgRemoteMediaOperator
             $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
         } elseif ($operatorName === 'is_content_browser_active') {
             $operatorValue = $this->isContentBrowserActive();
+        } elseif ($operatorName === 'remote_folders') {
+            $operatorValue = $this->listFolders();
         }
+    }
+
+    function listFolders()
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get('netgen_remote_media.provider');
+
+        if (!$provider->supportsFolders()) {
+            return null;
+        }
+
+        return $provider->listFolders();
     }
 
     function isContentBrowserActive()
     {
         $container = ezpKernel::instance()->getServiceContainer();
 
-        return $container->getParameter('netgen_remote_media.content_browser.activated');
+        $cbActive = $container->getParameter('netgen_remote_media.content_browser.activated');
+        $provider = $container->get('netgen_remote_media.provider');
+
+        return $cbActive && $provider->supportsContentBrowser();
 
     }
 
