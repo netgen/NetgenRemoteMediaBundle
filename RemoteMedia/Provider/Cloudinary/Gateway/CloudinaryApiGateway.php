@@ -6,7 +6,6 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 use \Cloudinary;
 use \Cloudinary\Uploader;
 use \Cloudinary\Api;
-use \Cloudinary\Search;
 
 class CloudinaryApiGateway extends Gateway
 {
@@ -38,6 +37,13 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
+    }
+
+    public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api)
+    {
+        $this->cloudinary = $cloudinary;
+        $this->cloudinaryUploader = $uploader;
+        $this->cloudinaryApi = $api;
     }
 
     /**
@@ -99,7 +105,7 @@ class CloudinaryApiGateway extends Gateway
     {
         $apiOptions = array(
             'prefix' => $query,
-            'type' => $options['type'],
+            'type' => isset($options['type']) ? $options['type'] : 'upload',
             'tags' => true,
             'max_results' => 500
         );
@@ -108,8 +114,8 @@ class CloudinaryApiGateway extends Gateway
 
         $items = $resources['resources'];
         while (!empty($resources['next_cursor'])) {
-            $options['next_cursor'] = $resources['next_cursor'];
-            $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+            $apiOptions['next_cursor'] = $resources['next_cursor'];
+            $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
 
             if (!empty($resources['resources'])) {
                 $items = array_merge($items, $resources['resources']);
@@ -135,7 +141,7 @@ class CloudinaryApiGateway extends Gateway
      */
     public function search($query, $options = array(), $limit = 10, $offset = 0)
     {
-        if ($options['SearchByTags']) {
+        if (isset($options['SearchByTags']) && $options['SearchByTags'] === true) {
             return $this->searchByTags($query);
         }
 

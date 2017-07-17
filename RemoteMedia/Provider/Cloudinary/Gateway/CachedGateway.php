@@ -29,8 +29,8 @@ class CachedGateway extends Gateway
 
     /**
      * CachedGateway constructor.
-     * @param Gateway $gateway
-     * @param CacheService $cache
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway $gateway
+     * @param \Tedivm\StashBundle\Service\CacheService $cache
      */
     public function __construct(Gateway $gateway, CacheService $cache)
     {

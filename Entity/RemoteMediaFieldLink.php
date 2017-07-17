@@ -78,6 +78,26 @@ class RemoteMediaFieldLink
     }
 
     /**
+     * @param mixed $versionId
+     *
+     * @return \Netgen\Bundle\RemoteMediaBundle\Entity\RemoteMediaFieldLink
+     */
+    public function setVersionId($versionId)
+    {
+        $this->versionId = $versionId;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVersionId()
+    {
+        return $this->versionId;
+    }
+
+    /**
      * Sets remote resource id.
      *
      * @param string $resourceId

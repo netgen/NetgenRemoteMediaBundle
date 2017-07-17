@@ -208,9 +208,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function listFolders()
     {
-        $list = $this->gateway->listFolders();
-
-        return $list;
+        return $this->gateway->listFolders();
     }
 
     /**

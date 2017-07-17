@@ -24,6 +24,7 @@
         "cloudinary/cloudinary_php": "^1.0"
     },
     "require-dev": {
+        "netgen/admin-ui-bundle": "^2.0",
         "matthiasnoback/symfony-config-test": "~2.0",
         "matthiasnoback/symfony-dependency-injection-test": "~1.0",
         "phpunit/phpunit": "^5.7",

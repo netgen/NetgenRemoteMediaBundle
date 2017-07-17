@@ -20,9 +20,14 @@
             <directory>.</directory>
             <exclude>
                 <directory>ezpublish_legacy</directory>
+                <directory>Command</directory>
+                <directory>RemoteMedia/Provider/Cloudinary/ContentBrowser</directory>
                 <directory>Resources</directory>
                 <directory>Tests</directory>
                 <directory>vendor</directory>
+                <directory>update</directory>
+                <directory>extension</directory>
+                <file>RemoteMedia/Provider/Cloudinary/Gateway/CachedGateway.php</file>
                 <file>NetgenRemoteMediaBundle.php</file>
             </exclude>
         </whitelist>
