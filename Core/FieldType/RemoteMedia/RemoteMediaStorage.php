@@ -153,7 +153,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
 
             foreach ($resourceIdsToDelete as $resourceId) {
                 // check if resource_id is used anywhere else
-                if (!$gateway->remoteResourceConnected($resourceId)) {
+                if (!$gateway->remoteResourceConnected($resourceId, $this->provider->getIdentifier())) {
                     // delete from remote provider
                     $this->provider->deleteResource($resourceId);
                 }
