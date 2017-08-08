@@ -31,19 +31,22 @@ class RemoteMediaStorage extends GatewayBasedStorage
 
     /**
      * Constructor.
-
      * @param \eZ\Publish\API\Repository\ContentService $contentService
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
      * @param \eZ\Publish\API\Repository\FieldTypeService $fieldTypeService
+     * @param array $gateways
      */
     public function __construct(
         ContentService $contentService,
         RemoteMediaProvider $provider,
-        FieldTypeService $fieldTypeService
+        FieldTypeService $fieldTypeService,
+        array $gateways = array()
     ) {
         $this->contentService = $contentService;
         $this->provider = $provider;
         $this->fieldTypeService = $fieldTypeService;
+
+        parent::__construct($gateways);
     }
 
     public function setDeleteUnused($deleteUnused = false)
