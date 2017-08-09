@@ -27,6 +27,14 @@ class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.testprovider');
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testWithoutProviderParameter()
+    {
+        $this->load(array('provider' => null));
+    }
+    
     public function testIfContentBrowserIsActive()
     {
         $this->container->setParameter('kernel.bundles', array('NetgenContentBrowserBundle' => 'NetgenContentBrowserBundle'));
