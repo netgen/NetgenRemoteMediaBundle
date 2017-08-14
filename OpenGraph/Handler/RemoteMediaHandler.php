@@ -102,15 +102,16 @@ class RemoteMediaHandler extends Handler
                 return $media->secure_url;
             }
 
-            $contentTypeIdentifier = $this->contentTypeService->loadContentType(
-                $this->content->contentInfo->contentTypeId
-            )->identifier;
-            $variation = $this->provider->buildVariation($media, $contentTypeIdentifier, $params[1]);
+            $contentType =$this->contentTypeService->loadContentType(
+                $this->content->versionInfo->contentInfo->contentTypeId
+            );
+
+            $variation = $this->provider->buildVariation($media, $contentType->identifier, $params[1]);
 
             return $variation->url;
         } catch (Exception $e) {
             $this->logger->error(
-                "Open Graph keymedia handler: Error while getting image with id {$field->value->id}: " . $e->getMessage()
+                "Open Graph remote media handler: Error while getting media with id {$field->value->resourceId}: " . $e->getMessage()
             );
         }
 

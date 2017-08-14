@@ -142,6 +142,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param string $contentTypeIdentifier
      * @param string|array $variationName
      * @param bool $secure
+     *
      * @return Variation
      */
     public function buildVariation(Value $value, $contentTypeIdentifier, $variationName, $secure = true)
