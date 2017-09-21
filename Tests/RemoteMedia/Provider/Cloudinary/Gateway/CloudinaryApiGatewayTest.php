@@ -39,6 +39,11 @@ class CloudinaryApiGatewayTest extends TestCase
         $this->apiGateway = $apiGateway;
     }
 
+    public function testInitCloudinary()
+    {
+        $this->apiGateway->initCloudinary('testcloud', 'test_key', 'test_secret');
+    }
+
     public function testGetVariationUrl()
     {
         $source = 'test.jpg';
@@ -110,7 +115,9 @@ class CloudinaryApiGatewayTest extends TestCase
                 ),
                 new \ArrayObject(
                     array(
-                        'resource' => array()
+                        'resources' => array(
+                            'test' => 'test',
+                        )
                     )
                 )
             );
@@ -151,7 +158,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->method('resources')
             ->willReturnOnConsecutiveCalls(
                 new \ArrayObject(array('resources' => array(), 'next_cursor' => 123)),
-                new \ArrayObject(array('resources' => array()))
+                new \ArrayObject(array('resources' => array('test' => 'test')))
             );
 
         $this->cloudinaryApi

@@ -220,6 +220,10 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->method('getTranslatedField')
             ->willReturn($this->field);
 
-        $this->remoteMediaHandler->getMetaTags('some_tag', array('some_value', 'some_value_2'));
+        $this->requestStack->expects($this->once())
+            ->method('getCurrentRequest')
+            ->willReturn(new Request());
+
+        $this->remoteMediaHandler->getMetaTags('some_tag', array('some_value', 'some_value_2', 'some_value_3'));
     }
 }

@@ -4,11 +4,16 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
+use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Crop;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Resize;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class CloudinaryProviderTest extends TestCase
 {
@@ -32,16 +37,23 @@ class CloudinaryProviderTest extends TestCase
      */
     protected $gateway;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $logger;
+
     public function setUp()
     {
         $this->registry = $this->createMock(Registry::class);
         $this->variationResolver = $this->createMock(VariationResolver::class);
         $this->gateway = $this->createMock(CloudinaryApiGateway::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->cloudinaryProvider = new CloudinaryProvider(
             $this->registry,
             $this->variationResolver,
-            $this->gateway
+            $this->gateway,
+            $this->logger
         );
     }
 
@@ -455,6 +467,104 @@ class CloudinaryProviderTest extends TestCase
         $this->cloudinaryProvider->generateVideoTag($value, 'test_content_type', $variationConfig);
     }
 
+    public function testGetVideoTagWithProvidedVariationName()
+    {
+        $options = array(
+            'controls' => true,
+            'fallback_content' => 'Your browser does not support HTML5 video tags'
+        );
+
+        $cropConfig = array(
+            'x' => 200,
+            'y' => 100,
+            'w' => 50,
+            'h' => 50,
+        );
+
+        $transformations = array(
+            'crop' => $cropConfig,
+            'resize' => array(),
+            'non_existing_transformation' => array(),
+        );
+
+        $variations = array(
+            'test_variation' => array(
+                'transformations' => $transformations,
+            ),
+        );
+
+        $cropOptions = array(
+            'x' => $cropConfig['x'],
+            'y' => $cropConfig['y'],
+            'width' => $cropConfig['w'],
+            'height' => (int)$cropConfig['h'],
+            'crop' => 'crop',
+        );
+
+        $variationConfig = array(
+            'secure' => true,
+            'transformation' => array(
+                $cropOptions
+            ),
+        );
+
+        $value = new Value();
+        $value->resourceId = 'testResourceId';
+        $value->variations = $transformations;
+
+        $this->variationResolver
+            ->expects($this->once())
+            ->method('getVariationsForContentType')
+            ->with('test_content_type')
+            ->willReturn($variations);
+
+        $cropHandler = $this->createMock(Crop::class);
+        $resizeHandler = $this->createMock(Resize::class);
+
+        $cropHandler
+            ->expects($this->once())
+            ->method('process')
+            ->with($value, 'test_variation', $cropConfig)
+            ->willReturn($cropOptions);
+
+        $resizeHandler
+            ->expects($this->once())
+            ->method('process')
+            ->with($value, 'test_variation', array())
+            ->willThrowException(new TransformationHandlerFailedException(Resize::class));
+
+        $this->registry
+            ->expects($this->exactly(3))
+            ->method('getHandler')
+            ->withConsecutive(
+                ['crop', 'cloudinary'],
+                ['resize', 'cloudinary']
+            )
+            ->willReturnOnConsecutiveCalls(
+                $cropHandler,
+                $resizeHandler
+            );
+
+        $this->registry
+            ->expects($this->at(2))
+            ->method('getHandler')
+            ->with('non_existing_transformation', 'cloudinary')
+            ->willThrowException(new TransformationHandlerNotFoundException('cloudinary', 'non_existing_transformation'));
+
+        $this->gateway
+            ->expects($this->once())
+            ->method('getVideoTag')
+            ->with($value->resourceId, $options + $variationConfig)
+            ->willReturn('video_tag')
+        ;
+
+        $this->logger
+            ->expects($this->exactly(2))
+            ->method('error');
+
+        $this->assertEquals('video_tag', $this->cloudinaryProvider->generateVideoTag($value, 'test_content_type', 'test_variation'));
+    }
+
     public function testGenerateDownloadLink()
     {
         $options = array(
@@ -597,6 +707,63 @@ class CloudinaryProviderTest extends TestCase
             $value,
             'test_content_type',
             array('crop' => 'fit', 'width' => 200, 'height' => 200)
+        );
+
+        $this->assertInstanceOf(Variation::class, $variation);
+        $this->assertEquals(
+            'https://cloudinary.com/c_fit,w_200,h_200/testId',
+            $variation->url
+        );
+    }
+
+    public function testBuildVariationWithProvidedVariationName()
+    {
+        $options = array(
+            'transformation' => array(),
+            'secure' => true,
+        );
+
+        $smallVariation = array(
+            'x' => 10,
+            'y' => 10,
+            'w' => 300,
+            'h' => 200
+        );
+
+        $value = new Value(
+            array(
+                'resourceId' => 'testId',
+                'url' => 'http://cloudinary.com/some/url',
+                'secure_url' => 'https://cloudinary.com/some/url',
+                'variations' => array(
+                    'small' => $smallVariation,
+                )
+            )
+        );
+
+        $variations = array(
+            'small' => array(
+                'transformations' => array(),
+            ),
+        );
+
+        $this->variationResolver
+            ->expects($this->once())
+            ->method('getVariationsForContentType')
+            ->with('test_content_type')
+            ->willReturn($variations);
+
+        $this->gateway
+            ->expects($this->once())
+            ->method('getVariationUrl')
+            ->with($value->resourceId, $options)
+            ->willReturn('https://cloudinary.com/c_fit,w_200,h_200/testId')
+        ;
+
+        $variation = $this->cloudinaryProvider->buildVariation(
+            $value,
+            'test_content_type',
+            'small'
         );
 
         $this->assertInstanceOf(Variation::class, $variation);
