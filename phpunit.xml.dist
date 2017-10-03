@@ -29,6 +29,7 @@
                 <directory>extension</directory>
                 <file>Core/FieldType/RemoteMedia/SearchField.php</file>
                 <file>RemoteMedia/Provider/Cloudinary/Gateway/CachedGateway.php</file>
+                <file>RemoteMedia/Helper.php</file>
                 <file>NetgenRemoteMediaBundle.php</file>
             </exclude>
         </whitelist>
