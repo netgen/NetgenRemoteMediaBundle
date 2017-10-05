@@ -24,7 +24,13 @@ class CloudinaryApiGateway extends Gateway
      */
     protected $cloudinaryUploader;
 
-    public function initCloudinary($cloudName, $apiKey, $apiSecret)
+    /**
+     * @param $cloudName
+     * @param $apiKey
+     * @param $apiSecret
+     * @param bool $useSubdomains
+     */
+    public function initCloudinary($cloudName, $apiKey, $apiSecret, $useSubdomains = false)
     {
         $this->cloudinary = new Cloudinary();
         $this->cloudinary->config(
@@ -32,6 +38,7 @@ class CloudinaryApiGateway extends Gateway
                 'cloud_name' => $cloudName,
                 'api_key' => $apiKey,
                 'api_secret' => $apiSecret,
+                'cdn_subdomain' => $useSubdomains
             )
         );
 
