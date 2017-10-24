@@ -261,22 +261,17 @@ class NgRemoteMediaType extends eZDataType
 
     function fromString($contentObjectAttribute, $string)
     {
-        $id = $string;
-        if(empty($string)){
-            $id = 'removed';
-        }
-
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.provider' );
 
         $value = $contentObjectAttribute->Content();
         $updatedValue = new Value();
 
-        if ($id !== 'removed') {
+        if (!empty($string)) {
             $updatedValue = $value;
 
-            if(empty($updatedValue->resourceId) || $updatedValue->resourceId !== $id){
-                $updatedValue->resourceId = $id;
+            if(empty($updatedValue->resourceId) || $updatedValue->resourceId !== $string){
+                $updatedValue->resourceId = $string;
             }
         }
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
