@@ -249,6 +249,36 @@ class NgRemoteMediaType extends eZDataType
 
         return $value;
     }
+
+    function toString($contentObjectAttribute)
+    {
+        if(!$this->hasObjectAttributeContent($contentObjectAttribute)){
+            return '';
+        }
+        $value = $this->objectAttributeContent($contentObjectAttribute);
+        return $value->resourceId;
+    }
+
+    function fromString($contentObjectAttribute, $string)
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get( 'netgen_remote_media.provider' );
+
+        $value = $contentObjectAttribute->Content();
+        $updatedValue = new Value();
+
+        if (!empty($string)) {
+            $updatedValue = $value;
+
+            if(empty($updatedValue->resourceId) || $updatedValue->resourceId !== $string){
+                $updatedValue->resourceId = $string;
+            }
+        }
+        $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
+        $this->saveExternalData($contentObjectAttribute, $updatedValue, $provider);
+
+        return true;
+    }
 }
 
 eZDataType::register(
