@@ -77,16 +77,18 @@ class CloudinaryApiGateway extends Gateway
      * @todo: probably should also iterate all results
      *
      * @param $query
+     * @param $resourceType
      *
      * @return array
      */
-    protected function searchByTags($query)
+    protected function searchByTags($query, $resourceType = 'image')
     {
         $resources = $this->cloudinaryApi->resources_by_tag(
             $query,
             array(
                 'tags' => true,
                 'context' => true,
+                'resource_type' => $resourceType
             )
         );
 
@@ -109,6 +111,9 @@ class CloudinaryApiGateway extends Gateway
             'tags' => true,
             'max_results' => 500
         );
+        if (isset($options['resource_type'])) {
+            $apiOptions['resource_type'] = $options['resource_type'];
+        }
 
         $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
 
@@ -142,7 +147,7 @@ class CloudinaryApiGateway extends Gateway
     public function search($query, $options = array(), $limit = 10, $offset = 0)
     {
         if (isset($options['SearchByTags']) && $options['SearchByTags'] === true) {
-            return $this->searchByTags($query);
+            return $this->searchByTags($query, $options['resource_type']);
         }
 
         return $this->searchByPrefix($query, $options);

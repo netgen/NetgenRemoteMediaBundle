@@ -79,10 +79,11 @@ abstract class RemoteMediaProvider
      *
      * @param int $limit
      * @param int $offset
+     * @param string $resource_type
      *
      * @return array
      */
-    abstract public function listResources($limit = 10, $offset = 0);
+    abstract public function listResources($limit = 10, $offset = 0, $resource_type = 'image');
 
     /**
      * Lists all available folders.
@@ -105,19 +106,21 @@ abstract class RemoteMediaProvider
      * @param string $query
      * @param int $limit
      * @param int $offset
+     * @param string $resourceType
      *
      * @return array
      */
-    abstract public function searchResources($query, $limit = 10, $offset = 0);
+    abstract public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image');
 
     /**
      * Searches for the remote resource tagged with a provided tag.
      *
      * @param string $tag
+     * @param string $resourceType
      *
      * @return array
      */
-    abstract public function searchResourcesByTag($tag);
+    abstract public function searchResourcesByTag($tag, $resourceType = 'image');
 
     /**
      * Returns the remote resource with provided id and type.

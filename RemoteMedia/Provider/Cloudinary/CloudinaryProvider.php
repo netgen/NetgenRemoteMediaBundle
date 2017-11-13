@@ -179,14 +179,16 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @param int $limit
      * @param int $offset
+     * @param string $resource_type
      *
      * @return array
      */
-    public function listResources($limit = 10, $offset = 0)
+    public function listResources($limit = 10, $offset = 0, $resource_type = 'image')
     {
         $options = array(
             'tags' => true,
             'context' => true,
+            'resource_type' => $resource_type
         );
 
         return $this->gateway->listResources($options, $limit, $offset);
@@ -229,14 +231,16 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param string $query
      * @param int $limit
      * @param int $offset
+     * @param string $resourceType
      *
      * @return array
      */
-    public function searchResources($query, $limit = 10, $offset = 0)
+    public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image')
     {
         $options = array(
             'SearchByTags' => false,
             'type' => 'upload',
+            'resource_type' => $resourceType
         );
 
         return $this->gateway->search($query, $options, $limit, $offset);
@@ -246,13 +250,15 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Searches for the remote resource tagged with a provided tag.
      *
      * @param string $tag
+     * @param string $resourceType
      *
      * @return array
      */
-    public function searchResourcesByTag($tag)
+    public function searchResourcesByTag($tag, $resourceType = 'image')
     {
         $options = array(
-            'SearchByTags' => true
+            'SearchByTags' => true,
+            'resource_type' => $resourceType
         );
 
         return $this->gateway->search(urlencode($tag), $options);

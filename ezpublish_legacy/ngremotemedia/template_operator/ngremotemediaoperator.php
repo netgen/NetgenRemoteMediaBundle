@@ -193,7 +193,7 @@ class NgRemoteMediaOperator
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.provider' );
 
-        return $provider->getVideoThumbnail($value->resourceId);
+        return $provider->getVideoThumbnail($value);
     }
 
     function getVideoTag($value, $availableFormats, $format)
