@@ -79,7 +79,8 @@ class CloudinaryProviderTest extends TestCase
             ->with(
                 array(
                     'tags' => true,
-                    'context' => true
+                    'context' => true,
+                    'resource_type' => 'image'
                 ),
                 10,
                 0
@@ -98,7 +99,8 @@ class CloudinaryProviderTest extends TestCase
             ->with(
                 array(
                     'tags' => true,
-                    'context' => true
+                    'context' => true,
+                    'resource_type' => 'image'
                 ),
                 20,
                 0
@@ -117,7 +119,8 @@ class CloudinaryProviderTest extends TestCase
             ->with(
                 array(
                     'tags' => true,
-                    'context' => true
+                    'context' => true,
+                    'resource_type' => 'image'
                 ),
                 20,
                 5
@@ -162,7 +165,8 @@ class CloudinaryProviderTest extends TestCase
                 'queryTerm',
                 array(
                     'SearchByTags' => false,
-                    'type' => 'upload'
+                    'type' => 'upload',
+                    'resource_type' => 'image'
                 ),
                 10,
                 0
@@ -180,7 +184,8 @@ class CloudinaryProviderTest extends TestCase
                 'queryTerm',
                 array(
                     'SearchByTags' => false,
-                    'type' => 'upload'
+                    'type' => 'upload',
+                    'resource_type' => 'image'
                 ),
                 25,
                 50
@@ -198,6 +203,7 @@ class CloudinaryProviderTest extends TestCase
                 'queryTerm',
                 array(
                     'SearchByTags' => true,
+                    'resource_type' => 'image'
                 )
             );
 
@@ -213,6 +219,7 @@ class CloudinaryProviderTest extends TestCase
                 'test%2Fsomething',
                 array(
                     'SearchByTags' => true,
+                    'resource_type' => 'image'
                 )
             );
 

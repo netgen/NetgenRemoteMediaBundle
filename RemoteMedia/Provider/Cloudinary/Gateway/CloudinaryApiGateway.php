@@ -147,7 +147,11 @@ class CloudinaryApiGateway extends Gateway
     public function search($query, $options = array(), $limit = 10, $offset = 0)
     {
         if (isset($options['SearchByTags']) && $options['SearchByTags'] === true) {
-            return $this->searchByTags($query, $options['resource_type']);
+            if (isset($options['resource_type'])) {
+                return $this->searchByTags($query, $options['resource_type']);
+            }
+
+            return $this->searchByTags($query);
         }
 
         return $this->searchByPrefix($query, $options);

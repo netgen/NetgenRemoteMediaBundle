@@ -59,13 +59,20 @@ class CloudinaryApiGatewayTest extends TestCase
     public function testSearchByTags()
     {
         $options = array(
-            'SearchByTags' => true
+            'SearchByTags' => true,
         );
 
         $this->cloudinaryApi
             ->expects($this->once())
             ->method('resources_by_tag')
-            ->with('query', array('tags' => true, 'context' => true));
+            ->with(
+                'query',
+                array(
+                    'tags' => true,
+                    'context' => true,
+                    'resource_type' => 'image'
+                )
+            );
 
         $this->apiGateway->search('query', $options);
     }
