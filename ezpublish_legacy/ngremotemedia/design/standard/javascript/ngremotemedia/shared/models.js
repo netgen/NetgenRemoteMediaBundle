@@ -2,7 +2,7 @@
 window.NgRemoteMediaShared || (window.NgRemoteMediaShared = {});
 
 window.NgRemoteMediaShared.config = function() {
-    
+
     var is_admin = this.is_admin();
 
     return {
@@ -110,8 +110,8 @@ window.NgRemoteMediaShared.Models = function() {
                 url: url,
                 method: 'POST',
                 data: {
-                    resource_id: id, 
-                } 
+                    resource_id: id,
+                }
             });
         },
 
@@ -177,7 +177,7 @@ window.NgRemoteMediaShared.Models = function() {
                 data = new_data;
             }
             data.id = data.resourceId;
-            data.file = _.extend({}, data.metaData); //Create alias for metaData            
+            data.file = _.extend({}, data.metaData); //Create alias for metaData
             delete(data.metaData);
             data.file.type = data.file.resource_type;
             data.true_size = [data.file.width, data.file.height];
@@ -207,7 +207,7 @@ window.NgRemoteMediaShared.Models = function() {
                 transform: false,
                 url: this.tags_url(),
                 data: {
-                    id: this.get('resourceId'), 
+                    id: this.get('resourceId'),
                     tag: tag_name
                 }
             });
@@ -251,14 +251,10 @@ window.NgRemoteMediaShared.Models = function() {
             return NgRemoteMediaShared.url('/ngremotemedia/browse');
         },
 
-        search: function(q, data) {
+        search: function(data) {
             data = (data ||  {});
-            if (typeof q === 'string') {
-                this.q = q;
-                data.q = q;
-            }
             data.limit = this.limit;
-            
+
             if (this.xhr && typeof this.xhr.abort === 'function') {
                 this.xhr.abort();
             }

@@ -58,6 +58,14 @@
   }
 }
 
+
+%clearfix{
+  content: "";
+  display: table;
+  width:100%;
+  clear: both;
+}
+
 .ngremotemedia-type {
 
   .uploading .button:before{
@@ -95,30 +103,6 @@
     }
   }
 
-  // EzExceed only
-  // .eze & {
-  //   .thumbnail { position: relative; margin: 0 0 10px 0; background: #fff; float: left;
-  //     .edit-image { position: absolute; bottom: 10px; left: 10px; }
-  //     .close {position: absolute; top: 0; right: 0; padding: 4px 10px 8px 10px; color: #fff; opacity: 1;}
-  //     &:hover .close {@include transition(linear, background-color, 0.2s); background: #fff; border-bottom-left-radius: 4px; color: #000;}
-  //   }
-
-  //   .add-tag {position:relative;
-  //     .btn {
-  //       position: absolute; top: 0; right: 0; padding: 3px 10px 2px 10px; z-index: 2; font-size: 12px; color: #333; border: 1px solid #bbbbbb; background: #f5f5f5; background-repeat: repeat-x;
-  //       box-shadow: none; background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
-  //       &:hover,
-  //       &:focus {background-color: #e6e6e6; background-position: 0 -15px; @include transition(linear, background-position, 0.1s);}
-  //       &[disabled] {background-color: #e6e6e6; opacity: 0.65; background-image: none;}
-  //     }
-  //     input {display: block; width: 100%; box-sizing: border-box; height: auto;}
-  //   }
-  //   .tags {
-  //     .label {padding: 0.2em 1.75em 0.2em 0.65em; background: #666;}
-  //     .close {font-size: 1.25em; opacity: 1; filter: alpha(opacity = 100);}
-  //   }
-  // }
-
 }
 
 // Remote media thumbs
@@ -146,16 +130,33 @@
 }
 
 // remote media admin
-#ngremotemedia-modal {position: fixed; height: 100%; width: 100%; z-index: 1000;
+#ngremotemedia-modal {
+  position: fixed; height: 100%; width: 100%; z-index: 1000;
   .backdrop { z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: #fff; opacity: 0.6; }
 
   .content { position: absolute; top: 50px; bottom: 25px; z-index: 200000; padding: 40px; border-radius: 4px; width: 920px; left: 50%; margin-left: -460px; background-color: #000; font: normal 14px/14px Helvetica, Arial, sans-serif; }
-  .in{overflow: auto; position: absolute; top:50px; left:40px; right:40px; bottom:25px;}
+  .in{overflow: auto; position: absolute; top:50px; left:40px; right:40px; bottom:25px; padding-right: 25px}
   .close { background: #fff url(close.png) center center no-repeat; height: 20px; width: 20px; border: 0; border-radius: 20px; text-indent: -99999px; position: absolute; top: 10px; right: 10px; opacity: 1;}
 
-  .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
-    .btn {box-shadow: none; line-height: 16px;}
+  .with-loader{
+    position: relative;
+    .loader{
+        position:absolute; top:50%; right:10px; margin-top:-8px;
+        @extend %ngri-spin;
+    }
   }
+
+  .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
+    .with-loader{width:50%;}
+    .btn {box-shadow: none; line-height: 16px;}
+    .upload-container{float:right;}
+    label{color:#eee;}
+    .form-group{
+      @extend %clearfix;
+    }
+
+  }
+
 
   .ngremotemedia-thumbs {
     .item {
@@ -163,14 +164,17 @@
     }
     .pick {color: rgba(#fff, 0.75); text-decoration: none;}
   }
-  .load-more {display: block; margin:40px auto 0; width:80%; box-shadow: none; line-height: 16px;}
-  .loader {
-    &.icon-16 {height: 16px; width: 16px; max-width: 16px; vertical-align:middle;}
+  .load-more {
+    display: block; margin:40px auto 0; width:80%; box-shadow: none; line-height: 16px;
+    .loader {
+      display: inline-block;
+      @extend %ngri-spin;
+    }
   }
   .well {color: #fff;}
-}
 
-#ngremotemedia-modal .form-search .loader{margin:0px 10px 0px -24px;}
+  .ngremotemedia-remote-folders{width:98%;}
+}
 
 #ngremotemedia-modal{
   .upload-backdrop{background:#000 url(./ngremotemedia_upload.svg) no-repeat 50% 50%; z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity:0.8;}

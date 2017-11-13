@@ -14,24 +14,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 templates['browser'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, helper, options, functionType="function", escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing;
 
 
-  buffer += "<form onsubmit=\"javascript: return false;\" class=\"form-search\">\n    <input type=\"text\" class=\"q input-long\" placeholder=\""
-    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Search for media", options) : helperMissing.call(depth0, "translate", "Search for media", options)))
-    + "\">\n    <img class=\"icon-16 hide loader\" src=\"/extension/ngremotemedia/design/standard/images/loader.gif\" />\n    <span class=\"upload-container\" id=\"ngremotemedia-browser-local-file-container-";
+  buffer += "<form onsubmit=\"javascript: return false;\" class=\"form-search\">\n\n    <div class=\"form-group\">\n        <label for=\"ngremotemedia-remote-folder-select\">Folder:</label>\n        <select class=\"ngremotemedia-remote-folders\" id=\"ngremotemedia-remote-folder-select\">\n            <option>All</option>\n        </select>\n    </div>\n\n    <div class=\"form-group\">\n        <span class=\"upload-container\" id=\"ngremotemedia-browser-local-file-container-";
   if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "\">\n        <button type=\"button\" class=\"btn upload upload-from-disk\" id=\"ngremotemedia-browser-local-file-";
+    + "\">\n            <button type=\"button\" class=\"btn btn-primary upload upload-from-disk\" id=\"ngremotemedia-browser-local-file-";
   if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "\">\n            "
+    + "\">\n                "
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Upload new media", options) : helperMissing.call(depth0, "translate", "Upload new media", options)))
-    + "\n        </button>\n    </span>\n</form>\n<div class=\"ngremotemedia-thumbs-scroll\">\n  <div class=\"ngremotemedia-thumbs\"></div>\n</div>\n<button class=\"btn btn-large btn-block load-more\" type=\"button\">\n    "
+    + "\n            </button>\n        </span>\n\n        <div class=\"with-loader\">\n            <input type=\"text\" class=\"form-control q input-long\" placeholder=\""
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Search for media", options) : helperMissing.call(depth0, "translate", "Search for media", options)))
+    + "\">\n            <i class=\"ngri-spinner loader\"></i>\n        </div>\n    </div>\n\n</form>\n\n<div class=\"ngremotemedia-thumbs-scroll\">\n  <div class=\"ngremotemedia-thumbs\"></div>\n</div>\n\n<button class=\"btn btn-large btn-block load-more\" type=\"button\">\n    <i class=\"ngri ngri-spinner loader\"></i> "
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Load more", options) : helperMissing.call(depth0, "translate", "Load more", options)))
-    + "\n    <img class=\"icon-16 hide loader\" src=\"/extension/ngremotemedia/design/standard/images/loader.gif\" />\n</button>\n";
+    + "\n</button>\n";
   return buffer;
   });
 templates['item'] = template(function (Handlebars,depth0,helpers,partials,data) {

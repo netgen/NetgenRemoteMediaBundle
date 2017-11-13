@@ -9,10 +9,13 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             _.bindAll(this);
 
             this.debounced_search =_.debounce(function(){
-                this.collection.search(this.q);
+                this.collection.search(this.query);
             }, 250);
 
             options && _.extend(this, _.pick(options, ['onSelect']));
+
+            this.query = {};
+
             this.collection.on('reset add', this.renderItems);
         },
 
@@ -42,8 +45,6 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             return this.collection.get(id);
         },
 
-        q: '',
-
 
         search: function(e) {
             e.preventDefault();
@@ -56,11 +57,39 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             // Do search if query is empty
             if(q.length !== 0 && q.length <= 2 ){return;}
 
-            if (q !== this.q) {
+            if (q !== this.query.q) {
                 this.$loader.removeClass('hide');
-                this.q = q;
+                this.query.q = q;
                 this.debounced_search();
             }
+        },
+
+
+        renderFolderSearch: function() {
+
+            var $search = this.$('.ngremotemedia-remote-folders');
+            var data = $search.data();
+            var self = this;
+            $search.off().select2({
+                tags: true,
+                placeholder: data.placeholderText,
+                createTag: function (tag) {
+                    return {
+                        id: tag.term,
+                        text: tag.term,
+                        isNew : true
+                    };
+                }
+            }).on('select2:selecting', function (e) {
+                console.log(e);
+                var d = e.params.args.data;
+                if(d.isNew && !confirm('Selected folder does not exist. Do you want to create it?')){
+                    e.preventDefault();
+                }else{
+                    self.query.folder = d.text;
+                    self.collection.search(self.query);
+                }
+            });
         },
 
         render: function() {
@@ -72,12 +101,13 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             };
             this.$el.append(JST.browser(context));
 
-            this.$loader = this.$('img.loader');
+            this.$loader = this.$('.loader');
             this.$body = this.$('.ngremotemedia-thumbs');
 
             this.renderItems(true);
             this.input = this.$('.q');
             this.enableUpload();
+            this.renderFolderSearch();
             return this;
         },
 
