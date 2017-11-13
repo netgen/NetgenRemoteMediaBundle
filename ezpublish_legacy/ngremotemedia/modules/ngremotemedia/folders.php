@@ -7,11 +7,14 @@ $provider = $container->get('netgen_remote_media.provider');
 
 $folders = $provider->listFolders();
 
-$result = array(
-    'folders' => $folders,
-);
+$formattedFolders = array();
+foreach($folders as $folder) {
+    $folder['id'] = $folder['name'];
+    unset($folder['path']);
+    $formattedFolders[] = $folder;
+}
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
-print(json_encode($result));
+print(json_encode($formattedFolders));
 
 eZExecution::cleanExit();
