@@ -29,7 +29,7 @@
                             name="{$base}_alttext_{$fieldId}" value="{$remote_value.metaData.alt_text}" class="media-alttext data">
                 </div>
 
-                <select class="ngremotemedia-newtags" multiple="multiple" data-placeholder-text="{'Add tag'|i18n( 'content/edit' )}"></select>
+                <select class="ngremotemedia-newtags" multiple="multiple"></select>
 
             </div>
             {if $remote_value.size|null()|not()}

@@ -83,7 +83,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             }).on('select2:selecting', function (e) {
                 console.log(e);
                 var d = e.params.args.data;
-                if(d.isNew && !confirm('Selected folder does not exist. Do you want to create it?')){
+                if(d.isNew && !confirm(NgRemoteMedia.t('Create new folder?'))){
                     e.preventDefault();
                 }else{
                     self.query.folder = d.text;

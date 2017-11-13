@@ -6,6 +6,10 @@
     'No results': "{'No results'|i18n( 'content/ngremotemedia' )}",
     'Alternate text': "{'Alternate text'|i18n( 'content/ngremotemedia' )}",
     'Class': "{'Class'|i18n( 'content/ngremotemedia' )}",
+    'Create new folder?': "{'Create new folder?'|i18n( 'content/ngremotemedia' )}",
+    'Folder': "{'Folder'|i18n( 'content/ngremotemedia' )}",
+
+    'Add tag': "{'Add tag'|i18n( 'content/edit' )}",
 
     close : "{'Close'|i18n( 'content/ngremotemedia' )}",
     next : "{'Next 25 &gt;'}",

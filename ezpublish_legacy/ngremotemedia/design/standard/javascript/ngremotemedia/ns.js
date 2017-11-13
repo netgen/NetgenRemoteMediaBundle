@@ -13,6 +13,8 @@ var translateString = function(key) {
     return key;
 };
 
+NgRemoteMedia.t = translateString;
+
 
 Handlebars.registerHelper('translate', function(value) {
     var translateEntity = function(value) {
