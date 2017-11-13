@@ -104,10 +104,10 @@ class CachedGateway extends Gateway
         $cache = $this->cache->getItem(self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST);
 
         $list = $cache->get();
-        if ($cache->isMiss()) {
+        // if ($cache->isMiss()) {
             $list = $this->gateway->listResources($options, $limit, $offset);
             $cache->set($list, self::TTL);
-        }
+        // }
 
         return array_slice($list, $offset, $limit);
     }

@@ -17,10 +17,12 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             this.query = {};
 
             this.collection.on('reset add', this.renderItems);
+            this.folders_xhr = $.get(NgRemoteMediaShared.url('/ngremotemedia/folders'));
         },
 
         events: {
             'keyup .q': 'search',
+            'change .ngremotemedia-remote-media-type-select': 'changeMediaType',
             'submit .form-search': 'search',
             'click .item a': 'select',
             'click .load-more': 'page'
@@ -28,6 +30,13 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
 
         keys: {
             'return .q': 'search'
+        },
+
+
+        changeMediaType: function(e){
+          this.query.mediatype = $(e.target).val();
+          this.collection.search(this.query);
+          return this;
         },
 
         select: function(e) {
@@ -67,12 +76,27 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
 
         renderFolderSearch: function() {
 
-            var $search = this.$('.ngremotemedia-remote-folders');
+            var $search = this.$('.ngremotemedia-remote-folders').off().prop("disabled", true);
+            var $loadingOption = $search.find('option.loading');
+            var originalText = $loadingOption.text();
+            $loadingOption.text('Loading...')
             var data = $search.data();
             var self = this;
-            $search.off().select2({
+
+
+            this.folders_xhr.done(function(data){
+                var $options = $.map(data, function(item){
+                    return $('<option>', {value: item.id, text: item.name})
+                });
+                $loadingOption.remove();
+                $search.append($options);
+                $search.prop("disabled", false);
+            });
+
+            $search.select2({
                 tags: true,
                 placeholder: data.placeholderText,
+                // data: data,
                 createTag: function (tag) {
                     return {
                         id: tag.term,
@@ -90,6 +114,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
                     self.collection.search(self.query);
                 }
             });
+
         },
 
         render: function() {
@@ -108,6 +133,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             this.input = this.$('.q');
             this.enableUpload();
             this.renderFolderSearch();
+            this.$('.ngremotemedia-remote-media-type-select').select2();
             return this;
         },
 

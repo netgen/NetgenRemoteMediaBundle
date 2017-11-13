@@ -32,7 +32,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 _.extend(this, _.pick(options, ['singleVersion', 'editorAttributes', 'selectedVersion']));
                 this.versionSaved = null;
                 this.poppedFromStack = null;
-                
+
                 this.trueSize = this.model.get('media').get('true_size');
 
                 // Model is an instance of Attribute
@@ -171,7 +171,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                         if (!parseInt(scale.size[1], 10))
                             scale.size[1] = this.trueSize[0];
                     }
-                    
+
 
                     this.storeVersion(selection, scale);
                     this.current.removeClass('uncropped').addClass('cropped');
@@ -218,7 +218,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                     allowSelect: scale.unbounded,
                     trueSize: this.trueSize,
                     onSelect:  function() { context.hasSelection = true; },
-                    onRelease: function() { context.hasSelection = false; }                    
+                    onRelease: function() { context.hasSelection = false; }
                 };
 
                 this.$('.image-wrap > img').Jcrop(cropperOptions, function(){
@@ -233,8 +233,8 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.finishScaler();
             },
 
-            
-            // Checks if both stack animation is finished and version saved to server before adding to tinyMCE            
+
+            // Checks if both stack animation is finished and version saved to server before adding to tinyMCE
             finishScaler: function() {
                 if (this.versionSaved && this.poppedFromStack) {
                     /**
@@ -258,6 +258,6 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                     this.$el.html('');
                 }
             }
-        
+
   };
 };

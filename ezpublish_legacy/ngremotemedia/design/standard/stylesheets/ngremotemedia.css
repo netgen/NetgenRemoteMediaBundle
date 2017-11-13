@@ -269,7 +269,7 @@
       display: inline-block; }
   #ngremotemedia-modal .well {
     color: #fff; }
-  #ngremotemedia-modal .ngremotemedia-remote-folders {
+  #ngremotemedia-modal .ngremotemedia-remote-folders, #ngremotemedia-modal .ngremotemedia-remote-media-type-select {
     width: 98%; }
 
 #ngremotemedia-modal .upload-backdrop {

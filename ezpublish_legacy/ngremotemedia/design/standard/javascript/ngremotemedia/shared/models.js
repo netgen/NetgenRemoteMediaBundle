@@ -195,36 +195,44 @@ window.NgRemoteMediaShared.Models = function() {
         },
 
 
-        tags_url: function(method) {
-            var attr = this.get('attr');
-            method || (method = "");
-            return [NgRemoteMediaShared.url('/ngremotemedia/tags'+method), attr.get('contentObjectId'), attr.id, attr.get('version')].join('/');
+        saveVersion: function(version, coords){
+          var toScaleNew = _.map(this.get('toScale'), function(i, item){
+            console.log(item);
+          })
+          return this;
         },
 
 
-        add_tag: function(tag_name) {
-            return Backbone.sync('create', this, {
-                transform: false,
-                url: this.tags_url(),
-                data: {
-                    id: this.get('resourceId'),
-                    tag: tag_name
-                }
-            });
-        },
+        // tags_url: function(method) {
+        //     var attr = this.get('attr');
+        //     method || (method = "");
+        //     return [NgRemoteMediaShared.url('/ngremotemedia/tags'+method), attr.get('contentObjectId'), attr.id, attr.get('version')].join('/');
+        // },
 
 
-        remove_tag: function(tag_name) {
-            return Backbone.sync('delete', this, {
-                transform: false,
-                method: 'POST',
-                url: this.tags_url('_delete'),
-                data: {
-                    id: this.get('resourceId'),
-                    tag: tag_name
-                }
-            });
-        },
+        // add_tag: function(tag_name) {
+        //     return Backbone.sync('create', this, {
+        //         transform: false,
+        //         url: this.tags_url(),
+        //         data: {
+        //             id: this.get('resourceId'),
+        //             tag: tag_name
+        //         }
+        //     });
+        // },
+
+
+        // remove_tag: function(tag_name) {
+        //     return Backbone.sync('delete', this, {
+        //         transform: false,
+        //         method: 'POST',
+        //         url: this.tags_url('_delete'),
+        //         data: {
+        //             id: this.get('resourceId'),
+        //             tag: tag_name
+        //         }
+        //     });
+        // },
 
 
         // Generate thumb url for a given size

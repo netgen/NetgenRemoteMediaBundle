@@ -7,7 +7,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         options = (options || {});
         _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');
         this.listenTo(this.model, 'change', this.render);
-
         return this;
     },
 

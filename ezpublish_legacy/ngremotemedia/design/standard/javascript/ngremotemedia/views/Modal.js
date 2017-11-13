@@ -15,13 +15,13 @@ NgRemoteMedia.views.Modal = Backbone.View.extend({
     },
 
     events: {
-        'click .close': 'close'
+        'click .js-close': 'close'
     },
 
     render: function() {
         this.$el.html(this.template).hide();
         this.contentEl = this.$('.in');
-        this.contentEl.before('<a href="#" class="close">X</a>');
+        this.contentEl.before('<a href="#" class="js-close close">X</a>');
 
         this.delegateEvents();
 

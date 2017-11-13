@@ -1,9 +1,19 @@
 <form onsubmit="javascript: return false;" class="form-search">
 
+
+    <div class="form-group">
+        <label for="ngremotemedia-remote-media-type-select">{{translate "Media type"}}:</label>
+        <select class="ngremotemedia-remote-media-type-select" id="ngremotemedia-remote-media-type-select">
+            <option value="image">{{translate "Image"}}</option>
+            <option value="video">{{translate "Video"}}</option>
+        </select>
+    </div>
+
     <div class="form-group">
         <label for="ngremotemedia-remote-folder-select">{{translate "Folder"}}:</label>
         <select class="ngremotemedia-remote-folders" id="ngremotemedia-remote-folder-select">
-            <option>All</option>
+            <option class="loading">{{translate "Loading..."}}</option>
+            <option value="root">{{translate "Root folder"}}</option>
         </select>
     </div>
 
