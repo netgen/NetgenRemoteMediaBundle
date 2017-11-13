@@ -188,6 +188,24 @@ class Helper
     }
 
     /**
+     * Parse out the type, we make a difference between images, videos, and documents (pdf, doc, docx).
+     *
+     * @param $hit
+     *
+     * @return string
+     */
+    private function determineType($hit)
+    {
+        if ($hit['resource_type'] == 'video') {
+            return Value::TYPE_VIDEO;
+        } else if ($hit['resource_type'] == 'image' && (!isset($hit['format']) || !in_array($hit['format'], array('pdf', 'doc', 'docx')))) {
+            return Value::TYPE_IMAGE;
+        }
+
+        return Value::TYPE_OTHER;
+    }
+
+    /**
      * Formats browse list to comply with javascript.
      *
      * @todo: check if can be removed/refractored
@@ -211,6 +229,7 @@ class Helper
                 'resourceId' => $hit['public_id'],
                 'tags' => $hit['tags'],
                 'type' => $hit['resource_type'],
+                'mediaType' => $this->determineType($hit),
                 'filesize' => $hit['bytes'],
                 'width' => $hit['width'],
                 'height' => $hit['height'],
