@@ -51,23 +51,21 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
     },
 
 
-   browser: function() {
-        var options = {
-            model: this.model,
-            collection: this.model.medias
-        };
+    browser: function() {
+        var modal = new NgRemoteMedia.views.Modal().insert().render();
 
-        var context = {
-            icon: '/extension/ngremotemedia/design/standard/images/pictures32x32.png',
-            heading: 'Select media',
-            render: true
-        };
-        eZExceed.stack.push(
-            BrowserView,
-            options,
-            context
-        ).on('destruct', this.changeMedia);
+        this.view = new NgRemoteMedia.views.Browser({
+            model: this.model,
+            collection: this.model.medias,
+            onSelect: function(model){ //also used just for close on upload
+                modal.close();
+                model && this.changeMedia(model);
+            }.bind(this),
+            el: modal.show().contentEl
+        }).render();
+
         this.model.medias.search(''); //Fetch
+
     },
 
 
@@ -123,9 +121,10 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
     },
 
 
-    render_scaler_view: function(options){
-      this.render_scaler_view_in_stack(options);
-    },
+      render_scaler_view: function(options){
+        this.render_scaler_view_in_modal(options);
+      },
+
 
 
     render_scaler_view_in_modal: function(options){
@@ -137,22 +136,6 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             scaler_view.trigger('destruct');
             scaler_view.trigger('stack.popped');
         });
-    },
-
-
-    render_scaler_view_in_stack: function(options){
-        var context = {
-            icon: '/extension/ngremotemedia/design/standard/images/pictures-alt32x32.png',
-            className: 'dark',
-            heading: 'Select crops',
-            render: true
-        };
-
-        eZExceed.stack.push(
-            ScalerView,
-            options,
-            context
-        );
     },
 
 

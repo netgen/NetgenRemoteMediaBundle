@@ -32,10 +32,10 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
 
         select: function(e) {
             var model = this.find_model(e);
-            eZExceed.stack.pop({
-                id: model.id,
-                new_image_selected: true,
-                model: model.toJSON()
+            this.onSelect({
+              id: model.id,
+              new_image_selected: !!model,
+              model: this.find_model(e)
             });
         },
 
@@ -146,10 +146,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
         },
 
         uplodedMedia: function(data) {
-            data && eZExceed.stack.pop({
-                id: data.id,
-                new_image_selected: true
-            });
+          this.onSelect(data);
         }
     };
 };

@@ -7,7 +7,7 @@ window.NgRemoteMediaShared.config = function() {
 
     return {
         is_admin: is_admin,
-        plupload_swf: is_admin ? '/extension/ngremotemedia/design/standard/javascript/libs/plupload/Moxie.swf' : eZExceed.config.plupload.flash_swf_url
+        plupload_swf: '/extension/ngremotemedia/design/standard/javascript/libs/plupload/Moxie.swf'
     };
 };
 
