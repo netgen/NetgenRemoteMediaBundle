@@ -1,6 +1,50 @@
-/*********************
-  EzExceed & admin
-**********************/
+@font-face {
+  font-family: 'ngri';
+  src: url("data:application/x-font-ttf;charset=utf-8;base64,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AQECAgQCAQQCAQIBAQMBAgQDCRUMDBkODR0ODx4PAwgEAQQCAgMCBAcEAwgDAgMCAgMCBAYEAwcDAgMBAQIBAgEDBgMCAgIBAwIDBQMDBQIBASUaAQEDBgICAgIBBAECBAIFCQUFCwUDBgMCBgQBAwIBAwIDBwMBAgECAQEEAQQHAwQHAwIDAgIDAgQHBAMHBAIDAgIDAgQHBA4cDQ0ZCwwUCgkPBwEDAgEBAQICAgEBAwEBAQEBAgECAQEBAQEBARslAQEBAQEBAQECAQEBAQEBAQEBAQEBAgEBAQEBAQEDAQEDAgEBAQECAgQCAQQCAQIBAQMBAgQDCRUMDBkODR0ODx4PAwgEAQQCAgMCBAcEAwgDAgMCAgMCBAYEAwcDAgMBAQIBAgEDBgMCAgIBAwIDBQMDBQIBAQEmGgEBAwUDAQMCAQMCAgQCBAoFBQoGAwUDAwYDAgMCAQMCAwcDAQEBAQIBAQQBBAYEAwcEAgMCAgMCBAcDBAcEAgMCAgMCBAcDDxsODRkLDBQJCRAHAQMCAgECAQMBAQIBAQEBAQECAQEBAQEBAQEBARokSgIBAQEBAQEBAgEBAQEBAQECAQEDAgIBAgIDAgEEAgEBAQECAQIEAggTCgsWDAwZDQwaDQQGAwIDAgEDAgMGBAMGAwIDAQIDAQMGAwMFAwICAgEBAQIDBQMBAwEBAwECBQMCBAMECAQEBgMBAwECAwECAwEDBQIBARcjAwEBAgUDAgYCAgICAQMBAwYCAQIBAQECAwEDBgMDBgMCAwECAwEDBwMDBgMCAwECAwIDBgMMGAwLFQoKEQgIDQUCAgEBAQECAQIBAQIBAQEBAgEBAQEBAQEBAQEBHhYBAQEBAQEBAQEBAgEBAQEBAQMBAQMBAQEBAQEBAgMBAgQBAQIBAQIBAgQCCBMKCxYMDBkMDRoNAwcDAgMBAgMCAwYDBAYDAQMCAQMCAwYDAwUDAgICAgEBAQMFAwEDAQEDAQIFAgMEAwQIBAMHAwEDAQIDAQIDAQIFAwEBFyIEAgUDAgYCAgICAQMBAwYCAQIBAQECAwEDBgMDBgMCAwECAwEDBwMDBgMCAwECAwIDBgMMGAwLFQoKEQgIDQUCAgEBAQECAQIBAQIBAQEBAgEBAQEBAQEBAQEBHxYBvgMFAwICAgEDAgIEAgUJBQUKBgMGAgMGAwIDAgEDAgMHAwEBAQECAQEEAQQHAwMHBAIDAgIDAgQHAwQHBAIDAgIDAgQHBA4cDQ0ZCwwUCgkPBwEDAgIBAgICAQECAQEBAQEBAgEBAQEBAQEBAQEaJQEBAQEBAQEBAgEBAQEBAQEBAQEBAQIBAQEBAQEBAwEBAwIBAQEBAgIEAgEEAgECAQEDAQIEAwkVDAwZDg0dDg8eDwMIBAEEAgIDAgQHBAMIAwIDAgIDAgQGBAMHAwIDAQECAQIBAwYDAgICAQMCAwUDAwUCAQEmGgEBAwUDAgICAQMCAgQCBQkFBQoGAwYCAwYDAgMCAQMCAwcDAQEBAQIBAQQBBAcDAwcEAgMCAgMCBAcDBAcEAgMCAgMCBAcEDhwNDRkLDBQKCQ8HAQMCAgECAgIBAQIBAQEBAQECAQEBAQEBAQEBARolAQEBAQEBAQECAQEBAQEBAQEBAQEBAgEBAQEBAQEDAQEDAgEBAQECAgQCAQQCAQIBAQMBAgQDCRUMDBkODR0ODx4PAwgEAQQCAgMCBAcEAwgDAgMCAgMCBAYEAwcDAgMBAQIBAgEDBgMCAgIBAwIDBQMDBQIBAQElGgEBQQECBQMCBgICAgIBAwEDBgIBAgEBAQIDAQMGAwMGAwIDAQIDAQMHAwMGAwIDAQIDAgMGAwwYDAsVCgoRCAgNBQICAQEBAQIBAgEBAgEBAQECAQEBAQEBAQEBAQEeFwEBAQEBAQEBAQECAQEBAQECAgEBAwEBAgEBAQIDAgEEAgIBAQIBAgQCCBMKCxYMDBkNDBoNBAYDAgMCAQMCAwYEAwYDAQMCAQMCAwYDAwUDAgICAgECAwUDAQMBAQMBAgUDAgQDBAgEAwcDAQMBAgMBAgMBAgUDAQEXIgQBAgUDAgYCAgICAQMBAwYCAQIBAQECAwEDBgMDBgMCAwECAwEDBwMDBgMCAwECAwIDBgMMGAwLFQoKEQgIDQUCAgEBAQECAQIBAQIBAQEBAgEBAQEBAQEBAQEBHhYBAQEBAQEBAQECAQEBAQECAgEBAwEBAgEBAQIDAgEEAgIBAQIBAgQCCBMKCxYMDBkNDBoNBAYDAgMCAQMCAwYDBAYDAQMCAQMCAwYDAwUDAgICAgECAwUDAQMBAQMBAgUDAgQDBAgEAwcDAQMBAgMBAgMBAgUDAQEXIwMAAAAAAQAAAAEAAEsh3y9fDzz1AAsEAAAAAADWLP7WAAAAANYs/tYAAP/ABAADwAAAAAgAAgAAAAAAAAABAAADwP/AAAAEAAAAAAAEAAABAAAAAAAAAAAAAAAAAAAABgQAAAAAAAAAAAAAAAIAAAAEAAAOBAAAAAAAAAAACgAUAB4AagY+AAAAAQAAAAYEhwAEAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA4ArgABAAAAAAABAA0AAAABAAAAAAACAAcAlgABAAAAAAADAA0ASAABAAAAAAAEAA0AqwABAAAAAAAFAAsAJwABAAAAAAAGAA0AbwABAAAAAAAKABoA0gADAAEECQABABoADQADAAEECQACAA4AnQADAAEECQADABoAVQADAAEECQAEABoAuAADAAEECQAFABYAMgADAAEECQAGABoAfAADAAEECQAKADQA7G5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYVZlcnNpb24gMS4wAFYAZQByAHMAaQBvAG4AIAAxAC4AMG5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYW5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYVJlZ3VsYXIAUgBlAGcAdQBsAGEAcm5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYUZvbnQgZ2VuZXJhdGVkIGJ5IEljb01vb24uAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=") format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+[class^="ngri-"], [class*=" ngri-"], .ngremotemedia-type .uploading .button:before {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'ngri' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; }
+
+.ngri-warning:before {
+  content: "\e900"; }
+
+.ngri-spinner:before, .ngremotemedia-type .uploading .button:before {
+  content: "\e901"; }
+
+.ngremotemedia-type .uploading .button:before {
+  display: inline-block;
+  -webkit-animation: ngri-spin 2s infinite linear;
+  animation: ngri-spin 2s infinite linear; }
+
+@-webkit-keyframes ngri-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+@keyframes ngri-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg); } }
+.ngremotemedia-type .uploading .button:before {
+  margin-right: 4px; }
+.ngremotemedia-type .uploading {
+  pointer-events: none; }
 .ngremotemedia-type .image-meta {
   float: none;
   overflow: hidden; }
@@ -34,6 +78,9 @@
     color: black;
     border: 1px solid #999;
     outline: none; }
+.ngremotemedia-type .ngremotemedia-newtags {
+  min-width: 200px;
+  width: 50%; }
 .ngremotemedia-type .ngremotemedia-tags {
   font-size: 12px; }
 .ngremotemedia-type .tags {
@@ -69,68 +116,6 @@
     vertical-align: text-top; }
     .ngremotemedia-type .tags .close:focus {
       outline: none; }
-.eze .ngremotemedia-type .thumbnail {
-  position: relative;
-  margin: 0 0 10px 0;
-  background: #fff;
-  float: left; }
-  .eze .ngremotemedia-type .thumbnail .edit-image {
-    position: absolute;
-    bottom: 10px;
-    left: 10px; }
-  .eze .ngremotemedia-type .thumbnail .close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 4px 10px 8px 10px;
-    color: #fff;
-    opacity: 1; }
-  .eze .ngremotemedia-type .thumbnail:hover .close {
-    -webkit-transition: linear background-color 0.2s;
-    -moz-transition: linear background-color 0.2s;
-    -o-transition: linear background-color 0.2s;
-    transition: linear background-color 0.2s;
-    background: #fff;
-    border-bottom-left-radius: 4px;
-    color: #000; }
-.eze .ngremotemedia-type .add-tag {
-  position: relative; }
-  .eze .ngremotemedia-type .add-tag .btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 3px 10px 2px 10px;
-    z-index: 2;
-    font-size: 12px;
-    color: #333;
-    border: 1px solid #bbbbbb;
-    background: #f5f5f5;
-    background-repeat: repeat-x;
-    box-shadow: none;
-    background-image: linear-gradient(to bottom, #ffffff, #e6e6e6); }
-    .eze .ngremotemedia-type .add-tag .btn:hover, .eze .ngremotemedia-type .add-tag .btn:focus {
-      background-color: #e6e6e6;
-      background-position: 0 -15px;
-      -webkit-transition: linear background-position 0.1s;
-      -moz-transition: linear background-position 0.1s;
-      -o-transition: linear background-position 0.1s;
-      transition: linear background-position 0.1s; }
-    .eze .ngremotemedia-type .add-tag .btn[disabled] {
-      background-color: #e6e6e6;
-      opacity: 0.65;
-      background-image: none; }
-  .eze .ngremotemedia-type .add-tag input {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    height: auto; }
-.eze .ngremotemedia-type .tags .label {
-  padding: 0.2em 1.75em 0.2em 0.65em;
-  background: #666; }
-.eze .ngremotemedia-type .tags .close {
-  font-size: 1.25em;
-  opacity: 1;
-  filter: alpha(opacity=100); }
 
 .ngremotemedia-thumbs {
   clear: both;
@@ -239,7 +224,8 @@
     text-indent: -99999px;
     position: absolute;
     top: 10px;
-    right: 10px; }
+    right: 10px;
+    opacity: 1; }
   #ngremotemedia-modal .form-search {
     padding-bottom: 10px;
     margin-bottom: 20px;
@@ -267,11 +253,10 @@
   #ngremotemedia-modal .well {
     color: #fff; }
 
-.eze-modal-content .form-search .loader,
 #ngremotemedia-modal .form-search .loader {
   margin: 0px 10px 0px -24px; }
 
-#ngremotemedia-modal .upload-backdrop, .eze .upload-backdrop {
+#ngremotemedia-modal .upload-backdrop {
   background: #000 url(./ngremotemedia_upload.svg) no-repeat 50% 50%;
   z-index: 100000;
   position: absolute;

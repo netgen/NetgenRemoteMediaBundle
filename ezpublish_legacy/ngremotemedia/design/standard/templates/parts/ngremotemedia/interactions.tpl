@@ -9,13 +9,13 @@
         {if $type|eq('image')}
             {include uri="design:parts/scale_button.tpl"}
         {/if}
-        <input type="button" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'content/edit' )}">
+        <input type="button" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'content/edit' )}" />
     {/if}
 
-    <input type="button" class="ngremotemedia-remote-file button" value="{'Choose from NgRemoteMedia'|i18n( 'content/edit' )}">
+    <input type="button" class="ngremotemedia-remote-file button" value="{'Choose from NgRemoteMedia'|i18n( 'content/edit' )}" />
 
     <div class="ngremotemedia-local-file-container">
-        <input type="button" class="ngremotemedia-local-file button upload-from-disk" value="{'Choose from computer'|i18n( 'content/edit' )}">
+        <button class="btn btn-default ngremotemedia-local-file button upload-from-disk">{'Choose from computer'|i18n( 'content/edit' )}</button>
     </div>
 
     {def $remote_folders = remote_folders()}
@@ -29,8 +29,4 @@
             </select>
         </div>
     {/if}
-
-    <div class="upload-progress hid" id="ngremotemedia-progress-{$fieldId}">
-        <div class="progress"></div>
-    </div>
 </div>

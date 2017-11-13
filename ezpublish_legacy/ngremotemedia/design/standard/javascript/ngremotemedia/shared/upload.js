@@ -18,6 +18,8 @@ window.NgRemoteMediaShared.upload = function($, plupload){
         },
 
         uploaded: function(up, file, info) {
+            this.$('.upload-from-disk').parent().removeClass('uploading');
+
             if (!info || !info.response || !this.uploadCallback) { return this; }
 
             var model_attributes;
@@ -30,7 +32,7 @@ window.NgRemoteMediaShared.upload = function($, plupload){
                 return this;
             }
 
-            
+
             this.uploadCallback({
                 id: model_attributes.id || model_attributes.media.resourceId,
                 model_attributes: model_attributes, //For administration
@@ -46,6 +48,7 @@ window.NgRemoteMediaShared.upload = function($, plupload){
 
         added: function(up /*, files*/) {
             up.start();
+            this.$('.upload-from-disk').parent().addClass('uploading');
             !this.$('.upload-from-disk').closest('[data-bootstrap]').length && this.$el.after('<div class="backdrop upload-backdrop" />');
             this.trigger('uploading');
         },
@@ -85,11 +88,11 @@ window.NgRemoteMediaShared.upload = function($, plupload){
             this.uploader = new plupload.Uploader(settings);
             this.uploader.init();
             this.uploader.bind('FileUploaded', this.uploaded);
-            this.uploader.bind('UploadProgress', this.progress);
+            // this.uploader.bind('UploadProgress', this.progress); //NOTE: remove me
             this.uploader.bind('FilesAdded', this.added);
             return this;
         }
-    
+
 
   };
 };

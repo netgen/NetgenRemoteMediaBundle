@@ -1,9 +1,76 @@
 @import "mixins.sass";
 
-/*********************
-  EzExceed & admin
-**********************/
+// Icons
+@font-face {
+  font-family: 'ngri';
+  src: url("data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMg8SBYAAAAC8AAAAYGNtYXAXVtKIAAABHAAAAFRnYXNwAAAAEAAAAXAAAAAIZ2x5ZrzK1AcAAAF4AAAMfGhlYWQPeUIpAAAN9AAAADZoaGVhB8IDxwAADiwAAAAkaG10eA4AAA4AAA5QAAAAGGxvY2EGZgB+AAAOaAAAAA5tYXhwAAsEiQAADngAAAAgbmFtZWqm+K8AAA6YAAABznBvc3QAAwAAAAAQaAAAACAAAwNVAZAABQAAApkCzAAAAI8CmQLMAAAB6wAzAQkAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADpAQPA/8AAQAPAAEAAAAABAAAAAAAAAAAAAAAgAAAAAAADAAAAAwAAABwAAQADAAAAHAADAAEAAAAcAAQAOAAAAAoACAACAAIAAQAg6QH//f//AAAAAAAg6QD//f//AAH/4xcEAAMAAQAAAAAAAAAAAAAAAQAB//8ADwABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQAAAAAAAAAAAAIAADc5AQAAAAAEAA7/wAPyA8AAAwAVACEALwAACQEhATUiBgcBBhYzITI2JzEBLgEjMRMUBiMiJjU0NjMyFiciJj0BNDYzMhYdARQGAgABrfymAa0RHw3+SxklMwNmMyUZ/ksNHxFAJRsbJSUbGyVAGyUlGxslJQNj/KkDV10WF/yZLEBALANnFxb8wBslJRsbJSVlJRvAGyUlG8AbJQAAAAIAAP/ABAADwAJEBIYAABMxOAExFBYVFhQVFBYVFBYVHgEXHgEXHgEXHgEXFhQXFBYXHgEXFBYVFBYVHgEXHgEXHgEXHgEXHgEVHgEXHgEXHgEXHgEXHgEXHgEXHgEXHgEXHgEXHgEXMhYXMhYzHgEXHgEXHgEzHgEzHgEzHgEXMhYzMhYzMDIzHgEzMhYzOgEzFjIzFjIzMjAxHgEzMDIzMTgBMTI2MzYyMzI2MzI2Mz4BNz4BNz4BNz4BNzYyNzI2Nz4BNzI2MTI2Mz4BNz4BNz4BNz4BNz4BMz4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNzQ2NT4BNz4BNzQ2NzQ2NT4BNzQ2NTQ2NTY0NTA0NT4BNTQ2NTwBNTY0NTY0NTwBMTI2NTA0NTE4ATE0JjUmNDU0JjU0JjUuAScuAScuAScuAScmNCc0JicuASc0JjU0JjUuAScuAScuAScuAScuATUuAScuAScuAScuAScuAScuAScuAScuAScuAScuASciJiciJiMuAScuAScuASMuASMuASMuASciJiMiJiMwIiMuASMiJiMqASMmIiMmIiMqASM0JiMwIiMxOAExIgYjBiIjIgYjIgYjDgEHDgEHDgEHDgEHBiIHIgYHDgEHIgYjIgYjDgEHDgEHDgEHDgEHDgEjDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHFAYHFAYVDgEHDgEHDgEVDgEVDgEVDgEHFAYVFAYVMBQVDgEVFAYVHAEVBhQVBhQVHAExDgEVMBQVNzA0MTQ2NT4BNzQ2NzQ2NT4BNzQ2MTQ2NT4BNz4BNz4BNzQ2NT4BNT4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNz4BNzI2Mz4BNz4BNzI2MzYyNzI2Mz4BMzYyMzYyMzAyMTYyNzoBMzoBNzoBMzI2MzoBMzoBMzoBMxYyMzoBMxYyMzAyMTIwOQE+ATcyMBcyFhceARcyFhcyFjMeARcyFjEyFjMeATMeARceARceATMeARceARceARcyFhceARceARceARceARceARceARceARceARcUFhUeARceARcUFhUWFBcUFhUeARUWFBUyFDEcATEWFBccARUcARccARUUFhUcARUcARUcARUGFBUcARUGFBUwFDEwFDkBHgEXMBQxDgEHDgEHFAYVDgEVDgEHFAYxFAYVDgEVDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHDgEHIgYjDgEHDgEHIgYjBiIHIgYjDgEjBiIjFCIxKgEjBiIHKgEjKgEHKgEjIgYjKgEjKgEjKgEjJiIjKgEjJiIjMCIxMCI5AQ4BByImJy4BJyImJyImIy4BJyImMSImIy4BIy4BJy4BJy4BIy4BJy4BJy4BJyImJy4BJy4BJy4BJy4BJy4BJy4BJy4BJy4BJzQmNS4BJy4BJzQmNSY0JzQmNS4BNSY0NSI0MTwBMSY0JzwBNTwBJzwBNTQmNTwBNTwBNTwBNTY0NTwBNTY0NTA0MTA0OQEuAScAAQEBAQEBAQECAQEBAQEBAQEBAQEBAgEBAQEBAQEDAQEDAgEBAQECAgQCAQQCAQIBAQMBAgQDCRUMDBkODR0ODx4PAwgEAQQCAgMCBAcEAwgDAgMCAgMCBAYEAwcDAgMBAQIBAgEDBgMCAgIBAwIDBQMDBQIBASUaAQEDBgICAgIBBAECBAIFCQUFCwUDBgMCBgQBAwIBAwIDBwMBAgECAQEEAQQHAwQHAwIDAgIDAgQHBAMHBAIDAgIDAgQHBA4cDQ0ZCwwUCgkPBwEDAgEBAQICAgEBAwEBAQEBAgECAQEBAQEBARslAQEBAQEBAQECAQEBAQEBAQEBAQEBAgEBAQEBAQEDAQEDAgEBAQECAgQCAQQCAQIBAQMBAgQDCRUMDBkODR0ODx4PAwgEAQQCAgMCBAcEAwgDAgMCAgMCBAYEAwcDAgMBAQIBAgEDBgMCAgIBAwIDBQMDBQIBAQEmGgEBAwUDAQMCAQMCAgQCBAoFBQoGAwUDAwYDAgMCAQMCAwcDAQEBAQIBAQQBBAYEAwcEAgMCAgMCBAcDBAcEAgMCAgMCBAcDDxsODRkLDBQJCRAHAQMCAgECAQMBAQIBAQEBAQECAQEBAQEBAQEBARokSgIBAQEBAQEBAgEBAQEBAQECAQEDAgIBAgIDAgEEAgEBAQECAQIEAggTCgsWDAwZDQwaDQQGAwIDAgEDAgMGBAMGAwIDAQIDAQMGAwMFAwICAgEBAQIDBQMBAwEBAwECBQMCBAMECAQEBgMBAwECAwECAwEDBQIBARcjAwEBAgUDAgYCAgICAQMBAwYCAQIBAQECAwEDBgMDBgMCAwECAwEDBwMDBgMCAwECAwIDBgMMGAwLFQoKEQgIDQUCAgEBAQECAQIBAQIBAQEBAgEBAQEBAQEBAQEBHhYBAQEBAQEBAQEBAgEBAQEBAQMBAQMBAQEBAQEBAgMBAgQBAQIBAQIBAgQCCBMKCxYMDBkMDRoNAwcDAgMBAgMCAwYDBAYDAQMCAQMCAwYDAwUDAgICAgEBAQMFAwEDAQEDAQIFAgMEAwQIBAMHAwEDAQIDAQIDAQIFAwEBFyIEAgUDAgYCAgICAQMBAwYCAQIBAQECAwEDBgMDBgMCAwECAwEDBwMDBgMCAwECAwIDBgMMGAwLFQoKEQgIDQUCAgEBAQECAQIBAQIBAQEBAgEBAQEBAQEBAQEBHxYBvgMFAwICAgEDAgIEAgUJBQUKBgMGAgMGAwIDAgEDAgMHAwEBAQECAQEEAQQHAwMHBAIDAgIDAgQHAwQHBAIDAgIDAgQHBA4cDQ0ZCwwUCgkPBwEDAgIBAgICAQECAQEBAQEBAgEBAQEBAQEBAQEaJQEBAQEBAQEBAgEBAQEBAQEBAQEBAQIBAQEBAQEBAwEBAwIBAQEBAgIEAgEEAgECAQEDAQIEAwkVDAwZDg0dDg8eDwMIBAEEAgIDAgQHBAMIAwIDAgIDAgQGBAMHAwIDAQECAQIBAwYDAgICAQMCAwUDAwUCAQEmGgEBAwUDAgICAQMCAgQCBQkFBQoGAwYCAwYDAgMCAQMCAwcDAQEBAQIBAQQBBAcDAwcEAgMCAgMCBAcDBAcEAgMCAgMCBAcEDhwNDRkLDBQKCQ8HAQMCAgECAgIBAQIBAQEBAQECAQEBAQEBAQEBARolAQEBAQEBAQECAQEBAQEBAQEBAQEBAgEBAQEBAQEDAQEDAgEBAQECAgQCAQQCAQIBAQMBAgQDCRUMDBkODR0ODx4PAwgEAQQCAgMCBAcEAwgDAgMCAgMCBAYEAwcDAgMBAQIBAgEDBgMCAgIBAwIDBQMDBQIBAQElGgEBQQECBQMCBgICAgIBAwEDBgIBAgEBAQIDAQMGAwMGAwIDAQIDAQMHAwMGAwIDAQIDAgMGAwwYDAsVCgoRCAgNBQICAQEBAQIBAgEBAgEBAQECAQEBAQEBAQEBAQEeFwEBAQEBAQEBAQECAQEBAQECAgEBAwEBAgEBAQIDAgEEAgIBAQIBAgQCCBMKCxYMDBkNDBoNBAYDAgMCAQMCAwYEAwYDAQMCAQMCAwYDAwUDAgICAgECAwUDAQMBAQMBAgUDAgQDBAgEAwcDAQMBAgMBAgMBAgUDAQEXIgQBAgUDAgYCAgICAQMBAwYCAQIBAQECAwEDBgMDBgMCAwECAwEDBwMDBgMCAwECAwIDBgMMGAwLFQoKEQgIDQUCAgEBAQECAQIBAQIBAQEBAgEBAQEBAQEBAQEBHhYBAQEBAQEBAQECAQEBAQECAgEBAwEBAgEBAQIDAgEEAgIBAQIBAgQCCBMKCxYMDBkNDBoNBAYDAgMCAQMCAwYDBAYDAQMCAQMCAwYDAwUDAgICAgECAwUDAQMBAQMBAgUDAgQDBAgEAwcDAQMBAgMBAgMBAgUDAQEXIwMAAAAAAQAAAAEAAEsh3y9fDzz1AAsEAAAAAADWLP7WAAAAANYs/tYAAP/ABAADwAAAAAgAAgAAAAAAAAABAAADwP/AAAAEAAAAAAAEAAABAAAAAAAAAAAAAAAAAAAABgQAAAAAAAAAAAAAAAIAAAAEAAAOBAAAAAAAAAAACgAUAB4AagY+AAAAAQAAAAYEhwAEAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA4ArgABAAAAAAABAA0AAAABAAAAAAACAAcAlgABAAAAAAADAA0ASAABAAAAAAAEAA0AqwABAAAAAAAFAAsAJwABAAAAAAAGAA0AbwABAAAAAAAKABoA0gADAAEECQABABoADQADAAEECQACAA4AnQADAAEECQADABoAVQADAAEECQAEABoAuAADAAEECQAFABYAMgADAAEECQAGABoAfAADAAEECQAKADQA7G5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYVZlcnNpb24gMS4wAFYAZQByAHMAaQBvAG4AIAAxAC4AMG5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYW5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYVJlZ3VsYXIAUgBlAGcAdQBsAGEAcm5ncmVtb3RlbWVkaWEAbgBnAHIAZQBtAG8AdABlAG0AZQBkAGkAYUZvbnQgZ2VuZXJhdGVkIGJ5IEljb01vb24uAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=") format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="ngri-"], [class*=" ngri-"], %ngri {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'ngri' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ngri-warning:before, %ngri-warning {
+  content: "\e900";
+}
+
+.ngri-spinner:before, %ngri-spinner {
+  content: "\e901";
+}
+
+%ngri-spin {
+  display: inline-block;
+  -webkit-animation: ngri-spin 2s infinite linear;
+  animation: ngri-spin 2s infinite linear;
+}
+
+@-webkit-keyframes ngri-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes ngri-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+
 .ngremotemedia-type {
+
+  .uploading .button:before{
+    @extend %ngri;
+    @extend %ngri-spinner;
+    @extend %ngri-spin;
+    margin-right: 4px;
+  }
+
+  .uploading{
+    pointer-events:none;
+  }
+
   .image-meta {float: none; overflow: hidden;}
 
   .title {margin-bottom: 10px;}
@@ -19,6 +86,7 @@
     &:focus {background-color: rgba(0,0,0,0.1); color: black; border: 1px solid #999; outline: none;}
   }
 
+  .ngremotemedia-newtags{min-width:200px; width:50%;}
   .ngremotemedia-tags {font-size: 12px;}
   .tags {margin: 10px 0 5px;
     .label {position: relative; display: inline-block; margin: 0 8px 5px 0; padding: 0.166em 1.5em 0.166em 0.65em; font-size: 1em; line-height: 1em; background-color: rgb(86, 115, 165); text-decoration: none; border-radius: 4px; color: #fff;}
@@ -28,28 +96,28 @@
   }
 
   // EzExceed only
-  .eze & {
-    .thumbnail { position: relative; margin: 0 0 10px 0; background: #fff; float: left;
-      .edit-image { position: absolute; bottom: 10px; left: 10px; }
-      .close {position: absolute; top: 0; right: 0; padding: 4px 10px 8px 10px; color: #fff; opacity: 1;}
-      &:hover .close {@include transition(linear, background-color, 0.2s); background: #fff; border-bottom-left-radius: 4px; color: #000;}
-    }
+  // .eze & {
+  //   .thumbnail { position: relative; margin: 0 0 10px 0; background: #fff; float: left;
+  //     .edit-image { position: absolute; bottom: 10px; left: 10px; }
+  //     .close {position: absolute; top: 0; right: 0; padding: 4px 10px 8px 10px; color: #fff; opacity: 1;}
+  //     &:hover .close {@include transition(linear, background-color, 0.2s); background: #fff; border-bottom-left-radius: 4px; color: #000;}
+  //   }
 
-    .add-tag {position:relative;
-      .btn {
-        position: absolute; top: 0; right: 0; padding: 3px 10px 2px 10px; z-index: 2; font-size: 12px; color: #333; border: 1px solid #bbbbbb; background: #f5f5f5; background-repeat: repeat-x;
-        box-shadow: none; background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
-        &:hover,
-        &:focus {background-color: #e6e6e6; background-position: 0 -15px; @include transition(linear, background-position, 0.1s);}
-        &[disabled] {background-color: #e6e6e6; opacity: 0.65; background-image: none;}
-      }
-      input {display: block; width: 100%; box-sizing: border-box; height: auto;}
-    }
-    .tags {
-      .label {padding: 0.2em 1.75em 0.2em 0.65em; background: #666;}
-      .close {font-size: 1.25em; opacity: 1; filter: alpha(opacity = 100);}
-    }
-  }
+  //   .add-tag {position:relative;
+  //     .btn {
+  //       position: absolute; top: 0; right: 0; padding: 3px 10px 2px 10px; z-index: 2; font-size: 12px; color: #333; border: 1px solid #bbbbbb; background: #f5f5f5; background-repeat: repeat-x;
+  //       box-shadow: none; background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  //       &:hover,
+  //       &:focus {background-color: #e6e6e6; background-position: 0 -15px; @include transition(linear, background-position, 0.1s);}
+  //       &[disabled] {background-color: #e6e6e6; opacity: 0.65; background-image: none;}
+  //     }
+  //     input {display: block; width: 100%; box-sizing: border-box; height: auto;}
+  //   }
+  //   .tags {
+  //     .label {padding: 0.2em 1.75em 0.2em 0.65em; background: #666;}
+  //     .close {font-size: 1.25em; opacity: 1; filter: alpha(opacity = 100);}
+  //   }
+  // }
 
 }
 
@@ -83,7 +151,7 @@
 
   .content { position: absolute; top: 50px; bottom: 25px; z-index: 200000; padding: 40px; border-radius: 4px; width: 920px; left: 50%; margin-left: -460px; background-color: #000; font: normal 14px/14px Helvetica, Arial, sans-serif; }
   .in{overflow: auto; position: absolute; top:50px; left:40px; right:40px; bottom:25px;}
-  .close { background: #fff url(close.png) center center no-repeat; height: 20px; width: 20px; border: 0; border-radius: 20px; text-indent: -99999px; position: absolute; top: 10px; right: 10px; }
+  .close { background: #fff url(close.png) center center no-repeat; height: 20px; width: 20px; border: 0; border-radius: 20px; text-indent: -99999px; position: absolute; top: 10px; right: 10px; opacity: 1;}
 
   .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
     .btn {box-shadow: none; line-height: 16px;}
@@ -102,10 +170,9 @@
   .well {color: #fff;}
 }
 
-.eze-modal-content .form-search .loader,
 #ngremotemedia-modal .form-search .loader{margin:0px 10px 0px -24px;}
 
-#ngremotemedia-modal, .eze{
+#ngremotemedia-modal{
   .upload-backdrop{background:#000 url(./ngremotemedia_upload.svg) no-repeat 50% 50%; z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity:0.8;}
 }
 

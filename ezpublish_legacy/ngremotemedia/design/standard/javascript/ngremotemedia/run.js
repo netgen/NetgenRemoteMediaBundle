@@ -3,8 +3,9 @@ $(function() {
     $('.ngremotemedia-type').each(function() {
         var wrapper = $(this);
         var container = wrapper.find('.ngremotemedia-buttons');
+        console.log(container);
         if (container.length) {
-            
+
             var bootstrapData = wrapper.data('bootstrap-media');
 
             var media_attributes = _.extend({}, bootstrapData, {

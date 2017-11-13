@@ -1,11 +1,10 @@
-<a>
+<a
+{{#if toSmall}}
+    title="{{translate "Image is to small for this version"}}"
+{{/if}}
+>
     {{#if toSmall}}
-    <img class="white" src="/extension/ngremotemedia/design/standard/images/white_alert.png"
-        alt="{{translate "Image is to small for this version"}}"
-        title="{{translate "Image is to small for this version"}}" />
-    <img class="black" src="/extension/ngremotemedia/design/standard/images/white_alert.png"
-        alt="{{translate "Image is to small for this version"}}"
-        title="{{translate "Image is to small for this version"}}" />
+    <i class="ngri-warning"></i>
     {{/if}}
     {{name}}<br />
     <small>{{width}}x{{height}}</small>

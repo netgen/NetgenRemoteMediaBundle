@@ -40,7 +40,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, helper, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function", self=this;
 
 function program1(depth0,data) {
-
+  
   var buffer = "", helper, options;
   buffer += "\n            <span class=\"share\">"
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Shared", options) : helperMissing.call(depth0, "translate", "Shared", options)))
@@ -91,22 +91,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, helper, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, self=this, functionType="function";
 
 function program1(depth0,data) {
-
+  
   var buffer = "", helper, options;
-  buffer += "\n    <img class=\"white\" src=\"/extension/ngremotemedia/design/standard/images/white_alert.png\"\n        alt=\""
+  buffer += "\n    title=\""
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Image is to small for this version", options) : helperMissing.call(depth0, "translate", "Image is to small for this version", options)))
-    + "\"\n        title=\""
-    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Image is to small for this version", options) : helperMissing.call(depth0, "translate", "Image is to small for this version", options)))
-    + "\" />\n    <img class=\"black\" src=\"/extension/ngremotemedia/design/standard/images/white_alert.png\"\n        alt=\""
-    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Image is to small for this version", options) : helperMissing.call(depth0, "translate", "Image is to small for this version", options)))
-    + "\"\n        title=\""
-    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Image is to small for this version", options) : helperMissing.call(depth0, "translate", "Image is to small for this version", options)))
-    + "\" />\n    ";
+    + "\"\n";
   return buffer;
   }
 
-  buffer += "<a>\n    ";
+function program3(depth0,data) {
+  
+  
+  return "\n    <i class=\"ngri-warning\"></i>\n    ";
+  }
+
+  buffer += "<a\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.toSmall), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n>\n    ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.toSmall), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
   if (helper = helpers.name) { stack1 = helper.call(depth0, {hash:{},data:data}); }
@@ -142,7 +145,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, helper, options, functionType="function", escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
 
 function program1(depth0,data) {
-
+  
   var buffer = "", stack1, helper;
   buffer += " value=\"";
   if (helper = helpers.alttext) { stack1 = helper.call(depth0, {hash:{},data:data}); }
@@ -153,7 +156,7 @@ function program1(depth0,data) {
   }
 
 function program3(depth0,data) {
-
+  
   var buffer = "", stack1, helper, options;
   buffer += "\n    <label for=\"cssclass\">"
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Class", options) : helperMissing.call(depth0, "translate", "Class", options)))
@@ -164,7 +167,7 @@ function program3(depth0,data) {
   return buffer;
   }
 function program4(depth0,data) {
-
+  
   var buffer = "", stack1, helper;
   buffer += "\n            <option value=\"";
   if (helper = helpers.value) { stack1 = helper.call(depth0, {hash:{},data:data}); }
@@ -181,8 +184,8 @@ function program4(depth0,data) {
   return buffer;
   }
 function program5(depth0,data) {
-
-
+  
+  
   return " selected";
   }
 

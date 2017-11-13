@@ -5,9 +5,9 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
     initialize: function(options) {
         options = (options || {});
-        _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');       
+        _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');
         this.listenTo(this.model, 'change', this.render);
-        
+
         return this;
     },
 
@@ -28,6 +28,7 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
     },
 
     render: function() {
+        console.log('render');
         var content = this.model.get('content'), html;
 
         if(content){
@@ -46,12 +47,19 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
 
     renderTags: function() {
-        new NgRemoteMedia.views.Tagger({
-            el: this.$('.ngremotemedia-tags').off(),
-            model: this.model.get('media')
-        }).render();
+
+        var $tags = this.$('.ngremotemedia-newtags');
+        // if(!$tags.length){ return this; }
+        console.log($tags.length);
+        var data = $tags.data();
+        $tags.off().select2({
+            placeholder: data.placeholderText,
+            tags: true,
+            allowClear: true
+        });
+
         return this;
-    },    
+    },
 
     remove: function(e) {
         e.preventDefault();
@@ -116,7 +124,7 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         modal.on('close', function(){
             scaler_view.trigger('destruct');
             scaler_view.trigger('stack.popped');
-        });        
+        });
 
     },
 

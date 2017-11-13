@@ -18,4 +18,3 @@
     'url_prefix': {'/'|ezurl}
     {literal} }; {/literal}
 </script>
-
