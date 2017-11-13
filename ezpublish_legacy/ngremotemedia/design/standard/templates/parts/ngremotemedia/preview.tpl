@@ -6,7 +6,6 @@
     {def $thumb_url = videoThumbnail($remote_value)}
 {/if}
 
-
 <div class="ngremotemedia-image">
     {if $remote_value.resourceId}
         <div class="image-wrap">
@@ -29,7 +28,12 @@
                             name="{$base}_alttext_{$fieldId}" value="{$remote_value.metaData.alt_text}" class="media-alttext data">
                 </div>
 
-                <select class="ngremotemedia-newtags" multiple="multiple"></select>
+                {def $tags = $remote_value.metaData.tags}
+                <select name="{$base}_tags_{$fieldId}" class="ngremotemedia-newtags" multiple="multiple">
+                    {foreach $tags as $tag}
+                        <option value="{$tag}" selected="selected">{$tag}</option>
+                    {/foreach}
+                </select>
 
             </div>
             {if $remote_value.size|null()|not()}
