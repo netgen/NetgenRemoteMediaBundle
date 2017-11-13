@@ -29,7 +29,7 @@
                 </div>
 
                 {def $tags = $remote_value.metaData.tags}
-                <select name="{$base}_tags_{$fieldId}" class="ngremotemedia-newtags" multiple="multiple">
+                <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
                     {foreach $tags as $tag}
                         <option value="{$tag}" selected="selected">{$tag}</option>
                     {/foreach}

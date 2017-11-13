@@ -306,6 +306,15 @@ class CloudinaryProvider extends RemoteMediaProvider
         return $this->gateway->removeTag($resourceId, $tag);
     }
 
+    public function updateTags($resourceId, $tags)
+    {
+        $options = array(
+            'tags' => $tags
+        );
+
+        $this->gateway->update($resourceId, $options);
+    }
+
     /**
      * Updates the resource context.
      * eg. alt text and caption:

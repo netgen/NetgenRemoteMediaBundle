@@ -149,6 +149,8 @@ abstract class RemoteMediaProvider
      */
     abstract public function removeTagFromResource($resourceId, $tag);
 
+    abstract public function updateTags($resourceId, $tags);
+
     /**
      * Updates the resource context.
      * eg. alt text and caption:
