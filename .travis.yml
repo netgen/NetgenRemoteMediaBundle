@@ -21,11 +21,12 @@ branches:
 
 # make sure to update composer to latest available version
 before_install:
+    - composer self-update
     - phpenv config-add travis.php.ini
 
 # install dependencies
 install:
-    - travis_wait composer install
+    - travis_wait composer install --no-interaction --no-progress --prefer-dist
 
 # execute phpunit as the script command
 script:
