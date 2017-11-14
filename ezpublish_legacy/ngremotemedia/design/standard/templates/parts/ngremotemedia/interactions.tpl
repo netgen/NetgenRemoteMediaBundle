@@ -9,12 +9,12 @@
         {if $type|eq('image')}
             {include uri="design:parts/scale_button.tpl"}
         {/if}
-        <input type="button" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'content/edit' )}" />
+        <input type="button" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'extension/ngremotemedia/interactions' )}" />
     {/if}
 
-    <input type="button" class="ngremotemedia-remote-file button" value="{'Manage media'|i18n( 'content/edit' )}" />
+    <input type="button" class="ngremotemedia-remote-file button" value="{'Manage media'|i18n( 'extension/ngremotemedia/interactions' )}" />
 
     <div class="ngremotemedia-local-file-container">
-        <button class="btn btn-default ngremotemedia-local-file button upload-from-disk">{'Quick upload'|i18n( 'content/edit' )}</button>
+        <button class="btn btn-default ngremotemedia-local-file button upload-from-disk">{'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}</button>
     </div>
 </div>

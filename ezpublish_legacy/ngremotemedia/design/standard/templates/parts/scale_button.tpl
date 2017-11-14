@@ -7,6 +7,6 @@
 {if $croppable}
 <input type="button" class="ngremotemedia-scale hid button"
     data-truesize="{$size|json}"
-    value="{'Scale'|i18n( 'content/edit' )}"
+    value="{'Scale'|i18n( 'extension/ngremotemedia/interactions' )}"
     data-versions={scaling_format($croppableFormats)|json}>
 {/if}
