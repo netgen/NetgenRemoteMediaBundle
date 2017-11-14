@@ -283,6 +283,10 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $response = $this->gateway->get($resourceId, $options);
 
+        if (empty($response)) {
+            return new Value();
+        }
+
         return Value::createFromCloudinaryResponse($response);
     }
 
