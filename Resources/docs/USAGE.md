@@ -4,7 +4,7 @@
 You can add the remote media content field to your content type. There is no additional configuration needed.
 
 ## Image variation definitions ##
-Image variations are defined through yaml configuration, in the similar way it is defined in eZPublish. Configuration is siteaccess aware, and furthermore, you can define variations per content type, meaning you can have two variations that are named the same, but use different transformations depending on the content type where they are used.
+Image variations are defined through yaml configuration, in the similar way it is defined in eZ Platform. Configuration is siteaccess aware, and furthermore, you can define variations per content type, meaning you can have two variations that are named the same, but use different transformations depending on the content type where they are used.
 Example:
 ```yaml
 netgen_remote_media:
@@ -19,17 +19,17 @@ netgen_remote_media:
                             - { name: quality, params: ['auto', 'best'] }
                             - { name: effect, params: ['art', 'sizzle'] }
                             - { name: format, params: ['auto'] }
-                    formated:
+                    formatted:
                         transformations:
                             - { name: transformation, params: ['namedTransformation'] }
                 frontpage:
                     small:
                         transformations:
                             - { name: fit, params: [250,250] }
-                    Large:
+                    large:
                         transformations:
+                            - { name: crop, params: [1600, 800] }
                             - { name: fill, params: [1600, 800] }
-                            - { name: crop }
 ```
 You can check the list of available tranformations [here](Resources/docs/Transfromations.md). Further details on what which transformation does is available on [Cloudinary web](http://cloudinary.com/documentation/image_transformations).
 
@@ -42,7 +42,7 @@ If you have added the field to your content class, now you can use it with norma
     {
         'parameters':
         {
-            'format': 'Medium'
+            'format': 'large'
         }
     }
 ) }}
@@ -73,5 +73,5 @@ Note that not all parameters will be applicable always, it depends on the type o
 
 If you need to get just the url of the image, you can get the `Variation` object by using twig function `netgen_remote_variation`:
 ```php
-{% set variation = netgen_remote_variation(content, 'image', 'article', 'full') %}
+{% set variation = netgen_remote_variation(content, 'image', 'full') %}
 ```

@@ -4,12 +4,12 @@
 * eZ Publish 5.4. or eZ Platform
 
 **Suggested**
-* this package works best with NetgenAdminUI and, optionally, Netgen Content Browser
+* this package works best with NetgenAdminUI.
 
 ## Installation steps ##
 
 * Run the following from your website root folder:
-	`$ composer require netgen/remote-media-bundle:^1.0@alpha`
+	`$ composer require netgen/remote-media-bundle:^1.0`
     
 * Configure the bundle:
     * in `config.yml` add basic configuration:
@@ -47,10 +47,10 @@
     
 * Update the database with a custom table:
 	* `$ mysql -u<user> -p<password> -h<host> <db_name> < vendor/netgen/remote-media-bundle/Netgen/Bundle/RemoteMediaBundle/Resources/sql/mysql/schema.sql`
-    * **OR** run `php ezpublish/console doctrine:schema:update --force` (or run with `--dump-sql` to get the sql needed for creating the table)
+    * **OR** run `php app/console doctrine:schema:update --force` (or run with `--dump-sql` to get the sql needed for creating the table)
 
 * Clear the caches
     * run the following command:
     ```
-    $ php ezpublish/console cache:clear
+    $ php app/console cache:clear
     ```

@@ -30,18 +30,6 @@ This repository contains field type (and legacy data type) implementation, and i
 For usage documentation see [USAGE.md](Resources/docs/USAGE.md)
 
 
-## What's next ## 
-Here's the plan for features that should be in place before 1.0 release:
-- [x] move image variation defintions to yaml files
-- [x] add option to pass any option to cloudinary directly from template
-- [ ] add option to select folder when uploading the image - on roadmap for 1.0
-- [x] support both eZ 5.4.*, and eZPlatform with Legacy Bridge
-- [ ] add support for Netgen Content Browser(*) - on roadmap for 1.0
-- [ ] add support for Netgen Layouts (*) - on roadmap for 1.x
-
-(*) Netgen Content Browser and Netgen Layouts are products of Netgen. This bundle will provide support for both if they are already installed and activated on the project.
-
-
 ## Copyright ## 
 
 * Copyright (C) 2016 Keyteq. All rights reserved.
