@@ -27,8 +27,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Folder", options) : helperMissing.call(depth0, "translate", "Folder", options)))
     + ":</label>\n        <select class=\"ngremotemedia-remote-folders\" id=\"ngremotemedia-remote-folder-select\">\n            <option class=\"loading\">"
     + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Loading...", options) : helperMissing.call(depth0, "translate", "Loading...", options)))
-    + "</option>\n            <option value=\"root\">"
-    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Root folder", options) : helperMissing.call(depth0, "translate", "Root folder", options)))
+    + "</option>\n            <option value=\"all\">"
+    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "All", options) : helperMissing.call(depth0, "translate", "All", options)))
     + "</option>\n        </select>\n    </div>\n\n    <div class=\"form-group\">\n        <span class=\"upload-container\" id=\"ngremotemedia-browser-local-file-container-";
   if (helper = helpers.id) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.id); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
@@ -141,12 +141,10 @@ function program3(depth0,data) {
 templates['scaler'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, functionType="function";
+  var buffer = "", stack1, helper, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<button class=\"btn btn-primary js-close\">\n    "
-    + escapeExpression((helper = helpers.translate || (depth0 && depth0.translate),options={hash:{},data:data},helper ? helper.call(depth0, "Apply", options) : helperMissing.call(depth0, "translate", "Apply", options)))
-    + "\n</button>\n\n<div class=\"customattributes\"></div>\n\n<section class=\"ngremotemedia-crop\">\n    <ul class=\"nav nav-pills inverted\"></ul>\n</section>\n\n<div class=\"ngremotemedia-crop-container\">\n    <div class=\"image-wrap\">\n        <img src=\"";
+  buffer += "<div class=\"customattributes\"></div>\n\n<section class=\"ngremotemedia-crop\">\n    <ul class=\"nav nav-pills inverted\"></ul>\n</section>\n\n<div class=\"ngremotemedia-crop-container\">\n    <div class=\"image-wrap\">\n        <img src=\"";
   if (helper = helpers.media) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.media); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)

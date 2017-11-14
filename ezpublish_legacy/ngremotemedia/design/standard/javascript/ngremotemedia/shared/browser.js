@@ -110,7 +110,7 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
                 if(d.isNew && !confirm(NgRemoteMedia.t('Create new folder?'))){
                     e.preventDefault();
                 }else{
-                    self.query.folder = d.text;
+                    self.query.folder = d.id;
                     self.collection.search(self.query);
                 }
             });
