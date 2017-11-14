@@ -110,6 +110,11 @@ class CloudinaryProvider extends RemoteMediaProvider
         $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
         $options = array();
+
+        if (!isset($configuredVariations[$variationName])) {
+            return $options;
+        }
+
         $variationConfiguration = $configuredVariations[$variationName];
         foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
             try {
