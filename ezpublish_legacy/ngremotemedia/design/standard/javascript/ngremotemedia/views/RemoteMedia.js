@@ -10,13 +10,15 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         return this;
     },
 
-    convert_versions: function(versions){
-        if(_.isArray(versions)){return versions;}
+
+    convert_variations: function(versions){
         return _.map(versions, function(size, name) {
+            var s = size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size;
             return {
-                size: size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size,
-                name: name
-            };
+                name: name,
+                possibleWidth: s[0],
+                possibleHeight: s[1]
+            }
         });
     },
 
@@ -37,9 +39,15 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
         this.destination = this.$('.media-id');
         this.renderTags().enableUpload();
-
+        window.tmp = this.model;
+        // Scale button
         var data = this.$('.ngremotemedia-scale').data();
-        data && this.model.set({available_versions: this.convert_versions(data.versions), truesize: data.truesize}, {silent: true});
+        if(data){
+            this.model.set({
+                variations: this.model.variations.set(this.convert_variations(data.variations)),
+                truesize: data.truesize
+            }, {silent: true});
+        }
 
         return this;
     },
@@ -117,13 +125,18 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
                 el: modal.show().contentEl
             }).render();
 
+            scaler_view.on('saved', function(){
+                modal.close();
+            })
+
         }.bind(this));
 
 
         modal.on('close', function(){
-            scaler_view.trigger('destruct');
-            scaler_view.trigger('stack.popped');
+            scaler_view.close();
         });
+
+
 
     },
 

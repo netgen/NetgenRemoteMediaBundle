@@ -1,11 +1,11 @@
 <a
-{{#if toSmall}}
+{{#if tooSmall}}
     title="{{translate "Image is to small for this version"}}"
 {{/if}}
 >
-    {{#if toSmall}}
+    {{#if tooSmall}}
     <i class="ngri-warning"></i>
     {{/if}}
     {{name}}<br />
-    <small>{{width}}x{{height}}</small>
+    <small>{{possibleWidth}}x{{possibleHeight}}</small>
 </a>

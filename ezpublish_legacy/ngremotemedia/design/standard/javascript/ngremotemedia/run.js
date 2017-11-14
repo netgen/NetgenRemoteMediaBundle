@@ -11,6 +11,8 @@ $(function() {
                 prefix : container.data('prefix')
             });
 
+            console.log(bootstrapData, media_attributes);
+
             var model = new NgRemoteMedia.models.Attribute({
                 id : container.data('id'),
                 prefix : container.data('prefix'),

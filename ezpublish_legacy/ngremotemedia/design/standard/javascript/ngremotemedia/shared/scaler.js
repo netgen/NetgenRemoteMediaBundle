@@ -38,16 +38,15 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 // Model is an instance of Attribute
                 this.model.on('scale', this.render, this);
 
-
                 // When I get popped from stack
                 // i save my current scale
-                this.on('destruct', this.saveCrop, this);
-                this.on('stack.popped', this.stackPopped, this);
+                // this.on('destruct', this.saveAll, this);
 
-                this.versions = this.model.combined_versions();
+                this.versions = this.model.variations;
             },
 
             events: {
+                'click .js-save': 'saveAll',
                 'click .nav li': 'changeScale',
             },
 
@@ -76,13 +75,13 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
                 this.render_editor_elements();
 
-                var versionElements = _(this.versions).map(function(version) {
+                var versionElements = _(this.model.variations.models).map(function(version, name) {
                     return new ScaledVersion({
                         model: version,
-                        media: media,
-                        className: (version.coords ? 'cropped' : 'uncropped')
+                        // className: (version.coords ? 'cropped' : 'uncropped') //TODO: states
                     }).render().el;
                 });
+
                 this.$('ul.nav').html(versionElements);
 
 
@@ -123,15 +122,17 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
 
 
-            storeVersion: function(selection, scale) {
-                // Must store scale coords back onto object
-                var coords = [selection.x, selection.y, selection.x2, selection.y2];
+            // storeVersion: function(selection, model) {
+            //     // Must store scale coords back onto object
+            //     // var coords = [selection.x, selection.y, selection.x2, selection.y2];
 
-                this.trigger('save');
+            //     this.trigger('save');
+            //     console.log(scale, selection);
+            //     model.save(selection);
 
-                var method = this.singleVersion ? 'generate' : 'save_version';
-                this.model[method](scale.name, coords).success(this.versionCreated);
-            },
+            //     // var method = this.singleVersion ? 'generate' : 'save_variation';
+            //     // this.model[method](scale.name, coords).success(this.versionCreated);
+            // },
 
             versionCreated: function(data) {
                 data.content && (data = data.content);
@@ -151,29 +152,36 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 }
             },
 
+            saveAll: function(){
+                this.model.save_variations();
+                this.trigger('saved'); //TODO: Call this on done
+                return this;
+            },
+
             saveCrop: function() {
                 if (!this.current){return;}
 
                 this.set_editor_attributes();
 
-                var scale = this.current.data('scale');
+                var model = this.current.data('model');
 
-                if (this.cropper && scale) {
+                if (this.cropper && model) {
                     var selection = this.cropper.tellSelect();
 
-                    if (!this.hasSelection) {
-                        selection.x = 0;
-                        selection.y = 0;
-                        selection.x2 = this.trueSize[0];
-                        selection.y2 = this.trueSize[1];
-                        if (!parseInt(scale.size[0], 10))
-                            scale.size[0] = this.trueSize[0];
-                        if (!parseInt(scale.size[1], 10))
-                            scale.size[1] = this.trueSize[0];
-                    }
+                    // if (!this.hasSelection) {
+                    //     selection.x = 0;
+                    //     selection.y = 0;
+                    //     selection.x2 = this.trueSize[0];
+                    //     selection.y2 = this.trueSize[1];
+                    //     if (!parseInt(model.size[0], 10))
+                    //         model.size[0] = this.trueSize[0];
+                    //     if (!parseInt(model.size[1], 10))
+                    //         model.size[1] = this.trueSize[0];
+                    // }
 
 
-                    this.storeVersion(selection, scale);
+                    model.set($.extend({cropped: true}, selection));
+
                     this.current.removeClass('uncropped').addClass('cropped');
                 }
             },
@@ -197,25 +205,24 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 }
 
                 this.cropper && this.cropper.destroy();
-
                 this.current = $(e.currentTarget).addClass('active');
-                var scale = this.current.data('scale');
 
-                if (typeof scale === 'undefined' || scale.toSmall){return this;}
+                var model = this.current.data('model');
 
-                var coords = scale.coords || [0, 0, this.SIZE.w/2, this.SIZE.h/2], //Defaults are for fresh upload
-                    ratio = (scale.size[0] / scale.size[1]),
-                    context = this;
+                if (typeof model === 'undefined' || model.tooSmall()){return this;}
+
+                var context = this;
+
 
                 // If an API exists we dont need to build Jcrop
                 // but can just change crop
                 var cropperOptions = {
-                    setSelect: coords,
-                    aspectRatio: scale.unbounded ? null : ratio,
-                    minSize: scale.size,
+                    setSelect: model.coords(),
+                    aspectRatio: model.aspectRatio(),
+                    minSize: model.minSize(),
                     // Make sure user can't remove selection if width and height has bounded dimension
                     // if it has ratio than it has bounded dimension
-                    allowSelect: scale.unbounded,
+                    allowSelect: model.unbounded(),
                     trueSize: this.trueSize,
                     onSelect:  function() { context.hasSelection = true; },
                     onRelease: function() { context.hasSelection = false; }
@@ -236,7 +243,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
             // Checks if both stack animation is finished and version saved to server before adding to tinyMCE
             finishScaler: function() {
-                if (this.versionSaved && this.poppedFromStack) {
+                if (this.versionSaved) {
                     /**
                      * Must be wrapped in an timeout function to prevent FireFox from
                      * replacing all content instead of addding image to selected content
