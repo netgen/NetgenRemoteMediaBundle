@@ -9,25 +9,9 @@ $contentVersion = $Params['contentobject_version'];
 $attribute = eZContentObjectAttribute::fetch($attributeId, $contentVersion, true);
 $value = $attribute->content();
 
-$variations = $value->variations;
-
-$scaling = array();
-foreach ($variations as $name => $coords) {
-    $scaling[] = array(
-        'name' => $name,
-        'coords' => array(
-            (int) $coords['x'],
-            (int) $coords['y'],
-            (int) $coords['x'] + (int) $coords['w'],
-            (int) $coords['y'] + (int) $coords['h'],
-        ),
-    );
-}
-
 $responseData = array(
     'media' => !empty($value->resourceId) ? $value : false,
-    //'content' => $content,
-    'toScale' => $scaling,
+    'variations' => $value->variations,
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
