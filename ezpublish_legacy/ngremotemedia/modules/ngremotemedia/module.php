@@ -30,16 +30,6 @@ $ViewList['change'] = array(
     'functions' => 'change',
     'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
 );
-$ViewList['tags'] = array(
-    'script' => 'change_tags.php',
-    'functions' => 'tags',
-    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
-);
-$ViewList['tags_delete'] = array(
-    'script' => 'remove_tags.php',
-    'functions' => 'tags',
-    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
-);
 $ViewList['simple_fetch'] = array(
     'script' => 'simple_fetch.php',
     'functions' => 'fetch'
@@ -59,7 +49,6 @@ $FunctionList['save'] = array();
 $FunctionList['browse'] = array();
 $FunctionList['upload'] = array();
 $FunctionList['change'] = array();
-$FunctionList['tags'] = array();
 $FunctionList['generate'] = array();
 $FunctionList['simple_upload'] = array();
 $FunctionList['folders'] = array();
