@@ -10,4 +10,3 @@
     value="{'Scale'|i18n( 'extension/ngremotemedia/interactions' )}"
     data-variations={scaling_format($croppableFormats)|json}>
 {/if}
-g
