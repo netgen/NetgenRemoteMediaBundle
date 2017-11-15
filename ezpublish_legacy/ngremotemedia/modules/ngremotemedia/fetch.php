@@ -10,13 +10,10 @@ $attribute = eZContentObjectAttribute::fetch($attributeId, $contentVersion, true
 $value = $attribute->content();
 
 $responseData = array(
-    'media' => !empty($value->resourceId) ? $value : false,
-    'variations' => $value->variations,
+    'media' => !empty($value->resourceId) ? $value : false
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($responseData));
 
 eZExecution::cleanExit();
-
-?>
