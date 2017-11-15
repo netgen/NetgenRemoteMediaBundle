@@ -30,4 +30,7 @@ $attribute->setAttribute('data_text', json_encode($value));
 $attribute->store();
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
+
+print(json_encode(array()));
+
 eZExecution::cleanExit();
