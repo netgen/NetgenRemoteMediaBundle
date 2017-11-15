@@ -100,7 +100,7 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         }).done(function(){
 
             scaler_view = new NgRemoteMedia.views.Scaler({
-                model: this.model,
+                model: this.model.get('media'),
                 el: modal.show().contentEl
             }).render();
 

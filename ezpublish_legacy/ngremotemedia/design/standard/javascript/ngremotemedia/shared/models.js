@@ -158,6 +158,19 @@ window.NgRemoteMediaShared.Models = function() {
             this.variations = new VariationCollection();
         },
 
+
+        originalWidth: function(){
+          return this.get('file').width;
+        },
+
+        originalHeight: function(){
+          return this.get('file').height;
+        },
+
+        originalSize: function() {
+            return [this.originalWidth(), this.originalHeight()];
+        },
+
         parse: function(data) {
             this.variations || (this.variations = new VariationCollection());
 
@@ -321,16 +334,16 @@ window.NgRemoteMediaShared.Models = function() {
 
         },
 
-        file: function(){
-          return this.collection.media.get('file');
+        media: function(){
+          return this.collection.media;
         },
 
         originalWidth: function(){
-          return this.file().width;
+          return this.media().originalWidth();
         },
 
         originalHeight: function(){
-          return this.file().height;
+          return this.media().originalHeight();
         },
 
         originalSize: function() {
