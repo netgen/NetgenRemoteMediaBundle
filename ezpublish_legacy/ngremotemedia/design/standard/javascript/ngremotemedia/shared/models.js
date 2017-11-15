@@ -65,19 +65,14 @@ window.NgRemoteMediaShared.Models = function() {
         },
 
         parse: function(data) {
-
-            console.log('attribute data media', data.media);
-
             if ('media' in data) {
                 data.media.attr = this;
 
                 var media = this.get('media');
                 if(media){
                     var parsed = media.parse(data.media);
-                    console.log('update', parsed)
                     data.media = media.set(parsed);
                 }else{
-                    console.log('new')
                     data.media = new Media(data.media, {parse: true});
                 }
             }
@@ -116,22 +111,6 @@ window.NgRemoteMediaShared.Models = function() {
 
 
 
-        generate: function(name, selection){
-            var data = {
-                name: name,
-                resourceId: this.get('media').id
-            };
-
-            _.extend(data, this.parse_jcrop_selection_to_coords(selection));
-
-            return Backbone.sync('create', this, {
-                url: NgRemoteMediaShared.url('/ngremotemedia/generate'),
-                data: data,
-                transform: false
-            });
-        },
-
-
         // var coords = [selection.x, selection.y, selection.x2, selection.y2];
         parse_jcrop_selection_to_coords: function(selection){
             var data = {};
@@ -151,7 +130,6 @@ window.NgRemoteMediaShared.Models = function() {
     /**
      * Model Media
      */
-
     var Media = Backbone.Model.extend({
         klass: "Media",
         initialize: function() {
@@ -173,16 +151,24 @@ window.NgRemoteMediaShared.Models = function() {
 
         parse: function(data) {
             this.variations || (this.variations = new VariationCollection());
+            var media = this;
 
-            console.log('parse media', data);
+            // Used with ngremotemedia/simple_fetch change to save response other query
+            if(data.media){
+                var new_data = data.media;
 
-            // TODO: WHY???????????
-            // if(data.media){
-            //     var new_data = data.media;
-            //     new_data.available_versions = data.available_versions;
-            //     new_data.class_list = data.class_list;
-            //     data = new_data;
-            // }
+                // TODO: This is only temporary hack to support new structure
+                // {"gallery_image":"1520x940","mobile_full":"1x1"}
+                new_data.available_variations = _.reduce(data.available_versions, function(memo, item){
+                    memo[item.name] = [item.size[0], item.size[1]].join(':');
+                    return memo;
+                }, {});
+
+                delete(data.available_versions);
+
+                new_data.class_list = data.class_list;
+                data = new_data;
+            }
 
             if(data.available_variations){
                 data.available_variations = this.convert_possible_variations(data.available_variations);
@@ -192,7 +178,7 @@ window.NgRemoteMediaShared.Models = function() {
             if ('variations' in data) {
                 var variations = $.extend({}, data.variations, this.get('available_variations') || data.available_variations );
                 var x = _.map(variations, function(value, name){
-                    return $.extend({name: name}, value);
+                    return $.extend({name: name, media: media}, value);
                 });
 
                 this.variations.set(x, {parse: true})
@@ -231,6 +217,7 @@ window.NgRemoteMediaShared.Models = function() {
                 transform: false
             });
         },
+
 
         url: function(){
             return [NgRemoteMediaShared.url('/ngremotemedia/simple_fetch')].join('/');
@@ -326,7 +313,7 @@ window.NgRemoteMediaShared.Models = function() {
 
         set: function(attributes, options){
           _.each(attributes, function(value, attr) {
-            if(!_.contains(['name', 'cropped'], attr)){
+            if(_.contains(['x', 'y', 'w', 'h', 'x2', 'y2', 'possibleWidth', 'possibleHeight' ], attr)){
               attributes[attr] = Math.round(value) || 0;
             }
           })
@@ -383,6 +370,28 @@ window.NgRemoteMediaShared.Models = function() {
 
         is_cropped: function(){
           return this.has('x');
+        },
+
+
+        generate_image: function(){
+            console.log('generate_image', this);
+            var data = {
+                name: this.id,
+                resourceId: this.get('media').id,
+                // coords: _.pick(this.attributes, 'x', 'y', 'w', 'h'),
+
+                // TODO: Temporary hack
+                crop_x: this.get('x'),
+                crop_y: this.get('y'),
+                crop_w: this.get('w'),
+                crop_h: this.get('h'),
+            };
+
+            return Backbone.sync('create', this, {
+                url: NgRemoteMediaShared.url('/ngremotemedia/generate'),
+                data: data,
+                transform: false
+            });
         },
 
         // For template rendering

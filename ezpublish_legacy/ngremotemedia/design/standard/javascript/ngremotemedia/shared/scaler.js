@@ -40,6 +40,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
             events: {
                 'click .js-save': 'saveAll',
+                'click .js-generate': 'generate',
                 'click .nav li': 'changeScale',
             },
 
@@ -59,6 +60,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 this.updateScalerSize(this.model);
 
                 var content = JST.scaler({
+                    singleVersion: this.singleVersion,
                     media: this.model.thumb(this.SIZE.w, this.SIZE.h)
                 });
                 this.$el.append(content);
@@ -117,7 +119,6 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
             //     // var coords = [selection.x, selection.y, selection.x2, selection.y2];
 
             //     this.trigger('save');
-            //     console.log(scale, selection);
             //     model.save(selection);
 
             //     // var method = this.singleVersion ? 'generate' : 'save_variation';
@@ -144,6 +145,18 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
             saveAll: function(){
                 return this.model.save_variations().done(function(){
+                    this.trigger('saved');
+                }.bind(this));
+            },
+
+            generate: function(){
+                var variation = this.current.data('model');
+                return variation.generate_image().done(function(data){
+                    console.log(data);
+                    console.log(arguments);
+                    console.log(variation);
+                    this.model.set('generated_url', data.url);
+                    this.model.trigger('generated');
                     this.trigger('saved');
                 }.bind(this));
             },

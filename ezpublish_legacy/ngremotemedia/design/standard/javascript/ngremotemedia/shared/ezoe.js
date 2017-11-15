@@ -25,7 +25,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
 
         this.model = new Attribute({id: id, version: version, ezoe: true });
 
-        this.listenTo(this.model, 'version.create', this.updateEditor);
+        this.listenTo(this.model, 'generated', this.updateEditor);
 
         // Preselected image. Show scaler with selected crop
         if (this.is_remotemedia_selected()) {
@@ -95,12 +95,15 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             }] : [];
 
         var view_options = {
-            model : this.model,
+            model : media,
             className : 'ngremotemedia-scaler',
             singleVersion : true,
             editorAttributes : ea,
             selectedVersion : ea.version
         };
+
+
+        console.log('view_options', view_options);
 
 
         media.fetch({
@@ -140,6 +143,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
 
 
     updateEditor: function(versions, data) {
+        console.log(this.model);
         var media = this.model.get('media');
 
         var attributes = {

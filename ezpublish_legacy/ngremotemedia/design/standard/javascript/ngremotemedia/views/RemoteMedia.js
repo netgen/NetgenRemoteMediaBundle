@@ -17,7 +17,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
     },
 
     render: function() {
-        console.log('render');
         var content = this.model.get('content'), html;
 
         if(content){
@@ -37,7 +36,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
         var $tags = this.$('.ngremotemedia-newtags');
         // if(!$tags.length){ return this; }
-        console.log($tags.length);
         var data = $tags.data();
         $tags.off().select2({
             placeholder: NgRemoteMedia.t('Add tag'),
