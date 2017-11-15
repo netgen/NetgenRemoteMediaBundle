@@ -42,6 +42,8 @@ loadCSS();
 window.NgRemoteMediaShared.Models = function() {
     var VariationCollection = NgRemoteMedia.models.VariationCollection;
 
+
+
     var Attribute = Backbone.Model.extend({
         klass: "Attribute",
         medias: null,
@@ -49,15 +51,7 @@ window.NgRemoteMediaShared.Models = function() {
         initialize: function(attributes) {
             _.bindAll(this);
             this.medias = new MediaCollection();
-            this.variations = new VariationCollection();
         },
-
-        // toScaleIndexed: function() {
-        //     return _.reduce(this.get('toScale') || [], function(h, v) {
-        //         h[v.name.toLowerCase()] = v;
-        //         return h;
-        //     }, {});
-        // },
 
         defaults: function() {
             return {
@@ -72,28 +66,21 @@ window.NgRemoteMediaShared.Models = function() {
 
         parse: function(data) {
 
+            console.log('attribute data media', data.media);
+
             if ('media' in data) {
                 data.media.attr = this;
-                data.media = new Media(data.media, {
-                    parse: true
-                });
+
+                var media = this.get('media');
+                if(media){
+                    var parsed = media.parse(data.media);
+                    console.log('update', parsed)
+                    data.media = media.set(parsed);
+                }else{
+                    console.log('new')
+                    data.media = new Media(data.media, {parse: true});
+                }
             }
-
-
-            if ('variations' in data) {
-                var x = _.map(data.variations, function(value, name){
-                    return $.extend({name: name}, value);
-                });
-
-                // data.variations = new VariationCollection(x, {
-                //     parse: true
-                // });
-                this.variations.set(x, {parse: true})
-                this.variations.media = data.media;
-
-                delete(data.variations);
-            }
-
 
             return data;
         },
@@ -124,42 +111,6 @@ window.NgRemoteMediaShared.Models = function() {
                 data: {
                     resource_id: id,
                 }
-            });
-        },
-
-
-        // save_variation: function(name, selection) {
-        //     var variations = this.get('variations');
-        //     console.log(variations, selection);
-        //     variations[name] = {
-        //         name: name,
-        //         coords: this.parse_jcrop_selection_to_coords(selection),
-        //     }
-        //     this.set('variations', variations);
-        //     return this;
-        // },
-
-
-        //NOTE: not used yet
-        save_variations: function() {
-            var url = [NgRemoteMediaShared.url("/ngremotemedia/save"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
-
-            var json = this.variations.toJSON();
-
-            var out = {};
-            this.variations.each(function(item){
-                out[item.get('name')] = {
-                    x: item.get('x'),
-                    y: item.get('y'),
-                    w: item.get('w'),
-                    h: item.get('h')
-                }
-            });
-
-            return Backbone.sync('create', this, {
-                url: url,
-                data: {variations: out},
-                transform: false
             });
         },
 
@@ -204,22 +155,70 @@ window.NgRemoteMediaShared.Models = function() {
     var Media = Backbone.Model.extend({
         klass: "Media",
         initialize: function() {
-            _.bindAll(this);
+            this.variations = new VariationCollection();
         },
 
         parse: function(data) {
-            if(data.media){
-                var new_data = data.media;
-                new_data.available_versions = data.available_versions;
-                new_data.class_list = data.class_list;
-                data = new_data;
+            this.variations || (this.variations = new VariationCollection());
+
+            console.log('parse media', data);
+
+            // TODO: WHY???????????
+            // if(data.media){
+            //     var new_data = data.media;
+            //     new_data.available_versions = data.available_versions;
+            //     new_data.class_list = data.class_list;
+            //     data = new_data;
+            // }
+
+            if(data.available_variations){
+                data.available_variations = this.convert_possible_variations(data.available_variations);
             }
+
+
+            if ('variations' in data) {
+                var variations = $.extend({}, data.variations, this.get('available_variations') || data.available_variations );
+                var x = _.map(variations, function(value, name){
+                    return $.extend({name: name}, value);
+                });
+
+                this.variations.set(x, {parse: true})
+                this.variations.media = this;
+
+                delete(data.variations);
+            }
+
             data.id = data.resourceId;
             data.file = _.extend({}, data.metaData); //Create alias for metaData
             delete(data.metaData);
             data.file.type = data.file.resource_type;
             data.true_size = [data.file.width, data.file.height];
+            window.m = this
             return data;
+        },
+
+
+        save_variations: function() {
+            var attribute_model = this.get('attr');
+            var url = [NgRemoteMediaShared.url("/ngremotemedia/save"), attribute_model.get('contentObjectId'), attribute_model.id, attribute_model.get('version')].join('/');
+
+            var json = this.variations.toJSON();
+
+            var out = {};
+            this.variations.each(function(item){
+                out[item.get('name')] = {
+                    x: item.get('x'),
+                    y: item.get('y'),
+                    w: item.get('w'),
+                    h: item.get('h')
+                }
+            });
+
+            return Backbone.sync('create', this, {
+                url: url,
+                data: {variations: out},
+                transform: false
+            });
         },
 
         url: function(){
@@ -230,6 +229,18 @@ window.NgRemoteMediaShared.Models = function() {
         thumb: function(width, height) {
             var url = this.get('url').split(/\/v\d+\//);
             return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
+        },
+
+        convert_possible_variations: function(variations){
+            var out = {}
+            _.each(variations, function(size, name) {
+                var s = size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size;
+                out[name] = {
+                    possibleWidth: s[0],
+                    possibleHeight: s[1]
+                }
+            });
+            return out
         }
     });
 

@@ -115,24 +115,20 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
                 variations: media.get('variations')
             });
 
-            this.render_scaler_view(view_options);
+            this.render_scaler_view_in_modal(view_options);
 
         }.bind(this));
 
     },
 
 
-      render_scaler_view: function(options){
-        this.render_scaler_view_in_modal(options);
-      },
-
-
-
     render_scaler_view_in_modal: function(options){
+        console.log(options);
+
         var modal = new NgRemoteMedia.views.Modal().insert().render();
         _.extend(options, {el:modal.show().contentEl });
-        var scaler_view = new ScalerView(options).render();
 
+        var scaler_view = new ScalerView(options).render();
         scaler_view.modal = modal;
 
         modal.on('close', function(){

@@ -69,10 +69,9 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
                 this.render_editor_elements();
 
-                var versionElements = _(this.model.variations.models).map(function(version, name) {
+                var versionElements = _(media.variations.models).map(function(version, name) {
                     return new ScaledVersion({
-                        model: version,
-                        // className: (version.coords ? 'cropped' : 'uncropped') //TODO: states
+                        model: version
                     }).render().el;
                 });
 
@@ -152,35 +151,6 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 }.bind(this));
             },
 
-            saveCrop: function() {
-                if (!this.current){return;}
-
-                this.set_editor_attributes();
-
-                var model = this.current.data('model');
-
-                if (this.cropper && model) {
-                    var selection = this.cropper.tellSelect();
-
-                    // if (!this.hasSelection) {
-                    //     selection.x = 0;
-                    //     selection.y = 0;
-                    //     selection.x2 = this.trueSize[0];
-                    //     selection.y2 = this.trueSize[1];
-                    //     if (!parseInt(model.size[0], 10))
-                    //         model.size[0] = this.trueSize[0];
-                    //     if (!parseInt(model.size[1], 10))
-                    //         model.size[1] = this.trueSize[0];
-                    // }
-
-
-                    // model.set($.extend({cropped: true}, selection));
-
-                    // this.current.removeClass('uncropped').addClass('cropped');
-                }
-            },
-
-
             set_editor_attributes: function(){
                 if (!this.editorAttributes){ return; }
                 var self = this;
@@ -194,7 +164,6 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
                 if (this.current) {
                     if (this.current.get(0) == e.currentTarget){ return; }
-                    if (!this.singleVersion){ this.saveCrop();}
                     this.current.removeClass('active');
                 }
 

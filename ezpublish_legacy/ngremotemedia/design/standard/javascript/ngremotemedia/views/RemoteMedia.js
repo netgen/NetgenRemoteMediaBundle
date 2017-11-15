@@ -10,18 +10,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         return this;
     },
 
-
-    convert_variations: function(versions){
-        return _.map(versions, function(size, name) {
-            var s = size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size;
-            return {
-                name: name,
-                possibleWidth: s[0],
-                possibleHeight: s[1]
-            }
-        });
-    },
-
     events: {
         'click .ngremotemedia-remote-file': 'search',
         'click .ngremotemedia-scale': 'scaler',
@@ -40,14 +28,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         this.destination = this.$('.media-id');
         this.renderTags().enableUpload();
         window.tmp = this.model;
-        // Scale button
-        var data = this.$('.ngremotemedia-scale').data();
-        if(data){
-            this.model.set({
-                variations: this.model.variations.set(this.convert_variations(data.variations)),
-                truesize: data.truesize
-            }, {silent: true});
-        }
 
         return this;
     },
