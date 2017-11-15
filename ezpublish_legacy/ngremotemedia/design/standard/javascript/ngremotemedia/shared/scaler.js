@@ -31,7 +31,6 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 _.extend(this, _.pick(options, ['singleVersion', 'editorAttributes', 'selectedVersion']));
                 this.versionSaved = null;
 
-                this.trueSize = this.model.get('media').get('true_size');
 
                 // Model is an instance of Attribute
                 this.model.on('scale', this.render, this);
@@ -146,7 +145,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
             },
 
             saveAll: function(){
-                return this.model.save_variations().done(function(){
+                return this.model.get('media').save_variations().done(function(){
                     this.trigger('saved');
                 }.bind(this));
             },
@@ -186,7 +185,7 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                     // Make sure user can't remove selection if width and height has bounded dimension
                     // if it has ratio than it has bounded dimension
                     allowSelect: model.unbounded(),
-                    trueSize: this.trueSize,
+                    trueSize: model.originalSize(),
                     onSelect:  function() { context.hasSelection = true; },
                     onRelease: function() { context.hasSelection = false; },
                     onChange: _.debounce(function(selection){

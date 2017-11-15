@@ -192,8 +192,6 @@ window.NgRemoteMediaShared.Models = function() {
             data.file = _.extend({}, data.metaData); //Create alias for metaData
             delete(data.metaData);
             data.file.type = data.file.resource_type;
-            data.true_size = [data.file.width, data.file.height];
-            window.m = this
             return data;
         },
 
@@ -333,6 +331,10 @@ window.NgRemoteMediaShared.Models = function() {
 
         originalHeight: function(){
           return this.file().height;
+        },
+
+        originalSize: function() {
+            return [this.originalWidth(), this.originalHeight()];
         },
 
         tooSmall: function(){
