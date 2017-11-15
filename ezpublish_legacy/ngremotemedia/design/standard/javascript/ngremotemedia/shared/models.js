@@ -303,9 +303,9 @@ window.NgRemoteMediaShared.Models = function() {
 
 
         set: function(attributes, options){
-          _.each(attributes, function(value, name) {
-            if(name !== 'name'){
-              attributes[name] = Math.round(value) || 0;
+          _.each(attributes, function(value, attr) {
+            if(!_.contains(['name', 'cropped'], attr)){
+              attributes[attr] = Math.round(value) || 0;
             }
           })
           return Backbone.Model.prototype.set.call(this, attributes, options)
@@ -348,7 +348,15 @@ window.NgRemoteMediaShared.Models = function() {
         // jCrop selection
         coords: function(){
             var c = this.attributes;
-            return [c.x, c.y, c.x + c.w, c.y + c.h]
+            if(this.is_cropped()){
+                return [c.x, c.y, c.x + c.w, c.y + c.h];
+            }else{
+                return [0, 0, this.originalWidth() / 2, this.originalHeight() / 2];
+            }
+        },
+
+        is_cropped: function(){
+          return this.has('x');
         },
 
         // For template rendering

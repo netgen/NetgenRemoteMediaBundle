@@ -24,23 +24,17 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
             className: 'ngremotemedia-scaler',
 
             versionSaved: null,
-            poppedFromStack: null,
 
             initialize: function(options) {
                 options = (options || {});
                 _.bindAll(this);
                 _.extend(this, _.pick(options, ['singleVersion', 'editorAttributes', 'selectedVersion']));
                 this.versionSaved = null;
-                this.poppedFromStack = null;
 
                 this.trueSize = this.model.get('media').get('true_size');
 
                 // Model is an instance of Attribute
                 this.model.on('scale', this.render, this);
-
-                // When I get popped from stack
-                // i save my current scale
-                // this.on('destruct', this.saveAll, this);
 
                 this.versions = this.model.variations;
             },
@@ -153,9 +147,9 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
             },
 
             saveAll: function(){
-                this.model.save_variations();
-                this.trigger('saved'); //TODO: Call this on done
-                return this;
+                return this.model.save_variations().done(function(){
+                    this.trigger('saved');
+                }.bind(this));
             },
 
             saveCrop: function() {
@@ -180,9 +174,9 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                     // }
 
 
-                    model.set($.extend({cropped: true}, selection));
+                    // model.set($.extend({cropped: true}, selection));
 
-                    this.current.removeClass('uncropped').addClass('cropped');
+                    // this.current.removeClass('uncropped').addClass('cropped');
                 }
             },
 
@@ -213,9 +207,9 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
                 var context = this;
 
+                var not_initial = false;
 
-                // If an API exists we dont need to build Jcrop
-                // but can just change crop
+                // If an API exists we dont need to build Jcrop but can just change crop
                 var cropperOptions = {
                     setSelect: model.coords(),
                     aspectRatio: model.aspectRatio(),
@@ -225,7 +219,11 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                     allowSelect: model.unbounded(),
                     trueSize: this.trueSize,
                     onSelect:  function() { context.hasSelection = true; },
-                    onRelease: function() { context.hasSelection = false; }
+                    onRelease: function() { context.hasSelection = false; },
+                    onChange: _.debounce(function(selection){
+                        not_initial = model.set($.extend({crop_changed: true}, selection));
+                        not_initial = true;
+                    }, 75)
                 };
 
                 this.$('.image-wrap > img').Jcrop(cropperOptions, function(){
@@ -235,25 +233,21 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
             },
 
 
-            stackPopped: function() {
-                this.poppedFromStack = true;
-                this.finishScaler();
-            },
+            // stackPopped: function() {
+            //     this.finishScaler();
+            // },
 
 
-            // Checks if both stack animation is finished and version saved to server before adding to tinyMCE
-            finishScaler: function() {
-                if (this.versionSaved) {
-                    /**
-                     * Must be wrapped in an timeout function to prevent FireFox from
-                     * replacing all content instead of addding image to selected content
-                     */
-                    _.delay(function() {
-                        this.model.trigger('version.create', this.versions, this.versionSaved);
-                        this.trigger('saved');
-                    }.bind(this), 0);
-                }
-            },
+            // // Checks if both stack animation is finished and version saved to server before adding to tinyMCE
+            // finishScaler: function() {
+            //     if (this.versionSaved) {
+            //          // Must be wrapped in an timeout function to prevent FireFox from replacing all content instead of addding image to selected content
+            //         _.delay(function() {
+            //             this.model.trigger('version.create', this.versions, this.versionSaved);
+            //             this.trigger('saved');
+            //         }.bind(this), 0);
+            //     }
+            // },
 
             close: function() {
                 if (this.cropper) {

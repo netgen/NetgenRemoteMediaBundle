@@ -173,7 +173,9 @@
       background-image: linear-gradient(top, #ffbb00, #ff8d00);
       border-color: transparent; }
     .ngremotemedia-crop .nav-pills > li.cropped a {
-      border-color: red; }
+      border-color: green; }
+    .ngremotemedia-crop .nav-pills > li.changed a {
+      border-color: orange; }
   .ngremotemedia-crop .nav-pills a {
     display: block;
     padding: 8px 12px;

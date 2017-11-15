@@ -121,7 +121,8 @@
   .nav-pills {display: table; clear: both; margin: 0 0 20px; list-style: none;
     > li {float: left;
       &.active a {color: #000; background-color: #ffbb00; @include gradient(#ffbb00, #ff8d00); border-color: transparent;}
-      &.cropped a{border-color:red;}
+      &.cropped a{border-color:green;}
+      &.changed a{border-color:orange;}
     }
     a {display: block; padding: 8px 12px; margin: 0 2px; color: #ccc; border-radius: 5px; background: transparent; border: 1px solid #ccc; @include transition(all, 0.2s, ease-in-out);
       &:hover,
