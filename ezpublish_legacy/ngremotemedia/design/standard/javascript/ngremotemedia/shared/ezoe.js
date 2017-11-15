@@ -88,6 +88,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
     scaler: function() {
         var media = this.model.get('media'),
             ea = this.editorAttributes,
+            //TODO: FIX THIS
             editorToScale = ea.coords ? [{
                 name: ea.version,
                 coords: ea.coords
@@ -111,7 +112,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             this.editorAttributes.alttext = this.editorAttributes.alttext || media.get('file').alt_text;
             this.model.set({
                 toScale: editorToScale,
-                available_versions: media.get('available_versions')
+                variations: media.get('variations')
             });
 
             this.render_scaler_view(view_options);
@@ -131,6 +132,8 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
         var modal = new NgRemoteMedia.views.Modal().insert().render();
         _.extend(options, {el:modal.show().contentEl });
         var scaler_view = new ScalerView(options).render();
+
+        scaler_view.modal = modal;
 
         modal.on('close', function(){
             scaler_view.trigger('destruct');
