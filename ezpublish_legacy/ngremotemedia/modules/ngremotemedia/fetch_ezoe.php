@@ -38,7 +38,7 @@ $responseData['class_list'] = array(
         'name' => 'Class 2',
         'value' => 'class-2'
     )
-)
+);
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($responseData));
