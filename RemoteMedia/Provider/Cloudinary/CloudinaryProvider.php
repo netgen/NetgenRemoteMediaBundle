@@ -64,6 +64,10 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
 
+        if (!empty($options['folder'])) {
+            $publicId = $options['folder'].'/'.$publicId;
+        }
+
         return array(
             'public_id' => $publicId,
             'overwrite' => $overwrite,

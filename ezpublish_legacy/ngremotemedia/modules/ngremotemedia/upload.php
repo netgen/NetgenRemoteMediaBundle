@@ -6,6 +6,7 @@ $contentId = $Params['contentobject_id'];
 $file = eZHTTPFile::fetch( 'file' );
 $fieldId = $http->postVariable('AttributeID', '');
 $contentVersionId = $http->postVariable('ContentObjectVersion', '');
+$folder = $http->postVariable('folder', 'all');
 
 $container = ezpKernel::instance()->getServiceContainer();
 $provider = $container->get( 'netgen_remote_media.provider' );
@@ -23,10 +24,12 @@ if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
     eZExecution::cleanExit();
 }
 
-$value = $provider->upload(
-    $file->Filename,
-    pathinfo($file->OriginalFilename, PATHINFO_FILENAME)
-);
+$options = array();
+if ($folder !== 'all') {
+    $options['folder'] = $folder;
+}
+
+$value = $provider->upload($file->Filename, pathinfo($file->OriginalFilename, PATHINFO_FILENAME), $options);
 
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
 $attribute->setAttribute('data_text', json_encode($value));
