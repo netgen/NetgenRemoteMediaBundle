@@ -49,6 +49,10 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         } else {
             $container->setParameter('netgen_remote_media.content_browser.activated', false);
         }
+
+        if (in_array('NetgenOpenGraphBundle', $activatedBundles, true)) {
+            $loader->load('opengraph.yml');
+        }
     }
 
     /**

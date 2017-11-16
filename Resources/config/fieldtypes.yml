@@ -35,15 +35,3 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\SearchField
         tags:
             - {name: ezpublish.fieldType.indexable, alias: ngremotemedia}
-
-    netgen_remote_media.open_graph_handler:
-        class: Netgen\Bundle\RemoteMediaBundle\OpenGraph\Handler\RemoteMediaHandler
-        parent: netgen_open_graph.handler.field_type.abstract
-        arguments:
-            - "@netgen_remote_media.provider"
-            - "@ezpublish.api.service.content_type"
-            - "@request_stack"
-            - "@?logger"
-        lazy: true
-        tags:
-            - { name: netgen_open_graph.meta_tag_handler, alias: field_type/ngremotemedia }
