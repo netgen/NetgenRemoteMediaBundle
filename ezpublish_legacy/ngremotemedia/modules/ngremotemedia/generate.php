@@ -3,6 +3,11 @@
 $http = eZHTTPTool::instance();
 
 $resourceId = $http->postVariable('resourceId', '');
+// array(
+//   'small' => array(
+//      'x' => 200, 'y' => 200, 'w' => 200, 'h' => 200)
+//   )
+// )
 $variation = $http->postVariable('variation', array());
 
 $container = ezpKernel::instance()->getServiceContainer();
