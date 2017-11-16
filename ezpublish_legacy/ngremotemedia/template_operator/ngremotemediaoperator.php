@@ -16,7 +16,6 @@ class NgRemoteMediaOperator
             'ng_remote_croppable',
             'videoThumbnail',
             'ng_image_variations',
-            'scaling_format',
             'is_content_browser_active',
         );
     }
@@ -67,12 +66,6 @@ class NgRemoteMediaOperator
             'ng_remote_croppable' => array(
                 'class_identifier' => array(
                     'type' => 'string',
-                    'required' => true
-                )
-            ),
-            'scaling_format' => array(
-                'formats' => array(
-                    'type' => 'array',
                     'required' => true
                 )
             ),
@@ -130,8 +123,6 @@ class NgRemoteMediaOperator
         } elseif ($operatorName === 'ng_image_variations') {
             $onlyCroppable = $namedParameters['only_croppable'] ?: false;
             $operatorValue = $this->getImageVariations($namedParameters['class_identifier'], $onlyCroppable);
-        } elseif ($operatorName === 'scaling_format') {
-            $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
         } elseif ($operatorName === 'is_content_browser_active') {
             $operatorValue = $this->isContentBrowserActive();
         }
@@ -146,18 +137,6 @@ class NgRemoteMediaOperator
 
         return $cbActive && $provider->supportsContentBrowser();
 
-    }
-
-    function formatAliasForScaling($formats)
-    {
-        $returnValue = array();
-        foreach ($formats as $formatName => $formatOptions) {
-            $options = $formatOptions['transformations']['crop'];
-            $options = empty($options) ? '1x1' : $options[0] . 'x' . $options[1];
-            $returnValue[$formatName] = $options;
-        }
-
-        return $returnValue;
     }
 
     function getImageVariations($class_identifier, $onlyCroppable = false)
