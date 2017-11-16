@@ -1,5 +1,8 @@
 parameters:
-    netgen_remote_media.cloudinary.delete_not_used: false
+    netgen_remote_media.remove_unused_resources: false
+    netgen_remote_media.ezoe.class_list:
+        - { name: 'Embed left', value: 'embed-left' }
+        - { name: 'Embed right', value: 'embed-right' }
 
 services:
     netgen_remote_media.handler_registry:

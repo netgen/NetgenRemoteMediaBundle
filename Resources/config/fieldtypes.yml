@@ -17,7 +17,7 @@ services:
             - "@netgen_remote_media.provider"
             - "@ezpublish.api.service.field_type"
         calls:
-            - [setDeleteUnused, ["%netgen_remote_media.cloudinary.delete_not_used%"]]
+            - [setDeleteUnused, ["%netgen_remote_media.remove_unused_resources%"]]
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler, alias: ngremotemedia}
 
