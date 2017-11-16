@@ -10,17 +10,15 @@ $variationResolver = $container->get('netgen_remote_media.variation.resolver');
 
 $ezoeVariationList = $variationResolver->getEmbedVariations();
 
-$availableVersions = array();
+$availableVariations = array();
 if (!empty($ezoeVariationList)) {
-    foreach ($ezoeVariationList as $aliasName => $aliasConfig) {
-
-        foreach($aliasConfig['transformations'] as $name => $config) {
-            if ($name === 'crop') {
-                $availableVersions[] = array(
-                    'name' => $aliasName,
-                    'size' => $config,
-                );
+    foreach ($ezoeVariationList as $variationName => $variationConfig) {
+        foreach($variationConfig['transformations'] as $name => $config) {
+            if ($name !== 'crop') {
+                continue;
             }
+
+            $availableVariations[$variationName] = $config;
         }
     }
 }
@@ -29,8 +27,8 @@ $value = $provider->getRemoteResource($resourceId, 'image');
 
 $responseData = array(
     'media' => !empty($value) ? $value: false,
-    'available_versions' => $availableVersions,
-    'class_list' => ''
+    'available_variations' => $availableVariations,
+    'class_list' => '' // @todo
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
