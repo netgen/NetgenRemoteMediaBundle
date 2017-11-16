@@ -30,8 +30,8 @@ $ViewList['change'] = array(
     'functions' => 'change',
     'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
 );
-$ViewList['simple_fetch'] = array(
-    'script' => 'simple_fetch.php',
+$ViewList['fetch_ezoe'] = array(
+    'script' => 'fetch_ezoe.php',
     'functions' => 'fetch'
 );
 $ViewList['generate'] = array(
@@ -45,6 +45,7 @@ $ViewList['folders'] = array(
 );
 
 $FunctionList['fetch'] = array();
+$FunctionList['fetch_ezoe'] = array();
 $FunctionList['save'] = array();
 $FunctionList['browse'] = array();
 $FunctionList['upload'] = array();

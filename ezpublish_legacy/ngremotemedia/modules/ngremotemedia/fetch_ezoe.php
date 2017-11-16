@@ -25,11 +25,9 @@ if (!empty($ezoeVariationList)) {
 
 $value = $provider->getRemoteResource($resourceId, 'image');
 
-$responseData = array(
-    'media' => !empty($value) ? $value: false,
-    'available_variations' => $availableVariations,
-    'class_list' => '' // @todo
-);
+$responseData = (array) $value;
+$responseData['available_variations'] = $availableVariations;
+$responseData['class_list'] = array('class-1', 'class-2'); // @todo
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($responseData));
