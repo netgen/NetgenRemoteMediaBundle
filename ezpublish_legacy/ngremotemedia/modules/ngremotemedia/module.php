@@ -25,6 +25,11 @@ $ViewList['upload'] = array(
     'functions' => 'upload',
     'params' => array( 'contentobject_id' )
 );
+$ViewList['simple_upload'] = array(
+    'script' => 'simple_upload.php',
+    'functions' => 'simple_upload',
+    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
+);
 $ViewList['change'] = array(
     'script' => 'change.php',
     'functions' => 'change',
