@@ -136,7 +136,6 @@ window.NgRemoteMediaShared.Models = function() {
             this.variations = new VariationCollection();
         },
 
-
         originalWidth: function(){
           return this.get('file').width;
         },
@@ -153,27 +152,13 @@ window.NgRemoteMediaShared.Models = function() {
             this.variations || (this.variations = new VariationCollection());
             var media = this;
 
-            // Used with ngremotemedia/simple_fetch change to save response other query
-            if(data.media){
-                var new_data = data.media;
-
-                // TODO: This is only temporary hack to support new structure
-                // {"gallery_image":"1520x940","mobile_full":"1x1"}
-                new_data.available_variations = _.reduce(data.available_versions, function(memo, item){
-                    memo[item.name] = [item.size[0], item.size[1]].join(':');
-                    return memo;
-                }, {});
-
-                delete(data.available_versions);
-
-                new_data.class_list = data.class_list;
-                data = new_data;
-            }
-
-            if(data.available_variations){
-                data.available_variations = this.convert_possible_variations(data.available_variations);
-            }
-
+            data.available_variations = _.reduce(data.available_variations || {}, function(memo, size, name){
+                memo[name] = {
+                    possibleWidth: size[0],
+                    possibleHeight: size[1],
+                };
+                return memo;
+            }, {});
 
             if ('variations' in data) {
                 var variations = $.extend({}, data.variations, this.get('available_variations') || data.available_variations );
@@ -220,26 +205,15 @@ window.NgRemoteMediaShared.Models = function() {
 
 
         url: function(){
-            return [NgRemoteMediaShared.url('/ngremotemedia/simple_fetch')].join('/');
+            return [NgRemoteMediaShared.url('/ngremotemedia/fetch_ezoe')].join('/');
         },
 
         // Generate thumb url for a given size
         thumb: function(width, height) {
             var url = this.get('url').split(/\/v\d+\//);
             return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
-        },
-
-        convert_possible_variations: function(variations){
-            var out = {}
-            _.each(variations, function(size, name) {
-                var s = size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size;
-                out[name] = {
-                    possibleWidth: s[0],
-                    possibleHeight: s[1]
-                }
-            });
-            return out
         }
+
     });
 
 
@@ -374,22 +348,15 @@ window.NgRemoteMediaShared.Models = function() {
 
 
         generate_image: function(){
-            console.log('generate_image', this);
-            var data = {
-                name: this.id,
-                resourceId: this.get('media').id,
-                // coords: _.pick(this.attributes, 'x', 'y', 'w', 'h'),
-
-                // TODO: Temporary hack
-                crop_x: this.get('x'),
-                crop_y: this.get('y'),
-                crop_w: this.get('w'),
-                crop_h: this.get('h'),
-            };
+            var variation = {};
+            variation[this.id] = _.pick(this.attributes, 'x', 'y', 'w', 'h');
 
             return Backbone.sync('create', this, {
                 url: NgRemoteMediaShared.url('/ngremotemedia/generate'),
-                data: data,
+                data: {
+                    resourceId: this.get('media').id,
+                    variation: variation,
+                },
                 transform: false
             });
         },
