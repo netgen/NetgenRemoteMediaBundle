@@ -20,6 +20,12 @@ class XslRegisterPassTest extends AbstractCompilerPassTestCase
     {
         $siteaccessList = array('siteacc1', 'siteacc2');
 
+        $testXslConfigDefault = array(
+            array(
+                'path' => 'test/test1.xsl',
+                'priority' => 0,
+            )
+        );
         $testXslConfig = array(
             array(
                 'path' => 'test/test.xsl',
@@ -34,7 +40,7 @@ class XslRegisterPassTest extends AbstractCompilerPassTestCase
 
         $expectedXslConfig = array_merge($testXslConfig, array($expectedInjectedParameter));
 
-        $this->setParameter('ezsettings.default.fieldtypes.ezxml.custom_xsl', 'test_parameter');
+        $this->setParameter('ezsettings.default.fieldtypes.ezxml.custom_xsl', $testXslConfigDefault);
         $this->setParameter('ezpublish.siteaccess.list', $siteaccessList);
 
         foreach ($siteaccessList as $siteaccess) {
@@ -52,7 +58,6 @@ class XslRegisterPassTest extends AbstractCompilerPassTestCase
     {
         $siteaccessList = array('siteacc1', 'siteacc2');
 
-        $this->setParameter('ezsettings.default.fieldtypes.ezxml.custom_xsl', 'test_parameter');
         $this->setParameter('ezpublish.siteaccess.list', $siteaccessList);
 
         $this->compile();

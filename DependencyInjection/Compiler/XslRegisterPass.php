@@ -18,10 +18,18 @@ class XslRegisterPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        if (!$container->hasParameter('ezpublish.siteaccess.list')) {
+            return;
+        }
+
         $scopes = array_merge(
             array(ConfigResolver::SCOPE_DEFAULT),
             $container->getParameter('ezpublish.siteaccess.list')
         );
+
+        if (empty($scopes)) {
+            return;
+        }
 
         foreach ($scopes as $scope) {
             if (!$container->hasParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl")) {
