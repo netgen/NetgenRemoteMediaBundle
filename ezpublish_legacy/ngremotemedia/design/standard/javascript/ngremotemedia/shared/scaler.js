@@ -155,8 +155,8 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                     console.log(data);
                     console.log(arguments);
                     console.log(variation);
-                    this.model.set('generated_url', data.url);
-                    this.model.trigger('generated');
+                    variation.set('generated_url', data.url);
+                    this.model.trigger('generated', variation);
                     this.trigger('saved');
                 }.bind(this));
             },
