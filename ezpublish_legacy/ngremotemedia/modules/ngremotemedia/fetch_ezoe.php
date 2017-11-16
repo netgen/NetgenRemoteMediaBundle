@@ -27,10 +27,18 @@ $value = $provider->getRemoteResource($resourceId, 'image');
 
 $responseData = (array) $value;
 $responseData['available_variations'] = $availableVariations;
+
+// @todo: fetch classes from the configuration here
 $responseData['class_list'] = array(
-    'class-1' => 'Class 1',
-    'class-2' => 'Class 2'
-); // @todo
+    array(
+        'name' => 'Class 1',
+        'value' => 'class-1'
+    ),
+    array(
+        'name' => 'Class 2',
+        'value' => 'class-2'
+    )
+)
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($responseData));
