@@ -12,17 +12,8 @@ $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId, true);
 $value = $attribute->content();
 
 $variations = $http->postVariable('variations');
-$variationCoords = array();
-foreach ($variations as $variationName => $coordinates) {
-    $variationCoords[$variationName] = array(
-        'x' => $coordinates['x'],
-        'y' => $coordinates['y'],
-        'w' => $coordinates['w'],
-        'h' => $coordinates['h'],
-    );
-}
 
-$variations = $variationCoords + $value->variations;
+$variations = $variations + $value->variations;
 $value->variations = $variations;
 
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
