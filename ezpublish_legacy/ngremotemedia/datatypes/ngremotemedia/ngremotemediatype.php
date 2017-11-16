@@ -208,7 +208,9 @@ class NgRemoteMediaType extends eZDataType
 
         $this->removeFromFieldLinkTable($provider, $objectAttribute, $version);
 
-        $this->removeFromRemoteMedia($resourceIdsToDelete, $provider);
+        if (is_array($resourceIdsToDelete) && !empty($resourceIdsToDelete)) {
+            $this->removeFromRemoteMedia($resourceIdsToDelete, $provider);
+        }
     }
 
     /**
