@@ -20,7 +20,7 @@ NgRemoteMedia.views.ScaledVersion = Backbone.View.extend({
         var data = this.model.data();
 
         this.$el.html(JST.scaledversion(data))
-            .attr("version_name", data.id)
+            .attr("version_name", this.model.id)
             .data('model', this.model);
 
         return this;

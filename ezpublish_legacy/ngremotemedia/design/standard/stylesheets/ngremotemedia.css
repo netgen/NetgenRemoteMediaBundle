@@ -271,7 +271,7 @@
     line-height: 16px; }
     #ngremotemedia-modal .load-more .loader {
       display: inline-block; }
-  #ngremotemedia-modal .well {
+  #ngremotemedia-modal .well label {
     color: #fff; }
   #ngremotemedia-modal .ngremotemedia-remote-folders, #ngremotemedia-modal .ngremotemedia-remote-media-type-select {
     width: 98%; }

@@ -6,7 +6,6 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
     tinymceEditor: null,
     bookmark: null,
     selectedContent: null,
-    editorAttributes: {},
 
     initialize: function(options) {
         options = (options || {});
@@ -24,15 +23,12 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
         var version = NgRemoteMediaShared.config().is_admin ? RemoteMediaSettings.ez_contentobject_version : attribute_data.version;
 
         this.model = new Attribute({id: id, version: version, ezoe: true });
-
-
-
         this.listenTo(this.model.get('media'), 'generated', this.updateEditor);
 
         // Preselected image. Show scaler with selected crop
         if (this.is_remotemedia_selected()) {
-            this.editorAttributes = this.parse_custom_attributes(this.selectedContent.attr('customattributes'));
-            this.model.get('media').set({id: this.editorAttributes.resourceId});
+            var custom_attributes = this.parse_custom_attributes(this.selectedContent.attr('customattributes'));
+            this.model.get('media').set({id: custom_attributes.resourceId, custom_attributes: custom_attributes});
             this.scaler();
         } else {
             this.browser();
@@ -88,25 +84,13 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
 
     // Open a scaling gui
     scaler: function() {
-        var media = this.model.get('media'),
-            ea = this.editorAttributes,
-            //TODO: FIX THIS
-            editorToScale = ea.coords ? [{
-                name: ea.version,
-                coords: ea.coords
-            }] : [];
+        var media = this.model.get('media');
 
         var view_options = {
             model : media,
             className : 'ngremotemedia-scaler',
-            singleVersion : true,
-            editorAttributes : ea,
-            selectedVersion : ea.version
+            singleVersion : true
         };
-
-
-        console.log('view_options', view_options);
-
 
         media.fetch({
             transform: false,
@@ -114,14 +98,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
                 resourceId: media.id
             }
         }).done(function(){
-            this.editorAttributes.alttext = this.editorAttributes.alttext || media.get('file').alt_text;
-            this.model.set({
-                toScale: editorToScale,
-                variations: media.get('variations')
-            });
-
             this.render_scaler_view_in_modal(view_options);
-
         }.bind(this));
 
     },
@@ -130,15 +107,14 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
     render_scaler_view_in_modal: function(options){
         console.log(options);
 
-        var modal = new NgRemoteMedia.views.Modal().insert().render();
+        var modal = this.modal = new NgRemoteMedia.views.Modal().insert().render();
         _.extend(options, {el:modal.show().contentEl });
 
         var scaler_view = new ScalerView(options).render();
         scaler_view.modal = modal;
 
         modal.on('close', function(){
-            scaler_view.trigger('destruct');
-            scaler_view.trigger('stack.popped');
+            scaler_view.close();
         });
     },
 
@@ -151,8 +127,8 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             resourceId: media.id,
             version: variation.get('name'),
             caption: media.get('file').caption,
-            alttext: this.editorAttributes.alttext,
-            cssclass: this.editorAttributes.cssclass,
+            alttext: media.alt_text(),
+            cssclass: media.css_class(),
             coords: variation.coords().join(','),
             image_url: variation.get('generated_url')
         };
@@ -161,6 +137,8 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             src: attributes.image_url,
             customattributes: this.serialize_custom_attributes(attributes)
         });
+
+        this.modal.close();
     },
 
 

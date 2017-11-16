@@ -119,7 +119,14 @@ window.NgRemoteMediaShared.Models = function() {
     var Media = Backbone.Model.extend({
         klass: "Media",
         initialize: function() {
-            this.variations = new VariationCollection();
+            // this.variations = new VariationCollection();
+        },
+
+        defaults: function() {
+            return {
+                variations: new VariationCollection(),
+                custom_attributes: {}
+            };
         },
 
         originalWidth: function(){
@@ -132,6 +139,14 @@ window.NgRemoteMediaShared.Models = function() {
 
         originalSize: function() {
             return [this.originalWidth(), this.originalHeight()];
+        },
+
+        alt_text: function(){
+          return this.get('custom_attributes').alttext || this.get('file').alt_text;
+        },
+
+        css_class: function(){
+          return this.get('custom_attributes').cssclass;
         },
 
         parse: function(data) {

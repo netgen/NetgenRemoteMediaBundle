@@ -16,20 +16,14 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
             singleVersion: false,
 
-            selectedVersion: null,
-
             hasSelection: false,
 
-            editorAttributes: false,
             className: 'ngremotemedia-scaler',
-
-            versionSaved: null,
 
             initialize: function(options) {
                 options = (options || {});
                 _.bindAll(this);
-                _.extend(this, _.pick(options, ['singleVersion', 'editorAttributes', 'selectedVersion']));
-                this.versionSaved = null;
+                _.extend(this, _.pick(options, ['singleVersion']));
 
                 // Model is an instance of Attribute
                 this.model.on('scale', this.render, this);
@@ -65,17 +59,16 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
                 this.render_editor_elements();
 
-                var versionElements = this.model.variations.map(function(version, name) {
-                    return new ScaledVersion({
-                        model: version
-                    }).render().el;
+                var versionElements = this.model.variations.map(function(variation, name) {
+                    return new ScaledVersion({ model: variation }).render().el;
                 });
 
                 this.$('ul.nav').html(versionElements);
 
+                var selectedVersion = this.model.get('custom_attributes').version;
 
-                if (this.selectedVersion) {
-                    this.$('ul.nav li[version_name="'+this.selectedVersion.toLowerCase()+'"]').click();
+                if (selectedVersion) {
+                    this.$('ul.nav li[version_name="'+selectedVersion+'"]').click();
                 } else {
                     this.$('ul.nav li:first-child a').click();
                 }
@@ -85,26 +78,22 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
 
 
             render_editor_elements: function(){
-                if(!this.editorAttributes){return;}
+                if(!this.singleVersion){return;}
 
-                var classes = this.model.get('class_list'),
-                    selectedClass = this.editorAttributes.cssclass || false;
+                var class_list = this.model.get('class_list'),
+                    selectedClass = this.model.get('custom_attributes').cssclass,
+                    alttext = this.model.get('custom_attributes').alttext,
+                    css_class
 
-                if (classes) {
-                    classes = _(classes).map(function(value) {
-                        var s = value.split('|');
-                        return {
-                            value: s[0],
-                            name: s[1],
-                            selected: s[0] == selectedClass
-                        };
-                    });
+                if (class_list) {
+                    css_class = _(class_list).find({value: selectedClass});
+                    css_class && (css_class.selected = true);
                 }
 
                 this.$('.customattributes').html(
                     JST.scalerattributes({
-                        classes: classes,
-                        alttext: this.editorAttributes.alttext
+                        classes: class_list,
+                        alttext: alttext
                     })
                 );
             },
@@ -116,24 +105,26 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 }.bind(this));
             },
 
+
             generate: function(){
                 var variation = this.current.data('model');
+
+                this.update_custom_attributes();
+
                 return variation.generate_image().done(function(data){
-                    console.log(data);
-                    console.log(arguments);
-                    console.log(variation);
                     variation.set('generated_url', data.url);
                     this.model.trigger('generated', variation);
                     this.trigger('saved');
                 }.bind(this));
             },
 
-            set_editor_attributes: function(){
-                if (!this.editorAttributes){ return; }
-                var self = this;
+            update_custom_attributes: function(){
+                var custom_attributes = {};
                 this.$('.customattributes :input').each(function(){
-                    self.editorAttributes[this.name] = $(this).val();
+                    custom_attributes[this.name] = $(this).val();
                 });
+
+                this.model.set({custom_attributes: custom_attributes})
             },
 
             changeScale: function(e) {
