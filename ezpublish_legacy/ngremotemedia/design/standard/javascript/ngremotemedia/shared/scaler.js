@@ -31,11 +31,8 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 _.extend(this, _.pick(options, ['singleVersion', 'editorAttributes', 'selectedVersion']));
                 this.versionSaved = null;
 
-
                 // Model is an instance of Attribute
                 this.model.on('scale', this.render, this);
-
-                // this.versions = this.model.variations;
             },
 
             events: {
@@ -113,36 +110,6 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
             },
 
 
-
-            // storeVersion: function(selection, model) {
-            //     // Must store scale coords back onto object
-            //     // var coords = [selection.x, selection.y, selection.x2, selection.y2];
-
-            //     this.trigger('save');
-            //     model.save(selection);
-
-            //     // var method = this.singleVersion ? 'generate' : 'save_variation';
-            //     // this.model[method](scale.name, coords).success(this.versionCreated);
-            // },
-
-            // versionCreated: function(data) {
-            //     data.content && (data = data.content);
-
-            //     this.model.get('media').set('generated_url', data.url);
-
-            //     var current_version = _.find(this.versions, function(v) { return v.name  === data.name; });
-            //     current_version && (current_version.coords = data.coords);
-
-            //     this.versionSaved = data;
-
-            //     if (this.singleVersion){ //For online editor
-            //         this.finishScaler();
-            //     }else {
-            //         this.model.trigger('version.create', this.versions, this.versionSaved);
-            //         this.trigger('saved');
-            //     }
-            // },
-
             saveAll: function(){
                 return this.model.save_variations().done(function(){
                     this.trigger('saved');
@@ -210,11 +177,6 @@ window.NgRemoteMediaShared.scaler = function(ScaledVersion, $){
                 });
 
             },
-
-
-            // stackPopped: function() {
-            //     this.finishScaler();
-            // },
 
 
             // // Checks if both stack animation is finished and version saved to server before adding to tinyMCE

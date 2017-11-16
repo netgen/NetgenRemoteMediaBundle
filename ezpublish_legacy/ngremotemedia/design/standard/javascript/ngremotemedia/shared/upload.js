@@ -88,7 +88,6 @@ window.NgRemoteMediaShared.upload = function($, plupload){
             this.uploader = new plupload.Uploader(settings);
             this.uploader.init();
             this.uploader.bind('FileUploaded', this.uploaded);
-            // this.uploader.bind('UploadProgress', this.progress); //NOTE: remove me
             this.uploader.bind('FilesAdded', this.added);
             return this;
         }

@@ -42,8 +42,6 @@ loadCSS();
 window.NgRemoteMediaShared.Models = function() {
     var VariationCollection = NgRemoteMedia.models.VariationCollection;
 
-
-
     var Attribute = Backbone.Model.extend({
         klass: "Attribute",
         medias: null,
@@ -107,18 +105,6 @@ window.NgRemoteMediaShared.Models = function() {
                     resource_id: id,
                 }
             });
-        },
-
-
-
-        // var coords = [selection.x, selection.y, selection.x2, selection.y2];
-        parse_jcrop_selection_to_coords: function(selection){
-            var data = {};
-            data.x = Math.round(selection.x);
-            data.y = Math.round(selection.y);
-            data.w = Math.round(selection.x2 - selection.x);
-            data.h = Math.round(selection.y2 - selection.y);
-            return data;
         }
 
     });

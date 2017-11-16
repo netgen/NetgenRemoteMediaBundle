@@ -33,7 +33,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
 
     renderTags: function() {
-
         var $tags = this.$('.ngremotemedia-newtags');
         // if(!$tags.length){ return this; }
         var data = $tags.data();

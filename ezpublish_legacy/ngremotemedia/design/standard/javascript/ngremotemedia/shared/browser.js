@@ -96,7 +96,6 @@ window.NgRemoteMediaShared.browser = function(UploadView) {
             $search.select2({
                 tags: true,
                 placeholder: data.placeholderText,
-                // data: data,
                 createTag: function (tag) {
                     return {
                         id: tag.term,
