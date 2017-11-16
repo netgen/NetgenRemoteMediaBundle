@@ -14,6 +14,34 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 
 class NetgenRemoteMediaExtension extends Extension implements PrependExtensionInterface
 {
+    private function loadContentBrowserSettings(array $activatedBundles, ContainerBuilder $container)
+    {
+        if (in_array('NetgenContentBrowserBundle', $activatedBundles, true)) {
+            $container->setParameter('netgen_remote_media.content_browser.activated', true);
+            $this->doPrepend($container, 'content_browser/cloudinary.yml', 'netgen_content_browser');
+        } else {
+            $container->setParameter('netgen_remote_media.content_browser.activated', false);
+        }
+    }
+
+    private function loadOpenGraphSettings(array $activatedBundles, Loader\YamlFileLoader $loader)
+    {
+        if (in_array('NetgenOpenGraphBundle', $activatedBundles, true)) {
+            $loader->load('opengraph.yml');
+        }
+    }
+
+    private function loadSettings(ContainerBuilder $container)
+    {
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('transformation_handlers.yml');
+        $loader->load('services.yml');
+        $loader->load('templating.yml');
+        $loader->load('fieldtypes.yml');
+
+        return $loader;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -22,15 +50,11 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('transformation_handlers.yml');
-        $loader->load('services.yml');
-        $loader->load('templating.yml');
-        $loader->load('fieldtypes.yml');
-
         if (!isset($config['provider'])) {
             throw new \InvalidArgumentException('The "provider" option must be set');
         }
+
+        $loader = $this->loadSettings($container);
 
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_name", $config['account_name']);
         $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_key", $config['account_key']);
@@ -43,16 +67,8 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $processor->mapConfigArray('image_variations', $config, ContextualizerInterface::MERGE_FROM_SECOND_LEVEL);
 
         $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
-        if (in_array('NetgenContentBrowserBundle', $activatedBundles, true)) {
-            $container->setParameter('netgen_remote_media.content_browser.activated', true);
-            $this->doPrepend($container, 'content_browser/cloudinary.yml', 'netgen_content_browser');
-        } else {
-            $container->setParameter('netgen_remote_media.content_browser.activated', false);
-        }
-
-        if (in_array('NetgenOpenGraphBundle', $activatedBundles, true)) {
-            $loader->load('opengraph.yml');
-        }
+        $this->loadContentBrowserSettings($activatedBundles, $container);
+        $this->loadOpenGraphSettings($activatedBundles, $loader);
     }
 
     /**
