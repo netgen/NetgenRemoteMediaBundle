@@ -35,19 +35,6 @@ $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
 $attribute->setAttribute('data_text', json_encode($value));
 $attribute->store();
 
-$scaling = array();
-foreach ($variations as $name => $coords) {
-    $scaling[] = array(
-        'name' => $name,
-        'coords' => array(
-            (int) $coords['x'],
-            (int) $coords['y'],
-            (int) $coords['x'] + (int) $coords['w'],
-            (int) $coords['y'] + (int) $coords['h'],
-        ),
-    );
-}
-
 $tpl = eZTemplate::factory();
 $tpl->setVariable( 'remote_value', $value );
 $tpl->setVariable( 'fieldId', $fieldId );
@@ -59,8 +46,7 @@ $content = $tpl->fetch('design:content/datatype/edit/ngremotemedia.tpl');
 
 $responseData = array(
     'media' => !empty($value->resourceId) ? $value : false,
-    'content' => $content,
-    'toScale' => $scaling,
+    'content' => $content
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
