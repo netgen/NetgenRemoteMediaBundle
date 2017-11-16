@@ -148,16 +148,25 @@ class NgRemoteMediaOperator
 
     }
 
-    function formatAliasForScaling($formats)
+    function formatAliasForScaling($variations)
     {
-        $returnValue = array();
-        foreach ($formats as $formatName => $formatOptions) {
-            $options = $formatOptions['transformations']['crop'];
-            $options = empty($options) ? '1x1' : $options[0] . 'x' . $options[1];
-            $returnValue[$formatName] = $options;
+        if (empty($variations)) {
+            return $variations;
         }
 
-        return $returnValue;
+        $availableVariations = array();
+
+        foreach ($variations as $variationName => $variationConfig) {
+            foreach($variationConfig['transformations'] as $name => $config) {
+                if ($name !== 'crop') {
+                    continue;
+                }
+
+                $availableVariations[$variationName] = $config;
+            }
+        }
+
+        return $availableVariations;
     }
 
     function getImageVariations($class_identifier, $onlyCroppable = false)
