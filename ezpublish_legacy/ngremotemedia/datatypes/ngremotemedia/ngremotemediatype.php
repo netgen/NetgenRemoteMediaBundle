@@ -176,7 +176,7 @@ class NgRemoteMediaType extends eZDataType
 
         $db = eZDB::instance();
 
-        $deleteNotUsed = $container->getParameter('netgen_remote_media.cloudinary.delete_not_used');
+        $deleteNotUsed = $container->getParameter('netgen_remote_media.remove_unused_resources');
 
         // check if it's configured to remove not used media
         if (!$deleteNotUsed) {
@@ -208,7 +208,9 @@ class NgRemoteMediaType extends eZDataType
 
         $this->removeFromFieldLinkTable($provider, $objectAttribute, $version);
 
-        $this->removeFromRemoteMedia($resourceIdsToDelete, $provider);
+        if (is_array($resourceIdsToDelete) && !empty($resourceIdsToDelete)) {
+            $this->removeFromRemoteMedia($resourceIdsToDelete, $provider);
+        }
     }
 
     /**

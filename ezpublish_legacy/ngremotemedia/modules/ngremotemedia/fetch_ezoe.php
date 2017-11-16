@@ -29,16 +29,8 @@ $responseData = (array) $value;
 $responseData['available_variations'] = $availableVariations;
 
 // @todo: fetch classes from the configuration here
-$responseData['class_list'] = array(
-    array(
-        'name' => 'Class 1',
-        'value' => 'class-1'
-    ),
-    array(
-        'name' => 'Class 2',
-        'value' => 'class-2'
-    )
-);
+$classList = $container->getParameter('netgen_remote_media.ezoe.class_list');
+$responseData['class_list'] = $classList;
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($responseData));
