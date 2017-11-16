@@ -3,21 +3,21 @@
 $http = eZHTTPTool::instance();
 
 $resourceId = $http->postVariable('resourceId', '');
-$variantName = $http->postVariable('name', '');
-$coords = $http->postVariable('coords', array());
+$variation = $http->postVariable('variation', array());
 
 $container = ezpKernel::instance()->getServiceContainer();
 $provider = $container->get( 'netgen_remote_media.provider' );
 
 $remoteResourceValue = $provider->getRemoteResource($resourceId, 'image');
 
-$variations = $coords + $remoteResourceValue->variations;
+$variations = $variation + $remoteResourceValue->variations;
 $remoteResourceValue->variations = $variations;
 
+reset($variation);
 $variation = $provider->buildVariation(
     $remoteResourceValue,
     'embedded',
-    $variantName
+    key($variation)
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
