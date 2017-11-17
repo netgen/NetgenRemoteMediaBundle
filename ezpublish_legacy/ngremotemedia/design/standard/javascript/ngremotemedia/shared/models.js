@@ -48,8 +48,7 @@ window.NgRemoteMediaShared.Models = function() {
 
         initialize: function(attributes) {
             _.bindAll(this);
-            this.medias = new MediaCollection();
-        },
+            this.medias = new MediaCollection();        },
 
         defaults: function() {
             return {
@@ -119,12 +118,11 @@ window.NgRemoteMediaShared.Models = function() {
     var Media = Backbone.Model.extend({
         klass: "Media",
         initialize: function() {
-            // this.variations = new VariationCollection();
+            this.variations || (this.variations = new VariationCollection());
         },
 
         defaults: function() {
             return {
-                variations: new VariationCollection(),
                 custom_attributes: {}
             };
         },
@@ -149,9 +147,26 @@ window.NgRemoteMediaShared.Models = function() {
           return this.get('custom_attributes').cssclass;
         },
 
+
+        parse_coords: function(c) {
+            return {
+                x: c[0],
+                y: c[1],
+                w: c[2],
+                h: c[3],
+            }
+        },
+
+
+
+
+
         parse: function(data) {
             this.variations || (this.variations = new VariationCollection());
+
             var media = this;
+
+            data.id = data.resourceId;
 
             data.available_variations = _.reduce(data.available_variations || {}, function(memo, size, name){
                 memo[name] = {
@@ -161,8 +176,26 @@ window.NgRemoteMediaShared.Models = function() {
                 return memo;
             }, {});
 
-            if ('variations' in data) {
-                var variations = $.extend({}, data.variations, this.get('available_variations') || data.available_variations );
+
+            // Custom attributes are used only with ezoe (online editor)
+            var custom_attributes = data.custom_attributes;
+            data.preselected_variations = {}
+
+            if(custom_attributes && custom_attributes.coords){
+
+                data.id = data.resourceId = custom_attributes.resourceId;
+
+                data.metaData = {
+                    alt_text: custom_attributes.alttext,
+                    caption: custom_attributes.caption
+                }
+
+                data.preselected_variations[custom_attributes.version] = this.parse_coords(custom_attributes.coords);
+            }
+
+
+            if ('variations' in data || 'preselected_variations' in data) {
+                var variations = $.extend({}, data.available_variations, data.variations, data.preselected_variations || this.get('preselected_variations'));
                 var x = _.map(variations, function(value, name){
                     return $.extend({name: name, media: media}, value);
                 });
@@ -173,11 +206,22 @@ window.NgRemoteMediaShared.Models = function() {
                 delete(data.variations);
             }
 
-            data.id = data.resourceId;
+
             data.file = _.extend({}, data.metaData); //Create alias for metaData
             delete(data.metaData);
             data.file.type = data.file.resource_type;
             return data;
+        },
+
+
+        set_variations_from_custom_attributes: function(){
+            var attributes = this.get('custom_attributes');
+            var variation = {
+                name: attributes.version
+            }
+
+            $.extend(variation, this.parse_coords(attributes.coords));
+            this.get('variations').set([variation], {parse: true});
         },
 
 
@@ -211,6 +255,8 @@ window.NgRemoteMediaShared.Models = function() {
 
         // Generate thumb url for a given size
         thumb: function(width, height) {
+            //https://res.cloudinary.com/marko-ab-i/image/upload/c_crop,h_200,w_200,x_1051,y_434/h_200,w_200/Space_11_flgrns1c6j
+            //"http://res.cloudinary.com/marko-ab-i/image/upload/v1510578821/Space_11_flgrns1c6j.jpg"
             var url = this.get('url').split(/\/v\d+\//);
             return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
         }
@@ -339,8 +385,13 @@ window.NgRemoteMediaShared.Models = function() {
             if(this.is_cropped()){
                 return [c.x, c.y, c.x + c.w, c.y + c.h];
             }else{
-                return [0, 0, this.originalWidth() / 2, this.originalHeight() / 2];
+                return [0, 0, this.get('possibleWidth') / 2, this.get('possibleHeight') / 2];
             }
+        },
+
+        ezoe_coords: function() {
+            var c = this.attributes;
+            return [c.x, c.y, c.w, c.h].join(',');
         },
 
         is_cropped: function(){

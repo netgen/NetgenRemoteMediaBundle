@@ -22,13 +22,21 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
         var id = NgRemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : attribute_data.id;
         var version = NgRemoteMediaShared.config().is_admin ? RemoteMediaSettings.ez_contentobject_version : attribute_data.version;
 
-        this.model = new Attribute({id: id, version: version, ezoe: true });
+        var media_attributes, custom_attributes;
+
+        if(this.is_remotemedia_selected()){
+            custom_attributes = this.parse_custom_attributes(this.selectedContent.attr('customattributes'));
+            media_attributes = { media: {
+                    custom_attributes: custom_attributes
+                }
+            }
+        }
+
+        this.model = new Attribute($.extend({id: id, version: version, ezoe: true }, media_attributes), {parse: true});
         this.listenTo(this.model.get('media'), 'generated', this.updateEditor);
 
         // Preselected image. Show scaler with selected crop
-        if (this.is_remotemedia_selected()) {
-            var custom_attributes = this.parse_custom_attributes(this.selectedContent.attr('customattributes'));
-            this.model.get('media').set({id: custom_attributes.resourceId, custom_attributes: custom_attributes});
+        if (media_attributes) {
             this.scaler();
         } else {
             this.browser();
@@ -105,7 +113,6 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
 
 
     render_scaler_view_in_modal: function(options){
-        console.log(options);
 
         var modal = this.modal = new NgRemoteMedia.views.Modal().insert().render();
         _.extend(options, {el:modal.show().contentEl });
@@ -129,7 +136,7 @@ window.NgRemoteMediaShared.ezoe = function($, Attribute, BrowserView, ScalerView
             caption: media.get('file').caption,
             alttext: media.alt_text(),
             cssclass: media.css_class(),
-            coords: variation.coords().join(','),
+            coords: variation.ezoe_coords(),
             image_url: variation.get('generated_url')
         };
 
