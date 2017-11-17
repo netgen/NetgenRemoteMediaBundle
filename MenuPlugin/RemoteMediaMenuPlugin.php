@@ -51,6 +51,6 @@ class RemoteMediaMenuPlugin implements MenuPluginInterface
      */
     public function matches(Request $request)
     {
-        return true;
+        return false;
     }
 }
