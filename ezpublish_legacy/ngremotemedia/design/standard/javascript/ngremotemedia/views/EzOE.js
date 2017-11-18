@@ -19,8 +19,6 @@
                 this.selectedContent = $(this.tinymceEditor.selection.getContent());
             }
 
-            _.bindAll(this);
-
             var attribute_data =  this.$el.closest('.attribute').data();
             var id = NgRemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : attribute_data.id;
             var version = NgRemoteMediaShared.config().is_admin ? RemoteMediaSettings.ez_contentobject_version : attribute_data.version;

@@ -19,14 +19,14 @@
 
         hasSelection: false,
 
-        className: 'ngremotemedia-scaler',
+        className: function(){
+            var classes = ['ngremotemedia-scaler']
+            this.singleVersion && classes.push('ngremotemedia-scaler-single-version')
+            return classes.join(' ');
+        },
 
         initialize: function(options) {
-            options = (options || {});
-            _.bindAll(this);
-            _.extend(this, _.pick(options, ['singleVersion']));
-
-            // Model is an instance of Attribute
+            this.singleVersion = options.singleVersion;
             this.model.on('scale', this.render, this);
         },
 
@@ -56,7 +56,6 @@
                 media: this.model.thumb(this.SIZE.w, this.SIZE.h)
             });
             this.$el.append(content);
-
 
             this.render_editor_elements();
 

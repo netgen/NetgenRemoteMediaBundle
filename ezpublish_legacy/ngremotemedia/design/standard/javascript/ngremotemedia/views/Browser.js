@@ -7,8 +7,6 @@
         input: null,
 
         initialize: function(options) {
-            _.bindAll(this);
-
             this.debounced_search =_.debounce(function(){
                 this.collection.search(this.query);
             }, 250);

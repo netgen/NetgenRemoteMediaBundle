@@ -72,6 +72,14 @@ function program1(depth0,data) {
   buffer += "\n        </p>\n    </a>\n</div>\n";
   return buffer;
   });
+templates['modal'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"backdrop\"/>\n<div class=\"content\">\n    <a href=\"#\" class=\"js-close close\">x</a>\n    <div class=\"in\"></div>\n</div>\n";
+  });
 templates['nohits'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};

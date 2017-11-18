@@ -7,11 +7,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
     },
 
     initialize: function(options) {
-        _.bindAll(this);
-        this.options = options;
-
         this.uploadCallback = options.uploaded;
-
         return this;
     },
 
@@ -29,7 +25,6 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
             this.uploadCallback(false);
             return this;
         }
-
 
         this.uploadCallback({
             id: model_attributes.id || model_attributes.media.resourceId,
@@ -60,8 +55,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
         }
     },
 
-    render: function(/*response*/) {
-        // var id = this.model.id !== "ezoe" ? this.model.id : this.model.get('attributeId');
+    render: function() {
         var id = this.model.id;
         var settings = {
             runtimes: 'html5,flash,html4',
