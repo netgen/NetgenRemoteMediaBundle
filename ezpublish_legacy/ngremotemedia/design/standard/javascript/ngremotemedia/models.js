@@ -131,11 +131,11 @@
         },
 
         originalWidth: function(){
-          return this.get('file').width;
+          return this.get('metaData').width;
         },
 
         originalHeight: function(){
-          return this.get('file').height;
+          return this.get('metaData').height;
         },
 
         originalSize: function() {
@@ -143,7 +143,7 @@
         },
 
         alt_text: function(){
-          return this.get('custom_attributes').alttext || this.get('file').alt_text;
+          return this.get('custom_attributes').alttext || this.get('metaData').alt_text;
         },
 
         css_class: function(){
@@ -214,9 +214,6 @@
             }
 
 
-            data.file = _.extend({}, data.metaData); //Create alias for metaData
-            delete(data.metaData);
-            data.file.type = data.file.resource_type;
             return data;
         },
 

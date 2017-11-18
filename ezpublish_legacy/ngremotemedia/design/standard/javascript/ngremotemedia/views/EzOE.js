@@ -134,7 +134,7 @@
             var attributes = {
                 resourceId: media.id,
                 version: variation.get('name'),
-                caption: media.get('file').caption,
+                caption: media.get('metaData').caption, //TODO: not used???
                 alttext: media.alt_text(),
                 cssclass: media.css_class(),
                 coords: variation.ezoe_coords(),
