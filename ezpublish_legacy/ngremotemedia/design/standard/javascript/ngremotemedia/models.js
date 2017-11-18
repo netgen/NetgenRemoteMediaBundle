@@ -199,6 +199,9 @@
 
 
             if ('variations' in data) {
+                // Mark variations from server as cropped
+                _.each(data.variations, function(value) { value.is_cropped = true; });
+
                 var variations = $.extend({}, data.available_variations, data.variations);
                 var x = _.map(variations, function(value, name){
                     return $.extend({name: name, media: media}, value);
@@ -386,7 +389,7 @@
         },
 
         is_cropped: function(){
-          return this.has('x');
+          return this.get('is_cropped');
         },
 
 
