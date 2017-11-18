@@ -19,15 +19,17 @@
 
         hasSelection: false,
 
-        className: function(){
+        setup_class_name: function(){
             var classes = ['ngremotemedia-scaler']
             this.singleVersion && classes.push('ngremotemedia-scaler-single-version')
-            return classes.join(' ');
+            this.$el.addClass(classes.join(' '));
+            return this;
         },
 
         initialize: function(options) {
             this.singleVersion = options.singleVersion;
             this.model.on('scale', this.render, this);
+            this.setup_class_name();
         },
 
         events: {

@@ -79,8 +79,8 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
 
         this.uploader = new plupload.Uploader(settings);
         this.uploader.init();
-        this.uploader.bind('FileUploaded', this.uploaded);
-        this.uploader.bind('FilesAdded', this.added);
+        this.uploader.bind('FileUploaded', this.uploaded.bind(this));
+        this.uploader.bind('FilesAdded', this.added.bind(this));
         return this;
     }
 

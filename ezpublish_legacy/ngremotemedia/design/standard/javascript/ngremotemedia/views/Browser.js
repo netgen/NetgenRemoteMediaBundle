@@ -15,7 +15,7 @@
 
             this.query = {};
 
-            this.collection.on('reset add', this.renderItems);
+            this.collection.on('reset add', this.renderItems, this);
             this.folders_xhr = $.get(NgRemoteMediaShared.url('/ngremotemedia/folders'));
         },
 
@@ -162,7 +162,7 @@
         enableUpload: function() {
             this.upload = new UploadView({
                 model: this.model,
-                uploaded: this.uplodedMedia,
+                uploaded: this.uplodedMedia.bind(this),
                 el: this.$el,
                 version: this.model.get('version')
             }).render();
