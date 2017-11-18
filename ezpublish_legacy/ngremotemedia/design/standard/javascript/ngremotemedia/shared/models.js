@@ -168,18 +168,22 @@ window.NgRemoteMediaShared.Models = function() {
 
             data.id = data.resourceId;
 
-            data.available_variations = _.reduce(data.available_variations || {}, function(memo, size, name){
-                memo[name] = {
-                    possibleWidth: size[0],
-                    possibleHeight: size[1],
-                };
-                return memo;
-            }, {});
+            if(!_.isEmpty(data.available_variations)){
+                data.available_variations = _.reduce(data.available_variations, function(memo, size, name){
+                    memo[name] = {
+                        possibleWidth: size[0],
+                        possibleHeight: size[1],
+                    };
+                    return memo;
+                }, {});
+            }else{
+                data.available_variations = this.get('available_variations') || {};
+            }
 
 
             // Custom attributes are used only with ezoe (online editor)
             var custom_attributes = data.custom_attributes;
-            data.preselected_variations = {}
+            data.variations || (data.variations = {})
 
             if(custom_attributes && custom_attributes.coords){
 
@@ -190,12 +194,13 @@ window.NgRemoteMediaShared.Models = function() {
                     caption: custom_attributes.caption
                 }
 
-                data.preselected_variations[custom_attributes.version] = this.parse_coords(custom_attributes.coords);
+                data.variations[custom_attributes.version] = this.parse_coords(custom_attributes.coords);
             }
 
 
-            if ('variations' in data || 'preselected_variations' in data) {
-                var variations = $.extend({}, data.available_variations, data.variations, data.preselected_variations || this.get('preselected_variations'));
+
+            if ('variations' in data) {
+                var variations = $.extend({}, data.available_variations, data.variations);
                 var x = _.map(variations, function(value, name){
                     return $.extend({name: name, media: media}, value);
                 });
