@@ -137,10 +137,15 @@
             var html = '';
             if (this.collection.length) {
                 html = this.collection.map(function(item) {
-                    return template('item', item.attributes);
+                    return template('item', $.extend({}, item.attributes, {
+                        is_image: item.is_image(),
+                        is_video: item.is_video()
+                    }));
                 }, this);
             } else {
-                html = template('nohits');
+                html = template('nohits', {
+                    loading: clear === true
+                });
             }
 
 

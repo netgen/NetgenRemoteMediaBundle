@@ -1,5 +1,6 @@
+@import "mixins";
 @import "jquery_jcrop";
-@import "mixins.sass";
+@import "select2";
 
 $primaryColor: #009AC7;
 
@@ -57,7 +58,7 @@ $primaryColor: #009AC7;
   color:#222;
 }
 
-%ngri-spin {
+.ngri-spin, %ngri-spin {
   display: inline-block;
   -webkit-animation: ngri-spin 2s infinite linear;
   animation: ngri-spin 2s infinite linear;
@@ -125,7 +126,8 @@ $primaryColor: #009AC7;
 }
 
 // Remote media thumbs
-.ngremotemedia-thumbs {clear: both; display: table;
+.ngremotemedia-thumbs {
+  @extend %clearfix;
   .item {float: left; width: 100%; max-width: 160px; cursor: pointer;
     &:hover img {opacity: 1;}
     &:nth-child(5n+6) {clear:left;}
@@ -133,6 +135,7 @@ $primaryColor: #009AC7;
   }
   .pick {display: block; margin-top: 10px; padding: 0 10px 0 10px;}
   .meta {max-width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-top: 5px;}
+  .ngri-video{background:#888; text-align:center; line-height:80px; display:block; color: #333;}
 }
 
 
@@ -224,6 +227,8 @@ $primaryColor: #009AC7;
     }
   }
   .well label {color: #fff;}
+  .ngrm-title{color: #999}
+  .ngrm-big{text-align: center; padding:100px; font-size:3em;}
 
   .ngremotemedia-remote-folders, .ngremotemedia-remote-media-type-select{width:100%;}
 }

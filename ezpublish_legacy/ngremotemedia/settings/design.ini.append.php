@@ -12,6 +12,7 @@ BackendJavaScriptList[]=libs/handlebars.runtime.js
 BackendJavaScriptList[]=libs/plupload/moxie.js
 BackendJavaScriptList[]=libs/plupload/plupload.js
 BackendJavaScriptList[]=libs/jquery.jcrop.js
+BackendJavaScriptList[]=libs/select2.full.js
 
 BackendJavaScriptList[]=ngremotemedia/ns.js
 BackendJavaScriptList[]=ngremotemedia/templates.js

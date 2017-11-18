@@ -63,7 +63,7 @@
         },
 
         parse: function(data) {
-            if ('media' in data) {
+            if (data.media) {
                 data.media.attr = this;
 
                 var media = this.get('media');
@@ -150,6 +150,14 @@
           return this.get('custom_attributes').cssclass;
         },
 
+
+        is_image: function () {
+            return this.get('type') === 'image';
+        },
+
+        is_video: function () {
+            return this.get('type') === 'video';
+        },
 
         parse_coords: function(c) {
             return {
@@ -288,10 +296,6 @@
             return this.xhr;
         },
 
-        fetched: function() {
-            this.trigger('fetched');
-            this.xhr = null;
-        },
 
         parse: function(data) {
             this.total = data.count;

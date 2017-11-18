@@ -14,6 +14,9 @@
     'Image': "{'Image and documents'|i18n( 'extension/ngremotemedia/interactions' )}",
     'Video': "{'Video'|i18n( 'extension/ngremotemedia/interactions' )}",
     'Loading...': "{'Loading...'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Cancel': "{'Cancel'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Save all': "{'Save all'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Generate': "{'Generate'|i18n( 'extension/ngremotemedia/interactions' )}",
 
     close : "{'Close'|i18n( 'extension/ngremotemedia/interactions' )}",
     next : "{'Next 25 &gt;'}",
