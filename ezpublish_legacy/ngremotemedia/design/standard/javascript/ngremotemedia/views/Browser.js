@@ -103,7 +103,6 @@
                     };
                 }
             }).on('select2:selecting', function (e) {
-                console.log(e);
                 var d = e.params.args.data;
                 if(d.isNew && !confirm(NgRemoteMedia.t('Create new folder?'))){
                     e.preventDefault();
@@ -117,8 +116,6 @@
 
         render: function() {
             var context = {
-                icon: '/extension/ngremotemedia/design/standard/images/pictures32x32.png',
-                heading: 'Select media',
                 id: this.model.id,
                 attribute: this.model.attributes
             };

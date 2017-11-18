@@ -31,7 +31,7 @@
 
     var loadCSS = function() {
         var headEl = document.getElementsByTagName('head')[0];
-        var files = ['jquery.jcrop', 'ngremotemedia'];
+        var files = ['ngremotemedia'];
         _.each(files, function(name) {
             var css = document.createElement('link');
             css.href = '/extension/ngremotemedia/design/standard/stylesheets/' + name + '.css';
