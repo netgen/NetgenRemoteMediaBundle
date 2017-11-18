@@ -219,17 +219,6 @@ window.NgRemoteMediaShared.Models = function() {
         },
 
 
-        set_variations_from_custom_attributes: function(){
-            var attributes = this.get('custom_attributes');
-            var variation = {
-                name: attributes.version
-            }
-
-            $.extend(variation, this.parse_coords(attributes.coords));
-            this.get('variations').set([variation], {parse: true});
-        },
-
-
         save_variations: function() {
             var attribute_model = this.get('attr');
             var url = [NgRemoteMediaShared.url("/ngremotemedia/save"), attribute_model.get('contentObjectId'), attribute_model.id, attribute_model.get('version')].join('/');
@@ -260,8 +249,6 @@ window.NgRemoteMediaShared.Models = function() {
 
         // Generate thumb url for a given size
         thumb: function(width, height) {
-            //https://res.cloudinary.com/marko-ab-i/image/upload/c_crop,h_200,w_200,x_1051,y_434/h_200,w_200/Space_11_flgrns1c6j
-            //"http://res.cloudinary.com/marko-ab-i/image/upload/v1510578821/Space_11_flgrns1c6j.jpg"
             var url = this.get('url').split(/\/v\d+\//);
             return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
         }
