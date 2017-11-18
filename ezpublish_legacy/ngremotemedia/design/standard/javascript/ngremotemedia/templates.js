@@ -1,5 +1,5 @@
 (function() {
-  var template = Handlebars.template, templates = window.JST = window.JST || {};
+  var template = Handlebars.template, templates = window.NgRemoteMedia.JST = window.NgRemoteMedia.JST || {};
 templates['alert'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
