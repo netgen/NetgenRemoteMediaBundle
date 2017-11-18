@@ -20,8 +20,8 @@
         hasSelection: false,
 
         setup_class_name: function(){
-            var classes = ['ngremotemedia-scaler']
-            this.singleVersion && classes.push('ngremotemedia-scaler-single-version')
+            var css_class = this.singleVersion ? 'ngrm-single' : 'ngrm-multiple';
+            var classes = ['ngremotemedia-scaler', css_class]
             this.$el.addClass(classes.join(' '));
             return this;
         },
@@ -145,8 +145,8 @@
             if (typeof model === 'undefined' || model.tooSmall()){return this;}
 
             var context = this;
-
-            var not_initial = false;
+            model.not_initial = false;
+            model.set({crop_changed: false}, {silent: true});
 
             // If an API exists we dont need to build Jcrop but can just change crop
             var cropperOptions = {
@@ -160,8 +160,9 @@
                 onSelect:  function() { context.hasSelection = true; },
                 onRelease: function() { context.hasSelection = false; },
                 onChange: _.debounce(function(selection){
-                    not_initial = model.set($.extend({crop_changed: true}, selection));
-                    not_initial = true;
+                    model.set(selection);
+                    model.not_initial && model.set({crop_changed: true});
+                    model.not_initial = true;
                 }, 75)
             };
 
