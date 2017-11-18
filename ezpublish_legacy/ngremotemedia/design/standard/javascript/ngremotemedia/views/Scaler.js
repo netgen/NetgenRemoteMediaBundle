@@ -173,17 +173,6 @@
         },
 
 
-        // // Checks if both stack animation is finished and version saved to server before adding to tinyMCE
-        // finishScaler: function() {
-        //     if (this.versionSaved) {
-        //          // Must be wrapped in an timeout function to prevent FireFox from replacing all content instead of addding image to selected content
-        //         _.delay(function() {
-        //             this.model.trigger('version.create', this.versions, this.versionSaved);
-        //             this.trigger('saved');
-        //         }.bind(this), 0);
-        //     }
-        // },
-
         close: function() {
             if (this.cropper) {
                 this.cropper.destroy();
