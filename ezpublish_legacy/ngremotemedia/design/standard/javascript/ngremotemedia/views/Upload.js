@@ -57,6 +57,8 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
 
     render: function() {
         var id = this.model.id;
+        var ContentObjectId = this.model.get('contentObjectId');
+        console.log(this.model, ContentObjectId);
         var settings = {
             runtimes: 'html5,flash,html4',
             browse_button: this.$('.upload-from-disk').get(0),
@@ -66,6 +68,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
             multipart_params: {
                 legacy: NgRemoteMediaShared.config().is_admin,
                 AttributeID: id,
+                ContentObjectId: ContentObjectId,
                 ContentObjectVersion: this.model.get('version'),
                 http_accept: 'json' //Because of some strange failing when html4 is used
             },

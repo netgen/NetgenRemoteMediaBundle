@@ -64,6 +64,12 @@ function program3(depth0,data) {
 
 function program5(depth0,data) {
   
+  
+  return "\n            <i class=\"ngri-book ngri-big\"></i>\n        ";
+  }
+
+function program7(depth0,data) {
+  
   var buffer = "";
   buffer += "\n            <span class=\"share\">"
     + escapeExpression(helpers.translate.call(depth0, "Shared", {hash:{},data:data}))
@@ -79,6 +85,9 @@ function program5(depth0,data) {
   buffer += "\n        ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.is_video), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n\n        ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.is_other), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        <p class=\"meta\">"
     + escapeExpression(((stack1 = (depth0 && depth0.filename)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "<br />\n            <span class=\"details\">"
@@ -86,7 +95,7 @@ function program5(depth0,data) {
     + " x "
     + escapeExpression(((stack1 = (depth0 && depth0.height)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</span>\n            ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.shared), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.shared), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </p>\n    </a>\n</div>\n";
   return buffer;
@@ -213,28 +222,37 @@ function program1(depth0,data) {
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <div class=\"form-group\">\n        <label for=\"ngrm-sa-2\">"
+  buffer += " value=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.caption)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <div class=\"form-group\">\n        <label for=\"ngrm-sa-3\">"
     + escapeExpression(helpers.translate.call(depth0, "Class", {hash:{},data:data}))
-    + "</label>\n        <select id=\"ngrm-sa-2\" name=\"cssclass\" class=\"form-control\">\n            <option value=\"\"> - </option>\n            ";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.classes), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+    + "</label>\n        <select id=\"ngrm-sa-3\" name=\"cssclass\" class=\"form-control\">\n            <option value=\"\"> - </option>\n            ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.classes), {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n        </select>\n    </div>\n    ";
   return buffer;
   }
-function program4(depth0,data) {
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <option value=\""
     + escapeExpression(((stack1 = (depth0 && depth0.value)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\"";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.selected), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">"
     + escapeExpression(((stack1 = (depth0 && depth0.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</option>\n            ";
   return buffer;
   }
-function program5(depth0,data) {
+function program7(depth0,data) {
   
   
   return " selected";
@@ -245,8 +263,13 @@ function program5(depth0,data) {
     + "</label>\n        <input id=\"ngrm-sa-1\" name=\"alttext\" type=\"text\" class=\"form-control\" ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.alttext), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">\n    </div>\n\n    <div class=\"form-group\">\n        <label for=\"ngrm-sa-2\">"
+    + escapeExpression(helpers.translate.call(depth0, "Caption", {hash:{},data:data}))
+    + "</label>\n        <input id=\"ngrm-sa-2\" name=\"caption\" type=\"text\" class=\"form-control\" ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.caption), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n    </div>\n\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.classes), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.classes), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n</div>\n";
   return buffer;

@@ -84,7 +84,6 @@
 
             var class_list = this.model.get('class_list'),
                 selectedClass = this.model.get('custom_attributes').cssclass,
-                alttext = this.model.get('custom_attributes').alttext,
                 css_class
 
             if (class_list) {
@@ -95,7 +94,8 @@
             this.$('.customattributes').html(
                 template('scalerattributes', {
                     classes: class_list,
-                    alttext: alttext
+                    alttext: this.model.alt_text(),
+                    caption: this.model.caption()
                 })
             );
         },

@@ -183,6 +183,7 @@ $primaryColor: #009AC7;
 
   .with-loader{
     position: relative;
+    display: inline-block;
     .loader{
         position:absolute; top:50%; right:10px; margin-top:-10px;
         @extend %ngri-spin;
@@ -192,7 +193,7 @@ $primaryColor: #009AC7;
   }
 
   .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
-    .with-loader{width:50%;}
+    .with-loader input{width:400px;}
     .btn {box-shadow: none; line-height: 16px;}
     .upload-container{float:right;}
     label{color:#eee;}

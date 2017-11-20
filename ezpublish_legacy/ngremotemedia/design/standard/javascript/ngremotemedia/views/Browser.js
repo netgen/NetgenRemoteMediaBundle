@@ -139,7 +139,8 @@
                 html = this.collection.map(function(item) {
                     return template('item', $.extend({}, item.attributes, {
                         is_image: item.is_image(),
-                        is_video: item.is_video()
+                        is_video: item.is_video(),
+                        is_other: item.is_other()
                     }));
                 }, this);
             } else {

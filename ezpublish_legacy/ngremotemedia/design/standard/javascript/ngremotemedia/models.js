@@ -29,20 +29,6 @@
     };
 
 
-    var loadCSS = function() {
-        var headEl = document.getElementsByTagName('head')[0];
-        var files = ['ngremotemedia'];
-        _.each(files, function(name) {
-            var css = document.createElement('link');
-            css.href = '/extension/ngremotemedia/design/standard/stylesheets/' + name + '.css';
-            css.type = 'text/css';
-            css.rel = 'stylesheet';
-            headEl.appendChild(css);
-        });
-    };
-
-    loadCSS();
-
     var Attribute = Backbone.Model.extend({
         klass: "Attribute",
         medias: null,
@@ -146,17 +132,26 @@
           return this.get('custom_attributes').alttext || this.get('metaData').alt_text;
         },
 
+        caption: function(){
+          return this.get('custom_attributes').caption || this.get('metaData').caption;
+        },
+
         css_class: function(){
           return this.get('custom_attributes').cssclass;
         },
 
 
         is_image: function () {
-            return this.get('type') === 'image';
+            return this.get('mediaType') === 'image';
         },
 
         is_video: function () {
-            return this.get('type') === 'video';
+            return this.get('mediaType') === 'video';
+        },
+
+
+        is_other: function () {
+            return this.get('mediaType') === 'other';
         },
 
         parse_coords: function(c) {
