@@ -5,7 +5,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
     initialize: function(options) {
         options = (options || {});
-        _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');
         this.listenTo(this.model, 'change', this.render);
         return this;
     },
@@ -26,7 +25,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
         this.destination = this.$('.media-id');
         this.renderTags().enableUpload();
-        window.tmp = this.model;
 
         return this;
     },
@@ -34,7 +32,6 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
     renderTags: function() {
         var $tags = this.$('.ngremotemedia-newtags');
-        // if(!$tags.length){ return this; }
         var data = $tags.data();
         $tags.off().select2({
             placeholder: NgRemoteMedia.t('Add tag'),

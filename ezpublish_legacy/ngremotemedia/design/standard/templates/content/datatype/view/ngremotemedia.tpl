@@ -28,9 +28,9 @@
         />
     {elseif $value.mediaType|eq('video')}
         {* TODO: show video thumbnai *}
-        <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
+        <i class="ngri-video ngri-big"></i>
     {else}
         {* TODO: maybe show download link here? *}
-        <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />
+        <i class="ngri-book ngri-big"></i>
     {/if}
 {/if}

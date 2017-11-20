@@ -10,11 +10,11 @@
     {if $remote_value.resourceId}
         <div class="image-wrap">
             {if $remote_value.mediaType|eq('image')}
-                <img src="{$thumb_url}" width="{$format.width}" height="{$format.height}" />
+                <img src="{$thumb_url}" height="{$format.height}" />
             {elseif $remote_value.mediaType|eq('video')}
-                <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
+                <i class="ngri-video ngri-big"></i>
             {else}
-                <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />
+                <i class="ngri-book ngri-big"></i>
             {/if}
         </div>
 

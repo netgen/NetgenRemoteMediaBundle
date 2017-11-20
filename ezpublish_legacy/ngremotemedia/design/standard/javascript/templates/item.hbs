@@ -1,6 +1,11 @@
 <div class="item">
     <a class="pick" data-id="{{id}}">
-        <img src="{{url}}" />
+        {{#if is_image}}
+            <img src="{{url}}" />
+        {{/if}}
+        {{#if is_video}}
+            <i class="ngri-video ngri-big"></i>
+        {{/if}}
         <p class="meta">{{filename}}<br />
             <span class="details">{{width}} x {{height}}</span>
             {{#if shared}}
