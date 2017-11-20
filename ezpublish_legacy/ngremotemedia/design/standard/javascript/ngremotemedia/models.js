@@ -9,23 +9,15 @@
 
     window.NgRemoteMediaShared.config = function() {
 
-        var is_admin = this.is_admin();
-
         return {
-            is_admin: is_admin,
             plupload_swf: '/extension/ngremotemedia/design/standard/javascript/libs/plupload/Moxie.swf'
         };
     };
 
-    window.NgRemoteMediaShared.is_admin = function(){
-        return typeof RemoteMediaSettings !== 'undefined';
-    };
 
 
     window.NgRemoteMediaShared.url = function(url){
-        var prefix = this.is_admin() ?  RemoteMediaSettings.url_prefix : $('.ngremotemedia-type').data('urlRoot');
-        var new_url = [prefix, url].join('/').replace(/\/+/g, '/');
-        return new_url;
+        return [RemoteMediaSettings.url_prefix, url].join('/').replace(/\/+/g, '/');
     };
 
 

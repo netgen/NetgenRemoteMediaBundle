@@ -66,7 +66,6 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
             max_file_size: this.maxSize,
             url: this.upload_url(),
             multipart_params: {
-                legacy: NgRemoteMediaShared.config().is_admin,
                 AttributeID: id,
                 ContentObjectId: ContentObjectId,
                 ContentObjectVersion: this.model.get('version'),

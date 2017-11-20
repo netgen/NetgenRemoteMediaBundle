@@ -20,8 +20,8 @@
             }
 
             var attribute_data =  this.$el.closest('.attribute').data();
-            var id = NgRemoteMediaShared.config().is_admin ? this.$('[name="ContentObjectAttribute_id[]"]').val() : attribute_data.id;
-            var version = NgRemoteMediaShared.config().is_admin ? RemoteMediaSettings.ez_contentobject_version : attribute_data.version;
+            var id = this.$('[name="ContentObjectAttribute_id[]"]').val();
+            var version = RemoteMediaSettings.ez_contentobject_version;
 
             var media_attributes, custom_attributes;
 
