@@ -60,7 +60,6 @@ foreach ($variations as $name => $coords) {
 $responseData = array(
     'media' => !empty($updatedValue->resourceId) ? $updatedValue : false,
     'content' => $content,
-    'toScale' => $scaling,
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
