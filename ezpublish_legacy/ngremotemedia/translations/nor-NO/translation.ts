@@ -87,6 +87,18 @@
         <source>Loading...</source>
         <translation>Lasting...</translation>
     </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Avbryt</translation>
+    </message>
+    <message>
+        <source>Save all</source>
+        <translation>Lagre alt</translation>
+    </message>
+    <message>
+        <source>Generate</source>
+        <translation>Generere</translation>
+    </message>
 </context>
 </TS>
 
