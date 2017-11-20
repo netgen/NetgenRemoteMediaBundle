@@ -254,7 +254,9 @@ class CloudinaryApiGateway extends Gateway
         $response = $this->cloudinaryApi->resources_by_ids(
             array($id),
             $options
-        )->getIterator()->current();
+        );
+
+        $response = $response->getIterator()->current();
 
         return $response[0];
     }

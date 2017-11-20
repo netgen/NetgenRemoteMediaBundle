@@ -281,7 +281,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return Value
      */
-    public function getRemoteResource($resourceId, $resourceType)
+    public function getRemoteResource($resourceId, $resourceType = 'image')
     {
         $options = array(
             'resource_type' => $resourceType,
