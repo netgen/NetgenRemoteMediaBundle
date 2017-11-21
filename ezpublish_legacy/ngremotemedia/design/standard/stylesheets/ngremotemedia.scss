@@ -100,7 +100,7 @@ $primaryColor: #009AC7;
   margin-right: 4px;
 }
 
-.ngrm-uploading, .ngrm-disable{
+.ngrm-uploading, .ngrm-disable .in{
   pointer-events:none;
 }
 
@@ -135,7 +135,7 @@ $primaryColor: #009AC7;
   }
   .pick {display: block; margin-top: 10px; padding: 0 10px 0 10px;}
   .meta {max-width: 160px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-top: 5px;}
-  .ngri-video{background:#888; text-align:center; line-height:80px; display:block; color: #333;}
+  .ngri-video, .ngri-book{background:#888; text-align:center; line-height:80px; display:block; color: #333;}
 }
 
 

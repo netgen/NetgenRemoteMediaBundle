@@ -33,7 +33,12 @@
                 }
             }
 
-            this.model = new Attribute($.extend({id: id, version: version, ezoe: true }, media_attributes), {parse: true});
+            this.model = new Attribute($.extend({
+                id: id,
+                version: version,
+                ezoe: true,
+                contentObjectId: RemoteMediaSettings.ez_contentobject_id
+            }, media_attributes), {parse: true});
             this.listenTo(this.model.get('media'), 'generated', this.updateEditor);
 
             // Preselected image. Show scaler with selected crop

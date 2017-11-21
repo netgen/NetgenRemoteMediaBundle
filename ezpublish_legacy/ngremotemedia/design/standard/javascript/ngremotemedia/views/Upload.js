@@ -58,7 +58,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
     render: function() {
         var id = this.model.id;
         var ContentObjectId = this.model.get('contentObjectId');
-        console.log(this.model, ContentObjectId);
+
         var settings = {
             runtimes: 'html5,flash,html4',
             browse_button: this.$('.upload-from-disk').get(0),

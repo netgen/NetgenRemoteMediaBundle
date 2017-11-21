@@ -37,9 +37,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     + escapeExpression(helpers.translate.call(depth0, "Upload new media", {hash:{},data:data}))
     + "\n            </button>\n        </span>\n\n        <div class=\"with-loader\">\n            <input type=\"text\" class=\"form-control q input-long\" placeholder=\""
     + escapeExpression(helpers.translate.call(depth0, "Search for media", {hash:{},data:data}))
-    + "\">\n            <i class=\"ngri-spinner loader\"></i>\n        </div>\n    </div>\n\n</form>\n\n<div class=\"ngremotemedia-thumbs-scroll\">\n  <div class=\"ngremotemedia-thumbs\"></div>\n</div>\n\n<button class=\"btn btn-large btn-block load-more\" type=\"button\" style=\"display:none;\">\n    <i class=\"ngri ngri-spinner loader\"></i> "
+    + "\">\n            <i class=\"ngri-spinner loader\"></i>\n        </div>\n    </div>\n\n</form>\n\n<div class=\"ngremotemedia-thumbs-scroll\">\n    <div class=\"ngremotemedia-thumbs\"></div>\n\n\n    <button class=\"btn btn-large btn-block load-more\" type=\"button\" style=\"display:none;\">\n        <i class=\"ngri ngri-spinner loader\"></i> "
     + escapeExpression(helpers.translate.call(depth0, "Load more", {hash:{},data:data}))
-    + "\n</button>\n";
+    + "\n    </button>\n</div>\n";
   return buffer;
   });
 templates['item'] = template(function (Handlebars,depth0,helpers,partials,data) {

@@ -79,12 +79,12 @@
 
         change_media: function(id){
             var url = [NgRemoteMediaShared.url("/ngremotemedia/change"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
-
+            this.get('media').variations.reset([]);
             return this.save({}, {
                 url: url,
                 method: 'POST',
                 data: {
-                    resource_id: id,
+                    resource_id: id
                 }
             });
         }
