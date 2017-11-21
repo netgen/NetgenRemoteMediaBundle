@@ -121,6 +121,24 @@ $primaryColor: #009AC7;
     &:focus {background-color: rgba(0,0,0,0.1); color: black; border: 1px solid #999; outline: none;}
   }
 
+  .image-wrap{display:inline-block; position: relative; border:1px solid #eee; min-height:200px;}
+  &.ngrm-uploading{
+    img{visibility:hidden;}
+    .image-wrap:before{
+        @extend %ngri;
+        @extend %ngri-spinner;
+        @extend %ngri-spin;
+        $size: 60px;
+        position: absolute;
+        color: $primaryColor;
+        top:50%;
+        left:50%;
+        font-size:$size;
+        margin-top:-$size/2;
+        margin-left:-$size/2;
+    }
+  }
+
   .ngremotemedia-newtags{min-width:200px; width:50%;}
   .ngremotemedia-tags {font-size: 12px;}
 }
@@ -169,6 +187,7 @@ $primaryColor: #009AC7;
   .content { position: absolute; top: 50px; bottom: 25px; z-index: 200000; border-radius: 4px; width: 920px; left: 50%; margin-left: -460px; background-color: #000; font: normal 14px/14px Helvetica, Arial, sans-serif; }
   .in{position: absolute; top:30px; left:20px; right:20px; bottom:20px;}
   .close {
+    text-decoration: none;
     &:before{
       @extend %ngri;
       @extend %ngri-close;
@@ -198,6 +217,7 @@ $primaryColor: #009AC7;
     .upload-container{float:right;}
     label{color:#eee;}
     .form-group{
+      margin-bottom: 15px;
       @extend %clearfix;
     }
 
@@ -235,9 +255,12 @@ $primaryColor: #009AC7;
 }
 
 
-// #ngremotemedia-modal{
-//   .upload-backdrop{background:#000; z-index: 100000; position: absolute; top: 0; bottom: 0; left: 0; right: 0; opacity:0.8;}
-// }
+#ngremotemedia-modal{
+    .form-group{
+      margin-bottom: 15px;
+      @extend %clearfix;
+    }
+}
 
 .o2k7Skin .mceIcon.mce_ngremotemedia{
   &:before{
@@ -245,4 +268,10 @@ $primaryColor: #009AC7;
     @extend %ngri-cloud;
   }
   color: $primaryColor;
+  text-align: center;
+  line-height: 20px;
+}
+
+.ngmr-hide{
+    display: none !important;
 }

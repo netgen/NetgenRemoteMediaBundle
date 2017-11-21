@@ -15,6 +15,6 @@
     <input type="button" class="ngremotemedia-remote-file button" value="{'Manage media'|i18n( 'extension/ngremotemedia/interactions' )}" />
 
     <div class="ngremotemedia-local-file-container">
-        <button class="btn btn-default ngremotemedia-local-file button upload-from-disk">{'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}</button>
+        <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="{'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}">
     </div>
 </div>

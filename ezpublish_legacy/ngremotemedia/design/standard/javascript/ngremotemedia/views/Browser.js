@@ -66,7 +66,7 @@
             if(q.length !== 0 && q.length <= 2 ){return;}
 
             if (q !== this.query.q) {
-                this.$loader.removeClass('hide');
+                this.$loader.removeClass('ngmr-hide');
                 this.query.q = q;
                 this.debounced_search();
             }
@@ -133,7 +133,7 @@
         },
 
         renderItems: function(clear) {
-            this.$('.loader').addClass('hide');
+            this.$('.loader').addClass('ngmr-hide');
             var html = '';
             if (this.collection.length) {
                 html = this.collection.map(function(item) {
@@ -158,7 +158,7 @@
         },
 
         page: function() {
-            this.$('.load-more img').removeClass('hide');
+            this.$('.load-more img').removeClass('ngmr-hide');
             this.collection.page(this.q);
         },
 

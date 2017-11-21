@@ -13,6 +13,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
 
     uploaded: function(up, file, info) {
         this.$('.upload-from-disk').parent().removeClass('ngrm-uploading');
+        this.$el.closest('.ngremotemedia-type').removeClass('ngrm-uploading');
 
         if (!info || !info.response || !this.uploadCallback) { return this; }
 
@@ -43,6 +44,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
         up.start();
         this.$('.upload-from-disk').parent().addClass('ngrm-uploading');
         this.$el.closest('#ngremotemedia-modal').addClass('ngrm-disable');
+        this.$el.closest('.ngremotemedia-type').addClass('ngrm-uploading');
         this.trigger('uploading');
     },
 
