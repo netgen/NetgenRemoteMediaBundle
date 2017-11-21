@@ -19,6 +19,9 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
 
         var model_attributes;
 
+        // Clear folder
+        this.model.set({folder: null});
+
         try {
             model_attributes = $.parseJSON(info.response);
         } catch (e) {
@@ -85,6 +88,14 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
         this.uploader.init();
         this.uploader.bind('FileUploaded', this.uploaded.bind(this));
         this.uploader.bind('FilesAdded', this.added.bind(this));
+        this.uploader.bind("BeforeUpload", function(up,file) {
+            var folder = this.model.get('folder');
+            if(folder){
+                this.uploader.settings.multipart_params.folder = folder;
+            }else{
+                delete(this.uploader.settings.multipart_params.folder)
+            }
+        }.bind(this));
         return this;
     }
 

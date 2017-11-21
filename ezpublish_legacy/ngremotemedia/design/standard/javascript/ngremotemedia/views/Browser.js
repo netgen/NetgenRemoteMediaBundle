@@ -110,6 +110,7 @@
                     self.query.folder = d.id;
                     self.collection.search(self.query);
                 }
+                self.model.set('folder', self.query.folder);
             });
 
         },
