@@ -1,6 +1,10 @@
 system:
     default:
         image_variations:
+            default:
+                admin_preview:
+                    transformations:
+                        - { name: limit, params: [600,600] }
             embedded:
                 small:
                     transformations:

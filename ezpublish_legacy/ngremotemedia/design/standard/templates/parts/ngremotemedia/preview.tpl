@@ -1,5 +1,5 @@
 {if $type|eq('image')}
-    {def $format = hash('height', 400, 'width', 600)}
+    {def $format = 'admin_preview'}
     {def $media = ngremotemedia($remote_value, $attribute.object.class_identifier, $format, true)}
     {def $thumb_url = $media.url}
 {else}
@@ -10,7 +10,7 @@
     {if $remote_value.resourceId}
         <div class="image-wrap">
             {if $remote_value.mediaType|eq('image')}
-                <img src="{$thumb_url}" height="{$format.height}" />
+                <img src="{$thumb_url}"  />
             {elseif $remote_value.mediaType|eq('video')}
                 <i class="ngri-video ngri-big"></i>
             {else}
