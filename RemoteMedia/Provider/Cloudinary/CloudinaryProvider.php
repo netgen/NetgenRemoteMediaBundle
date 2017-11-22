@@ -260,17 +260,19 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @param string $tag
      * @param string $resourceType
+     * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    public function searchResourcesByTag($tag, $resourceType = 'image')
+    public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image')
     {
         $options = array(
             'SearchByTags' => true,
             'resource_type' => $resourceType
         );
 
-        return $this->gateway->search(urlencode($tag), $options);
+        return $this->gateway->search(urlencode($tag), $options, $limit, $offset);
     }
 
     /**

@@ -117,10 +117,12 @@ abstract class RemoteMediaProvider
      *
      * @param string $tag
      * @param string $resourceType
+     * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    abstract public function searchResourcesByTag($tag, $resourceType = 'image');
+    abstract public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image');
 
     /**
      * Returns the remote resource with provided id and type.
