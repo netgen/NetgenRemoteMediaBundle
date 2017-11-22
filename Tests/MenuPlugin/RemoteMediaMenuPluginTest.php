@@ -46,6 +46,6 @@ class RemoteMediaMenuPluginTest extends TestCase
     {
         $fakeRequest = Request::create('/', 'GET');
 
-        $this->assertEquals(true, $this->plugin->matches($fakeRequest));
+        $this->assertEquals(false, $this->plugin->matches($fakeRequest));
     }
 }
