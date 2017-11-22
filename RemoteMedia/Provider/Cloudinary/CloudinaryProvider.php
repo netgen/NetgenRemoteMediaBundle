@@ -205,7 +205,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             'type' => 'upload',
         );
 
-        return $this->gateway->search($query, $options);
+        return $this->gateway->search($query, $options, $limit);
     }
 
     /**
