@@ -86,7 +86,7 @@ class NgRemoteMediaType extends eZDataType
         return true;
     }
 
-    protected function saveExternalData($contentObjectAttribute, $value, $provider)
+    public static function saveExternalData($contentObjectAttribute, $value, $provider)
     {
         $db = eZDB::instance();
         $result = $db->arrayQuery(

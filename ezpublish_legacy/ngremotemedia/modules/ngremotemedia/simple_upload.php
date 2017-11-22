@@ -32,8 +32,8 @@ $responseData = array(
     'media' => !empty($value->resourceId) ? $value : false,
 );
 
-$storage = $container->get('ezpublish.fieldType.ngremotemedia.storage_gateway');
-$storage->storeFieldData($fieldId,$value->resourceId, $contentId, $provider->getIdentifier(), $contentVersionId);
+$attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId, true);
+NgRemoteMediaType::saveExternalData($attribute, $value, $provider);
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($responseData));
