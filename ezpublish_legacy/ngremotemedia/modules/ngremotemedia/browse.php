@@ -23,7 +23,7 @@ if (empty($userQuery) && $folder === 'all') {
 
     // search by name or by tag
     if ($searchType === 'tag') {
-        $list = $provider->searchResourcesByTag($query, $type);
+        $list = $provider->searchResourcesByTag($query, $limit, $offset, $type);
     } else {
         $list = $provider->searchResources($query, $limit, $offset, $type);
     }
@@ -34,7 +34,7 @@ if (empty($userQuery) && $folder === 'all') {
             $query = $folder['path'] . '/' . $userQuery;
 
             if ($searchType === 'tag') {
-                $folderList = $provider->searchResourcesByTag($query, $type);
+                $folderList = $provider->searchResourcesByTag($query, $limit, $offset, $type);
             } else {
                 $folderList= $provider->searchResources($query, $limit, $offset, $type);
             }
