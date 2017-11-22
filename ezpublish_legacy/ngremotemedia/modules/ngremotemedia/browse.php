@@ -13,24 +13,33 @@ $offset = $http->getVariable('offset', 0);
 $type = $http->getVariable('mediatype', 'image');
 $folder = $http->getVariable('folder', 'all');
 
+$searchType = $http->getVariable('search_type', 'name'); // 'name' or 'tag'
+
+// if no query, ignore the type of the search, list everything
 if (empty($userQuery) && $folder === 'all') {
     $list = $provider->listResources($limit, $offset, $type);
 } else {
     $query = $folder === 'all' ? $userQuery : $folder.'/'.$userQuery;
 
-    $list = $provider->searchResources($query, $limit, $offset, $type);
-    $listByTags = $provider->searchResourcesByTag($query, $type);
-
-    $list = array_merge($list, $listByTags);
+    // search by name or by tag
+    if ($searchType === 'tag') {
+        $list = $provider->searchResourcesByTag($query, $type);
+    } else {
+        $list = $provider->searchResources($query, $limit, $offset, $type);
+    }
 
     if ($folder === 'all') {
         $folders = $provider->listFolders();
         foreach ($folders as $folder) {
             $query = $folder['path'] . '/' . $userQuery;
-            $listFolders = $provider->searchResources($query, $limit, $offset, $type);
-            $listByTags = $provider->searchResourcesByTag($query, $type);
 
-            $list = array_merge($list, $listFolders, $listByTags);
+            if ($searchType === 'tag') {
+                $folderList = $provider->searchResourcesByTag($query, $type);
+            } else {
+                $folderList= $provider->searchResources($query, $limit, $offset, $type);
+            }
+
+            $list = array_merge($list, $folderList);
         }
     }
 }
