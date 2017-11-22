@@ -35,8 +35,15 @@ if (empty($userQuery) && $folder === 'all') {
     }
 }
 
+$loadMore = false;
+if (count($list) > 25) {
+    array_pop($list);
+    $loadMore = true;
+}
+
 $result = array(
-    'hits' => $helper->formatBrowseList($list)
+    'hits' => $helper->formatBrowseList($list),
+    'load_more' => $loadMore
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
