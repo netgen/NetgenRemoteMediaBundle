@@ -37,8 +37,6 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
         arguments:
             - "@netgen_remote_media.provider"
-            - "@ezpublish.api.service.content"
-            - "@ezpublish.api.service.content_type"
 
     # content browser specifics
     netgen_remote_media.ngadminui.menu_plugin.ngremotemedia:
