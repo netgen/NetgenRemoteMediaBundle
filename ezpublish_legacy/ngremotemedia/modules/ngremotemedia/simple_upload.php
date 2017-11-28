@@ -5,8 +5,9 @@ $http = eZHTTPTool::instance();
 $file = eZHTTPFile::fetch( 'file' );
 $fieldId = $http->postVariable('AttributeID', '');
 $contentVersionId = $http->postVariable('ContentObjectVersion', '');
+$contentId = $http->postVariable('ContentObjectId', '');
 
-if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
+if (empty($file) || empty($fieldId) || empty($contentId) || empty($contentVersionId)) {
     eZHTTPTool::headerVariable( 'Content-Type', 'text/html; charset=utf-8' );
     print(
     json_encode(
@@ -30,6 +31,9 @@ $value = $provider->upload(
 $responseData = array(
     'media' => !empty($value->resourceId) ? $value : false,
 );
+
+$attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId, true);
+NgRemoteMediaType::saveExternalData($attribute, $value, $provider);
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');
 print(json_encode($responseData));

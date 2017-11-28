@@ -5,15 +5,6 @@ netgen_remote_media:
     account_key: cloudinary_key
     account_secret: cloudinary_secret_key
 
-    # settings for eZ Online Editor:
-    ezoe:
-        class_list:
-            - 'pull-left|Left adjusted'
-            - 'pull-right|Right adjusted'
-
-    # Hard (maximum) limit of resources to be shown during the browse
-    browse_limit: 500
-
     # If set to true, resources that are not connected to any eZ content objects
     # will be removed from the remote provider
     remove_unused: false

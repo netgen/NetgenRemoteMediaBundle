@@ -1,0 +1,14 @@
+item_types:
+    cloudinary:
+        name: item_types.cloudinary # Will be translated with "ngcb" catalog
+        preview:
+            template: 'NetgenRemoteMediaBundle:ngcb:cloudinary_item.html.twig'
+        columns:
+            # At least a "name" column must exist
+            name:
+                name: columns.name # Will be translated with "ngcb" catalog
+                value_provider: name # Using a built in "name" value provider
+        default_columns:
+            - name
+        search:
+            enabled: false

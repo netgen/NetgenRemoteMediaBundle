@@ -41,6 +41,16 @@ abstract class RemoteMediaProvider
     }
 
     /**
+     * @return bool
+     */
+    abstract public function supportsContentBrowser();
+
+    /**
+     * @return bool
+     */
+    abstract public function supportsFolders();
+
+    /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
@@ -58,7 +68,7 @@ abstract class RemoteMediaProvider
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
-     * @param string $format
+     * @param string|array $format
      * @param bool $secure
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
@@ -68,10 +78,20 @@ abstract class RemoteMediaProvider
      * Lists all available resources from the remote storage.
      *
      * @param int $limit
+     * @param int $offset
+     * @param string $resource_type
      *
      * @return array
      */
-    abstract public function listResources($limit = 10);
+    abstract public function listResources($limit = 10, $offset = 0, $resource_type = 'image');
+
+    /**
+     * Lists all available folders.
+     * If folders are not supported, should return empty array.
+     *
+     * @return array
+     */
+    abstract public function listFolders();
 
     /**
      * Counts available resources from the remote storage.
@@ -85,19 +105,24 @@ abstract class RemoteMediaProvider
      *
      * @param string $query
      * @param int $limit
+     * @param int $offset
+     * @param string $resourceType
      *
      * @return array
      */
-    abstract public function searchResources($query, $limit = 10);
+    abstract public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image');
 
     /**
      * Searches for the remote resource tagged with a provided tag.
      *
      * @param string $tag
+     * @param string $resourceType
+     * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    abstract public function searchResourcesByTag($tag);
+    abstract public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image');
 
     /**
      * Returns the remote resource with provided id and type.
@@ -128,6 +153,8 @@ abstract class RemoteMediaProvider
      * @return mixed
      */
     abstract public function removeTagFromResource($resourceId, $tag);
+
+    abstract public function updateTags($resourceId, $tags);
 
     /**
      * Updates the resource context.

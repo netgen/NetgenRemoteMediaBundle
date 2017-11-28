@@ -11,7 +11,14 @@ class NgRemoteMediaOperator
      */
     function operatorList()
     {
-        return array('ngremotemedia', 'ng_remote_croppable', 'videoThumbnail', 'ng_image_variations', 'scaling_format');
+        return array(
+            'ngremotemedia',
+            'ng_remote_croppable',
+            'videoThumbnail',
+            'ng_image_variations',
+            'scaling_format',
+            'is_content_browser_active',
+        );
     }
 
     /**
@@ -88,12 +95,21 @@ class NgRemoteMediaOperator
                     'type' => 'string',
                     'required' => false
                 )
-            )
+            ),
+            'is_content_browser_active' => array()
         );
     }
 
-    function modify($tpl, $operatorName, $operatorParameters, $rootNamespace, $currentNamespace, &$operatorValue, $namedParameters, $placement)
-    {
+    function modify(
+        $tpl,
+        $operatorName,
+        $operatorParameters,
+        $rootNamespace,
+        $currentNamespace,
+        &$operatorValue,
+        $namedParameters,
+        $placement
+    ) {
         if ($operatorName === 'ngremotemedia') {
             $operatorValue = $this->ngremotemedia(
                 $namedParameters['value'],
@@ -116,18 +132,41 @@ class NgRemoteMediaOperator
             $operatorValue = $this->getImageVariations($namedParameters['class_identifier'], $onlyCroppable);
         } elseif ($operatorName === 'scaling_format') {
             $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
+        } elseif ($operatorName === 'is_content_browser_active') {
+            $operatorValue = $this->isContentBrowserActive();
         }
     }
 
-    function formatAliasForScaling($formats) {
-        $returnValue = array();
-        foreach ($formats as $formatName => $formatOptions) {
-            $options = $formatOptions['transformations']['crop'];
-            $options = empty($options) ? '1x1' : $options[0] . 'x' . $options[1];
-            $returnValue[$formatName] = $options;
+    function isContentBrowserActive()
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+
+        $cbActive = $container->getParameter('netgen_remote_media.content_browser.activated');
+        $provider = $container->get('netgen_remote_media.provider');
+
+        return $cbActive && $provider->supportsContentBrowser();
+
+    }
+
+    function formatAliasForScaling($variations)
+    {
+        if (empty($variations)) {
+            return $variations;
         }
 
-        return $returnValue;
+        $availableVariations = array();
+
+        foreach ($variations as $variationName => $variationConfig) {
+            foreach($variationConfig['transformations'] as $name => $config) {
+                if ($name !== 'crop') {
+                    continue;
+                }
+
+                $availableVariations[$variationName] = $config;
+            }
+        }
+
+        return $availableVariations;
     }
 
     function getImageVariations($class_identifier, $onlyCroppable = false)

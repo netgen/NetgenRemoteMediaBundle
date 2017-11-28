@@ -1,16 +1,42 @@
 <form onsubmit="javascript: return false;" class="form-search">
-    <input type="text" class="q input-long" placeholder="{{translate "Search for media"}}">
-    <img class="icon-16 hide loader" src="/extension/ngremotemedia/design/standard/images/loader.gif" />
-    <span class="upload-container" id="ngremotemedia-browser-local-file-container-{{id}}">
-        <button type="button" class="btn upload upload-from-disk" id="ngremotemedia-browser-local-file-{{id}}">
-            {{translate "Upload new media"}}
-        </button>
-    </span>
+
+
+    <div class="form-group">
+        <label for="ngremotemedia-remote-media-type-select">{{translate "Media type"}}:</label>
+        <select class="ngremotemedia-remote-media-type-select" id="ngremotemedia-remote-media-type-select">
+            <option value="image">{{translate "Image"}}</option>
+            <option value="video">{{translate "Video"}}</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="ngremotemedia-remote-folder-select">{{translate "Folder"}}:</label>
+        <select class="ngremotemedia-remote-folders" id="ngremotemedia-remote-folder-select">
+            <option class="loading">{{translate "Loading..."}}</option>
+            <option value="all">{{translate "All"}}</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <span class="upload-container" id="ngremotemedia-browser-local-file-container-{{id}}">
+            <button type="button" class="btn btn-primary upload upload-from-disk" id="ngremotemedia-browser-local-file-{{id}}">
+                {{translate "Upload new media"}}
+            </button>
+        </span>
+
+        <div class="with-loader">
+            <input type="text" class="form-control q input-long" placeholder="{{translate "Search for media"}}">
+            <i class="ngri-spinner loader"></i>
+        </div>
+    </div>
+
 </form>
+
 <div class="ngremotemedia-thumbs-scroll">
-  <div class="ngremotemedia-thumbs"></div>
+    <div class="ngremotemedia-thumbs"></div>
+
+
+    <button class="btn btn-large btn-block load-more" type="button" style="display:none;">
+        <i class="ngri ngri-spinner loader"></i> {{translate "Load more"}}
+    </button>
 </div>
-<button class="btn btn-large btn-block load-more" type="button">
-    {{translate "Load more"}}
-    <img class="icon-16 hide loader" src="/extension/ngremotemedia/design/standard/images/loader.gif" />
-</button>

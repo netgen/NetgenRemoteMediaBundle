@@ -1,16 +1,24 @@
 <div class="well control-group">
-    <input type="text" name="alttext"
-        placeholder="{{translate "Alternate text"}}"
-        {{#if alttext}} value="{{alttext}}"{{/if}}>
+    <div class="form-group">
+        <label for="ngrm-sa-1">{{translate "Alternate text"}}</label>
+        <input id="ngrm-sa-1" name="alttext" type="text" class="form-control" {{#if alttext}} value="{{alttext}}"{{/if}}>
+    </div>
+
+    <div class="form-group">
+        <label for="ngrm-sa-2">{{translate "Caption"}}</label>
+        <input id="ngrm-sa-2" name="caption" type="text" class="form-control" {{#if caption}} value="{{caption}}"{{/if}}>
+    </div>
 
     {{#if classes}}
-    <label for="cssclass">{{translate "Class"}}</label>
-    <select name="cssclass" id="cssclass">
-        <option value=""> - </option>
-        {{#each classes}}
-            <option value="{{value}}"{{#if selected}} selected{{/if}}>{{name}}</option>
-        {{/each}}
-    </select>
+    <div class="form-group">
+        <label for="ngrm-sa-3">{{translate "Class"}}</label>
+        <select id="ngrm-sa-3" name="cssclass" class="form-control">
+            <option value=""> - </option>
+            {{#each classes}}
+                <option value="{{value}}"{{#if selected}} selected{{/if}}>{{name}}</option>
+            {{/each}}
+        </select>
+    </div>
     {{/if}}
 
 </div>

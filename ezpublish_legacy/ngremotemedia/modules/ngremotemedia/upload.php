@@ -6,6 +6,7 @@ $contentId = $Params['contentobject_id'];
 $file = eZHTTPFile::fetch( 'file' );
 $fieldId = $http->postVariable('AttributeID', '');
 $contentVersionId = $http->postVariable('ContentObjectVersion', '');
+$folder = $http->postVariable('folder', 'all');
 
 $container = ezpKernel::instance()->getServiceContainer();
 $provider = $container->get( 'netgen_remote_media.provider' );
@@ -23,27 +24,16 @@ if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
     eZExecution::cleanExit();
 }
 
-$value = $provider->upload(
-    $file->Filename,
-    pathinfo($file->OriginalFilename, PATHINFO_FILENAME)
-);
+$options = array();
+if ($folder !== 'all') {
+    $options['folder'] = $folder;
+}
+
+$value = $provider->upload($file->Filename, pathinfo($file->OriginalFilename, PATHINFO_FILENAME), $options);
 
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
 $attribute->setAttribute('data_text', json_encode($value));
 $attribute->store();
-
-$scaling = array();
-foreach ($variations as $name => $coords) {
-    $scaling[] = array(
-        'name' => $name,
-        'coords' => array(
-            (int) $coords['x'],
-            (int) $coords['y'],
-            (int) $coords['x'] + (int) $coords['w'],
-            (int) $coords['y'] + (int) $coords['h'],
-        ),
-    );
-}
 
 $tpl = eZTemplate::factory();
 $tpl->setVariable( 'remote_value', $value );
@@ -56,8 +46,7 @@ $content = $tpl->fetch('design:content/datatype/edit/ngremotemedia.tpl');
 
 $responseData = array(
     'media' => !empty($value->resourceId) ? $value : false,
-    'content' => $content,
-    'toScale' => $scaling,
+    'content' => $content
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');

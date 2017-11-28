@@ -28,6 +28,22 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * @return bool
+     */
+    public function supportsContentBrowser()
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function supportsFolders()
+    {
+        return true;
+    }
+
+    /**
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
@@ -38,9 +54,6 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     protected function prepareUploadOptions($fileName, $options = array())
     {
-        // @todo: folders should be handled differently, not through siteacess parameter
-        //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
-
         $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
         $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
         $fileName = rtrim($cleanFileName, '_');
@@ -50,6 +63,10 @@ class CloudinaryProvider extends RemoteMediaProvider
         $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
 
         $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
+
+        if (!empty($options['folder'])) {
+            $publicId = $options['folder'].'/'.$publicId;
+        }
 
         return array(
             'public_id' => $publicId,
@@ -97,6 +114,11 @@ class CloudinaryProvider extends RemoteMediaProvider
         $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
         $options = array();
+
+        if (!isset($configuredVariations[$variationName])) {
+            return $options;
+        }
+
         $variationConfiguration = $configuredVariations[$variationName];
         foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
             try {
@@ -129,6 +151,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param string $contentTypeIdentifier
      * @param string|array $variationName
      * @param bool $secure
+     *
      * @return Variation
      */
     public function buildVariation(Value $value, $contentTypeIdentifier, $variationName, $secure = true)
@@ -164,18 +187,20 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Lists all available resources from the remote storage.
      *
      * @param int $limit
+     * @param int $offset
+     * @param string $resource_type
      *
      * @return array
      */
-    public function listResources($limit = 10)
+    public function listResources($limit = 10, $offset = 0, $resource_type = 'image')
     {
         $options = array(
             'tags' => true,
             'context' => true,
-            'max_results' => $limit,
+            'resource_type' => $resource_type
         );
 
-        return $this->gateway->listResources($options);
+        return $this->gateway->listResources($options, $limit, $offset);
     }
 
     /**
@@ -189,39 +214,65 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Searches for the remote resource containing term in the query.
-     *
-     * @todo: make use of the 'next_cursor' parametar in the API
-     *
-     * @param string $query
-     * @param int $limit
+     * Lists all available folders.
      *
      * @return array
      */
-    public function searchResources($query, $limit = 10)
+    public function listFolders()
+    {
+        return $this->gateway->listFolders();
+    }
+
+    /**
+     * @param $folder
+     *
+     * @return int
+     */
+    public function countResourcesInFolder($folder)
+    {
+        return $this->gateway->countResourcesInFolder($folder);
+    }
+
+    /**
+     * Searches for the remote resource containing term in the query.
+     *
+     *
+     * @param string $query
+     * @param int $limit
+     * @param int $offset
+     * @param string $resourceType
+     *
+     * @return array
+     */
+    public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image')
     {
         $options = array(
             'SearchByTags' => false,
             'type' => 'upload',
+            'resource_type' => $resourceType
         );
 
-        return $this->gateway->search($query, $options, $limit);
+        return $this->gateway->search($query, $options, $limit, $offset);
     }
 
     /**
      * Searches for the remote resource tagged with a provided tag.
      *
      * @param string $tag
+     * @param string $resourceType
+     * @param int $limit
+     * @param int $offset
      *
      * @return array
      */
-    public function searchResourcesByTag($tag)
+    public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image')
     {
         $options = array(
-            'SearchByTags' => true
+            'SearchByTags' => true,
+            'resource_type' => $resourceType
         );
 
-        return $this->gateway->search(urlencode($tag), $options);
+        return $this->gateway->search(urlencode($tag), $options, $limit, $offset);
     }
 
     /**
@@ -232,7 +283,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return Value
      */
-    public function getRemoteResource($resourceId, $resourceType)
+    public function getRemoteResource($resourceId, $resourceType = 'image')
     {
         $options = array(
             'resource_type' => $resourceType,
@@ -242,6 +293,10 @@ class CloudinaryProvider extends RemoteMediaProvider
         );
 
         $response = $this->gateway->get($resourceId, $options);
+
+        if (empty($response)) {
+            return new Value();
+        }
 
         return Value::createFromCloudinaryResponse($response);
     }
@@ -270,6 +325,15 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function removeTagFromResource($resourceId, $tag)
     {
         return $this->gateway->removeTag($resourceId, $tag);
+    }
+
+    public function updateTags($resourceId, $tags)
+    {
+        $options = array(
+            'tags' => $tags
+        );
+
+        $this->gateway->update($resourceId, $options);
     }
 
     /**

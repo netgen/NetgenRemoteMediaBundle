@@ -25,7 +25,12 @@ if (empty($resourceId)) {
 $container = ezpKernel::instance()->getServiceContainer();
 $provider = $container->get( 'netgen_remote_media.provider' );
 
-$updatedValue = $provider->getRemoteResource($resourceId, 'image');
+$updatedValue = $provider->getRemoteResource($resourceId);
+if (empty($updatedValue->resourceId)) {
+    // Cloudinary API can't search for resource by id disregarding type of the video
+    $updatedValue = $provider->getRemoteResource($resourceId, 'video');
+}
+
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
 $attribute->setAttribute('data_text', json_encode($updatedValue));
 $attribute->store();
@@ -55,7 +60,6 @@ foreach ($variations as $name => $coords) {
 $responseData = array(
     'media' => !empty($updatedValue->resourceId) ? $updatedValue : false,
     'content' => $content,
-    'toScale' => $scaling,
 );
 
 eZHTTPTool::headerVariable('Content-Type', 'application/json; charset=utf-8');

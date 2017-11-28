@@ -53,7 +53,7 @@ class Value extends BaseValue
             'format' => !empty($response['format']) ? $response['format'] : '',
             'resource_type' => !empty($response['resource_type']) ? $response['resource_type'] : '',
             'created' => !empty($response['created_at']) ? $response['created_at'] : '',
-            'tags' => $response['tags'] ?: array(),
+            'tags' => !empty($response['tags']) ? $response['tags'] : array(),
             'signature' => !empty($response['signature']) ? $response['signature'] : '',
             'type' => !empty($response['type']) ? $response['type'] : '',
             'etag' => !empty($response['etag']) ? $response['etag'] : '',
@@ -72,7 +72,7 @@ class Value extends BaseValue
 
         if ($response['resource_type'] == 'video') {
             $value->mediaType = Value::TYPE_VIDEO;
-        } else if ($response['resource_type'] == 'image' && !in_array($response['format'], array('pdf', 'doc', 'docx'))) {
+        } else if ($response['resource_type'] == 'image' && (!isset($response['format']) || !in_array($response['format'], array('pdf', 'doc', 'docx')))) {
             $value->mediaType = Value::TYPE_IMAGE;
         } else {
             $value->mediaType = Value::TYPE_OTHER;

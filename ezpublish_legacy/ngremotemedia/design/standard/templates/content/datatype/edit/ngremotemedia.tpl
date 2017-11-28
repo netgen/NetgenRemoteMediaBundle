@@ -30,8 +30,9 @@
 
 {def $user=fetch( 'user', 'current_user' )}
 
-<div class="ngremotemedia-type" data-bootstrap-media={$remote_value|json} data-user-id="{$user.contentobject_id}">
+{def $croppableVariations = ng_image_variations($attribute.object.class_identifier, true)}
+
+<div class="ngremotemedia-type" data-available-variations={json_encode(scaling_format($croppableVariations))} data-user-id="{$user.contentobject_id}">
     {include uri="design:parts/ngremotemedia/preview.tpl"}
     {include uri="design:parts/ngremotemedia/interactions.tpl"}
 </div>
-

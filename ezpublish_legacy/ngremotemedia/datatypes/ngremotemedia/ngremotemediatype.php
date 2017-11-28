@@ -51,7 +51,8 @@ class NgRemoteMediaType extends eZDataType
         $attributeId = $contentObjectAttribute->attribute('id');
         $data = array(
             'id' =>  $http->variable($base . '_media_id_' . $attributeId),
-            'alttext' => $http->variable($base . '_alttext_' . $attributeId, '')
+            'alttext' => $http->variable($base . '_alttext_' . $attributeId, ''),
+            'tags' => $http->variable($base.'_tags_'.$attributeId, array())
         );
 
         $container = ezpKernel::instance()->getServiceContainer();
@@ -64,15 +65,19 @@ class NgRemoteMediaType extends eZDataType
             $updatedValue = $value;
         }
 
-        if ($updatedValue->metaData['alt_text'] != $data['alttext'] && $data['changeMedia'] !== 1) {
-            $provider->updateResourceContext(
-                $updatedValue->resourceId,
-                $value->metaData['resource_type'],
-                array(
-                    'alt' => $data['alttext']
-                )
-            );
+        if ($updatedValue->metaData['alt_text'] != $data['alttext']) {
+            $provider->updateResourceContext($updatedValue->resourceId, $value->metaData['resource_type'], $data['alttext']);
             $updatedValue->metaData['alt_text'] = $data['alttext'];
+        }
+
+        if (!empty($data['tags']) && $data['tags'] !== $updatedValue->metaData['tags']) {
+            $provider->updateTags($updatedValue->resourceId, $data['tags']);
+            $updatedValue->metaData['tags'] = $data['tags'];
+        }
+
+        if (!empty($dataToChange)) {
+            $provider->updateResourceContext($updatedValue->resourceId, $value->metaData['resource_type'], $dataToChange);
+
         }
 
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
@@ -81,7 +86,7 @@ class NgRemoteMediaType extends eZDataType
         return true;
     }
 
-    protected function saveExternalData($contentObjectAttribute, $value, $provider)
+    public static function saveExternalData($contentObjectAttribute, $value, $provider)
     {
         $db = eZDB::instance();
         $result = $db->arrayQuery(
@@ -171,7 +176,7 @@ class NgRemoteMediaType extends eZDataType
 
         $db = eZDB::instance();
 
-        $deleteNotUsed = $container->getParameter('netgen_remote_media.cloudinary.delete_not_used');
+        $deleteNotUsed = $container->getParameter('netgen_remote_media.remove_unused_resources');
 
         // check if it's configured to remove not used media
         if (!$deleteNotUsed) {
@@ -203,7 +208,9 @@ class NgRemoteMediaType extends eZDataType
 
         $this->removeFromFieldLinkTable($provider, $objectAttribute, $version);
 
-        $this->removeFromRemoteMedia($resourceIdsToDelete, $provider);
+        if (is_array($resourceIdsToDelete) && !empty($resourceIdsToDelete)) {
+            $this->removeFromRemoteMedia($resourceIdsToDelete, $provider);
+        }
     }
 
     /**
@@ -246,6 +253,13 @@ class NgRemoteMediaType extends eZDataType
         $attributeValue = json_decode($attribute->attribute(self::FIELD_VALUE), true);
         $attributeValue = $attributeValue ?: array();
         $value = new Value($attributeValue);
+
+        // meta data might have been changed, so update database value with remote meta data
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get( 'netgen_remote_media.provider' );
+        $remoteValue = $provider->getRemoteResource($value->resourceId, $value->metaData['resource_type']);
+
+        $value->metaData = $remoteValue->metaData;
 
         return $value;
     }

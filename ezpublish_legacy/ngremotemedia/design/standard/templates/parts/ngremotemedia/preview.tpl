@@ -1,5 +1,5 @@
 {if $type|eq('image')}
-    {def $format = hash('height', 400, 'width', 600)}
+    {def $format = 'admin_preview'}
     {def $media = ngremotemedia($remote_value, $attribute.object.class_identifier, $format, true)}
     {def $thumb_url = $media.url}
 {else}
@@ -10,11 +10,11 @@
     {if $remote_value.resourceId}
         <div class="image-wrap">
             {if $remote_value.mediaType|eq('image')}
-                <img src="{$thumb_url}" />
+                <img src="{$thumb_url}"  />
             {elseif $remote_value.mediaType|eq('video')}
-                <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
+                <i class="ngri-video ngri-big"></i>
             {else}
-                <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />
+                <i class="ngri-book ngri-big"></i>
             {/if}
         </div>
 
@@ -25,22 +25,19 @@
                 <div class="ngremotemedia-alttext">
                     <span class="help-block description">{'Alternate text'|i18n('ngremotemedia')}</span>
                     <input type="text"
-                           name="{$base}_alttext_{$fieldId}" value="{$remote_value.metaData.alt_text}" class="media-alttext data">
+                            name="{$base}_alttext_{$fieldId}" value="{$remote_value.metaData.alt_text}" class="media-alttext data">
                 </div>
 
-                <div class="ngremotemedia-tags">
-                    <div class="input-append add-tag">
-                        <input type="text" class="tag no-autosave" placeholder="{'Add tag'|i18n( 'content/edit' )}" data-autosave="off">
-                        <button class="btn tag" disabled type="button">{'Add tag'|i18n( 'content/edit' )}</button>
-                    </div>
-                    <div class="tags"></div>
-                </div>
+                {def $tags = $remote_value.metaData.tags}
+                <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
+                    {foreach $tags as $tag}
+                        <option value="{$tag}" selected="selected">{$tag}</option>
+                    {/foreach}
+                </select>
 
             </div>
             {if $remote_value.size|null()|not()}
-            <p>
-            {'Size'|i18n( 'content/edit' )}: {$remote_value.size|si( byte )}
-            </p>
+                <p>{'Size'|i18n( 'content/edit' )}: {$remote_value.size|si( byte )}</p>
             {/if}
         </div>
     {/if}

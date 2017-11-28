@@ -3,5 +3,7 @@ JSDIR=ezpublish_legacy/ngremotemedia/design/standard/javascript
 
 node_modules/.bin/handlebars $JSDIR/templates \
 --extension hbs \
---namespace window.JST \
---output $JSDIR/ngremotemedia/shared/templates.js
+--namespace window.NgRemoteMedia.JST \
+--known translate \
+--knownOnly \
+--output $JSDIR/ngremotemedia/templates.js

@@ -25,23 +25,18 @@ $ViewList['upload'] = array(
     'functions' => 'upload',
     'params' => array( 'contentobject_id' )
 );
+$ViewList['simple_upload'] = array(
+    'script' => 'simple_upload.php',
+    'functions' => 'simple_upload',
+    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
+);
 $ViewList['change'] = array(
     'script' => 'change.php',
     'functions' => 'change',
     'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
 );
-$ViewList['tags'] = array(
-    'script' => 'change_tags.php',
-    'functions' => 'tags',
-    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
-);
-$ViewList['tags_delete'] = array(
-    'script' => 'remove_tags.php',
-    'functions' => 'tags',
-    'params' => array( 'contentobject_id', 'contentobjectattribute_id', 'contentobject_version' )
-);
-$ViewList['simple_fetch'] = array(
-    'script' => 'simple_fetch.php',
+$ViewList['fetch_ezoe'] = array(
+    'script' => 'fetch_ezoe.php',
     'functions' => 'fetch'
 );
 $ViewList['generate'] = array(
@@ -49,16 +44,17 @@ $ViewList['generate'] = array(
     'functions' => 'generate',
     'params' => array( 'resource_id' )
 );
-$ViewList['simple_upload'] = array(
-    'script' => 'simple_upload.php',
-    'functions' => 'simple_upload',
+$ViewList['folders'] = array(
+    'script' => 'folders.php',
+    'functions' => 'folders',
 );
 
 $FunctionList['fetch'] = array();
+$FunctionList['fetch_ezoe'] = array();
 $FunctionList['save'] = array();
 $FunctionList['browse'] = array();
 $FunctionList['upload'] = array();
 $FunctionList['change'] = array();
-$FunctionList['tags'] = array();
 $FunctionList['generate'] = array();
 $FunctionList['simple_upload'] = array();
+$FunctionList['folders'] = array();

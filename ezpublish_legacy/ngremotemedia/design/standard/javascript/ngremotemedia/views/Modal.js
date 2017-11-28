@@ -1,47 +1,37 @@
-NgRemoteMedia.views.Modal = Backbone.View.extend({
-    // el construction information
-    tagName: 'div',
-    id: 'ngremotemedia-modal',
+(function(){
+    var template = NgRemoteMedia.template;
 
-    // Template for containing data
-    template: '<div class="backdrop"/><div class="content"><div class="in"></div></div>',
+    NgRemoteMedia.views.Modal = Backbone.View.extend({
+        id: 'ngremotemedia-modal',
 
-    // To hold a subview
-    view: null,
+        // To hold a subview
+        view: null,
 
-    initialize: function() {
-        _.bindAll(this);
-        return this;
-    },
+        events: {
+            'click .js-close': 'close'
+        },
 
-    events: {
-        'click .close': 'close'
-    },
+        render: function() {
+            this.$el.html(template('modal')).hide();
+            this.contentEl = this.$('.in');
+            return this;
+        },
 
-    render: function() {
-        this.$el.html(this.template).hide();
-        this.contentEl = this.$('.in');
-        this.contentEl.before('<a href="#" class="close">X</a>');
+        insert: function(){
+          $(document.body).append(this.$el);
+          return this;
+        },
 
-        this.delegateEvents();
+        show: function() {
+            this.$el.show();
+            return this;
+        },
 
-        return this;
-    },
-
-    insert: function(){
-      $(document.body).prepend(this.$el);
-      return this;
-    },
-
-    show: function() {
-        this.$el.show();
-        return this;
-    },
-
-    close: function() {
-        this.trigger('close');
-        this.$el.hide();
-        this.view && this.view.remove();
-        this.remove();
-    }
-});
+        close: function() {
+            this.trigger('close');
+            this.$el.hide();
+            this.view && this.view.remove();
+            this.remove();
+        }
+    });
+})();

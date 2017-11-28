@@ -1,0 +1,5 @@
+{% if item.value is not empty %}
+    {% set remoteVariation = netgen_remote_media(item.remoteValue, { 'width': 200 }) %}
+
+    <img src="{{ remoteVariation.url }}" />
+{% endif %}

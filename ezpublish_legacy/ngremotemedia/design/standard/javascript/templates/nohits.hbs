@@ -1,3 +1,6 @@
-<div class="well well-large">
-    <h2>{{translate "No results"}}</h2>
-</div>
+
+{{#if loading}}
+    <h2 class="ngrm-title ngrm-big"><i class="ngri-spinner ngri-spin"></i> {{translate "Loading..."}}</h2>
+{{else}}
+    <h2 class="ngrm-title ngrm-big">{{translate "No results"}}</h2>
+{{/if}}

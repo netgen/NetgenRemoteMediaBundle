@@ -1,13 +1,25 @@
 <script type="text/javascript">
 {literal} NgRemoteMediaTranslations = { {/literal}
-    'Search for media': "{'Search for medias'|i18n( 'content/ngremotemedia' )}",
-    'Load more': "{'Load more'|i18n( 'content/ngremotemedia' )}",
-    'Upload new media': "{'Upload new media'|i18n( 'content/ngremotemedia' )}",
-    'No results': "{'No results'|i18n( 'content/ngremotemedia' )}",
-    'Alternate text': "{'Alternate text'|i18n( 'content/ngremotemedia' )}",
-    'Class': "{'Class'|i18n( 'content/ngremotemedia' )}",
+    'Search for media': "{'Search for media'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Load more': "{'Load more'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Upload new media': "{'Upload new media'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'No results': "{'No results'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Alternate text': "{'Alternate text'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Class': "{'CSS class'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Create new folder?': "{'Create new folder?'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Folder': "{'Folder'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'All': "{'All'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Add tag': "{'Add tag'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Media type': "{'Media type'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Image': "{'Image and documents'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Video': "{'Video'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Loading...': "{'Loading...'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Cancel': "{'Cancel'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Save all': "{'Save all'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Generate': "{'Generate'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Caption': "{'Caption'|i18n( 'extension/ngremotemedia/interactions' )}",
 
-    close : "{'Close'|i18n( 'content/ngremotemedia' )}",
+    close : "{'Close'|i18n( 'extension/ngremotemedia/interactions' )}",
     next : "{'Next 25 &gt;'}",
     prev : "{'&lt; Previous 25'}"
 {literal} }; {/literal}
@@ -18,4 +30,3 @@
     'url_prefix': {'/'|ezurl}
     {literal} }; {/literal}
 </script>
-

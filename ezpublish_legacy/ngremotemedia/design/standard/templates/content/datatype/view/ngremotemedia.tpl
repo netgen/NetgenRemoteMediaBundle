@@ -6,10 +6,7 @@
 
 {if $value.resourceId}
     {if $value.mediaType|eq('image')}
-        {if not(is_set($format))}
-            {def $format = hash('height', 400, 'width', 600)}
-        {/if}
-
+        {def $format = 'admin_preview'}
         {def $variation = ngremotemedia($value, $attribute.object.class_identifier, $format)}
 
         {if not(is_set($alt_text))}
@@ -28,9 +25,9 @@
         />
     {elseif $value.mediaType|eq('video')}
         {* TODO: show video thumbnai *}
-        <img src="/extension/ngremotemedia/design/standard/images/video128x128.png" />
+        <i class="ngri-video ngri-big"></i>
     {else}
         {* TODO: maybe show download link here? *}
-        <img src="/extension/ngremotemedia/design/standard/images/book128x128.png" />
+        <i class="ngri-book ngri-big"></i>
     {/if}
 {/if}

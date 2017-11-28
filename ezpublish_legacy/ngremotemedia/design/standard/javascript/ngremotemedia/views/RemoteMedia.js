@@ -5,20 +5,8 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
 
     initialize: function(options) {
         options = (options || {});
-        _.bindAll(this, 'render', 'search', 'close', 'enableUpload', 'changeMedia');       
         this.listenTo(this.model, 'change', this.render);
-        
         return this;
-    },
-
-    convert_versions: function(versions){
-        if(_.isArray(versions)){return versions;}
-        return _.map(versions, function(size, name) {
-            return {
-                size: size.split ? _.map(size.split('x'), function(n){return parseInt(n, 10);}) : size,
-                name: name
-            };
-        });
     },
 
     events: {
@@ -38,20 +26,21 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         this.destination = this.$('.media-id');
         this.renderTags().enableUpload();
 
-        var data = this.$('.ngremotemedia-scale').data();
-        data && this.model.set({available_versions: this.convert_versions(data.versions), truesize: data.truesize}, {silent: true});
-
         return this;
     },
 
 
     renderTags: function() {
-        new NgRemoteMedia.views.Tagger({
-            el: this.$('.ngremotemedia-tags').off(),
-            model: this.model.get('media')
-        }).render();
+        var $tags = this.$('.ngremotemedia-newtags');
+        var data = $tags.data();
+        $tags.off().select2({
+            placeholder: NgRemoteMedia.t('Add tag'),
+            tags: true,
+            allowClear: true
+        });
+
         return this;
-    },    
+    },
 
     remove: function(e) {
         e.preventDefault();
@@ -105,18 +94,22 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         }).done(function(){
 
             scaler_view = new NgRemoteMedia.views.Scaler({
-                trueSize: this.model.get('truesize'),
-                model: this.model,
+                model: this.model.get('media'),
                 el: modal.show().contentEl
             }).render();
+
+            scaler_view.on('saved', function(){
+                modal.close();
+            })
 
         }.bind(this));
 
 
         modal.on('close', function(){
-            scaler_view.trigger('destruct');
-            scaler_view.trigger('stack.popped');
-        });        
+            scaler_view.close();
+        });
+
+
 
     },
 
