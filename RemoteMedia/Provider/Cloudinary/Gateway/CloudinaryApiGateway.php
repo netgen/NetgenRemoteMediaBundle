@@ -81,7 +81,6 @@ class CloudinaryApiGateway extends Gateway
 
     /**
      * Perform search by tags
-     * @todo: probably should also iterate all results
      *
      * @param $query
      * @param $resourceType
@@ -95,11 +94,28 @@ class CloudinaryApiGateway extends Gateway
             array(
                 'tags' => true,
                 'context' => true,
-                'resource_type' => $resourceType
+                'resource_type' => $resourceType,
+                'max_results' => 500
             )
         );
 
-        return !empty($resources['resources']) ? $resources['resources'] : array();
+        if (empty($resources)) {
+            return array();
+        }
+
+        $resources = $resources->getArrayCopy();
+
+        $items = $resources['resources'];
+        while (!empty($resources['next_cursor'])) {
+            $apiOptions['next_cursor'] = $resources['next_cursor'];
+            $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
+
+            if (!empty($resources['resources'])) {
+                $items = array_merge($items, $resources['resources']);
+            }
+        }
+
+        return !empty($items) ? $items : array();
     }
 
     /**

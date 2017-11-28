@@ -70,7 +70,8 @@ class CloudinaryApiGatewayTest extends TestCase
                 array(
                     'tags' => true,
                     'context' => true,
-                    'resource_type' => 'image'
+                    'resource_type' => 'image',
+                    'max_results' => 500
                 )
             );
 
