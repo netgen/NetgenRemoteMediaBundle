@@ -48,8 +48,6 @@ class Helper
     /**
      * Formats browse list to comply with javascript.
      *
-     * @todo: check if can be removed/refractored
-     *
      * @param array $list
      *
      * @return array

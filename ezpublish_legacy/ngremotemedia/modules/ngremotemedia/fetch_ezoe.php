@@ -28,7 +28,6 @@ $value = $provider->getRemoteResource($resourceId, 'image');
 $responseData = (array) $value;
 $responseData['available_variations'] = $availableVariations;
 
-// @todo: fetch classes from the configuration here
 $classList = $container->getParameter('netgen_remote_media.ezoe.class_list');
 $responseData['class_list'] = $classList;
 
