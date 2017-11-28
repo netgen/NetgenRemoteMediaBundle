@@ -1,6 +1,25 @@
 # Netgen Remote Media Bundle changelog
 
 ##1.0
+###Added
+* introduced cached gateway
+* folder support (browsing/searching and uploading)
+* tests
+* opengraph handler for [NetgenOpenGraphBundle](https://github.com/netgen/NetgenOpenGraphBundle)
+* persist connection between remote media and content for embedded media
+* preview formats in the configuration are made configurable
+
+###Fixed
+* several bugfixes
+* administration interface has been cleaned up and improved
+
+###Changed
+* browse and search is now separated for images/documents and videos/audio files
+* improved cropping interface
+* search by name prefix and search by tag have been separated
+
+###Removed
+* suppport for eZExceed
 
 ##1.0.11-alpha
 ###Fixed
