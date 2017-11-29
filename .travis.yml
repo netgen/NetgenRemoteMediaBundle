@@ -4,6 +4,7 @@ language: php
 cache:
     directories:
         - vendor
+        - $HOME/.composer/cache/files
 
 matrix:
     # mark as finished before allow_failures are run
