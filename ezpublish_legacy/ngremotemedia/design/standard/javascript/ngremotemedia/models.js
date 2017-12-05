@@ -285,26 +285,24 @@
 
 
         parse: function(data) {
-            this.total = data.count;
+            this.load_more = data.load_more;
             return data.hits;
         },
 
         page: function() {
-            if (this.length < this.total) {
-                var data = {
-                    limit: this.limit,
-                    offset: this.length,
-                    q: this.q
-                };
 
-                return this.fetch({
-                    url: this.url(),
-                    data: data,
-                    remove: false,
-                    transform: false
-                });
-            }
-            return false;
+            var data = {
+                limit: this.limit,
+                offset: this.length,
+                q: this.q
+            };
+
+            return this.fetch({
+                url: this.url(),
+                data: data,
+                remove: false,
+                transform: false
+            });
         }
     });
 
@@ -345,7 +343,7 @@
         },
 
         unbounded: function(){
-          return !this.get('w') || !this.get('h'); //if any dimension is 0
+          return !this.get('possibleWidth') || !this.get('possibleHeight'); //if any dimension is 0
         },
 
         ratio: function(){
@@ -367,7 +365,9 @@
             if(this.is_cropped()){
                 return [c.x, c.y, c.x + c.w, c.y + c.h];
             }else{
-                return [0, 0, this.get('possibleWidth') / 2, this.get('possibleHeight') / 2];
+                var minPossibleWidth = this.originalWidth() / 4;
+                var minPossibleHeight = minPossibleWidth * this.ratio();
+                return [0, 0, minPossibleWidth, minPossibleHeight];
             }
         },
 

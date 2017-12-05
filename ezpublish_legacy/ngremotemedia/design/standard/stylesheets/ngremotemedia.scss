@@ -212,7 +212,7 @@ $primaryColor: #009AC7;
   }
 
   .form-search {padding-bottom: 10px; margin-bottom: 20px; border-bottom: 1px solid #555;
-    .with-loader input{width:400px;}
+    .with-loader input{width:300px;}
     .btn {box-shadow: none; line-height: 16px;}
     .upload-container{float:right;}
     label{color:#eee;}
@@ -256,10 +256,18 @@ $primaryColor: #009AC7;
 
 
 #ngremotemedia-modal{
+    label{margin-bottom:5px;}
     .form-group{
       margin-bottom: 15px;
       @extend %clearfix;
     }
+
+    .ngrm-by{
+        color:#999;
+        label{display:inline; font-weight:normal;}
+        span, input[type="radio"]{vertical-align: middle; margin:0;}
+    }
+
 }
 
 .o2k7Skin .mceIcon.mce_ngremotemedia{
@@ -275,3 +283,4 @@ $primaryColor: #009AC7;
 .ngmr-hide{
     display: none !important;
 }
+

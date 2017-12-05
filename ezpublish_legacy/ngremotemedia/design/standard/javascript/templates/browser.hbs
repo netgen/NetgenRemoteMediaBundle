@@ -28,6 +28,11 @@
             <input type="text" class="form-control q input-long" placeholder="{{translate "Search for media"}}">
             <i class="ngri-spinner loader"></i>
         </div>
+        <span class="ngrm-by">
+            {{translate "by"}}
+            <label><input type="radio" value="name" name="search_type" checked="checked" /> {{translate "name"}} </label>
+            <label><input type="radio" value="tag" name="search_type" /> {{translate "tag"}} </label>
+        </span>
     </div>
 
 </form>
@@ -36,7 +41,7 @@
     <div class="ngremotemedia-thumbs"></div>
 
 
-    <button class="btn btn-large btn-block load-more" type="button" style="display:none;">
+    <button class="btn btn-default btn-large btn-block load-more" type="button" style="display:none;">
         <i class="ngri ngri-spinner loader"></i> {{translate "Load more"}}
     </button>
 </div>

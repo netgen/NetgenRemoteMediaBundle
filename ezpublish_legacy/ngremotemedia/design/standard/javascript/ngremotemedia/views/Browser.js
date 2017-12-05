@@ -22,6 +22,7 @@
         events: {
             'keyup .q': 'search',
             'change .ngremotemedia-remote-media-type-select': 'changeMediaType',
+            'change .ngrm-by input': 'changeSearchType',
             'submit .form-search': 'search',
             'click .item a': 'select',
             'click .load-more': 'page'
@@ -34,6 +35,18 @@
 
         changeMediaType: function(e){
           this.query.mediatype = $(e.target).val();
+          this.$loader.removeClass('ngmr-hide');
+          this.collection.reset([]);
+          this.renderItems(true);
+          this.collection.search(this.query);
+          return this;
+        },
+
+        changeSearchType: function(e){
+          this.query.search_type = $(e.target).val();
+          this.$loader.removeClass('ngmr-hide');
+          this.collection.reset([]);
+          this.renderItems(true);
           this.collection.search(this.query);
           return this;
         },
@@ -152,14 +165,14 @@
 
 
             this.$body[clear ? 'html' : 'append'](html);
-            var show_load_more = this.collection.total > this.collection.length;
+            var show_load_more = this.collection.load_more;
             this.$('.load-more')[show_load_more ? 'show' : 'hide']();
 
             return this;
         },
 
         page: function() {
-            this.$('.load-more img').removeClass('ngmr-hide');
+            this.$('.load-more .loader').removeClass('ngmr-hide');
             this.collection.page(this.q);
         },
 
