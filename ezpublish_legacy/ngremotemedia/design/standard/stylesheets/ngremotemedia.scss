@@ -165,7 +165,7 @@ $primaryColor: #009AC7;
     > li {float: left;
       &.active a {color: #fff; background-color: $primaryColor; border-color: transparent;}
     }
-    a {display: block; padding: 8px 12px; margin: 0 2px; color: #ccc; border-radius: 5px; background: transparent; border: 1px solid #ccc; @include transition(all, 0.2s, ease-in-out);
+    a {display: block; padding: 8px 12px; margin: 0 2px; color: #ccc; border-radius: 5px; background: transparent; border: 1px solid #ccc; @include transition(all, 0.2s, ease-in-out); min-height:52px;
       &:hover,
       &:focus {color: darken(#ccc, 10%); border-color: darken(#ccc, 10%);}
     }
