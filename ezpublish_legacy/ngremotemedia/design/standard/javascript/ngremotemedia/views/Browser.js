@@ -173,7 +173,7 @@
 
         page: function() {
             this.$('.load-more .loader').removeClass('ngmr-hide');
-            this.collection.page(this.q);
+            this.collection.page(this.query);
         },
 
         enableUpload: function() {

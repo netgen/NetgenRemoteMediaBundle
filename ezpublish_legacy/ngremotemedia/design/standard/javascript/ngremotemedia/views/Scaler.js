@@ -150,7 +150,7 @@
 
             // If an API exists we dont need to build Jcrop but can just change crop
             var cropperOptions = {
-                setSelect: model.coords(),
+                setSelect: model.coords(this.SIZE),
                 aspectRatio: model.aspectRatio(),
                 minSize: model.minSize(),
                 // Make sure user can't remove selection if width and height has bounded dimension

@@ -289,13 +289,12 @@
             return data.hits;
         },
 
-        page: function() {
+        page: function(query) {
 
-            var data = {
+            var data = $.extend({}, {
                 limit: this.limit,
-                offset: this.length,
-                q: this.q
-            };
+                offset: this.length
+            }, query);
 
             return this.fetch({
                 url: this.url(),
@@ -360,14 +359,16 @@
 
         // var coords = [selection.x, selection.y, selection.x2, selection.y2];
         // jCrop selection
-        coords: function(){
+        coords: function(container_size){
             var c = this.attributes;
             if(this.is_cropped()){
                 return [c.x, c.y, c.x + c.w, c.y + c.h];
             }else{
-                var minPossibleWidth = this.originalWidth() / 4;
-                var minPossibleHeight = minPossibleWidth * this.ratio();
-                return [0, 0, minPossibleWidth, minPossibleHeight];
+                var possibleWidth = this.get('possibleWidth') / 2;
+                var possibleHeight = this.get('possibleHeight') / 2;
+                if(possibleWidth < 30){possibleWidth = 30;}
+                possibleHeight = possibleWidth * this.ratio();
+                return [0, 0, possibleWidth, possibleHeight];
             }
         },
 
