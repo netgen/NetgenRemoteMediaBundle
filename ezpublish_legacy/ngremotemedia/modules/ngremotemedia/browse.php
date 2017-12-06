@@ -28,21 +28,24 @@ if (empty($userQuery) && $folder === 'all') {
         $list = $provider->searchResources($query, $limit, $offset, $type);
     }
 
-    if ($folder === 'all') {
-        $folders = $provider->listFolders();
-        foreach ($folders as $folder) {
-            $query = $folder['path'] . '/' . $userQuery;
-
-            if ($searchType === 'tag') {
-                $folderList = $provider->searchResourcesByTag($query, $limit, $offset, $type);
-            } else {
-                $folderList= $provider->searchResources($query, $limit, $offset, $type);
-            }
-
-            $list = array_merge($list, $folderList);
-        }
-    }
+// @ŧodo: this messes up load more, for now we'll limit searches only to selected folder!
+//    if ($folder === 'all') {
+//        $folders = $provider->listFolders();
+//        $queryCount = 1 + count($folders);
+//        foreach ($folders as $folder) {
+//            $query = $folder['path'] . '/' . $userQuery;
+//
+//            if ($searchType === 'tag') {
+//                $folderList = $provider->searchResourcesByTag($query, $limit, $offset, $type);
+//            } else {
+//                $folderList= $provider->searchResources($query, $limit, $offset, $type);
+//            }
+//
+//            $list = array_merge($list, $folderList);
+//        }
+//    }
 }
+
 
 $loadMore = false;
 if (count($list) > 25) {
