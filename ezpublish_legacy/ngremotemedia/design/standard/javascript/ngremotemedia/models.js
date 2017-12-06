@@ -338,7 +338,7 @@
         },
 
         tooSmall: function(){
-          return this.get('w') > this.originalWidth() && this.get('h') > this.originalHeight();
+          return this.get('possibleWidth') > this.originalWidth() || this.get('possibleHeight') > this.originalHeight();
         },
 
         unbounded: function(){
