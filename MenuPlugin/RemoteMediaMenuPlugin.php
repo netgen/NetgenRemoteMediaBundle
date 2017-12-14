@@ -39,7 +39,7 @@ class RemoteMediaMenuPlugin implements MenuPluginInterface
      */
     public function isActive()
     {
-        return true;
+        return false;
     }
 
     /**
