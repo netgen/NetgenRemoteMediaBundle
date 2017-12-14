@@ -39,7 +39,7 @@ class RemoteMediaMenuPluginTest extends TestCase
 
     public function testIsActive()
     {
-        $this->assertEquals(true, $this->plugin->isActive());
+        $this->assertEquals(false, $this->plugin->isActive());
     }
 
     public function testMatches()
