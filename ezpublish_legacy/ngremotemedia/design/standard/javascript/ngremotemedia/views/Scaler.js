@@ -146,7 +146,6 @@
 
             var context = this;
             model.not_initial = false;
-            model.set({crop_changed: false}, {silent: true});
 
             // If an API exists we dont need to build Jcrop but can just change crop
             var cropperOptions = {

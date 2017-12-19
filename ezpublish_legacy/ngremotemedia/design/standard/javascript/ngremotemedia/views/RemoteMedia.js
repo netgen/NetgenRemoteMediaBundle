@@ -59,6 +59,7 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
             model: this.model,
             uploaded: function(resp){
                 resp && this.model.set(this.model.parse(resp.model_attributes));
+                tmp.get('media').variations.reset([]);
             }.bind(this),
             el: this.$el,
             version: this.model.get('version')

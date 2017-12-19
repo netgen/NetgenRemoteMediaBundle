@@ -310,6 +310,10 @@
         klass: "Variation",
         idAttribute: 'name',
 
+        defaults: {
+          crop_changed: false
+        },
+
 
         set: function(attributes, options){
           _.each(attributes, function(value, attr) {
@@ -361,14 +365,14 @@
         // jCrop selection
         coords: function(container_size){
             var c = this.attributes;
-            if(this.is_cropped()){
-                return [c.x, c.y, c.x + c.w, c.y + c.h];
+            if(this.is_cropped() || this.is_crop_changed()){
+              return [c.x, c.y, c.x + c.w, c.y + c.h];
             }else{
-                var possibleWidth = this.get('possibleWidth') / 2;
-                var possibleHeight = this.get('possibleHeight') / 2;
-                if(possibleWidth < 30){possibleWidth = 30;}
-                possibleHeight = possibleWidth * this.ratio();
-                return [0, 0, possibleWidth, possibleHeight];
+              var possibleWidth = this.get('possibleWidth') / 2;
+              var possibleHeight = this.get('possibleHeight') / 2;
+              if(possibleWidth < 30){possibleWidth = 30;}
+              possibleHeight = possibleWidth * this.ratio();
+              return [0, 0, possibleWidth, possibleHeight];
             }
         },
 
@@ -379,6 +383,11 @@
 
         is_cropped: function(){
           return this.get('is_cropped');
+        },
+
+
+        is_crop_changed: function(){
+          return this.get('crop_changed');
         },
 
 

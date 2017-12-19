@@ -21,6 +21,7 @@
     'by': "{'by'|i18n( 'extension/ngremotemedia/interactions' )}",
     'name': "{'name'|i18n( 'extension/ngremotemedia/interactions' )}",
     'tag': "{'tag'|i18n( 'extension/ngremotemedia/interactions' )}",
+    'Image is to small for this version': "{'Image is to small for this version'|i18n( 'extension/ngremotemedia/interactions' )}",
 
     close : "{'Close'|i18n( 'extension/ngremotemedia/interactions' )}",
     next : "{'Next 25 &gt;'}",
