@@ -281,7 +281,7 @@ class CloudinaryApiGateway extends Gateway
 
         $response = $response->getIterator()->current();
 
-        return $response[0];
+        return !empty($response) ? $response[0] : array();
     }
 
     /**

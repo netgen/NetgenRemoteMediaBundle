@@ -218,7 +218,7 @@ class CloudinaryApiGatewayTest extends TestCase
         $this->apiGateway->countResourcesInFolder('folderName');
     }
 
-    public function testGetResource()
+    public function testGetNotExistingResource()
     {
         $options = array();
 
@@ -231,7 +231,12 @@ class CloudinaryApiGatewayTest extends TestCase
             ->method('resources_by_ids')
             ->with(array('test_id'), $options);
 
-        $this->apiGateway->get('test_id', $options);
+        $result = $this->apiGateway->get('test_id', $options);
+
+        $this->assertEquals(
+            array(),
+            $result
+        );
     }
 
     public function testUpdateResource()
