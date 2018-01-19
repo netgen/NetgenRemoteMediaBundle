@@ -34,6 +34,16 @@ class NgRemoteMediaType extends eZDataType
      */
     public function validateObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
+        $contentObjectAttributeID = $contentObjectAttribute->attribute( 'id' );
+
+        $resourceId = trim( $http->postVariable( $base . '_media_id_' . $contentObjectAttributeID, '' ) );
+
+        if ( (empty($resourceId) || $resourceId === 'removed') && $contentObjectAttribute->validateIsRequired() )
+        {
+            $contentObjectAttribute->setValidationError( ezpI18n::tr( 'extension/ngremotemedia/datatypes', 'It is required to select media.' ) );
+            return eZInputValidator::STATE_INVALID;
+        }
+
         return eZInputValidator::STATE_ACCEPTED;
     }
 
