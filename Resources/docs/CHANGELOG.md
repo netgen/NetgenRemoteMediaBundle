@@ -1,7 +1,24 @@
 # Netgen Remote Media Bundle changelog
 
-##1.0
-###Added
+## 1.1.4
+## Fixed
+* undefined offset error when requesting non-existant resource id
+* validation for required field
+
+## 1.1.3
+### Fixed
+* ezjscpacker does not have an issue anymore with handlebars
+
+## 1.1.2
+## Fixed
+* cropping is now always correctly saved when switching between formats
+
+## 1.1.1
+### Removed
+* Netgen Admin UI menu plugin is now disabled as it is not used, and caused double legacy aside template to show up
+
+## 1.1
+### Added
 * introduced cached gateway
 * folder support (browsing/searching and uploading)
 * tests
@@ -9,70 +26,70 @@
 * persist connection between remote media and content for embedded media
 * preview formats in the configuration are made configurable
 
-###Fixed
+### Fixed
 * several bugfixes
 * administration interface has been cleaned up and improved
 
-###Changed
+### Changed
 * browse and search is now separated for images/documents and videos/audio files
 * improved cropping interface
 * search by name prefix and search by tag have been separated
 
-###Removed
+### Removed
 * suppport for eZExceed
 
-##1.0.11-alpha
-###Fixed
+## 1.0.11-alpha
+### Fixed
 * fixed `load more` functionality when searching for remote image
 
-##1.0.10-alpha
-###Added
+## 1.0.10-alpha
+### Added
 * add `toString` and `fromString` methods to legacy datatype implementation
 
-##1.0.9-alpha
-###Added
+## 1.0.9-alpha
+### Added
 * option to use subdomains on Cloudinary
 
-##1.0.8-alpha
-###Fixed
+## 1.0.8-alpha
+### Fixed
 * fix listing of images when browsing in administration
 * bugfix on videos in legacy
-###Changed
+### Changed
 * require latest 1.x version of Cloudinary API
 * better configuration for embedded images
 
-##1.0.7-alpha
-###Fixed
+## 1.0.7-alpha
+### Fixed
 * field template configuration
 
-##1.0.6-alpha
-###Changed
+## 1.0.6-alpha
+### Changed
 * wrap inline image together with caption for easier styling
 
-##1.0.5-alpha
-###Added
+## 1.0.5-alpha
+### Added
 * add caption to images embedded in ezxml text
 
-##1.0.4-alpha
-###Fixed
+## 1.0.4-alpha
+### Fixed
 * make sure configuration is merged correctly, and the values are not overwritten
 
-##1.0.3-alpha
-###Added
+## 1.0.3-alpha
+### Added
 * add migration command
 * test for existance of array offset before testing it's value
 
-##1.0.2-alpha
-###Fixed
+## 1.0.2-alpha
+### Fixed
 * enable overwritting of the media on cloudinary.
 
-##1.0.1-alpha
-###Added
+## 1.0.1-alpha
+### Added
 * CS fixer and travis configuration
 * support for 'invalidate' option on media upload
 
-###Fixed
+### Fixed
 * bugfix when no default configuration has been set
 
-##1.0-alpha
+## 1.0-alpha
 * Initial release
