@@ -264,12 +264,14 @@ class NgRemoteMediaType extends eZDataType
         $attributeValue = $attributeValue ?: array();
         $value = new Value($attributeValue);
 
-        // meta data might have been changed, so update database value with remote meta data
-        $container = ezpKernel::instance()->getServiceContainer();
-        $provider = $container->get( 'netgen_remote_media.provider' );
-        $remoteValue = $provider->getRemoteResource($value->resourceId, $value->metaData['resource_type']);
+        if (!empty($value->resourceId)) {
+            // meta data might have been changed, so update database value with remote meta data
+            $container = ezpKernel::instance()->getServiceContainer();
+            $provider = $container->get('netgen_remote_media.provider');
+            $remoteValue = $provider->getRemoteResource($value->resourceId, $value->metaData['resource_type']);
 
-        $value->metaData = $remoteValue->metaData;
+            $value->metaData = $remoteValue->metaData;
+        }
 
         return $value;
     }
