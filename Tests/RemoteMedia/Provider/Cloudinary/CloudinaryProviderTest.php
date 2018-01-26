@@ -226,6 +226,21 @@ class CloudinaryProviderTest extends TestCase
         $this->cloudinaryProvider->searchResourcesBytag('test/something');
     }
 
+    public function testGetEmptyResourceId()
+    {
+        $this->gateway
+            ->expects($this->never())
+            ->method('get');
+
+        $value = $this->cloudinaryProvider->getRemoteResource('', 'image');
+
+        $this->assertInstanceOf(Value::class, $value);
+        $this->assertEquals(
+            null,
+            $value->resourceId
+        );
+    }
+
     public function testGetRemoteResource()
     {
         $options = array(

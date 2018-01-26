@@ -285,6 +285,10 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function getRemoteResource($resourceId, $resourceType = 'image')
     {
+        if (empty($resourceId)) {
+            return new Value();
+        }
+
         $options = array(
             'resource_type' => $resourceType,
             'max_results' => 1,
