@@ -452,6 +452,29 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Deletes all resources inside given folder.
+     * Prevents deleting in the root folder.
+     *
+     * @param $folder
+     */
+    public function deleteResourcesInFolder($folder)
+    {
+        if (empty($folder) || $folder === '/') {
+            return;
+        }
+
+        $folders = $this->gateway->listFolders();
+
+        foreach ($folders as $item) {
+            if ($item['name'] === $folder) {
+                $this->gateway->deleteByPrefix($folder . '/');
+
+                return;
+            }
+        }
+    }
+
+    /**
      * Returns unique identifier of the provided
      *
      * @return string

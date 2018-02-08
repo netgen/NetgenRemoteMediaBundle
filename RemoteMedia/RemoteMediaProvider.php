@@ -201,6 +201,14 @@ abstract class RemoteMediaProvider
     abstract public function deleteResource($resourceId);
 
     /**
+     * Deletes all resources inside given folder.
+     * Prevents deleting in the root folder.
+     *
+     * @param $folder
+     */
+    abstract public function deleteResourcesInFolder($folder);
+
+    /**
      * Generates the link to the remote resource.
      *
      * @param Value $value
