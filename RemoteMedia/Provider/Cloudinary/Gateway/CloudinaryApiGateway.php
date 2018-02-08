@@ -369,4 +369,14 @@ class CloudinaryApiGateway extends Gateway
     {
         $this->cloudinaryApi->delete_resources(array($id));
     }
+
+    /**
+     * Deletes all resources with given prefix.
+     *
+     * @param $prefix
+     */
+    public function deleteByPrefix($prefix)
+    {
+        $this->cloudinaryApi->delete_resources_by_prefix($prefix);
+    }
 }

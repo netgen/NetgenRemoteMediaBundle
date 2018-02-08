@@ -144,4 +144,11 @@ abstract class Gateway
      * @param $id
      */
     public abstract function delete($id);
+
+    /**
+     * Deletes all resources with given prefix.
+     *
+     * @param $prefix
+     */
+    public abstract function deleteByPrefix($prefix);
 }

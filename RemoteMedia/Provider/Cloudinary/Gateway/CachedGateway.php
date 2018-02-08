@@ -258,4 +258,14 @@ class CachedGateway extends Gateway
     {
         return $this->gateway->delete($id);
     }
+
+    /**
+     * Deletes all resources with given prefix.
+     *
+     * @param $prefix
+     */
+    public function deleteByPrefix($prefix)
+    {
+        $this->gateway->deleteByPrefix($prefix);
+    }
 }
