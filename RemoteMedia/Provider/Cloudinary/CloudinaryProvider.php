@@ -403,7 +403,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function generateVideoTag(Value $value, $contentTypeIdentifier, $variationName = '')
     {
         $finalOptions = array(
-            'controls' => true,
             'fallback_content' => 'Your browser does not support HTML5 video tags'
         );
 

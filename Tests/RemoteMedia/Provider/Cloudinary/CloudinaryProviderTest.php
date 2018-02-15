@@ -439,7 +439,6 @@ class CloudinaryProviderTest extends TestCase
     public function testGetVideoTag()
     {
         $options = array(
-            'controls' => true,
             'fallback_content' => 'Your browser does not support HTML5 video tags'
         );
 
@@ -457,7 +456,6 @@ class CloudinaryProviderTest extends TestCase
     public function testGetVideoTagWithProvidedVariation()
     {
         $options = array(
-            'controls' => true,
             'fallback_content' => 'Your browser does not support HTML5 video tags'
         );
 
