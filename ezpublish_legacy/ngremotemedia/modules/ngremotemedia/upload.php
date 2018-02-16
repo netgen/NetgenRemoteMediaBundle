@@ -25,7 +25,10 @@ if (empty($file) || empty($fieldId) || empty($contentVersionId)) {
 
 $value = $provider->upload(
     $file->Filename,
-    pathinfo($file->OriginalFilename, PATHINFO_FILENAME)
+    pathinfo($file->OriginalFilename, PATHINFO_FILENAME),
+    array(),
+    $file->MimeCategory,
+    pathinfo($file->OriginalFilename, PATHINFO_EXTENSION)
 );
 
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);

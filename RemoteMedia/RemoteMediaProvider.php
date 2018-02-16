@@ -46,10 +46,12 @@ abstract class RemoteMediaProvider
      * @param string $fileUri
      * @param string $fileName
      * @param array $options
+     * @param string $mimeCategory
+     * @param string $originalExtension
      *
      * @return Value
      */
-    abstract public function upload($fileUri, $fileName, $options = array());
+    abstract public function upload($fileUri, $fileName, $options = array(), $mimeCategory = null, $originalExtension = null);
 
     /**
      * Gets the remote media Variation.
