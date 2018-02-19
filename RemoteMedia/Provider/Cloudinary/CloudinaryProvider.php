@@ -16,13 +16,17 @@ class CloudinaryProvider extends RemoteMediaProvider
     /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway */
     protected $gateway;
 
+    protected $noExtensionMimeTypes = array('image', 'video');
+
     public function __construct(
         Registry $registry,
         VariationResolver $variationsResolver,
         Gateway $gateway,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        $noExtensionMimeTypes = array()
     ) {
         $this->gateway = $gateway;
+        $this->noExtensionMimeTypes = $noExtensionMimeTypes;
 
         parent::__construct($registry, $variationsResolver, $logger);
     }
@@ -33,14 +37,13 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @param string $fileName
      * @param array $options
+     * @param string $mimeCategory
+     * @param string $originalExtension
      *
      * @return array
      */
-    protected function prepareUploadOptions($fileName, $options = array())
+    protected function prepareUploadOptions($fileName, $options = array(), $mimeCategory = null, $originalExtension = null)
     {
-        // @todo: folders should be handled differently, not through siteacess parameter
-        //$id = $this->folderName ? $this->folderName . '/' . $fileName : $fileName;
-
         $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
         $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
         $fileName = rtrim($cleanFileName, '_');
@@ -50,6 +53,11 @@ class CloudinaryProvider extends RemoteMediaProvider
         $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
 
         $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
+
+        // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
+        if ($originalExtension !== null && $originalExtension !== 'pdf' && !in_array($mimeCategory, $this->noExtensionMimeTypes)) {
+            $publicId .= '.' . $originalExtension;
+        }
 
         return array(
             'public_id' => $publicId,
@@ -71,12 +79,14 @@ class CloudinaryProvider extends RemoteMediaProvider
      * @param string $fileUri
      * @param string $fileName
      * @param array $options
+     * @param string $mimeCategory
+     * @param string $originalExtension
      *
      * @return Value
      */
-    public function upload($fileUri, $fileName, $options = array())
+    public function upload($fileUri, $fileName, $options = array(), $mimeCategory = null, $originalExtension = null)
     {
-        $options = $this->prepareUploadOptions($fileName, $options);
+        $options = $this->prepareUploadOptions($fileName, $options, $mimeCategory, $originalExtension);
 
         $response = $this->gateway->upload($fileUri, $options);
 

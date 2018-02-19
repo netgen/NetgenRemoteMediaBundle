@@ -8,7 +8,10 @@ use eZ\Publish\SPI\FieldType\FieldStorage;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
+use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints\FileValidator;
 
 class RemoteMediaStorage extends GatewayBasedStorage
 {
@@ -51,6 +54,17 @@ class RemoteMediaStorage extends GatewayBasedStorage
         $this->deleteUnused = $deleteUnused;
     }
 
+    private function parseMimeCategory($mimeType)
+    {
+        $parsedMime = explode('/', $mimeType);
+
+        if (count($parsedMime) !== 2) {
+            throw new MimeCategoryParseException($mimeType);
+        }
+
+        return $parsedMime[0];
+    }
+
     /**
      * Stores value for $field in an external data source.
      *
@@ -79,12 +93,18 @@ class RemoteMediaStorage extends GatewayBasedStorage
             $fileUri = $data['input_uri'];
             $id = pathinfo($fileUri, PATHINFO_FILENAME);
 
+            $file = new File($fileUri);
+            $mimeCategory = $this->parseMimeCategory($file->getMimeType());
+            $extension = $file->getExtension();
+
             $options['alt_text'] = $data['alt_text'];
             $options['caption'] = $data['caption'];
             $value = $this->provider->upload(
                 $fileUri,
                 $id,
-                $options
+                $options,
+                $mimeCategory,
+                $extension
             );
 
             $value->variations = $data['variations'];
@@ -150,7 +170,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
 
             foreach ($resourceIdsToDelete as $resourceId) {
                 // check if resource_id is used anywhere else
-                if (!$gateway->remoteResourceConnected($resourceId)) {
+                if (!$gateway->remoteResourceConnected($resourceId, $this->provider->getIdentifier())) {
                     // delete from remote provider
                     $this->provider->deleteResource($resourceId);
                 }
