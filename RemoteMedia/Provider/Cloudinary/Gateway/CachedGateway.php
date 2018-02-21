@@ -16,8 +16,6 @@ class CachedGateway extends Gateway
     const FOLDER_COUNT = 'folder_count';
     const RESOURCE_ID = 'resource';
 
-    const TTL = 7200;
-
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway
      */
@@ -29,14 +27,22 @@ class CachedGateway extends Gateway
     protected $cache;
 
     /**
+     * @var int
+     */
+    protected $ttl;
+
+    /**
      * CachedGateway constructor.
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway $gateway
      * @param \Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper $cache
+     * @param int $ttl
      */
-    public function __construct(Gateway $gateway, CacheWrapper $cache)
+    public function __construct(Gateway $gateway, CacheWrapper $cache, $ttl = 7200)
     {
         $this->gateway = $gateway;
         $this->cache = $cache;
+
+        $this->ttl = $ttl;
     }
 
     /**
@@ -85,7 +91,7 @@ class CachedGateway extends Gateway
         $searchResult = $cacheItem->get();
         if ($cacheItem->isMiss()) {
             $searchResult = $this->gateway->search($query, $options, $limit);
-            $this->cache->saveItem($cacheItem, $searchResult, self::TTL);
+            $this->cache->saveItem($cacheItem, $searchResult, $this->ttl);
         }
 
         return array_slice($searchResult, $offset, $limit);
@@ -107,7 +113,7 @@ class CachedGateway extends Gateway
 
         if ($cacheItem->isMiss()) {
             $list = $this->gateway->listResources($options, $limit, $offset);
-            $this->cache->saveItem($cacheItem, $list, self::TTL);
+            $this->cache->saveItem($cacheItem, $list, $this->ttl);
         }
 
         return array_slice($list, $offset, $limit);
@@ -125,7 +131,7 @@ class CachedGateway extends Gateway
         $list = $cacheItem->get();
         if ($cacheItem->isMiss()) {
             $list = $this->gateway->listFolders();
-            $this->cache->saveItem($cacheItem, $list, self::TTL);
+            $this->cache->saveItem($cacheItem, $list, $this->ttl);
         }
 
         return $list;
@@ -155,7 +161,7 @@ class CachedGateway extends Gateway
         $count = $cacheItem->get();
         if ($cacheItem->isMiss()) {
             $count = $this->gateway->countResourcesInFolder($folder);
-            $this->cache->saveItem($cacheItem, $count, self::TTL);
+            $this->cache->saveItem($cacheItem, $count, $this->ttl);
         }
 
         return $count;
@@ -177,7 +183,7 @@ class CachedGateway extends Gateway
 
         if ($cacheItem->isMiss()) {
             $value = $this->gateway->get($id, $options);
-            $this->cache->saveItem($cacheItem, $value, self::TTL);
+            $this->cache->saveItem($cacheItem, $value, $this->ttl);
         }
 
         return $value;

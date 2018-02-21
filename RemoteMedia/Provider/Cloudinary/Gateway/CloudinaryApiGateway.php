@@ -61,6 +61,11 @@ class CloudinaryApiGateway extends Gateway
         $this->cloudinaryApi = $api;
     }
 
+    public function setInternalLimit($interalLimit)
+    {
+        $this->internalLimit = $interalLimit;
+    }
+
     /**
      * Uploads file to cloudinary.
      *

@@ -29,6 +29,7 @@ services:
         arguments:
             - "@netgen_remote_media.provider.cloudinary.gateway"
             - "@netgen_remote_media.cache.cache_wrapper"
+            - "%netgen_remote_media.cloudinary.cache_ttl%"
 
     netgen_remote_media.provider.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider
