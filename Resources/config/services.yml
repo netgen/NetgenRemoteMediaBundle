@@ -22,7 +22,7 @@ services:
     netgen_remote_media.provider.cloudinary.gateway:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway
         calls:
-            - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%"]]
+            - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%", "%netgen_remote_media.cloudinary.internal_limit%"]]
 
     netgen_remote_media.provider.cloudinary.gateway.cached:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway
