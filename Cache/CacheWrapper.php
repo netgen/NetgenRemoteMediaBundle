@@ -29,7 +29,7 @@ final class CacheWrapper
             }
         }
 
-        $item = $this->cacheService->getItem($args);
+        $item = $this->getItem($args);
 
         return $item->clear();
     }
