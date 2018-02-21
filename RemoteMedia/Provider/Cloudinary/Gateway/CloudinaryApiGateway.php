@@ -25,12 +25,18 @@ class CloudinaryApiGateway extends Gateway
     protected $cloudinaryUploader;
 
     /**
+     * @var int
+     */
+    protected $internalLimit;
+
+    /**
      * @param $cloudName
      * @param $apiKey
      * @param $apiSecret
      * @param bool $useSubdomains
+     * @param int $internalLimit
      */
-    public function initCloudinary($cloudName, $apiKey, $apiSecret, $useSubdomains = false)
+    public function initCloudinary($cloudName, $apiKey, $apiSecret, $useSubdomains = false, $internalLimit = 500)
     {
         $this->cloudinary = new Cloudinary();
         $this->cloudinary->config(
@@ -44,6 +50,8 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
+
+        $this->internalLimit = $internalLimit;
     }
 
     public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api)
@@ -201,6 +209,10 @@ class CloudinaryApiGateway extends Gateway
         $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
 
         $items = $resources['resources'];
+        if ($this->internalLimit <= 500) {
+            return !empty($items) ? $items : array();
+        }
+
         while (!empty($resources['next_cursor'])) {
             $options['next_cursor'] = $resources['next_cursor'];
             $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();

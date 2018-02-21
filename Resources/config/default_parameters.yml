@@ -1,2 +1,3 @@
 parameters:
     netgen_remote_media.parameters.use_subdomains: true
+    netgen_remote_media.cloudinary.internal_limit: 500

@@ -22,8 +22,7 @@ class Helper
      */
     public function __construct(
         RemoteMediaProvider $provider
-    )
-    {
+    ) {
         $this->provider = $provider;
     }
 
