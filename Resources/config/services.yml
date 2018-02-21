@@ -14,6 +14,11 @@ services:
         calls:
             - [setVariations, ["$image_variations;netgen_remote_media$"]]
 
+    netgen_remote_media.cache.cache_wrapper:
+        class: Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper
+        arguments:
+            - "@ezpublish.cache_pool"
+
     netgen_remote_media.provider.cloudinary.gateway:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway
         calls:
@@ -23,7 +28,7 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway
         arguments:
             - "@netgen_remote_media.provider.cloudinary.gateway"
-            - "@ezpublish.cache_pool"
+            - "@netgen_remote_media.cache.cache_wrapper"
 
     netgen_remote_media.provider.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider
