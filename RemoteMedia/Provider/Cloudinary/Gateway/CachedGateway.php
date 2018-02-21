@@ -4,7 +4,6 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gatewa
 
 use Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
-use Tedivm\StashBundle\Service\CacheService;
 
 class CachedGateway extends Gateway
 {
@@ -15,6 +14,7 @@ class CachedGateway extends Gateway
     const FOLDER_LIST = 'folder_list';
     const COUNT = 'resources_count';
     const FOLDER_COUNT = 'folder_count';
+    const RESOURCE_ID = 'resource';
 
     const TTL = 7200;
 
@@ -156,7 +156,6 @@ class CachedGateway extends Gateway
         if ($cacheItem->isMiss()) {
             $count = $this->gateway->countResourcesInFolder($folder);
             $this->cache->saveItem($cacheItem, $count, self::TTL);
-            $cacheItem->set($count, self::TTL);
         }
 
         return $count;
@@ -172,7 +171,16 @@ class CachedGateway extends Gateway
      */
     public function get($id, $options)
     {
-        return $this->gateway->get($id, $options);
+        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+
+        $value = $cacheItem->get();
+
+        if ($cacheItem->isMiss()) {
+            $value = $this->gateway->get($id, $options);
+            $this->cache->saveItem($cacheItem, $value, self::TTL);
+        }
+
+        return $value;
     }
 
     /**
@@ -185,7 +193,11 @@ class CachedGateway extends Gateway
      */
     public function addTag($id, $tag)
     {
-        return $this->gateway->addTag($id, $tag);
+        $value = $this->gateway->addTag($id, $tag);
+
+        $this->cache->clear(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+
+        return $value;
     }
 
     /**
@@ -198,7 +210,11 @@ class CachedGateway extends Gateway
      */
     public function removeTag($id, $tag)
     {
-        return $this->gateway->removeTag($id, $tag);
+        $value = $this->gateway->removeTag($id, $tag);
+
+        $this->cache->clear(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+
+        return $value;
     }
 
     /**
@@ -209,7 +225,11 @@ class CachedGateway extends Gateway
      */
     public function update($id, $options)
     {
-        return $this->gateway->update($id, $options);
+        $value = $this->gateway->update($id, $options);
+
+        $this->cache->clear(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+
+        return $value;
     }
 
     /**
