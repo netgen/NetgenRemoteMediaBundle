@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
+use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -10,19 +11,24 @@ use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundExcep
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 
 class CloudinaryProvider extends RemoteMediaProvider
 {
     /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway */
     protected $gateway;
 
+    protected $noExtensionMimeTypes;
+
     public function __construct(
         Registry $registry,
         VariationResolver $variationsResolver,
         Gateway $gateway,
-        LoggerInterface $logger = null
+        LoggerInterface $logger = null,
+        array $noExtensionMimeTypes = array('image', 'video')
     ) {
         $this->gateway = $gateway;
+        $this->noExtensionMimeTypes = $noExtensionMimeTypes;
 
         parent::__construct($registry, $variationsResolver, $logger);
     }
@@ -43,16 +49,46 @@ class CloudinaryProvider extends RemoteMediaProvider
         return true;
     }
 
+    private function parseMimeCategory(File $file)
+    {
+        $parsedMime = explode('/', $file->getMimeType());
+        if (count($parsedMime) !== 2) {
+            throw new MimeCategoryParseException($file->getMimeType());
+        }
+
+        return $parsedMime[0];
+    }
+
+    private function appendExtension($publicId, $fileUri)
+    {
+        $file = new File($fileUri);
+        $extension = $file->getExtension();
+
+        if (empty($extension)) {
+            return $publicId;
+        }
+
+        $mimeCategory = $this->parseMimeCategory($file);
+
+        // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
+        if ($extension !== 'pdf' && !in_array($mimeCategory, $this->noExtensionMimeTypes)) {
+            $publicId .= '.' . $extension;
+        }
+
+        return $publicId;
+    }
+
     /**
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
      * @param string $fileName
+     * @param string $fileUri
      * @param array $options
      *
      * @return array
      */
-    protected function prepareUploadOptions($fileName, $options = array())
+    protected function prepareUploadOptions($fileName, $fileUri, $options = array())
     {
         $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
         $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
@@ -63,6 +99,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
 
         $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
+        $publicId = $this->appendExtension($publicId, $fileUri);
 
         if (!empty($options['folder'])) {
             $publicId = $options['folder'].'/'.$publicId;
@@ -93,7 +130,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function upload($fileUri, $fileName, $options = array())
     {
-        $options = $this->prepareUploadOptions($fileName, $options);
+        $options = $this->prepareUploadOptions($fileName, $fileUri, $options);
 
         $response = $this->gateway->upload($fileUri, $options);
 
