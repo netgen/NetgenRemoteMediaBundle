@@ -8,7 +8,9 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryPr
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class CloudinaryProviderTest extends TestCase
 {
@@ -522,6 +524,9 @@ class CloudinaryProviderTest extends TestCase
             'resource_type' => 'auto'
         );
 
+        $root = vfsStream::setup('some');
+        $file = vfsStream::newFile('path')->at($root);
+
         $this->gateway->method('upload')->willReturn(
             array(
                 'public_id' => 'name',
@@ -536,11 +541,11 @@ class CloudinaryProviderTest extends TestCase
             ->expects($this->once())
             ->method('upload')
             ->with(
-                'some/path',
+                $file->url(),
                 $options
             );
 
-        $value = $this->cloudinaryProvider->upload('some/path', 'name', array('overwrite' => true));
+        $value = $this->cloudinaryProvider->upload($file->url(), 'name', array('overwrite' => true));
 
         $this->assertInstanceOf(Value::class, $value);
 
@@ -564,6 +569,74 @@ class CloudinaryProviderTest extends TestCase
             Value::TYPE_IMAGE,
             $value->mediaType
         );
+    }
+
+    public function testUploadWithExtension()
+    {
+        $options = array(
+            'public_id' => 'file.zip',
+            'overwrite' => true,
+            'invalidate' => true,
+            'discard_original_filename' => true,
+            'context' => array(
+                'alt' => '',
+                'caption' => '',
+            ),
+            'resource_type' => 'auto'
+        );
+
+        $root = vfsStream::setup('some');
+        $file = vfsStream::newFile('file.zip')->at($root);
+
+        $this->gateway->method('upload')->willReturn(
+            array(
+                'public_id' => 'file.zip',
+                'url' => 'http://some.url/file.zip',
+                'secure_url' => 'https://some.url/file.zip',
+                'bytes' => 1024,
+                'resource_type' => 'other'
+            )
+        );
+
+        $this->gateway
+            ->expects($this->once())
+            ->method('upload')
+            ->with(
+                $file->url(),
+                $options
+            );
+
+        $value = $this->cloudinaryProvider->upload($file->url(), 'file', array('overwrite' => true));
+
+        $this->assertInstanceOf(Value::class, $value);
+
+        $this->assertEquals(
+            'file.zip',
+            $value->resourceId
+        );
+        $this->assertEquals(
+            'http://some.url/file.zip',
+            $value->url
+        );
+        $this->assertEquals(
+            'https://some.url/file.zip',
+            $value->secure_url
+        );
+        $this->assertEquals(
+            1024,
+            $value->size
+        );
+        $this->assertEquals(
+            Value::TYPE_OTHER,
+            $value->mediaType
+        );
+    }
+
+    public function testUploadNoFile()
+    {
+        $this->expectException(FileNotFoundException::class);
+
+        $this->cloudinaryProvider->upload('some/path', 'name', array('overwrite' => true));
     }
 
     public function testBuildVariation()
