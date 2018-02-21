@@ -34,9 +34,8 @@ class CloudinaryApiGateway extends Gateway
      * @param $apiKey
      * @param $apiSecret
      * @param bool $useSubdomains
-     * @param int $internalLimit
      */
-    public function initCloudinary($cloudName, $apiKey, $apiSecret, $useSubdomains = false, $internalLimit = 500)
+    public function initCloudinary($cloudName, $apiKey, $apiSecret, $useSubdomains = false)
     {
         $this->cloudinary = new Cloudinary();
         $this->cloudinary->config(
@@ -50,8 +49,6 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
-
-        $this->internalLimit = $internalLimit;
     }
 
     public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api)
@@ -59,6 +56,14 @@ class CloudinaryApiGateway extends Gateway
         $this->cloudinary = $cloudinary;
         $this->cloudinaryUploader = $uploader;
         $this->cloudinaryApi = $api;
+    }
+
+    /**
+     * @param int $interalLimit
+     */
+    public function setInternalLimit($interalLimit)
+    {
+        $this->internalLimit = $interalLimit;
     }
 
     /**

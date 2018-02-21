@@ -36,6 +36,7 @@ class CloudinaryApiGatewayTest extends TestCase
 
         $apiGateway = new CloudinaryApiGateway();
         $apiGateway->setServices($this->cloudinary, $this->cloudinaryUploader, $this->cloudinaryApi);
+        $apiGateway->setInternalLimit(1000);
         $this->apiGateway = $apiGateway;
     }
 
