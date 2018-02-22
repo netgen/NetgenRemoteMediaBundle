@@ -36,6 +36,13 @@ class QualityTest extends BaseTest
         );
     }
 
+    public function testQualityWithNonAutoType()
+    {
+        $this->expectException(TransformationHandlerFailedException::class);
+
+        $this->quality->process($this->value, 'test', array('test', 'best'));
+    }
+
     public function testMissingNamedTransformationConfiguration()
     {
         $this->expectException(TransformationHandlerFailedException::class);

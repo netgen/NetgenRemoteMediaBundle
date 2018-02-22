@@ -201,7 +201,7 @@ class CachedGateway extends Gateway
     {
         $value = $this->gateway->addTag($id, $tag);
 
-        $this->cache->clear(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
 
         return $value;
     }
@@ -218,7 +218,7 @@ class CachedGateway extends Gateway
     {
         $value = $this->gateway->removeTag($id, $tag);
 
-        $this->cache->clear(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
 
         return $value;
     }
@@ -233,7 +233,7 @@ class CachedGateway extends Gateway
     {
         $value = $this->gateway->update($id, $options);
 
-        $this->cache->clear(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
 
         return $value;
     }
