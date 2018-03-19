@@ -16,6 +16,17 @@ final class CacheWrapper
     }
 
     /**
+     * Remove slashes from start and end of keys, and for content replace it with _ to avoid issues for Stash.
+     *
+     * @param string $key
+     * @return string
+     */
+    private function washKey($key)
+    {
+        return str_replace('/', '_', trim($key, '/'));
+    }
+
+    /**
      * @return bool
      */
     public function clear()
@@ -42,7 +53,7 @@ final class CacheWrapper
     public function getItem($key)
     {
         if (is_array($key)) {
-            $key = implode('/', $key);
+            $key = implode('/', array_map([$this, 'washKey'], $key));
         }
 
         return $this->cacheService->getItem($key);
