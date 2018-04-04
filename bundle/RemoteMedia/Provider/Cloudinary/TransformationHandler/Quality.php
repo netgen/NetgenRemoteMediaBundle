@@ -25,13 +25,12 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
  *      q_auto:low - Most aggressive algorithm, which results in the smallest files of low visual
  *                  quality. Example of a target audience: sites using thumbnail images that
  *                  link to higher quality images.
- *
  */
 class Quality implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -41,22 +40,22 @@ class Quality implements HandlerInterface
      *
      * @return array
      */
-    public function process(Value $value, $variationName, array $config = array())
+    public function process(Value $value, $variationName, array $config = [])
     {
         if (empty($config[0])) {
             throw new TransformationHandlerFailedException(self::class);
         }
 
         if (empty($config[1])) {
-            return array(
-                'quality' => $config[0]
-            );
+            return [
+                'quality' => $config[0],
+            ];
         }
 
-        if ($config[0] === 'auto') {
-            return array(
-                'quality' => $config[0] . ':' . $config[1]
-            );
+        if ('auto' === $config[0]) {
+            return [
+                'quality' => $config[0].':'.$config[1],
+            ];
         }
 
         throw new TransformationHandlerFailedException(self::class);

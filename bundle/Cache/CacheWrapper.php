@@ -7,7 +7,7 @@ use Tedivm\StashBundle\Service\CacheService;
 
 final class CacheWrapper
 {
-    /** @var  CacheService */
+    /** @var CacheService */
     private $cacheService;
 
     public function __construct(CacheService $cacheService)
@@ -16,28 +16,17 @@ final class CacheWrapper
     }
 
     /**
-     * Remove slashes from start and end of keys, and for content replace it with _ to avoid issues for Stash.
-     *
-     * @param string $key
-     * @return string
-     */
-    private function washKey($key)
-    {
-        return str_replace('/', '_', trim($key, '/'));
-    }
-
-    /**
      * @return bool
      */
     public function clear()
     {
         $args = func_get_args();
-        if (count($args) === 0) {
+        if (0 === count($args)) {
             if (method_exists($this->cacheService, 'flush')) {
                 return $this->cacheService->flush();
-            } else {
-                return $this->cacheService->clear();
             }
+
+            return $this->cacheService->clear();
         }
 
         $item = $this->getItem($args);
@@ -72,5 +61,17 @@ final class CacheWrapper
         } else {
             $item->set($value, $ttl);
         }
+    }
+
+    /**
+     * Remove slashes from start and end of keys, and for content replace it with _ to avoid issues for Stash.
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    private function washKey($key)
+    {
+        return str_replace('/', '_', trim($key, '/'));
     }
 }

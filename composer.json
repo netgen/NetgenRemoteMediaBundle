@@ -40,7 +40,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Netgen\\Bundle\\Tests\\": "tests"
+            "Netgen\\Bundle\\Tests\\": "tests",
+            "Netgen\\Bundle\\OpenGraphBundle\\Tests\\": "vendor/netgen/open-graph-bundle/tests"
         }
     },
     "scripts": {

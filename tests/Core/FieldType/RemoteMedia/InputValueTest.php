@@ -15,12 +15,12 @@ class InputValueTest extends TestCase
 
     public function testConstructionWithParameters()
     {
-        $parameters = array(
+        $parameters = [
             'input_uri' => 'test/path/image.jpg',
             'alt_text' => 'Test alt text',
             'caption' => 'Test caption',
-            'variations' => array(),
-        );
+            'variations' => [],
+        ];
 
         $inputValue = new InputValue($parameters);
 
@@ -29,12 +29,12 @@ class InputValueTest extends TestCase
 
     public function testConstructionWithoutParameters()
     {
-        $expectedResponseArray = array(
+        $expectedResponseArray = [
             'input_uri' => null,
             'alt_text' => '',
             'caption' => '',
-            'variations' => array(),
-        );
+            'variations' => [],
+        ];
 
         $inputValue = new InputValue();
 

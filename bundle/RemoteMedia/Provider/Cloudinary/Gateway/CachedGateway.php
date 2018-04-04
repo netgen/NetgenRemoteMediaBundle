@@ -33,6 +33,7 @@ class CachedGateway extends Gateway
 
     /**
      * CachedGateway constructor.
+     *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway $gateway
      * @param \Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper $cache
      * @param int $ttl
@@ -63,7 +64,7 @@ class CachedGateway extends Gateway
     }
 
     /**
-     * Generates url to the media with provided options
+     * Generates url to the media with provided options.
      *
      * @param string $source
      * @param array $options
@@ -85,9 +86,9 @@ class CachedGateway extends Gateway
      *
      * @return array
      */
-    public function search($query, $options = array(), $limit = 10, $offset = 0)
+    public function search($query, $options = [], $limit = 10, $offset = 0)
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode( '|', $options)));
+        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)]);
         $searchResult = $cacheItem->get();
         if ($cacheItem->isMiss()) {
             $searchResult = $this->gateway->search($query, $options, $limit);
@@ -108,7 +109,7 @@ class CachedGateway extends Gateway
      */
     public function listResources($options, $limit, $offset)
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST));
+        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST]);
         $list = $cacheItem->get();
 
         if ($cacheItem->isMiss()) {
@@ -126,7 +127,7 @@ class CachedGateway extends Gateway
      */
     public function listFolders()
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST));
+        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST]);
 
         $list = $cacheItem->get();
         if ($cacheItem->isMiss()) {
@@ -156,7 +157,7 @@ class CachedGateway extends Gateway
      */
     public function countResourcesInFolder($folder)
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder));
+        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder]);
 
         $count = $cacheItem->get();
         if ($cacheItem->isMiss()) {
@@ -177,7 +178,7 @@ class CachedGateway extends Gateway
      */
     public function get($id, $options)
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id));
+        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id]);
 
         $value = $cacheItem->get();
 
@@ -246,7 +247,7 @@ class CachedGateway extends Gateway
      *
      * @return string
      */
-    public function getVideoThumbnail($id, $options = array())
+    public function getVideoThumbnail($id, $options = [])
     {
         return $this->gateway->getVideoThumbnail($id, $options);
     }
@@ -259,7 +260,7 @@ class CachedGateway extends Gateway
      *
      * @return string
      */
-    public function getVideoTag($id, $options = array())
+    public function getVideoTag($id, $options = [])
     {
         return $this->gateway->getVideoTag($id, $options);
     }

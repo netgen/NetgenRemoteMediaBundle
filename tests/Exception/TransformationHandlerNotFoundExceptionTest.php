@@ -5,7 +5,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Exception;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use PHPUnit\Framework\TestCase;
 
-class TransformationHandlerNotFoundxceptionTest extends TestCase
+class TransformationHandlerNotFoundExceptionTest extends TestCase
 {
     /**
      * @expectedException \Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException

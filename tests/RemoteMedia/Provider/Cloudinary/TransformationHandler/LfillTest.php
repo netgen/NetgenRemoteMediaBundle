@@ -20,7 +20,7 @@ class LfillTest extends BaseTest
     public function testLfillSimple()
     {
         $this->assertEquals(
-            array('crop' => 'lfill'),
+            ['crop' => 'lfill'],
             $this->lfill->process($this->value, 'small')
         );
     }
@@ -28,12 +28,12 @@ class LfillTest extends BaseTest
     public function testLfillWithDimensions()
     {
         $this->assertEquals(
-            array(
+            [
                 'crop' => 'lfill',
                 'width' => 100,
-                'height' => 200
-            ),
-            $this->lfill->process($this->value, 'small', array(100, 200))
+                'height' => 200,
+            ],
+            $this->lfill->process($this->value, 'small', [100, 200])
         );
     }
 }

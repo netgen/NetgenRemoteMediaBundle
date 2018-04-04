@@ -21,18 +21,18 @@ class QualityTest extends BaseTest
     public function testQualitySimple()
     {
         $this->assertEquals(
-            array('quality' => 80),
-            $this->quality->process($this->value, 'test', array(80))
+            ['quality' => 80],
+            $this->quality->process($this->value, 'test', [80])
         );
     }
 
     public function testQualityWithAutoType()
     {
         $this->assertEquals(
-            array(
-                'quality' => 'auto:best'
-            ),
-            $this->quality->process($this->value, 'test', array('auto', 'best'))
+            [
+                'quality' => 'auto:best',
+            ],
+            $this->quality->process($this->value, 'test', ['auto', 'best'])
         );
     }
 
@@ -40,7 +40,7 @@ class QualityTest extends BaseTest
     {
         $this->expectException(TransformationHandlerFailedException::class);
 
-        $this->quality->process($this->value, 'test', array('test', 'best'));
+        $this->quality->process($this->value, 'test', ['test', 'best']);
     }
 
     public function testMissingNamedTransformationConfiguration()

@@ -21,8 +21,8 @@ class NamedTransformationTest extends BaseTest
     public function testNamedTransformation()
     {
         $this->assertEquals(
-            array('transformation' => 'thisIsNamedTransformation'),
-            $this->namedTransformation->process($this->value, 'named', array('thisIsNamedTransformation'))
+            ['transformation' => 'thisIsNamedTransformation'],
+            $this->namedTransformation->process($this->value, 'named', ['thisIsNamedTransformation'])
         );
     }
 

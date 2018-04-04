@@ -6,7 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Fill
+ * Class Fill.
  *
  * Create an image with the exact given width and height while
  * retaining the original aspect ratio, using only part of the
@@ -18,7 +18,7 @@ class Fill implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -26,17 +26,17 @@ class Fill implements HandlerInterface
      *
      * @return array
      */
-    public function process(Value $value, $variationName, array $config = array())
+    public function process(Value $value, $variationName, array $config = [])
     {
-        $options = array(
-            'crop' => 'fill'
-        );
+        $options = [
+            'crop' => 'fill',
+        ];
 
-        if (isset($config[0]) && $config[0] !== 0) {
+        if (isset($config[0]) && 0 !== $config[0]) {
             $options['width'] = $config[0];
         }
 
-        if (isset($config[1]) && $config[1] !== 0) {
+        if (isset($config[1]) && 0 !== $config[1]) {
             $options['height'] = $config[1];
         }
 

@@ -7,72 +7,8 @@ use PHPUnit\Framework\TestCase;
 
 class VariationResolverTest extends TestCase
 {
-    /** @var  \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver */
+    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver */
     protected $variationResolver;
-
-    protected function getVariationSet()
-    {
-        return array(
-            'default' => array(
-                'small' => array(
-                    'transformations' => array(
-                        'crop' => array(100, 100)
-                    )
-                ),
-                'non_cropbbable' => array(
-                    'transformations' => array(
-                        'resize' => array(100, 100)
-                    )
-                )
-            ),
-            'article' => array(
-                'small' => array(
-                    'transformations' => array(
-                        'crop' => array(200, 200)
-                    )
-                ),
-                'large' => array(
-                    'transformations' => array(
-                        'crop'  => array(400, 400)
-                    )
-                ),
-                'non_croppable_article' => array(
-                    'transformations' => array(
-                        'resize'  => array(100, 100)
-                    )
-                )
-            ),
-            'blog_post' => array(
-                'header' => array(
-                    'transformations' => array(
-                        'crop' => array(1600, 900)
-                    )
-                ),
-            ),
-            'embedded' => array(
-                'small' => array(
-                    'transformations' => array(
-                        'crop' => array(400, 250)
-                    )
-                ),
-                'medium' => array(
-                    'transformations' => array(
-                        'crop' => array(800, 450)
-                    )
-                ),
-                'large' => array(
-                    'transformations' => array(
-                        'crop' => array(1600, 900)
-                    )
-                ),
-                'not_valid_embedded' => array(
-                    'transformations' => array(
-                        'resize' => array(200, 200)
-                    )
-                )
-            )
-        );
-    }
 
     public function setUp()
     {
@@ -82,55 +18,53 @@ class VariationResolverTest extends TestCase
 
     public function testContentTypeVariationsWithOverride()
     {
-
         $this->assertEquals(
-            array(
-                'small' => array(
-                    'transformations' => array(
-                        'crop' => array(200, 200)
-                    )
-                ),
-                'large' => array(
-                    'transformations' => array(
-                        'crop'  => array(400, 400)
-                    )
-                ),
-                'non_croppable_article' => array(
-                    'transformations' => array(
-                        'resize'  => array(100, 100)
-                    )
-                ),
-                'non_cropbbable' => array(
-                    'transformations' => array(
-                        'resize' => array(100, 100)
-                    )
-                )
-            ),
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [200, 200],
+                    ],
+                ],
+                'large' => [
+                    'transformations' => [
+                        'crop' => [400, 400],
+                    ],
+                ],
+                'non_croppable_article' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+                'non_cropbbable' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+            ],
             $this->variationResolver->getVariationsForContentType('article')
         );
     }
 
     public function testContentTypeVariationsWithOutOverride()
     {
-
         $this->assertEquals(
-            array(
-                'small' => array(
-                    'transformations' => array(
-                        'crop' => array(100, 100)
-                    )
-                ),
-                'non_cropbbable' => array(
-                    'transformations' => array(
-                        'resize' => array(100, 100)
-                    )
-                ),
-                'header' => array(
-                    'transformations' => array(
-                        'crop' => array(1600, 900)
-                    )
-                ),
-            ),
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [100, 100],
+                    ],
+                ],
+                'non_cropbbable' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+                'header' => [
+                    'transformations' => [
+                        'crop' => [1600, 900],
+                    ],
+                ],
+            ],
             $this->variationResolver->getVariationsForContentType('blog_post')
         );
     }
@@ -138,18 +72,18 @@ class VariationResolverTest extends TestCase
     public function testCroppableVariations()
     {
         $this->assertEquals(
-            array(
-                'small' => array(
-                    'transformations' => array(
-                        'crop' => array(200, 200)
-                    )
-                ),
-                'large' => array(
-                    'transformations' => array(
-                        'crop'  => array(400, 400)
-                    )
-                ),
-            ),
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [200, 200],
+                    ],
+                ],
+                'large' => [
+                    'transformations' => [
+                        'crop' => [400, 400],
+                    ],
+                ],
+            ],
             $this->variationResolver->getCroppbableVariations('article')
         );
     }
@@ -157,24 +91,88 @@ class VariationResolverTest extends TestCase
     public function testGetEmbedVariations()
     {
         $this->assertEquals(
-            array(
-                'small' => array(
-                    'transformations' => array(
-                        'crop' => array(400, 250)
-                    )
-                ),
-                'medium' => array(
-                    'transformations' => array(
-                        'crop' => array(800, 450)
-                    )
-                ),
-                'large' => array(
-                    'transformations' => array(
-                        'crop' => array(1600, 900)
-                    )
-                ),
-            ),
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [400, 250],
+                    ],
+                ],
+                'medium' => [
+                    'transformations' => [
+                        'crop' => [800, 450],
+                    ],
+                ],
+                'large' => [
+                    'transformations' => [
+                        'crop' => [1600, 900],
+                    ],
+                ],
+            ],
             $this->variationResolver->getEmbedVariations()
         );
+    }
+
+    protected function getVariationSet()
+    {
+        return [
+            'default' => [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [100, 100],
+                    ],
+                ],
+                'non_cropbbable' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+            ],
+            'article' => [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [200, 200],
+                    ],
+                ],
+                'large' => [
+                    'transformations' => [
+                        'crop' => [400, 400],
+                    ],
+                ],
+                'non_croppable_article' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+            ],
+            'blog_post' => [
+                'header' => [
+                    'transformations' => [
+                        'crop' => [1600, 900],
+                    ],
+                ],
+            ],
+            'embedded' => [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [400, 250],
+                    ],
+                ],
+                'medium' => [
+                    'transformations' => [
+                        'crop' => [800, 450],
+                    ],
+                ],
+                'large' => [
+                    'transformations' => [
+                        'crop' => [1600, 900],
+                    ],
+                ],
+                'not_valid_embedded' => [
+                    'transformations' => [
+                        'resize' => [200, 200],
+                    ],
+                ],
+            ],
+        ];
     }
 }

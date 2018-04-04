@@ -9,7 +9,7 @@ class Registry
     /**
      * @var \Netgen\Bundle\OpenGraphBundle\Handler\HandlerInterface[]
      */
-    protected $transformationHandlers = array();
+    protected $transformationHandlers = [];
 
     /**
      * Adds a handler to the registry.

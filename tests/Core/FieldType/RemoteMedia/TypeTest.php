@@ -2,24 +2,24 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 
+use eZ\Publish\Core\FieldType\Date\Value as DateValue;
+use eZ\Publish\SPI\FieldType\FieldType;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Type;
-use eZ\Publish\SPI\FieldType\FieldType;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use eZ\Publish\Core\FieldType\Date\Value as DateValue;
 use PHPUnit\Framework\TestCase;
 
 class TypeTest extends TestCase
 {
-    const PARAMETERS = array('resourceId' => 'test');
+    const PARAMETERS = ['resourceId' => 'test'];
 
-    const INPUT_PARAMETERS = array(
+    const INPUT_PARAMETERS = [
         'input_uri' => 'test/path/image.jpg',
         'alt_text' => 'Test alt text',
         'caption' => 'Test caption',
-        'variations' => array(),
-    );
+        'variations' => [],
+    ];
 
     /**
      * @var Type
@@ -86,11 +86,11 @@ class TypeTest extends TestCase
     public function testInputValueToPersistenceValue()
     {
         $fieldValue = new FieldValue(
-            array(
+            [
                 'data' => null,
                 'externalData' => (array) $this->inputValue,
                 'sortKey' => false,
-            )
+            ]
         );
 
         $this->assertEquals($fieldValue, $this->type->toPersistenceValue($this->inputValue));
@@ -99,11 +99,11 @@ class TypeTest extends TestCase
     public function testValueToPersistenceValue()
     {
         $fieldValue = new FieldValue(
-            array(
+            [
                 'data' => $this->value,
                 'externalData' => $this->value,
                 'sortKey' => false,
-            )
+            ]
         );
 
         $this->assertEquals($fieldValue, $this->type->toPersistenceValue($this->value));
@@ -119,9 +119,9 @@ class TypeTest extends TestCase
     public function testValueFromPersistenceValue()
     {
         $fieldValue = new FieldValue(
-            array(
+            [
                 'data' => $this->value,
-            )
+            ]
         );
 
         $this->assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
@@ -130,9 +130,9 @@ class TypeTest extends TestCase
     public function testParametersValueFromPersistenceValue()
     {
         $fieldValue = new FieldValue(
-            array(
+            [
                 'data' => self::PARAMETERS,
-            )
+            ]
         );
 
         $this->assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
@@ -141,9 +141,9 @@ class TypeTest extends TestCase
     public function testNullValueFromPersistenceValue()
     {
         $fieldValue = new FieldValue(
-            array(
+            [
                 'data' => null,
-            )
+            ]
         );
 
         $this->assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
@@ -152,9 +152,9 @@ class TypeTest extends TestCase
     public function testEmptyValueFromPersistenceValue()
     {
         $fieldValue = new FieldValue(
-            array(
+            [
                 'data' => $this->emptyValue,
-            )
+            ]
         );
 
         $this->assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
@@ -182,7 +182,7 @@ class TypeTest extends TestCase
 
     public function testIsEmptyValueWithValueWithoutResourceId()
     {
-        $spiValue = new Value(array('url' => 'test'));
+        $spiValue = new Value(['url' => 'test']);
 
         $this->assertTrue($this->type->isEmptyValue($spiValue));
     }
@@ -194,7 +194,7 @@ class TypeTest extends TestCase
 
     public function testAcceptValueWithSingle()
     {
-        $value = new InputValue(array('input_uri' => 'test_uri'));
+        $value = new InputValue(['input_uri' => 'test_uri']);
 
         $returnedValue = $this->type->acceptValue('test_uri');
 
@@ -213,7 +213,7 @@ class TypeTest extends TestCase
      */
     public function testAcceptValueWithInvalidArray()
     {
-        $returnedValue = $this->type->acceptValue(array(1));
+        $returnedValue = $this->type->acceptValue([1]);
 
         $this->assertEquals(1, $returnedValue);
     }
@@ -233,7 +233,7 @@ class TypeTest extends TestCase
      */
     public function testAcceptValueWithInvalidStructuredInputValueObject()
     {
-        $value = new InputValue(array('input_uri' => array('test_uri')));
+        $value = new InputValue(['input_uri' => ['test_uri']]);
 
         $this->assertEquals($value, $this->type->acceptValue($value));
     }
@@ -243,7 +243,7 @@ class TypeTest extends TestCase
      */
     public function testAcceptValueWithInvalidStructuredValueObject()
     {
-        $value = new Value(array('resourceId' => array('test')));
+        $value = new Value(['resourceId' => ['test']]);
 
         $this->assertEquals($value, $this->type->acceptValue($value));
     }

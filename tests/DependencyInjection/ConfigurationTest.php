@@ -3,17 +3,12 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection;
 
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
-use PHPUnit\Framework\TestCase;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration;
+use PHPUnit\Framework\TestCase;
 
 class ConfigurationTest extends TestCase
 {
     use ConfigurationTestCaseTrait;
-
-    protected function getConfiguration()
-    {
-        return new Configuration();
-    }
 
     public function testBasicConfigurationValuesAreOkAndValid()
     {
@@ -23,7 +18,7 @@ class ConfigurationTest extends TestCase
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
                     'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret'
+                    'account_secret' => 'examplesecret',
                 ],
             ]
         );
@@ -46,12 +41,12 @@ class ConfigurationTest extends TestCase
                                         'transformations' => [
                                             [
                                                 'name' => 'crop',
-                                                'params' => [2, 1]
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
+                                                'params' => [2, 1],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                         'testsiteaccess' => [
                             'image_variations' => [
@@ -60,22 +55,21 @@ class ConfigurationTest extends TestCase
                                         'transformations' => [
                                             [
                                                 'name' => 'crop',
-                                                'params' => [2,1]
+                                                'params' => [2, 1],
                                             ],
                                             [
                                                 'name' => 'test_transformation',
-                                                'params' => ['test']
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
+                                                'params' => ['test'],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
             ]
         );
-
     }
 
     public function testEmptyAccountNameIsInvalid()
@@ -86,7 +80,7 @@ class ConfigurationTest extends TestCase
                     'provider' => 'cloudinary',
                     'account_name' => '',
                     'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret'
+                    'account_secret' => 'examplesecret',
                 ],
             ]
         );
@@ -100,7 +94,7 @@ class ConfigurationTest extends TestCase
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
                     'account_key' => '',
-                    'account_secret' => 'examplesecret'
+                    'account_secret' => 'examplesecret',
                 ],
             ]
         );
@@ -113,7 +107,7 @@ class ConfigurationTest extends TestCase
                 'netgen_remote_media' => [
                     'provider' => 'cloudinary',
                     'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret'
+                    'account_secret' => 'examplesecret',
                 ],
             ]
         );
@@ -126,9 +120,14 @@ class ConfigurationTest extends TestCase
                 'netgen_remote_media' => [
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
-                    'account_secret' => 'examplesecret'
+                    'account_secret' => 'examplesecret',
                 ],
             ]
         );
+    }
+
+    protected function getConfiguration()
+    {
+        return new Configuration();
     }
 }

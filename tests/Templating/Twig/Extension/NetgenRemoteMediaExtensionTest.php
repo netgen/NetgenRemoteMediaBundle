@@ -2,18 +2,18 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Templating\Twig\Extension;
 
-use eZ\Publish\API\Repository\Values\Content\ContentInfo;
-use eZ\Publish\Core\Helper\TranslationHelper;
 use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\Values\Content\ContentInfo;
+use eZ\Publish\API\Repository\Values\Content\Field as ContentField;
+use eZ\Publish\Core\Helper\TranslationHelper;
+use eZ\Publish\Core\Repository\Values\Content\Content;
 use eZ\Publish\Core\Repository\Values\Content\VersionInfo;
 use eZ\Publish\Core\Repository\Values\ContentType\ContentType;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension\NetgenRemoteMediaExtension;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use eZ\Publish\API\Repository\Values\Content\Field as ContentField;
-use eZ\Publish\Core\Repository\Values\Content\Content;
 use PHPUnit\Framework\TestCase;
 
 class NetgenRemoteMediaExtensionTest extends TestCase
@@ -77,21 +77,21 @@ class NetgenRemoteMediaExtensionTest extends TestCase
     public function testGetRemoteImageVariation()
     {
         $field = new ContentField(
-            array(
+            [
                 'id' => 'some_field',
                 'value' => new Value(),
-            )
+            ]
         );
 
         $content = new Content(
-            array(
-                'internalFields' => array($field),
+            [
+                'internalFields' => [$field],
                 'versionInfo' => new VersionInfo(
-                    array(
+                    [
                         'contentInfo' => new ContentInfo(),
-                    )
+                    ]
                 ),
-            )
+            ]
         );
 
         $variation = new Variation();
@@ -105,9 +105,9 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             ->will(
                 $this->returnValue(
                     new ContentType(
-                        array(
-                            'fieldDefinitions' => array(),
-                        )
+                        [
+                            'fieldDefinitions' => [],
+                        ]
                     )
                 )
             );
@@ -122,21 +122,21 @@ class NetgenRemoteMediaExtensionTest extends TestCase
     public function testGetRemoteVideoTag()
     {
         $field = new ContentField(
-            array(
+            [
                 'id' => 'some_field',
                 'value' => new Value(),
-            )
+            ]
         );
 
         $content = new Content(
-            array(
-                'internalFields' => array($field),
+            [
+                'internalFields' => [$field],
                 'versionInfo' => new VersionInfo(
-                    array(
+                    [
                         'contentInfo' => new ContentInfo(),
-                    )
+                    ]
                 ),
-            )
+            ]
         );
 
         $this->translationHelper->expects($this->once())
@@ -148,9 +148,9 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             ->will(
                 $this->returnValue(
                     new ContentType(
-                        array(
-                            'fieldDefinitions' => array(),
-                        )
+                        [
+                            'fieldDefinitions' => [],
+                        ]
                     )
                 )
             );
@@ -168,7 +168,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             ->method('getVideoThumbnail')
             ->will($this->returnValue('test_thumbnail'));
 
-        $this->assertEquals('test_thumbnail', $this->extension->getVideoThumbnail(new Value(), array()));
+        $this->assertEquals('test_thumbnail', $this->extension->getVideoThumbnail(new Value(), []));
     }
 
     public function testGetResourceDownloadLink()
@@ -177,7 +177,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             ->method('generateDownloadLink')
             ->will($this->returnValue('http://cloudinary.com/some/url/download'));
 
-        $this->assertEquals('http://cloudinary.com/some/url/download', $this->extension->getResourceDownloadLink(new Value(), array()));
+        $this->assertEquals('http://cloudinary.com/some/url/download', $this->extension->getResourceDownloadLink(new Value(), []));
     }
 
     public function testGetRemoteResource()

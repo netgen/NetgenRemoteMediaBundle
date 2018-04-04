@@ -2,23 +2,19 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
-use eZ\Publish\SPI\Persistence\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Psr\Log\LoggerInterface;
 
 abstract class RemoteMediaProvider
 {
-    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry  */
+    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry */
     protected $registry;
 
-    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver  */
+    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver */
     protected $variationResolver;
 
-    /** @var \Psr\Log\LoggerInterface  */
+    /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
     public function __construct(Registry $registry, VariationResolver $variationsResolver, LoggerInterface $logger = null)
@@ -26,18 +22,6 @@ abstract class RemoteMediaProvider
         $this->registry = $registry;
         $this->variationResolver = $variationsResolver;
         $this->logger = $logger;
-    }
-
-    /**
-     * Logs the error if the logger is available
-     *
-     * @param $message
-     */
-    protected function logError($message)
-    {
-        if ($this->logger instanceof LoggerInterface) {
-            $this->logger->error($message);
-        }
     }
 
     /**
@@ -58,7 +42,7 @@ abstract class RemoteMediaProvider
      *
      * @return Value
      */
-    abstract public function upload(UploadFile $uploadFile, $options = array());
+    abstract public function upload(UploadFile $uploadFile, $options = []);
 
     /**
      * Gets the remote media Variation.
@@ -69,6 +53,7 @@ abstract class RemoteMediaProvider
      * @param string $contentTypeIdentifier
      * @param string|array $format
      * @param bool $secure
+     *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
     abstract public function buildVariation(Value $value, $contentTypeIdentifier, $format, $secure = true);
@@ -161,7 +146,7 @@ abstract class RemoteMediaProvider
      * context = array(
      *      'caption' => 'new caption'
      *      'alt' => 'alt text'
-     * );
+     * );.
      *
      * @param mixed $resourceId
      * @param string $resourceType
@@ -179,7 +164,7 @@ abstract class RemoteMediaProvider
      *
      * @return string
      */
-    abstract public function getVideoThumbnail(Value $value, $options = array());
+    abstract public function getVideoThumbnail(Value $value, $options = []);
 
     /**
      * Generates html5 video tag for the video with provided id.
@@ -209,9 +194,21 @@ abstract class RemoteMediaProvider
     abstract public function generateDownloadLink(Value $value);
 
     /**
-     * Returns unique identifier of the provided
+     * Returns unique identifier of the provided.
      *
      * @return string
      */
     abstract public function getIdentifier();
+
+    /**
+     * Logs the error if the logger is available.
+     *
+     * @param $message
+     */
+    protected function logError($message)
+    {
+        if ($this->logger instanceof LoggerInterface) {
+            $this->logger->error($message);
+        }
+    }
 }

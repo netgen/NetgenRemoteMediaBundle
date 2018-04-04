@@ -21,21 +21,21 @@ class EffectTest extends BaseTest
     public function testEffectSimple()
     {
         $this->assertEquals(
-            array(
-                'effect' => 'grayscale'
-            ),
-            $this->effect->process($this->value, 'small', array('grayscale'))
+            [
+                'effect' => 'grayscale',
+            ],
+            $this->effect->process($this->value, 'small', ['grayscale'])
         );
     }
 
     public function testEffect()
     {
         $this->assertEquals(
-            array(
-                'effect' => 'saturation:50'
-            ),
+            [
+                'effect' => 'saturation:50',
+            ],
 
-            $this->effect->process($this->value, 'small', array('saturation', '50'))
+            $this->effect->process($this->value, 'small', ['saturation', '50'])
         );
     }
 

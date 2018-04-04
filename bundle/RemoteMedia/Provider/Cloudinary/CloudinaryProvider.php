@@ -2,15 +2,15 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
-use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -26,7 +26,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         VariationResolver $variationsResolver,
         Gateway $gateway,
         LoggerInterface $logger = null,
-        array $noExtensionMimeTypes = array('image', 'video')
+        array $noExtensionMimeTypes = ['image', 'video']
     ) {
         $this->gateway = $gateway;
         $this->noExtensionMimeTypes = $noExtensionMimeTypes;
@@ -51,88 +51,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * @param File $file
-     *
-     * @return mixed
-     *
-     * @throws MimeCategoryParseException
-     */
-    private function parseMimeCategory(File $file)
-    {
-        $parsedMime = explode('/', $file->getMimeType());
-        if (count($parsedMime) !== 2) {
-            throw new MimeCategoryParseException($file->getMimeType());
-        }
-
-        return $parsedMime[0];
-    }
-
-    /**
-     * @param $publicId
-     * @param UploadFile $uploadFile
-     *
-     * @return string
-     */
-    private function appendExtension($publicId, UploadFile $uploadFile)
-    {
-        $extension = $uploadFile->originalExtension();
-
-        if (empty($extension)) {
-            return $publicId;
-        }
-
-        $file = new File($uploadFile->uri());
-        $mimeCategory = $this->parseMimeCategory($file);
-
-        // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
-        if ($extension !== 'pdf' && !in_array($mimeCategory, $this->noExtensionMimeTypes)) {
-            $publicId .= '.' . $extension;
-        }
-
-        return $publicId;
-    }
-
-    /**
-     * Prepares upload options for Cloudinary.
-     * Every image with the same name will be overwritten.
-     *
-     * @param UploadFile $uploadFile
-     * @param array $options
-     *
-     * @return array
-     */
-    protected function prepareUploadOptions(UploadFile $uploadFile, $options = array())
-    {
-        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
-        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
-        $fileName = rtrim($cleanFileName, '_');
-
-        // check if overwrite is set, if it is, do not append random string
-        $overwrite = isset($options['overwrite']) ? $options['overwrite'] : false;
-        $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
-
-        $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
-        $publicId = $this->appendExtension($publicId, $uploadFile);
-
-        if (!empty($options['folder'])) {
-            $publicId = $options['folder'].'/'.$publicId;
-        }
-
-        return array(
-            'public_id' => $publicId,
-            'overwrite' => $overwrite,
-            'invalidate' => $invalidate,
-            'discard_original_filename' =>
-                isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
-            'context' => array(
-                'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
-                'caption' => !empty($options['caption']) ? $options['caption'] : '',
-            ),
-            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto'
-        );
-    }
-
-    /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param UploadFile $uploadFile
@@ -140,56 +58,13 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return Value
      */
-    public function upload(UploadFile $uploadFile, $options = array())
+    public function upload(UploadFile $uploadFile, $options = [])
     {
         $options = $this->prepareUploadOptions($uploadFile, $options);
 
         $response = $this->gateway->upload($uploadFile->uri(), $options);
 
         return Value::createFromCloudinaryResponse($response);
-    }
-
-    /**
-     * Builds transformation options for the provider to consume.
-     *
-     * @param Value $value
-     * @param string $variationName
-     * @param string $contentTypeIdentifier
-     *
-     * @return array options of the total sum of transformations for the provider to use
-     */
-    protected function processConfiguredVariation(Value $value, $variationName, $contentTypeIdentifier)
-    {
-        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
-
-        $options = array();
-
-        if (!isset($configuredVariations[$variationName])) {
-            return $options;
-        }
-
-        $variationConfiguration = $configuredVariations[$variationName];
-        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
-            try {
-                $transformationHandler = $this->registry->getHandler(
-                    $transformationIdentifier, $this->getIdentifier()
-                );
-            } catch (TransformationHandlerNotFoundException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-
-            try {
-                $options[] = $transformationHandler->process($value, $variationName, $config);
-            } catch (TransformationHandlerFailedException $e) {
-                $this->logError($e->getMessage());
-
-                continue;
-            }
-        }
-
-        return $options;
     }
 
     /**
@@ -243,11 +118,11 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function listResources($limit = 10, $offset = 0, $resource_type = 'image')
     {
-        $options = array(
+        $options = [
             'tags' => true,
             'context' => true,
-            'resource_type' => $resource_type
-        );
+            'resource_type' => $resource_type,
+        ];
 
         return $this->gateway->listResources($options, $limit, $offset);
     }
@@ -295,11 +170,11 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image')
     {
-        $options = array(
+        $options = [
             'SearchByTags' => false,
             'type' => 'upload',
-            'resource_type' => $resourceType
-        );
+            'resource_type' => $resourceType,
+        ];
 
         return $this->gateway->search($query, $options, $limit, $offset);
     }
@@ -316,10 +191,10 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image')
     {
-        $options = array(
+        $options = [
             'SearchByTags' => true,
-            'resource_type' => $resourceType
-        );
+            'resource_type' => $resourceType,
+        ];
 
         return $this->gateway->search(urlencode($tag), $options, $limit, $offset);
     }
@@ -338,12 +213,12 @@ class CloudinaryProvider extends RemoteMediaProvider
             return new Value();
         }
 
-        $options = array(
+        $options = [
             'resource_type' => $resourceType,
             'max_results' => 1,
             'tags' => true,
             'context' => true,
-        );
+        ];
 
         $response = $this->gateway->get($resourceId, $options);
 
@@ -382,9 +257,9 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     public function updateTags($resourceId, $tags)
     {
-        $options = array(
-            'tags' => $tags
-        );
+        $options = [
+            'tags' => $tags,
+        ];
 
         $this->gateway->update($resourceId, $options);
     }
@@ -395,7 +270,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * context = array(
      *      'caption' => 'new caption'
      *      'alt' => 'alt text'
-     * );
+     * );.
      *
      * @param mixed $resourceId
      * @param string $resourceType
@@ -405,10 +280,10 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function updateResourceContext($resourceId, $resourceType, $context)
     {
-        $options = array(
-            "context" => $context,
-            "resource_type" => $resourceType
-        );
+        $options = [
+            'context' => $context,
+            'resource_type' => $resourceType,
+        ];
 
         $this->gateway->update($resourceId, $options);
     }
@@ -421,7 +296,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return string
      */
-    public function getVideoThumbnail(Value $value, $options = array())
+    public function getVideoThumbnail(Value $value, $options = [])
     {
         if (!empty($options)) {
             $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
@@ -451,9 +326,9 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function generateVideoTag(Value $value, $contentTypeIdentifier, $variationName = '')
     {
-        $finalOptions = array(
-            'fallback_content' => 'Your browser does not support HTML5 video tags'
-        );
+        $finalOptions = [
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+        ];
 
         if (empty($variationName)) {
             return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
@@ -480,11 +355,11 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function generateDownloadLink(Value $value)
     {
-        $options = array(
+        $options = [
             'type' => $value->metaData['type'],
             'resource_type' => $value->metaData['resource_type'],
-            'flags' => 'attachment'
-        );
+            'flags' => 'attachment',
+        ];
 
         return $this->gateway->getDownloadLink($value->resourceId, $options);
     }
@@ -500,12 +375,136 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Returns unique identifier of the provided
+     * Returns unique identifier of the provided.
      *
      * @return string
      */
     public function getIdentifier()
     {
         return 'cloudinary';
+    }
+
+    /**
+     * Prepares upload options for Cloudinary.
+     * Every image with the same name will be overwritten.
+     *
+     * @param UploadFile $uploadFile
+     * @param array $options
+     *
+     * @return array
+     */
+    protected function prepareUploadOptions(UploadFile $uploadFile, $options = [])
+    {
+        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
+        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
+        $fileName = rtrim($cleanFileName, '_');
+
+        // check if overwrite is set, if it is, do not append random string
+        $overwrite = isset($options['overwrite']) ? $options['overwrite'] : false;
+        $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
+
+        $publicId = $overwrite ? $fileName : $fileName.'_'.base_convert(uniqid(), 16, 36);
+        $publicId = $this->appendExtension($publicId, $uploadFile);
+
+        if (!empty($options['folder'])) {
+            $publicId = $options['folder'].'/'.$publicId;
+        }
+
+        return [
+            'public_id' => $publicId,
+            'overwrite' => $overwrite,
+            'invalidate' => $invalidate,
+            'discard_original_filename' => isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
+            'context' => [
+                'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
+                'caption' => !empty($options['caption']) ? $options['caption'] : '',
+            ],
+            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto',
+        ];
+    }
+
+    /**
+     * Builds transformation options for the provider to consume.
+     *
+     * @param Value $value
+     * @param string $variationName
+     * @param string $contentTypeIdentifier
+     *
+     * @return array options of the total sum of transformations for the provider to use
+     */
+    protected function processConfiguredVariation(Value $value, $variationName, $contentTypeIdentifier)
+    {
+        $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
+
+        $options = [];
+
+        if (!isset($configuredVariations[$variationName])) {
+            return $options;
+        }
+
+        $variationConfiguration = $configuredVariations[$variationName];
+        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
+            try {
+                $transformationHandler = $this->registry->getHandler(
+                    $transformationIdentifier, $this->getIdentifier()
+                );
+            } catch (TransformationHandlerNotFoundException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+
+            try {
+                $options[] = $transformationHandler->process($value, $variationName, $config);
+            } catch (TransformationHandlerFailedException $e) {
+                $this->logError($e->getMessage());
+
+                continue;
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * @param File $file
+     *
+     * @throws MimeCategoryParseException
+     *
+     * @return mixed
+     */
+    private function parseMimeCategory(File $file)
+    {
+        $parsedMime = explode('/', $file->getMimeType());
+        if (2 !== count($parsedMime)) {
+            throw new MimeCategoryParseException($file->getMimeType());
+        }
+
+        return $parsedMime[0];
+    }
+
+    /**
+     * @param $publicId
+     * @param UploadFile $uploadFile
+     *
+     * @return string
+     */
+    private function appendExtension($publicId, UploadFile $uploadFile)
+    {
+        $extension = $uploadFile->originalExtension();
+
+        if (empty($extension)) {
+            return $publicId;
+        }
+
+        $file = new File($uploadFile->uri());
+        $mimeCategory = $this->parseMimeCategory($file);
+
+        // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
+        if ('pdf' !== $extension && !in_array($mimeCategory, $this->noExtensionMimeTypes, true)) {
+            $publicId .= '.'.$extension;
+        }
+
+        return $publicId;
     }
 }

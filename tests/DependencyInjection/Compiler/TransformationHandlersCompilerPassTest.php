@@ -10,11 +10,6 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    protected function registerCompilerPass(ContainerBuilder $container)
-    {
-        $container->addCompilerPass(new TransformationHandlersCompilerPass());
-    }
-
     public function testCompilerPassCollectsValidServices()
     {
         $registry = new Definition();
@@ -23,14 +18,14 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
 
         $transformationHandler = new Definition();
 
-        $tags = array(
-            'netgen_remote_media.transformation_handler' => array(
-                array(
+        $tags = [
+            'netgen_remote_media.transformation_handler' => [
+                [
                     'alias' => 'testalias',
-                    'provider' => 'testprovider'
-                )
-            )
-        );
+                    'provider' => 'testprovider',
+                ],
+            ],
+        ];
 
         $transformationHandler->setTags($tags);
         $this->setDefinition('custom_handler', $transformationHandler);
@@ -60,13 +55,13 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
 
         $transformationHandler = new Definition();
 
-        $tags = array(
-            'netgen_remote_media.transformation_handler' => array(
-                array(
-                    'provider' => 'testprovider'
-                )
-            )
-        );
+        $tags = [
+            'netgen_remote_media.transformation_handler' => [
+                [
+                    'provider' => 'testprovider',
+                ],
+            ],
+        ];
 
         $transformationHandler->setTags($tags);
         $this->setDefinition('custom_handler', $transformationHandler);
@@ -86,17 +81,22 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
 
         $transformationHandler = new Definition();
 
-        $tags = array(
-            'netgen_remote_media.transformation_handler' => array(
-                array(
-                    'alias' => 'testalias'
-                )
-            )
-        );
+        $tags = [
+            'netgen_remote_media.transformation_handler' => [
+                [
+                    'alias' => 'testalias',
+                ],
+            ],
+        ];
 
         $transformationHandler->setTags($tags);
         $this->setDefinition('custom_handler', $transformationHandler);
 
         $this->compile();
+    }
+
+    protected function registerCompilerPass(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new TransformationHandlersCompilerPass());
     }
 }

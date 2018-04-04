@@ -7,7 +7,7 @@ use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedExcepti
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Resize
+ * Class Resize.
  *
  * To change the size of a image, use the width and height parameters
  * (w and h in URLs) to assign new values. You can resize the image
@@ -18,7 +18,7 @@ class Resize implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -28,15 +28,15 @@ class Resize implements HandlerInterface
      *
      * @return array
      */
-    public function process(Value $value, $variationName, array $config = array())
+    public function process(Value $value, $variationName, array $config = [])
     {
-        $options = array();
+        $options = [];
 
-        if (isset($config[0]) && $config[0] !== 0) {
+        if (isset($config[0]) && 0 !== $config[0]) {
             $options['width'] = $config[0];
         }
 
-        if (isset($config[1]) && $config[1] !== 0) {
+        if (isset($config[1]) && 0 !== $config[1]) {
             $options['height'] = $config[1];
         }
 

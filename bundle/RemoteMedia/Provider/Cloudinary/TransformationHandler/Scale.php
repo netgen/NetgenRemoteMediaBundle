@@ -6,7 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Scale
+ * Class Scale.
  *
  * Change the size of the image exactly to the given width and
  * height without necessarily retaining the original aspect ratio:
@@ -18,7 +18,7 @@ class Scale implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -26,17 +26,17 @@ class Scale implements HandlerInterface
      *
      * @return array
      */
-    public function process(Value $value, $variationName, array $config = array())
+    public function process(Value $value, $variationName, array $config = [])
     {
-        $options = array(
-            'crop' => 'scale'
-        );
+        $options = [
+            'crop' => 'scale',
+        ];
 
-        if (isset($config[0]) && $config[0] !== 0) {
+        if (isset($config[0]) && 0 !== $config[0]) {
             $options['width'] = $config[0];
         }
 
-        if (isset($config[1]) && $config[1] !== 0) {
+        if (isset($config[1]) && 0 !== $config[1]) {
             $options['height'] = $config[1];
         }
 

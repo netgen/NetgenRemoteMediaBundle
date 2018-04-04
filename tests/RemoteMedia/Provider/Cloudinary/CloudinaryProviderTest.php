@@ -58,33 +58,31 @@ class CloudinaryProviderTest extends TestCase
 
     public function testSupportsContentBrowser()
     {
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->cloudinaryProvider->supportsContentBrowser()
         );
     }
 
     public function testSupportsFolders()
     {
-        $this->assertEquals(
-            true,
+        $this->assertTrue(
             $this->cloudinaryProvider->supportsFolders()
         );
     }
 
     public function testListResources()
     {
-        $this->gateway->method('listResources')->willReturn(array());
+        $this->gateway->method('listResources')->willReturn([]);
 
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
             ->with(
-                array(
+                [
                     'tags' => true,
                     'context' => true,
-                    'resource_type' => 'image'
-                ),
+                    'resource_type' => 'image',
+                ],
                 10,
                 0
             );
@@ -94,17 +92,17 @@ class CloudinaryProviderTest extends TestCase
 
     public function testListResourcesWithLimit()
     {
-        $this->gateway->method('listResources')->willReturn(array());
+        $this->gateway->method('listResources')->willReturn([]);
 
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
             ->with(
-                array(
+                [
                     'tags' => true,
                     'context' => true,
-                    'resource_type' => 'image'
-                ),
+                    'resource_type' => 'image',
+                ],
                 20,
                 0
             );
@@ -114,17 +112,17 @@ class CloudinaryProviderTest extends TestCase
 
     public function testListResourcesWithLimitAndOffset()
     {
-        $this->gateway->method('listResources')->willReturn(array());
+        $this->gateway->method('listResources')->willReturn([]);
 
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
             ->with(
-                array(
+                [
                     'tags' => true,
                     'context' => true,
-                    'resource_type' => 'image'
-                ),
+                    'resource_type' => 'image',
+                ],
                 20,
                 5
             );
@@ -166,11 +164,11 @@ class CloudinaryProviderTest extends TestCase
             ->method('search')
             ->with(
                 'queryTerm',
-                array(
+                [
                     'SearchByTags' => false,
                     'type' => 'upload',
-                    'resource_type' => 'image'
-                ),
+                    'resource_type' => 'image',
+                ],
                 10,
                 0
             );
@@ -185,11 +183,11 @@ class CloudinaryProviderTest extends TestCase
             ->method('search')
             ->with(
                 'queryTerm',
-                array(
+                [
                     'SearchByTags' => false,
                     'type' => 'upload',
-                    'resource_type' => 'image'
-                ),
+                    'resource_type' => 'image',
+                ],
                 25,
                 50
             );
@@ -204,10 +202,10 @@ class CloudinaryProviderTest extends TestCase
             ->method('search')
             ->with(
                 'queryTerm',
-                array(
+                [
                     'SearchByTags' => true,
-                    'resource_type' => 'image'
-                )
+                    'resource_type' => 'image',
+                ]
             );
 
         $this->cloudinaryProvider->searchResourcesBytag('queryTerm');
@@ -220,10 +218,10 @@ class CloudinaryProviderTest extends TestCase
             ->method('search')
             ->with(
                 'test%2Fsomething',
-                array(
+                [
                     'SearchByTags' => true,
-                    'resource_type' => 'image'
-                )
+                    'resource_type' => 'image',
+                ]
             );
 
         $this->cloudinaryProvider->searchResourcesBytag('test/something');
@@ -238,29 +236,28 @@ class CloudinaryProviderTest extends TestCase
         $value = $this->cloudinaryProvider->getRemoteResource('', 'image');
 
         $this->assertInstanceOf(Value::class, $value);
-        $this->assertEquals(
-            null,
+        $this->assertNull(
             $value->resourceId
         );
     }
 
     public function testGetRemoteResource()
     {
-        $options = array(
+        $options = [
             'resource_type' => 'image',
             'max_results' => 1,
             'tags' => true,
             'context' => true,
-        );
+        ];
 
         $this->gateway->method('get')->willReturn(
-            array(
+            [
                 'public_id' => 'testResourceId',
                 'url' => 'http://some.url/path',
                 'secure_url' => 'https://some.url/path',
                 'bytes' => 1024,
-                'resource_type' => 'image'
-            )
+                'resource_type' => 'image',
+            ]
         );
 
         $this->gateway
@@ -295,21 +292,21 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteVideo()
     {
-        $options = array(
+        $options = [
             'resource_type' => 'video',
             'max_results' => 1,
             'tags' => true,
             'context' => true,
-        );
+        ];
 
         $this->gateway->method('get')->willReturn(
-            array(
+            [
                 'public_id' => 'testResourceId',
                 'url' => 'http://some.url/path',
                 'secure_url' => 'https://some.url/path',
                 'bytes' => 1024,
-                'resource_type' => 'video'
-            )
+                'resource_type' => 'video',
+            ]
         );
 
         $this->gateway
@@ -328,22 +325,22 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteDocument()
     {
-        $options = array(
+        $options = [
             'resource_type' => 'image',
             'max_results' => 1,
             'tags' => true,
             'context' => true,
-        );
+        ];
 
         $this->gateway->method('get')->willReturn(
-            array(
+            [
                 'public_id' => 'testResourceId',
                 'url' => 'http://some.url/path',
                 'secure_url' => 'https://some.url/path',
                 'bytes' => 1024,
                 'resource_type' => 'image',
-                'format' => 'pdf'
-            )
+                'format' => 'pdf',
+            ]
         );
 
         $this->gateway
@@ -384,28 +381,28 @@ class CloudinaryProviderTest extends TestCase
 
     public function testUpdateResourceContext()
     {
-        $options = array(
-            'context' => array('caption' => 'test_caption'),
-            'resource_type' => 'image'
-        );
+        $options = [
+            'context' => ['caption' => 'test_caption'],
+            'resource_type' => 'image',
+        ];
 
         $this->gateway
             ->expects($this->once())
             ->method('update')
             ->with('testResourceId', $options);
 
-        $this->cloudinaryProvider->updateResourceContext('testResourceId', 'image', array('caption' => 'test_caption'));
+        $this->cloudinaryProvider->updateResourceContext('testResourceId', 'image', ['caption' => 'test_caption']);
     }
 
     public function testGetVideoThumbnail()
     {
-        $options = array(
+        $options = [
             'start_offset' => 'auto',
             'resource_type' => 'video',
-            'crop' =>'fit',
+            'crop' => 'fit',
             'width' => 320,
-            'height' => 240
-        );
+            'height' => 240,
+        ];
 
         $this->gateway
             ->expects($this->once())
@@ -420,13 +417,13 @@ class CloudinaryProviderTest extends TestCase
 
     public function testVideoThumbnailWithProvidedOptions()
     {
-        $options = array(
+        $options = [
             'start_offset' => 'auto',
             'resource_type' => 'video',
-            'crop' =>'fill',
+            'crop' => 'fill',
             'width' => 200,
-            'height' => 200
-        );
+            'height' => 200,
+        ];
 
         $this->gateway
             ->expects($this->once())
@@ -436,14 +433,14 @@ class CloudinaryProviderTest extends TestCase
         $value = new Value();
         $value->resourceId = 'testResourceId';
 
-        $this->cloudinaryProvider->getVideoThumbnail($value, array('crop' => 'fill', 'width' => 200, 'height' => 200));
+        $this->cloudinaryProvider->getVideoThumbnail($value, ['crop' => 'fill', 'width' => 200, 'height' => 200]);
     }
 
     public function testGetVideoTag()
     {
-        $options = array(
-            'fallback_content' => 'Your browser does not support HTML5 video tags'
-        );
+        $options = [
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+        ];
 
         $this->gateway
             ->expects($this->once())
@@ -458,14 +455,14 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetVideoTagWithProvidedVariation()
     {
-        $options = array(
-            'fallback_content' => 'Your browser does not support HTML5 video tags'
-        );
+        $options = [
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+        ];
 
-        $variationConfig = array(
+        $variationConfig = [
             'crop' => 'fit',
-            'width' => 200
-        );
+            'width' => 200,
+        ];
 
         $this->gateway
             ->expects($this->once())
@@ -480,17 +477,17 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGenerateDownloadLink()
     {
-        $options = array(
+        $options = [
             'type' => 'upload',
             'resource_type' => 'image',
-            'flags' => 'attachment'
-        );
+            'flags' => 'attachment',
+        ];
 
         $value = new Value(
-            array(
+            [
                 'resourceId' => 'testResourceId',
-                'metaData' => array('type' => 'upload', 'resource_type' => 'image')
-            )
+                'metaData' => ['type' => 'upload', 'resource_type' => 'image'],
+            ]
         );
 
         $this->gateway
@@ -513,17 +510,17 @@ class CloudinaryProviderTest extends TestCase
 
     public function testUpload()
     {
-        $options = array(
+        $options = [
             'public_id' => 'filename',
             'overwrite' => true,
             'invalidate' => true,
             'discard_original_filename' => true,
-            'context' => array(
+            'context' => [
                 'alt' => '',
                 'caption' => '',
-            ),
-            'resource_type' => 'auto'
-        );
+            ],
+            'resource_type' => 'auto',
+        ];
 
         $root = vfsStream::setup('some');
         $file = vfsStream::newFile('filename')->at($root);
@@ -531,13 +528,13 @@ class CloudinaryProviderTest extends TestCase
         $uploadFile = UploadFile::fromUri($file->url());
 
         $this->gateway->method('upload')->willReturn(
-            array(
+            [
                 'public_id' => 'filename',
                 'url' => 'http://some.url/filename',
                 'secure_url' => 'https://some.url/filename',
                 'bytes' => 1024,
-                'resource_type' => 'image'
-            )
+                'resource_type' => 'image',
+            ]
         );
 
         $this->gateway
@@ -548,7 +545,7 @@ class CloudinaryProviderTest extends TestCase
                 $options
             );
 
-        $value = $this->cloudinaryProvider->upload($uploadFile, array('overwrite' => true));
+        $value = $this->cloudinaryProvider->upload($uploadFile, ['overwrite' => true]);
 
         $this->assertInstanceOf(Value::class, $value);
 
@@ -576,29 +573,29 @@ class CloudinaryProviderTest extends TestCase
 
     public function testUploadWithExtension()
     {
-        $options = array(
+        $options = [
             'public_id' => 'file.zip',
             'overwrite' => true,
             'invalidate' => true,
             'discard_original_filename' => true,
-            'context' => array(
+            'context' => [
                 'alt' => '',
                 'caption' => '',
-            ),
-            'resource_type' => 'auto'
-        );
+            ],
+            'resource_type' => 'auto',
+        ];
 
         $root = vfsStream::setup('some');
         $file = vfsStream::newFile('file.zip')->at($root);
 
         $this->gateway->method('upload')->willReturn(
-            array(
+            [
                 'public_id' => 'file.zip',
                 'url' => 'http://some.url/file.zip',
                 'secure_url' => 'https://some.url/file.zip',
                 'bytes' => 1024,
-                'resource_type' => 'other'
-            )
+                'resource_type' => 'other',
+            ]
         );
 
         $this->gateway
@@ -611,7 +608,7 @@ class CloudinaryProviderTest extends TestCase
 
         $uploadFile = UploadFile::fromUri($file->url());
 
-        $value = $this->cloudinaryProvider->upload($uploadFile, array('overwrite' => true));
+        $value = $this->cloudinaryProvider->upload($uploadFile, ['overwrite' => true]);
 
         $this->assertInstanceOf(Value::class, $value);
 
@@ -643,25 +640,25 @@ class CloudinaryProviderTest extends TestCase
 
         $uploadFile = UploadFile::fromUri('/some/path.jpg');
 
-        $this->cloudinaryProvider->upload($uploadFile, array('overwrite' => true));
+        $this->cloudinaryProvider->upload($uploadFile, ['overwrite' => true]);
     }
 
     public function testBuildVariation()
     {
         $value = new Value(
-            array(
+            [
                 'resourceId' => 'testId',
                 'url' => 'http://cloudinary.com/some/url',
                 'secure_url' => 'https://cloudinary.com/some/url',
-                'variations' => array(
-                    'small' => array(
+                'variations' => [
+                    'small' => [
                         'x' => 10,
                         'y' => 10,
                         'w' => 300,
-                        'h' => 200
-                    )
-                )
-            )
+                        'h' => 200,
+                    ],
+                ],
+            ]
         );
 
         $variation = $this->cloudinaryProvider->buildVariation($value, 'test_content_type', '');
@@ -676,19 +673,19 @@ class CloudinaryProviderTest extends TestCase
     public function testBuildVariationWithProvidedConfiguration()
     {
         $value = new Value(
-            array(
+            [
                 'resourceId' => 'testId',
                 'url' => 'http://cloudinary.com/some/url',
                 'secure_url' => 'https://cloudinary.com/some/url',
-                'variations' => array(
-                    'small' => array(
+                'variations' => [
+                    'small' => [
                         'x' => 10,
                         'y' => 10,
                         'w' => 300,
-                        'h' => 200
-                    )
-                )
-            )
+                        'h' => 200,
+                    ],
+                ],
+            ]
         );
 
         $this->gateway->method('getVariationUrl')->willReturn('https://cloudinary.com/c_fit,w_200,h_200/testId');
@@ -696,7 +693,7 @@ class CloudinaryProviderTest extends TestCase
         $variation = $this->cloudinaryProvider->buildVariation(
             $value,
             'test_content_type',
-            array('crop' => 'fit', 'width' => 200, 'height' => 200)
+            ['crop' => 'fit', 'width' => 200, 'height' => 200]
         );
 
         $this->assertInstanceOf(Variation::class, $variation);

@@ -20,7 +20,7 @@ class ScaleTest extends BaseTest
     public function testScaleSimple()
     {
         $this->assertEquals(
-            array('crop' => 'scale'),
+            ['crop' => 'scale'],
             $this->scale->process($this->value, 'small')
         );
     }
@@ -28,12 +28,12 @@ class ScaleTest extends BaseTest
     public function testScaleWithDimensions()
     {
         $this->assertEquals(
-            array(
+            [
                 'crop' => 'scale',
                 'width' => 100,
-                'height' => 200
-            ),
-            $this->scale->process($this->value, 'small', array(100, 200))
+                'height' => 200,
+            ],
+            $this->scale->process($this->value, 'small', [100, 200])
         );
     }
 }

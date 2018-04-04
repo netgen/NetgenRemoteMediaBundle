@@ -40,9 +40,9 @@ class RemoteMediaConverterTest extends TestCase
     public function testToStorageValue()
     {
         $fieldValue = new FieldValue(
-            array(
+            [
                 'data' => 'data',
-            )
+            ]
         );
 
         $storageFieldValue = new StorageFieldValue();
@@ -54,9 +54,9 @@ class RemoteMediaConverterTest extends TestCase
     public function testToFieldValue()
     {
         $storageFieldValue = new StorageFieldValue(
-            array(
+            [
                 'dataText' => 'data',
-            )
+            ]
         );
 
         $fieldValue = new FieldValue();

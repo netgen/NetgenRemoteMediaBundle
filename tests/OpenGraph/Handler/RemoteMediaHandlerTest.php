@@ -3,22 +3,22 @@
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\OpenGraph\Handler\RemoteMediaHandler;
 
 use eZ\Publish\API\Repository\Values\Content\ContentInfo;
+use eZ\Publish\API\Repository\Values\Content\Field;
+use eZ\Publish\Core\Helper\FieldHelper;
+use eZ\Publish\Core\Helper\TranslationHelper;
 use eZ\Publish\Core\Repository\ContentTypeService;
+use eZ\Publish\Core\Repository\Values\Content\Content;
+use eZ\Publish\Core\Repository\Values\Content\VersionInfo;
+use eZ\Publish\Core\Repository\Values\ContentType\ContentType;
+use Netgen\Bundle\OpenGraphBundle\Handler\HandlerInterface;
 use Netgen\Bundle\OpenGraphBundle\Tests\Handler\FieldType\HandlerBaseTest;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\OpenGraph\Handler\RemoteMediaHandler;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
-use eZ\Publish\API\Repository\Values\Content\Field;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use eZ\Publish\Core\Helper\FieldHelper;
-use eZ\Publish\Core\Helper\TranslationHelper;
-use eZ\Publish\Core\Repository\Values\Content\Content;
-use eZ\Publish\Core\Repository\Values\Content\VersionInfo;
-use Netgen\Bundle\OpenGraphBundle\Handler\HandlerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use eZ\Publish\Core\Repository\Values\ContentType\ContentType;
 
 class RemoteMediaHandlerTest extends HandlerBaseTest
 {
@@ -51,40 +51,40 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
     {
         $this->fieldHelper = $this->getMockBuilder(FieldHelper::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('isFieldEmpty'))
+            ->setMethods(['isFieldEmpty'])
             ->getMock();
 
         $this->translationHelper = $this->getMockBuilder(TranslationHelper::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('getTranslatedField'))
+            ->setMethods(['getTranslatedField'])
             ->getMock();
 
         $this->contentTypeService = $this->getMockBuilder(ContentTypeService::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('loadContentType'))
+            ->setMethods(['loadContentType'])
             ->getMock();
 
         $this->content = new Content(
-            array(
+            [
                 'versionInfo' => new VersionInfo(
-                    array('contentInfo' => new ContentInfo(array('contentTypeId' => 2)))
-                )
-            )
+                    ['contentInfo' => new ContentInfo(['contentTypeId' => 2])]
+                ),
+            ]
         );
 
         $this->provider = $this->getMockBuilder(RemoteMediaProvider::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('buildVariation'))
+            ->setMethods(['buildVariation'])
             ->getMockForAbstractClass();
 
         $this->requestStack = $this->getMockBuilder(RequestStack::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('getCurrentRequest'))
+            ->setMethods(['getCurrentRequest'])
             ->getMock();
 
         $this->logger = $this->getMockBuilder(NullLogger::class)
             ->disableOriginalConstructor()
-            ->setMethods(array())
+            ->setMethods([])
             ->getMock();
 
         $this->remoteMediaHandler = new RemoteMediaHandler(
@@ -93,11 +93,11 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
         $this->remoteMediaHandler->setContent($this->content);
 
         $this->field = new Field(
-            array(
+            [
                 'value' => new Value(
-                    array('secure_url' => 'https://res.example.com/some/uri')
-                )
-            )
+                    ['secure_url' => 'https://res.example.com/some/uri']
+                ),
+            ]
         );
     }
 
@@ -112,7 +112,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
      */
     public function testGettingTagsWithoutFieldIdentifier()
     {
-        $this->remoteMediaHandler->getMetaTags('some_tag', array());
+        $this->remoteMediaHandler->getMetaTags('some_tag', []);
     }
 
     /**
@@ -125,7 +125,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->method('getTranslatedField')
             ->willReturn(null);
 
-        $this->remoteMediaHandler->getMetaTags('some_tag', array('some_value'));
+        $this->remoteMediaHandler->getMetaTags('some_tag', ['some_value']);
     }
 
     /**
@@ -138,7 +138,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->method('getTranslatedField')
             ->willReturn(new Field());
 
-        $this->remoteMediaHandler->getMetaTags('some_tag', array('some_value'));
+        $this->remoteMediaHandler->getMetaTags('some_tag', ['some_value']);
     }
 
     public function testGettingTagsWithEmptyField()
@@ -151,7 +151,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->method('isFieldEmpty')
             ->willReturn(true);
 
-        $this->remoteMediaHandler->getMetaTags('some_tag', array('some_value'));
+        $this->remoteMediaHandler->getMetaTags('some_tag', ['some_value']);
     }
 
     public function testGettingTags()
@@ -161,11 +161,11 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->with(2)
             ->willReturn(
                 new ContentType(
-                    array(
+                    [
                         'id' => 2,
                         'identifier' => 'test',
-                        'fieldDefinitions' => array()
-                    )
+                        'fieldDefinitions' => [],
+                    ]
                 )
             );
 
@@ -177,14 +177,13 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->method('isFieldEmpty')
             ->willReturn(false);
 
-
-        $variation = new Variation(array('url' => 'https://res.example.com/some/url'));
+        $variation = new Variation(['url' => 'https://res.example.com/some/url']);
 
         $this->provider->expects($this->once())
             ->method('buildVariation')
             ->willReturn($variation);
 
-        $item = $this->remoteMediaHandler->getMetaTags('some_tag', array('some_identifier', 'some_format'));
+        $item = $this->remoteMediaHandler->getMetaTags('some_tag', ['some_identifier', 'some_format']);
 
         $this->assertEquals(
             'https://res.example.com/some/url',
@@ -206,7 +205,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->method('buildVariation');
 
         /** @var \Netgen\Bundle\OpenGraphBundle\MetaTag\Item[] */
-        $item = $this->remoteMediaHandler->getMetaTags('some_tag', array('some_identifier'));
+        $item = $this->remoteMediaHandler->getMetaTags('some_tag', ['some_identifier']);
 
         $this->assertEquals(
             'https://res.example.com/some/uri',
@@ -224,6 +223,6 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->method('getCurrentRequest')
             ->willReturn(new Request());
 
-        $this->remoteMediaHandler->getMetaTags('some_tag', array('some_value', 'some_value_2', '/fallback_path'));
+        $this->remoteMediaHandler->getMetaTags('some_tag', ['some_value', 'some_value_2', '/fallback_path']);
     }
 }

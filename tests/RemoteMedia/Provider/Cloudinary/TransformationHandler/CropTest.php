@@ -21,15 +21,15 @@ class CropTest extends BaseTest
     public function testCrop()
     {
         $this->assertEquals(
-            array(
-                array(
+            [
+                [
                     'x' => 10,
                     'y' => 10,
                     'width' => 300,
                     'height' => 200,
-                    'crop' => 'crop'
-                )
-            ),
+                    'crop' => 'crop',
+                ],
+            ],
             $this->crop->process($this->value, 'small')
         );
     }

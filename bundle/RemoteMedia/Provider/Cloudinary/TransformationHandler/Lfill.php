@@ -6,7 +6,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class Lfill
+ * Class Lfill.
  *
  * Same as the fill mode but only if the original image is larger
  * than the given limit (width and height), in which case the image
@@ -16,13 +16,12 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
  * might be visible if the requested aspect ratio is different from the
  * original aspect ratio). This mode doesn't scale up the image if your
  * requested dimensions are bigger than the original image's.
- *
  */
 class Lfill implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -30,17 +29,17 @@ class Lfill implements HandlerInterface
      *
      * @return array
      */
-    public function process(Value $value, $variationName, array $config = array())
+    public function process(Value $value, $variationName, array $config = [])
     {
-        $options = array(
-            'crop' => 'lfill'
-        );
+        $options = [
+            'crop' => 'lfill',
+        ];
 
-        if (isset($config[0]) && $config[0] !== 0) {
+        if (isset($config[0]) && 0 !== $config[0]) {
             $options['width'] = $config[0];
         }
 
-        if (isset($config[1]) && $config[1] !== 0) {
+        if (isset($config[1]) && 0 !== $config[1]) {
             $options['height'] = $config[1];
         }
 

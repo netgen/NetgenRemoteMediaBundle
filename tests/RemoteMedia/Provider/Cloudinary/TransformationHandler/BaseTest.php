@@ -15,19 +15,19 @@ abstract class BaseTest extends TestCase
     public function setUp()
     {
         $this->value = new Value(
-            array(
+            [
                 'resourceId' => 'testId',
                 'url' => 'http://cloudinary.com/some/url',
                 'secure_url' => 'https://cloudinary.com/some/url',
-                'variations' => array(
-                    'small' => array(
+                'variations' => [
+                    'small' => [
                         'x' => 10,
                         'y' => 10,
                         'w' => 300,
-                        'h' => 200
-                    )
-                )
-            )
+                        'h' => 200,
+                    ],
+                ],
+            ]
         );
     }
 }

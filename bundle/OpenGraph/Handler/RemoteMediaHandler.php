@@ -2,17 +2,17 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\OpenGraph\Handler;
 
+use Exception;
 use eZ\Publish\API\Repository\ContentTypeService;
-use Netgen\Bundle\OpenGraphBundle\Exception\FieldEmptyException;
-use Netgen\Bundle\OpenGraphBundle\Handler\FieldType\Handler;
 use eZ\Publish\API\Repository\Values\Content\Field;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
 use eZ\Publish\Core\Helper\FieldHelper;
 use eZ\Publish\Core\Helper\TranslationHelper;
-use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
+use Netgen\Bundle\OpenGraphBundle\Exception\FieldEmptyException;
+use Netgen\Bundle\OpenGraphBundle\Handler\FieldType\Handler;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Psr\Log\LoggerInterface;
-use Exception;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -20,7 +20,6 @@ class RemoteMediaHandler extends Handler
 {
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
-     *
      */
     protected $provider;
 
@@ -40,7 +39,7 @@ class RemoteMediaHandler extends Handler
     protected $logger;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \eZ\Publish\Core\Helper\FieldHelper $fieldHelper
      * @param \eZ\Publish\Core\Helper\TranslationHelper $translationHelper
@@ -57,7 +56,7 @@ class RemoteMediaHandler extends Handler
         RequestStack $requestStack,
         LoggerInterface $logger = null
     ) {
-        parent::__construct( $fieldHelper, $translationHelper );
+        parent::__construct($fieldHelper, $translationHelper);
 
         $this->provider = $provider;
         $this->contentTypeService = $contentTypeService;
@@ -66,19 +65,19 @@ class RemoteMediaHandler extends Handler
     }
 
     /**
-     * Returns if this field type handler supports current field
+     * Returns if this field type handler supports current field.
      *
      * @param \eZ\Publish\API\Repository\Values\Content\Field $field
      *
      * @return bool
      */
-    protected function supports( Field $field )
+    protected function supports(Field $field)
     {
         return $field->value instanceof Value;
     }
 
     /**
-     * Returns the field value, converted to string
+     * Returns the field value, converted to string.
      *
      * @param \eZ\Publish\API\Repository\Values\Content\Field $field
      * @param string $tagName
@@ -89,7 +88,7 @@ class RemoteMediaHandler extends Handler
      *
      * @return string
      */
-    protected function getFieldValue(Field $field, $tagName, array $params = array())
+    protected function getFieldValue(Field $field, $tagName, array $params = [])
     {
         if ($this->fieldHelper->isFieldEmpty($this->content, $params[0])) {
             throw new FieldEmptyException($field->fieldDefIdentifier);
@@ -102,7 +101,7 @@ class RemoteMediaHandler extends Handler
                 return $media->secure_url;
             }
 
-            $contentType =$this->contentTypeService->loadContentType(
+            $contentType = $this->contentTypeService->loadContentType(
                 $this->content->versionInfo->contentInfo->contentTypeId
             );
 
@@ -111,7 +110,7 @@ class RemoteMediaHandler extends Handler
             return $variation->url;
         } catch (Exception $e) {
             $this->logger->error(
-                "Open Graph remote media handler: Error while getting media with id {$field->value->resourceId}: " . $e->getMessage()
+                "Open Graph remote media handler: Error while getting media with id {$field->value->resourceId}: ".$e->getMessage()
             );
         }
 
@@ -126,10 +125,10 @@ class RemoteMediaHandler extends Handler
      *
      * @return string
      */
-    protected function getFallbackValue($tagName, array $params = array())
+    protected function getFallbackValue($tagName, array $params = [])
     {
-        if (!empty($params[2]) && ($request = $this->requestStack->getCurrentRequest()) !== null) {
-            return $request->getUriForPath('/' . ltrim($params[2], '/'));
+        if (!empty($params[2]) && null !== ($request = $this->requestStack->getCurrentRequest())) {
+            return $request->getUriForPath('/'.ltrim($params[2], '/'));
         }
 
         return '';

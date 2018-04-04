@@ -12,17 +12,17 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function upload($fileUri, $options);
+    abstract public function upload($fileUri, $options);
 
     /**
-     * Generates url to the media with provided options
+     * Generates url to the media with provided options.
      *
      * @param string $source
      * @param array $options
      *
      * @return string
      */
-    public abstract function getVariationUrl($source, $options);
+    abstract public function getVariationUrl($source, $options);
 
     /**
      * Perform search.
@@ -34,7 +34,7 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function search($query, $options = array(), $limit = 10, $offset = 0);
+    abstract public function search($query, $options = [], $limit = 10, $offset = 0);
 
     /**
      * List all available resources.
@@ -45,21 +45,21 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function listResources($options, $limit, $offset);
+    abstract public function listResources($options, $limit, $offset);
 
     /**
      * Lists all available folders.
      *
      * @return array
      */
-    public abstract function listFolders();
+    abstract public function listFolders();
 
     /**
      * Returns the overall resources usage on the cloudinary account.
      *
      * @return int
      */
-    public abstract function countResources();
+    abstract public function countResources();
 
     /**
      * Returns the number of resources in the provided folder.
@@ -68,7 +68,7 @@ abstract class Gateway
      *
      * @return int
      */
-    public abstract function countResourcesInFolder($folder);
+    abstract public function countResourcesInFolder($folder);
 
     /**
      * Fetches the remote resource by id.
@@ -78,7 +78,7 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function get($id, $options);
+    abstract public function get($id, $options);
 
     /**
      * Adds new tag to the remote resource.
@@ -88,7 +88,7 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function addTag($id, $tag);
+    abstract public function addTag($id, $tag);
 
     /**
      * Removes the tag from the remote resource.
@@ -98,7 +98,7 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function removeTag($id, $tag);
+    abstract public function removeTag($id, $tag);
 
     /**
      * Updates the remote resource.
@@ -106,7 +106,7 @@ abstract class Gateway
      * @param $id
      * @param $options
      */
-    public abstract function update($id, $options);
+    abstract public function update($id, $options);
 
     /**
      * Returns the url for the thumbnail of video with the provided id.
@@ -116,7 +116,7 @@ abstract class Gateway
      *
      * @return string
      */
-    public abstract function getVideoThumbnail($id, $options = array());
+    abstract public function getVideoThumbnail($id, $options = []);
 
     /**
      * Generates video tag for the video with the provided id.
@@ -126,7 +126,7 @@ abstract class Gateway
      *
      * @return string
      */
-    public abstract function getVideoTag($id, $options = array());
+    abstract public function getVideoTag($id, $options = []);
 
     /**
      * Generates download link for the remote resource.
@@ -136,12 +136,12 @@ abstract class Gateway
      *
      * @return string
      */
-    public abstract function getDownloadLink($id, $options);
+    abstract public function getDownloadLink($id, $options);
 
     /**
      * Deletes the resource from the cloudinary.
      *
      * @param $id
      */
-    public abstract function delete($id);
+    abstract public function delete($id);
 }

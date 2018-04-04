@@ -20,7 +20,7 @@ class MfitTest extends BaseTest
     public function testMfitSimple()
     {
         $this->assertEquals(
-            array('crop' => 'mfit'),
+            ['crop' => 'mfit'],
             $this->mfit->process($this->value, 'small')
         );
     }
@@ -28,12 +28,12 @@ class MfitTest extends BaseTest
     public function testMfitWithDimensions()
     {
         $this->assertEquals(
-            array(
+            [
                 'crop' => 'mfit',
                 'width' => 100,
-                'height' => 200
-            ),
-            $this->mfit->process($this->value, 'small', array(100, 200))
+                'height' => 200,
+            ],
+            $this->mfit->process($this->value, 'small', [100, 200])
         );
     }
 }

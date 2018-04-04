@@ -10,7 +10,7 @@ class XslRegisterPass implements CompilerPassInterface
 {
     /**
      * Compiler pass to register ezxml_ngremotemedia.xsl as custom XSL stylesheet for
-     * XmlText field type
+     * XmlText field type.
      *
      * Avoids having it in %kernel.root_dir%/Resources folder
      *
@@ -23,7 +23,7 @@ class XslRegisterPass implements CompilerPassInterface
         }
 
         $scopes = array_merge(
-            array(ConfigResolver::SCOPE_DEFAULT),
+            [ConfigResolver::SCOPE_DEFAULT],
             $container->getParameter('ezpublish.siteaccess.list')
         );
 
@@ -37,7 +37,7 @@ class XslRegisterPass implements CompilerPassInterface
             }
 
             $xslConfig = $container->getParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl");
-            $xslConfig[] = array('path' => __DIR__ . '/../../Resources/xsl/ezxml_ngremotemedia.xsl', 'priority' => 5000);
+            $xslConfig[] = ['path' => __DIR__.'/../../Resources/xsl/ezxml_ngremotemedia.xsl', 'priority' => 5000];
             $container->setParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl", $xslConfig);
         }
     }

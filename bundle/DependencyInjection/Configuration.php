@@ -59,28 +59,28 @@ class Configuration extends SiteAccessConfiguration
             ->arrayNode('image_variations')
                 ->info('Configuration for your image variations (aka "image aliases")')
                 ->example(
-                    array(
-                        'variation_name' => array(
-                            'transformations' => array(
-                                array(
+                    [
+                        'variation_name' => [
+                            'transformations' => [
+                                [
                                     'name' => 'resize',
-                                    'params' => array(400, 350),
-                                ),
-                            ),
-                        ),
-                        'my_cropped_variation' => array(
-                            'transformations' => array(
-                                array(
+                                    'params' => [400, 350],
+                                ],
+                            ],
+                        ],
+                        'my_cropped_variation' => [
+                            'transformations' => [
+                                [
                                     'name' => 'fill',
-                                    'params' => array(300, 200),
-                                ),
-                                array(
+                                    'params' => [300, 200],
+                                ],
+                                [
                                     'name' => 'crop',
-                                    'params' => array(300, 300, 0, 0),
-                                ),
-                            ),
-                        ),
-                    )
+                                    'params' => [300, 300, 0, 0],
+                                ],
+                            ],
+                        ],
+                    ]
                 )
                 ->useAttributeAsKey('variation_name')
                 ->normalizeKeys(false)
@@ -100,7 +100,7 @@ class Configuration extends SiteAccessConfiguration
                                         ->ifTrue(
                                             function ($v) {
                                                 // Check if passed array only contains a "params" key (BC with <=5.3).
-                                                return is_array($v) && count($v) === 1 && isset($v['params']);
+                                                return is_array($v) && 1 === count($v) && isset($v['params']);
                                             }
                                         )
                                         ->then(

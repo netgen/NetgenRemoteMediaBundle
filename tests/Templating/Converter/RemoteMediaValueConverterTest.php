@@ -2,8 +2,8 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Templating\Converter;
 
-use Netgen\Bundle\RemoteMediaBundle\Templating\Converter\RemoteMediaValueConverter;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Templating\Converter\RemoteMediaValueConverter;
 use PHPUnit\Framework\TestCase;
 
 class RemoteMediaValueConverterTest extends TestCase
@@ -15,10 +15,10 @@ class RemoteMediaValueConverterTest extends TestCase
         $this->converter = new RemoteMediaValueConverter();
     }
 
-   public function testConvert()
-   {
-       $object = new Value();
+    public function testConvert()
+    {
+        $object = new Value();
 
-       $this->assertEquals($object, $this->converter->convert($object));
-   }
+        $this->assertEquals($object, $this->converter->convert($object));
+    }
 }

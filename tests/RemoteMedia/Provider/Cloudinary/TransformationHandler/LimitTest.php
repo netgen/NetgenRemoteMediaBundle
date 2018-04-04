@@ -20,7 +20,7 @@ class LimitTest extends BaseTest
     public function testLimitSimple()
     {
         $this->assertEquals(
-            array('crop' => 'limit'),
+            ['crop' => 'limit'],
             $this->limit->process($this->value, 'small')
         );
     }
@@ -28,12 +28,12 @@ class LimitTest extends BaseTest
     public function testLimitWithDimensions()
     {
         $this->assertEquals(
-            array(
+            [
                 'crop' => 'limit',
                 'width' => 100,
-                'height' => 200
-            ),
-            $this->limit->process($this->value, 'small', array(100, 200))
+                'height' => 200,
+            ],
+            $this->limit->process($this->value, 'small', [100, 200])
         );
     }
 }

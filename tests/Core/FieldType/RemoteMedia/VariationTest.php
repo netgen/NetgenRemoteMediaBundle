@@ -15,15 +15,15 @@ class VariationTest extends TestCase
 
     public function testConstructionWithParameters()
     {
-        $parameters = array(
+        $parameters = [
             'url' => 'test/path/image.jpg',
             'width' => '150',
             'height' => '200',
-            'coords' => array(
+            'coords' => [
                 'x' => 20,
                 'y' => 30,
-            ),
-        );
+            ],
+        ];
 
         $variation = new Variation($parameters);
 
@@ -32,15 +32,15 @@ class VariationTest extends TestCase
 
     public function testConstructionWithoutParameters()
     {
-        $expectedResponseArray = array(
+        $expectedResponseArray = [
             'url' => null,
             'width' => null,
             'height' => null,
-            'coords' => array(
+            'coords' => [
                 'x' => 0,
                 'y' => 0,
-            ),
-        );
+            ],
+        ];
 
         $variation = new Variation();
 

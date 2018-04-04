@@ -7,7 +7,7 @@ use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedExcepti
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
 
 /**
- * Class NamedTransformation
+ * Class NamedTransformation.
  *
  * A named transformation is a set of image transformations that has been given a custom name
  * for easy reference. It is useful to define a named transformation when you have a set of
@@ -16,13 +16,12 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
  * Strict Transformations mode.
  * Named transformations can also include other named transformations, which allows you to
  * define a chain of transformations to run on uploaded images very easily.
- *
  */
 class NamedTransformation implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
-     * properly configured array of options
+     * properly configured array of options.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
@@ -32,14 +31,14 @@ class NamedTransformation implements HandlerInterface
      *
      * @return array
      */
-    public function process(Value $value, $variationName, array $config = array())
+    public function process(Value $value, $variationName, array $config = [])
     {
         if (empty($config[0])) {
             throw new TransformationHandlerFailedException(self::class);
         }
 
-        return array(
-            'transformation' => $config[0]
-        );
+        return [
+            'transformation' => $config[0],
+        ];
     }
 }

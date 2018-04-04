@@ -12,12 +12,12 @@ class Location implements LocationInterface
 
     public function __construct($locationId, $locationName, $parentId)
     {
-        $this->locationId = (string)$locationId;
+        $this->locationId = (string) $locationId;
         $this->locationName = $locationName;
-        if ($parentId === null) {
+        if (null === $parentId) {
             $this->parentId = null;
         } else {
-            $this->parentId = (string)$parentId;
+            $this->parentId = (string) $parentId;
         }
     }
 

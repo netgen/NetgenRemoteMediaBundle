@@ -20,7 +20,7 @@ class LpadTest extends BaseTest
     public function testLpadSimple()
     {
         $this->assertEquals(
-            array('crop' => 'lpad'),
+            ['crop' => 'lpad'],
             $this->lpad->process($this->value, 'small')
         );
     }
@@ -28,25 +28,25 @@ class LpadTest extends BaseTest
     public function testLpadWithDimensions()
     {
         $this->assertEquals(
-            array(
+            [
                 'crop' => 'lpad',
                 'width' => 100,
-                'height' => 200
-            ),
-            $this->lpad->process($this->value, 'small', array(100, 200))
+                'height' => 200,
+            ],
+            $this->lpad->process($this->value, 'small', [100, 200])
         );
     }
 
     public function testLpadWithDimensionsAndColour()
     {
         $this->assertEquals(
-            array(
+            [
                 'crop' => 'lpad',
                 'width' => 100,
                 'height' => 200,
-                'background' => 'red'
-            ),
-            $this->lpad->process($this->value, 'small', array(100, 200, 'red'))
+                'background' => 'red',
+            ],
+            $this->lpad->process($this->value, 'small', [100, 200, 'red'])
         );
     }
 }

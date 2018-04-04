@@ -44,12 +44,13 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
             )
         ;
     }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $contentTypeIdentifier = $input->getArgument('content_type_identifier');
         $fieldDefIdentifier = $input->getArgument('field_identifier');
         $fieldName = $input->getArgument('field_name');
-        $fieldPosition = (int)$input->getOption('field_position');
+        $fieldPosition = (int) $input->getOption('field_position');
 
         $repository = $this->getContainer()->get('ezpublish.api.repository');
 
@@ -57,7 +58,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
         $contentTypeNames = $contentType->getNames();
         $languageCodes = array_keys($contentTypeNames);
-        $names = array();
+        $names = [];
         foreach ($languageCodes as $languageCode) {
             $names[$languageCode] = $fieldName;
         }
@@ -86,7 +87,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
             $repository->commit();
         } catch (\Exception $e) {
             $repository->rollback();
-            $output->writeln('<error>' . $e->getMessage() . '<error>');
+            $output->writeln('<error>'.$e->getMessage().'<error>');
             dump($e->getTraceAsString());
 
             return;
@@ -94,7 +95,5 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
 
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
         $output->writeln("<info>Added new field {$fieldDefIdentifier} to content type {$contentTypeIdentifier}</info>");
-
-        return;
     }
 }

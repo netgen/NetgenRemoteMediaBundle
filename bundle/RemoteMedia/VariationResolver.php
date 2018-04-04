@@ -4,14 +4,14 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 class VariationResolver
 {
-    protected $variations = array();
+    protected $variations = [];
 
     /**
-     * Dynamic injection of configured transformations
+     * Dynamic injection of configured transformations.
      *
      * @param array $variations
      */
-    public function setVariations($variations = array())
+    public function setVariations($variations = [])
     {
         $this->variations = $variations;
     }
@@ -25,15 +25,15 @@ class VariationResolver
      */
     public function getVariationsForContentType($contentTypeIdentifier)
     {
-        $defaultVariations = isset($this->variations['default']) ? $this->variations['default'] : array();
-        $contentTypeVariations= isset($this->variations[$contentTypeIdentifier]) ?
-            $this->variations[$contentTypeIdentifier] : array();
+        $defaultVariations = isset($this->variations['default']) ? $this->variations['default'] : [];
+        $contentTypeVariations = isset($this->variations[$contentTypeIdentifier]) ?
+            $this->variations[$contentTypeIdentifier] : [];
 
         return array_merge($defaultVariations, $contentTypeVariations);
     }
 
     /**
-     * Returns variations for a provided content type which have 'crop' transformation configured
+     * Returns variations for a provided content type which have 'crop' transformation configured.
      *
      * @param $contentTypeIdentifier
      *
@@ -43,7 +43,7 @@ class VariationResolver
     {
         $variations = $this->getVariationsForContentType($contentTypeIdentifier);
 
-        $croppableVariations = array();
+        $croppableVariations = [];
         foreach ($variations as $variationName => $variationOptions) {
             if (isset($variationOptions['transformations']['crop'])) {
                 $croppableVariations[$variationName] = $variationOptions;
@@ -60,10 +60,10 @@ class VariationResolver
      */
     public function getEmbedVariations()
     {
-        $variations= isset($this->variations['embedded']) ?
-            $this->variations['embedded'] : array();
+        $variations = isset($this->variations['embedded']) ?
+            $this->variations['embedded'] : [];
 
-        $croppableVariations = array();
+        $croppableVariations = [];
         foreach ($variations as $variationName => $variationOptions) {
             if (isset($variationOptions['transformations']['crop'])) {
                 $croppableVariations[$variationName] = $variationOptions;

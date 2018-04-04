@@ -4,7 +4,6 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Conten
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\AdminProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\Item\Item;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\ContentBrowser\Item\Location;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
@@ -28,7 +27,7 @@ class CloudinaryBackend implements BackendInterface
      */
     public function getDefaultSections()
     {
-        return array($this->buildRootLocation());
+        return [$this->buildRootLocation()];
     }
 
     /**
@@ -42,7 +41,7 @@ class CloudinaryBackend implements BackendInterface
      */
     public function loadLocation($id)
     {
-        if ($id === "0") {
+        if ('0' === $id) {
             return $this->buildRootLocation();
         }
 
@@ -60,7 +59,7 @@ class CloudinaryBackend implements BackendInterface
      */
     public function loadItem($id)
     {
-        if ($id === 0) {
+        if (0 === $id) {
             return $this->buildRootItem();
         }
 
@@ -92,7 +91,7 @@ class CloudinaryBackend implements BackendInterface
      */
     public function getSubLocationsCount(LocationInterface $location)
     {
-        if ($location->getLocationId() !== 0) {
+        if (0 !== $location->getLocationId()) {
             return 0;
         }
 
@@ -112,7 +111,7 @@ class CloudinaryBackend implements BackendInterface
      */
     public function getSubItems(LocationInterface $location, $offset = 0, $limit = 25)
     {
-        if ($location->getLocationId() === "0") {
+        if ('0' === $location->getLocationId()) {
             $resources = $this->provider->listResources($offset, $limit);
         } else {
             $resources = $this->provider->searchResources($location->getLocationId(), $limit, $offset);
@@ -130,7 +129,7 @@ class CloudinaryBackend implements BackendInterface
      */
     public function getSubItemsCount(LocationInterface $location)
     {
-        if ($location->getLocationId() === "0") {
+        if ('0' === $location->getLocationId()) {
             return $this->provider->countResources();
         }
 

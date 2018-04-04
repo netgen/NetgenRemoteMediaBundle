@@ -9,7 +9,7 @@ class InputValue extends BaseValue
     public $input_uri = null;
     public $alt_text = '';
     public $caption = '';
-    public $variations = array();
+    public $variations = [];
 
     /**
      * Returns a string representation of the field value.

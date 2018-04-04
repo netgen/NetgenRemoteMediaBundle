@@ -7,16 +7,9 @@ use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtensi
 
 class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
 {
-    protected function getContainerExtensions()
-    {
-        return [
-            new NetgenRemoteMediaExtension(),
-        ];
-    }
-
     public function testItSetsValidContainerParameters()
     {
-        $this->setParameter('kernel.bundles', array());
+        $this->setParameter('kernel.bundles', []);
         $this->load();
 
         $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_name', 'testname');
@@ -32,12 +25,12 @@ class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
      */
     public function testWithoutProviderParameter()
     {
-        $this->load(array('provider' => null));
+        $this->load(['provider' => null]);
     }
-    
+
     public function testIfContentBrowserIsActive()
     {
-        $this->container->setParameter('kernel.bundles', array('NetgenContentBrowserBundle' => 'NetgenContentBrowserBundle'));
+        $this->container->setParameter('kernel.bundles', ['NetgenContentBrowserBundle' => 'NetgenContentBrowserBundle']);
         $this->load();
 
         $this->assertContainerBuilderHasParameter('netgen_remote_media.content_browser.activated', true);
@@ -45,10 +38,17 @@ class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
 
     public function testIfContentBrowserIsNotActive()
     {
-        $this->container->setParameter('kernel.bundles', array());
+        $this->container->setParameter('kernel.bundles', []);
         $this->load();
 
         $this->assertContainerBuilderHasParameter('netgen_remote_media.content_browser.activated', false);
+    }
+
+    protected function getContainerExtensions()
+    {
+        return [
+            new NetgenRemoteMediaExtension(),
+        ];
     }
 
     protected function getMinimalConfiguration()
@@ -65,11 +65,11 @@ class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
                             'small' => [
                                 'transformations' => [
                                     'name' => ['Crop'],
-                                    'params' => [200,200]
-                                ]
-                            ]
+                                    'params' => [200, 200],
+                                ],
+                            ],
                         ],
-                    ]
+                    ],
                 ],
             ],
         ];

@@ -36,7 +36,7 @@ class LegacyStorageTest extends TestCase
     {
         $this->connection = $this->getMockBuilder(ConnectionHandler::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('createDeleteQuery', 'quoteColumn', 'createInsertQuery', 'createSelectQuery', 'createUpdateQuery'))
+            ->setMethods(['createDeleteQuery', 'quoteColumn', 'createInsertQuery', 'createSelectQuery', 'createUpdateQuery'])
             ->getMock();
 
         $this->storage = new LegacyStorage();
@@ -73,27 +73,27 @@ class LegacyStorageTest extends TestCase
             ->getMock();
 
         $selectQuery = $this->getMockBuilder(SelectDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $insertQuery = $this->getMockBuilder(InsertDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $statement = $this->getMockBuilder(Statement::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('execute', 'fetchAll'))
+            ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
-        $result = array(
-            array('resource_id' => 'some_resource_id'),
-        );
+        $result = [
+            ['resource_id' => 'some_resource_id'],
+        ];
 
         $statement->expects($this->once())
             ->method('fetchAll')
-            ->willReturn(array());
+            ->willReturn([]);
 
         $selectQuery->expects($this->once())
             ->method('prepare')
@@ -125,23 +125,23 @@ class LegacyStorageTest extends TestCase
             ->getMock();
 
         $selectQuery = $this->getMockBuilder(SelectDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $updateQuery = $this->getMockBuilder(UpdateDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $statement = $this->getMockBuilder(Statement::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('execute', 'fetchAll'))
+            ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
-        $result = array(
-            array('resource_id' => 'some_resource_id'),
-        );
+        $result = [
+            ['resource_id' => 'some_resource_id'],
+        ];
 
         $statement->expects($this->once())
             ->method('fetchAll')
@@ -177,13 +177,13 @@ class LegacyStorageTest extends TestCase
             ->getMock();
 
         $query = $this->getMockBuilder(DeleteDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $statement = $this->getMockBuilder(Statement::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('execute'))
+            ->setMethods(['execute'])
             ->getMock();
 
         $query->expects($this->once())
@@ -208,13 +208,13 @@ class LegacyStorageTest extends TestCase
             ->getMock();
 
         $query = $this->getMockBuilder(SelectDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $statement = $this->getMockBuilder(Statement::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('execute', 'fetchAll'))
+            ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
         $this->connection->expects($this->once())
@@ -228,9 +228,9 @@ class LegacyStorageTest extends TestCase
         $statement->expects($this->once())
             ->method('execute');
 
-        $result = array(
-            array('resource_id' => 'some_resource_id'),
-        );
+        $result = [
+            ['resource_id' => 'some_resource_id'],
+        ];
 
         $statement->expects($this->once())
             ->method('fetchAll')
@@ -247,13 +247,13 @@ class LegacyStorageTest extends TestCase
             ->getMock();
 
         $query = $this->getMockBuilder(SelectDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $statement = $this->getMockBuilder(Statement::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('execute', 'fetchAll'))
+            ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
         $this->connection->expects($this->once())
@@ -267,9 +267,9 @@ class LegacyStorageTest extends TestCase
         $statement->expects($this->once())
             ->method('execute');
 
-        $result = array(
-            array('resource_id' => 'some_resource_id'),
-        );
+        $result = [
+            ['resource_id' => 'some_resource_id'],
+        ];
 
         $statement->expects($this->once())
             ->method('fetchAll')
@@ -286,13 +286,13 @@ class LegacyStorageTest extends TestCase
             ->getMock();
 
         $query = $this->getMockBuilder(SelectDoctrineQuery::class)
-            ->setConstructorArgs(array($connection))
-            ->setMethods(array('prepare'))
+            ->setConstructorArgs([$connection])
+            ->setMethods(['prepare'])
             ->getMock();
 
         $statement = $this->getMockBuilder(Statement::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('execute', 'fetchAll'))
+            ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
         $this->connection->expects($this->once())
@@ -306,7 +306,7 @@ class LegacyStorageTest extends TestCase
         $statement->expects($this->once())
             ->method('execute');
 
-        $result = array();
+        $result = [];
 
         $statement->expects($this->once())
             ->method('fetchAll')

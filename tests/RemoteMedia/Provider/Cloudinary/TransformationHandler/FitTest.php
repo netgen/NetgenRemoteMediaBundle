@@ -20,7 +20,7 @@ class FitTest extends BaseTest
     public function testFitSimple()
     {
         $this->assertEquals(
-            array('crop' => 'fit'),
+            ['crop' => 'fit'],
             $this->fit->process($this->value, 'small')
         );
     }
@@ -28,12 +28,12 @@ class FitTest extends BaseTest
     public function testFitWithDimensions()
     {
         $this->assertEquals(
-            array(
+            [
                 'crop' => 'fit',
                 'width' => 100,
-                'height' => 200
-            ),
-            $this->fit->process($this->value, 'small', array(100, 200))
+                'height' => 200,
+            ],
+            $this->fit->process($this->value, 'small', [100, 200])
         );
     }
 }

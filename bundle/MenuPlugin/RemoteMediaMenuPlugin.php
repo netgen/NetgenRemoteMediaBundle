@@ -24,12 +24,12 @@ class RemoteMediaMenuPlugin implements MenuPluginInterface
      */
     public function getTemplates()
     {
-        return array(
+        return [
             'head' => 'NetgenRemoteMediaBundle:ngadminui/plugin:head.html.twig',
             'aside' => '@NetgenAdminUI/menu/plugins/legacy/aside.html.twig',
             'left' => '@NetgenAdminUI/menu/plugins/legacy/left.html.twig',
             'top' => '@NetgenAdminUI/menu/plugins/legacy/top.html.twig',
-        );
+        ];
     }
 
     /**

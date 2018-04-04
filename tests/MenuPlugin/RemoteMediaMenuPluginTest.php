@@ -27,25 +27,25 @@ class RemoteMediaMenuPluginTest extends TestCase
     public function testTemplates()
     {
         $this->assertEquals(
-            array(
+            [
                 'head' => 'NetgenRemoteMediaBundle:ngadminui/plugin:head.html.twig',
                 'aside' => '@NetgenAdminUI/menu/plugins/legacy/aside.html.twig',
                 'left' => '@NetgenAdminUI/menu/plugins/legacy/left.html.twig',
                 'top' => '@NetgenAdminUI/menu/plugins/legacy/top.html.twig',
-            ),
+            ],
             $this->plugin->getTemplates()
         );
     }
 
     public function testIsActive()
     {
-        $this->assertEquals(false, $this->plugin->isActive());
+        $this->assertFalse($this->plugin->isActive());
     }
 
     public function testMatches()
     {
         $fakeRequest = Request::create('/', 'GET');
 
-        $this->assertEquals(false, $this->plugin->matches($fakeRequest));
+        $this->assertFalse($this->plugin->matches($fakeRequest));
     }
 }
