@@ -12,25 +12,24 @@
 >
     <testsuites>
         <testsuite name="Netgen\RemoteMedia\Tests">
-            <directory>Tests</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory>.</directory>
+            <directory suffix=".php">bundle</directory>
             <exclude>
-                <directory>ezpublish_legacy</directory>
-                <directory>Command</directory>
-                <directory>RemoteMedia/Provider/Cloudinary/ContentBrowser</directory>
-                <directory>Resources</directory>
-                <directory>Tests</directory>
-                <directory>vendor</directory>
-                <directory>update</directory>
-                <directory>extension</directory>
-                <file>Core/FieldType/RemoteMedia/SearchField.php</file>
-                <file>RemoteMedia/Provider/Cloudinary/Gateway/CachedGateway.php</file>
-                <file>RemoteMedia/Helper.php</file>
-                <file>NetgenRemoteMediaBundle.php</file>
+                <directory>bundle/ezpublish_legacy</directory>
+                <directory>bundle/Command</directory>
+                <directory>bundle/RemoteMedia/Provider/Cloudinary/ContentBrowser</directory>
+                <directory>bundle/Resources</directory>
+                <directory>bundle/vendor</directory>
+                <directory>bundle/update</directory>
+                <directory>bundle/extension</directory>
+                <file>bundle/Core/FieldType/RemoteMedia/SearchField.php</file>
+                <file>bundle/RemoteMedia/Provider/Cloudinary/Gateway/CachedGateway.php</file>
+                <file>bundle/RemoteMedia/Helper.php</file>
+                <file>bundle/NetgenRemoteMediaBundle.php</file>
             </exclude>
         </whitelist>
     </filter>
