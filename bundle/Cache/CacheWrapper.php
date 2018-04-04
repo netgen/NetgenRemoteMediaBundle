@@ -56,7 +56,8 @@ final class CacheWrapper
     public function saveItem(CacheItem $item, $value, $ttl)
     {
         if (method_exists($item, 'save')) {
-            $item->set($value)->setTTL($ttl);
+            $item->set($value);
+            $item->setTTL($ttl);
             $item->save();
         } else {
             $item->set($value, $ttl);
