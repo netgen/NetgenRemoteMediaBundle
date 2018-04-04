@@ -1,5 +1,7 @@
 <?php
 
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
+
 $http = eZHTTPTool::instance();
 
 $file = eZHTTPFile::fetch( 'file' );
@@ -23,10 +25,8 @@ if (empty($file) || empty($fieldId) || empty($contentId) || empty($contentVersio
 $container = ezpKernel::instance()->getServiceContainer();
 $provider = $container->get( 'netgen_remote_media.provider' );
 
-$value = $provider->upload(
-    $file->Filename,
-    pathinfo($file->OriginalFilename, PATHINFO_FILENAME)
-);
+$uploadFile = UploadFile::fromZHTTPFile($file);
+$value = $provider->upload($uploadFile);
 
 $responseData = array(
     'media' => !empty($value->resourceId) ? $value : false,

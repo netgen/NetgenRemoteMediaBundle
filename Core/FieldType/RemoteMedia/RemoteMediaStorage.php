@@ -9,6 +9,7 @@ use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\API\Repository\ContentService;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 
 class RemoteMediaStorage extends GatewayBasedStorage
 {
@@ -79,16 +80,11 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $versionInfo->versionNo
             );
         } else if (is_array($data) && !empty($data)) {
-            $fileUri = $data['input_uri'];
-            $id = pathinfo($fileUri, PATHINFO_FILENAME);
-
             $options['alt_text'] = $data['alt_text'];
             $options['caption'] = $data['caption'];
-            $value = $this->provider->upload(
-                $fileUri,
-                $id,
-                $options
-            );
+
+            $uploadFile = UploadFile::fromUri($data['input_uri']);
+            $value = $this->provider->upload($uploadFile, $options);
 
             $value->variations = $data['variations'];
 

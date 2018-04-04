@@ -10,6 +10,7 @@ use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use eZ\Publish\Core\Helper\FieldHelper;
 use eZ\Publish\Core\Helper\TranslationHelper;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -158,7 +159,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
     protected function getContinue()
     {
         $question = new Question('Continue? (y/n): ', 'y');
-        $continue = $this>$this->questionHelper->ask($this->input, $this->output, $question);
+        $continue = $this->questionHelper->ask($this->input, $this->output, $question);
 
         return $continue === 'y';
     }
@@ -203,11 +204,10 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         // @todo: handle translations
         $ezImageValue = $this->translationHelper->getTranslatedField($content, $ezimageFieldIdentifier)->value;
 
-        $fullPath = $this->webPath.$ezImageValue->uri;
-        $name = $ezImageValue->fileName;
+        $uploadFile = UploadFile::fromEzImageValue($ezImageValue, $this->webPath);
 
         if ($dryRun) {
-            $this->output->writeln('<info>Would migrate image: '.$fullPath.'</info>');
+            $this->output->writeln('<info>Would migrate image: '.$uploadFile->uri().'</info>');
 
             return true;
         }
@@ -228,7 +228,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             throw $e;
         }
 
-        $value = $this->remoteMediaProvider->upload($fullPath, $name);
+        $value = $this->remoteMediaProvider->upload($uploadFile);
 
         $contentUpdateStruct = $this->contentService->newContentUpdateStruct();
         $contentUpdateStruct->setField($remoteMediaFieldIdentifier, $value);

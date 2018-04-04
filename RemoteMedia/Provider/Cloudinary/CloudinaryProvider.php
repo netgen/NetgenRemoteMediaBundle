@@ -4,6 +4,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
 use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
@@ -49,6 +50,13 @@ class CloudinaryProvider extends RemoteMediaProvider
         return true;
     }
 
+    /**
+     * @param File $file
+     *
+     * @return mixed
+     *
+     * @throws MimeCategoryParseException
+     */
     private function parseMimeCategory(File $file)
     {
         $parsedMime = explode('/', $file->getMimeType());
@@ -59,15 +67,21 @@ class CloudinaryProvider extends RemoteMediaProvider
         return $parsedMime[0];
     }
 
-    private function appendExtension($publicId, $fileUri)
+    /**
+     * @param $publicId
+     * @param UploadFile $uploadFile
+     *
+     * @return string
+     */
+    private function appendExtension($publicId, UploadFile $uploadFile)
     {
-        $file = new File($fileUri);
-        $extension = $file->getExtension();
+        $extension = $uploadFile->originalExtension();
 
         if (empty($extension)) {
             return $publicId;
         }
 
+        $file = new File($uploadFile->uri());
         $mimeCategory = $this->parseMimeCategory($file);
 
         // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
@@ -82,15 +96,14 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
-     * @param string $fileName
-     * @param string $fileUri
+     * @param UploadFile $uploadFile
      * @param array $options
      *
      * @return array
      */
-    protected function prepareUploadOptions($fileName, $fileUri, $options = array())
+    protected function prepareUploadOptions(UploadFile $uploadFile, $options = array())
     {
-        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $fileName);
+        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
         $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
         $fileName = rtrim($cleanFileName, '_');
 
@@ -99,7 +112,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
 
         $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
-        $publicId = $this->appendExtension($publicId, $fileUri);
+        $publicId = $this->appendExtension($publicId, $uploadFile);
 
         if (!empty($options['folder'])) {
             $publicId = $options['folder'].'/'.$publicId;
@@ -122,17 +135,16 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
-     * @param string $fileUri
-     * @param string $fileName
+     * @param UploadFile $uploadFile
      * @param array $options
      *
      * @return Value
      */
-    public function upload($fileUri, $fileName, $options = array())
+    public function upload(UploadFile $uploadFile, $options = array())
     {
-        $options = $this->prepareUploadOptions($fileName, $fileUri, $options);
+        $options = $this->prepareUploadOptions($uploadFile, $options);
 
-        $response = $this->gateway->upload($fileUri, $options);
+        $response = $this->gateway->upload($uploadFile->uri(), $options);
 
         return Value::createFromCloudinaryResponse($response);
     }

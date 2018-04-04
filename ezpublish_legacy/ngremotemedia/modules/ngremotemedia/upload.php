@@ -1,5 +1,7 @@
 <?php
 
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
+
 $http = eZHTTPTool::instance();
 
 $contentId = $Params['contentobject_id'];
@@ -29,7 +31,8 @@ if ($folder !== 'all') {
     $options['folder'] = $folder;
 }
 
-$value = $provider->upload($file->Filename, pathinfo($file->OriginalFilename, PATHINFO_FILENAME), $options);
+$uploadFile = UploadFile::fromZHTTPFile($file);
+$value = $provider->upload($uploadFile, $options);
 
 $attribute = eZContentObjectAttribute::fetch($fieldId, $contentVersionId);
 $attribute->setAttribute('data_text', json_encode($value));
