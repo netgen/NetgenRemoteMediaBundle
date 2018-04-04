@@ -5,9 +5,9 @@ return PhpCsFixer\Config::create()
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
-        'array_syntax' => array('syntax' => 'long'),
+        'array_syntax' => array('syntax' => 'short'),
         'combine_consecutive_unsets' => true,
-        'concat_space' => ['spacing' => 'one'],
+        'concat_space' => ['spacing' => 'none'],
         'no_useless_else' => true,
         'no_useless_return' => true,
         'ordered_class_elements' => true,
@@ -23,7 +23,7 @@ return PhpCsFixer\Config::create()
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->exclude(['vendor', 'doc', ezpublish_legacy])
+            ->exclude(['vendor', 'doc', 'ezpublish_legacy'])
             ->in(__DIR__)
     )
 ;
