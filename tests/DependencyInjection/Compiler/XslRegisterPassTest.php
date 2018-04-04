@@ -34,7 +34,7 @@ class XslRegisterPassTest extends AbstractCompilerPassTestCase
         );
 
         $expectedInjectedParameter = array(
-            'path' => str_replace('Tests/', '', __DIR__) . '/../../Resources/xsl/ezxml_ngremotemedia.xsl',
+            'path' => str_replace('tests/', 'bundle/', __DIR__) . '/../../Resources/xsl/ezxml_ngremotemedia.xsl',
             'priority' => 5000,
         );
 

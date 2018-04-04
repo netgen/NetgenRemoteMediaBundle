@@ -35,8 +35,13 @@
     },
     "target-dir": "Netgen/Bundle/RemoteMediaBundle",
     "autoload": {
-        "psr-0": {
-            "Netgen\\Bundle\\RemoteMediaBundle": ""
+        "psr-4": {
+            "Netgen\\Bundle\\RemoteMediaBundle\\": "bundle"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Netgen\\Bundle\\Tests\\": "tests"
         }
     },
     "scripts": {
