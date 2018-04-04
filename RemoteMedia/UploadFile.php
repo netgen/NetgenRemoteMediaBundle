@@ -3,6 +3,7 @@
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use \eZHTTPFile;
+use eZ\Publish\Core\FieldType\Image\Value;
 
 class UploadFile
 {
@@ -46,6 +47,25 @@ class UploadFile
         $uploadFile->uri = $file->Filename;
         $uploadFile->originalFilename = pathinfo($file->OriginalFilename, PATHINFO_FILENAME);
         $uploadFile->originalExtension = pathinfo($file->OriginalFilename, PATHINFO_EXTENSION);
+
+        return $uploadFile;
+    }
+
+    /**
+     * Constructs UploadFile from given eZImage field Value.
+     *
+     * @param Value $value
+     * @param $webRoot
+     *
+     * @return UploadFile
+     */
+    public static function fromEzImageValue(Value $value, $webRoot)
+    {
+        $uploadFile = new UploadFile;
+
+        $uploadFile->uri = $webRoot.$value->uri;
+        $uploadFile->originalFilename = pathinfo($value->fileName, PATHINFO_FILENAME);
+        $uploadFile->originalExtension = pathinfo($value->fileName, PATHINFO_EXTENSION);
 
         return $uploadFile;
     }
