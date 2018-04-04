@@ -33,7 +33,6 @@
         "phpunit/phpunit": "^5.7",
         "friendsofphp/php-cs-fixer": "^2.0"
     },
-    "target-dir": "Netgen/Bundle/RemoteMediaBundle",
     "autoload": {
         "psr-4": {
             "Netgen\\Bundle\\RemoteMediaBundle\\": "bundle"
