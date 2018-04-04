@@ -7,6 +7,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
@@ -513,7 +514,7 @@ class CloudinaryProviderTest extends TestCase
     public function testUpload()
     {
         $options = array(
-            'public_id' => 'name',
+            'public_id' => 'filename',
             'overwrite' => true,
             'invalidate' => true,
             'discard_original_filename' => true,
@@ -525,13 +526,15 @@ class CloudinaryProviderTest extends TestCase
         );
 
         $root = vfsStream::setup('some');
-        $file = vfsStream::newFile('path')->at($root);
+        $file = vfsStream::newFile('filename')->at($root);
+
+        $uploadFile = UploadFile::fromUri($file->url());
 
         $this->gateway->method('upload')->willReturn(
             array(
-                'public_id' => 'name',
-                'url' => 'http://some.url/path',
-                'secure_url' => 'https://some.url/path',
+                'public_id' => 'filename',
+                'url' => 'http://some.url/filename',
+                'secure_url' => 'https://some.url/filename',
                 'bytes' => 1024,
                 'resource_type' => 'image'
             )
@@ -541,24 +544,24 @@ class CloudinaryProviderTest extends TestCase
             ->expects($this->once())
             ->method('upload')
             ->with(
-                $file->url(),
+                $uploadFile->uri(),
                 $options
             );
 
-        $value = $this->cloudinaryProvider->upload($file->url(), 'name', array('overwrite' => true));
+        $value = $this->cloudinaryProvider->upload($uploadFile, array('overwrite' => true));
 
         $this->assertInstanceOf(Value::class, $value);
 
         $this->assertEquals(
-            'name',
+            'filename',
             $value->resourceId
         );
         $this->assertEquals(
-            'http://some.url/path',
+            'http://some.url/filename',
             $value->url
         );
         $this->assertEquals(
-            'https://some.url/path',
+            'https://some.url/filename',
             $value->secure_url
         );
         $this->assertEquals(
@@ -606,7 +609,9 @@ class CloudinaryProviderTest extends TestCase
                 $options
             );
 
-        $value = $this->cloudinaryProvider->upload($file->url(), 'file', array('overwrite' => true));
+        $uploadFile = UploadFile::fromUri($file->url());
+
+        $value = $this->cloudinaryProvider->upload($uploadFile, array('overwrite' => true));
 
         $this->assertInstanceOf(Value::class, $value);
 
@@ -636,7 +641,9 @@ class CloudinaryProviderTest extends TestCase
     {
         $this->expectException(FileNotFoundException::class);
 
-        $this->cloudinaryProvider->upload('some/path', 'name', array('overwrite' => true));
+        $uploadFile = UploadFile::fromUri('/some/path.jpg');
+
+        $this->cloudinaryProvider->upload($uploadFile, array('overwrite' => true));
     }
 
     public function testBuildVariation()
