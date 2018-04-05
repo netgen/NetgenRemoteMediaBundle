@@ -285,12 +285,19 @@ class CloudinaryApiGateway extends Gateway
      * Fetches the remote resource by id.
      *
      * @param $id
-     * @param $options
+     * @param $type
      *
      * @return array
      */
-    public function get($id, $options)
+    public function get($id, $type)
     {
+        $options = array(
+            'resource_type' => $type,
+            'max_results' => 1,
+            'tags' => true,
+            'context' => true,
+        );
+
         $response = $this->cloudinaryApi->resources_by_ids(
             array($id),
             $options

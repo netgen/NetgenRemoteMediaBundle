@@ -221,7 +221,13 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testGetNotExistingResource()
     {
-        $options = array();
+        $options = array(
+            'resource_type' => 'image',
+            'max_results' => 1,
+            'tags' => true,
+            'context' => true,
+        );
+
 
         $this->cloudinaryApi
             ->method('resources_by_ids')
@@ -232,7 +238,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->method('resources_by_ids')
             ->with(array('test_id'), $options);
 
-        $result = $this->apiGateway->get('test_id', $options);
+        $result = $this->apiGateway->get('test_id', 'image');
 
         $this->assertEquals(
             array(),
