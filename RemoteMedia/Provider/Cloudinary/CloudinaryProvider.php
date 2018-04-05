@@ -231,13 +231,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function listResources($limit = 10, $offset = 0, $resource_type = 'image')
     {
-        $options = array(
-            'tags' => true,
-            'context' => true,
-            'resource_type' => $resource_type
-        );
-
-        return $this->gateway->listResources($options, $limit, $offset);
+        return $this->gateway->listResources($resource_type, $limit, $offset);
     }
 
     /**

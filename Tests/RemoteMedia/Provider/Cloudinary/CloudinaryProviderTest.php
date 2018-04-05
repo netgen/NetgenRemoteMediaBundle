@@ -78,15 +78,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with(
-                array(
-                    'tags' => true,
-                    'context' => true,
-                    'resource_type' => 'image'
-                ),
-                10,
-                0
-            );
+            ->with('image', 10, 0)
+        ;
 
         $this->cloudinaryProvider->listResources();
     }
@@ -98,15 +91,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with(
-                array(
-                    'tags' => true,
-                    'context' => true,
-                    'resource_type' => 'image'
-                ),
-                20,
-                0
-            );
+            ->with('image', 20, 0)
+        ;
 
         $this->cloudinaryProvider->listResources(20);
     }
@@ -118,15 +104,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with(
-                array(
-                    'tags' => true,
-                    'context' => true,
-                    'resource_type' => 'image'
-                ),
-                20,
-                5
-            );
+            ->with('image', 20, 5)
+        ;
 
         $this->cloudinaryProvider->listResources(20, 5);
     }
