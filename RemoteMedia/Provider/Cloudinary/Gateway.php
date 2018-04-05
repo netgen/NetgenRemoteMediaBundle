@@ -39,13 +39,13 @@ abstract class Gateway
     /**
      * List all available resources.
      *
-     * @param $options
+     * @param $type
      * @param $limit
      * @param $offset
      *
      * @return array
      */
-    public abstract function listResources($options, $limit, $offset);
+    public abstract function listResources($type, $limit, $offset);
 
     /**
      * Lists all available folders.

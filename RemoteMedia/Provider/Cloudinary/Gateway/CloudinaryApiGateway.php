@@ -201,14 +201,19 @@ class CloudinaryApiGateway extends Gateway
      * Max limit for this endpoint is 500.
      * @see \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway.php
      *
-     * @param $options
+     * @param $type
      * @param $limit
      * @param $offset
      *
      * @return array
      */
-    public function listResources($options, $limit, $offset)
+    public function listResources($type, $limit, $offset)
     {
+        $options = array(
+            'tags' => true,
+            'context' => true,
+            'resource_type' => $type
+        );
         $options['max_results'] = 500;
 
         $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
