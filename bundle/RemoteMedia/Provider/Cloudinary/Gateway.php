@@ -2,6 +2,9 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
+/**
+ * @internal
+ */
 abstract class Gateway
 {
     /**
@@ -39,13 +42,13 @@ abstract class Gateway
     /**
      * List all available resources.
      *
-     * @param $options
+     * @param $type
      * @param $limit
      * @param $offset
      *
      * @return array
      */
-    abstract public function listResources($options, $limit, $offset);
+    public abstract function listResources($type, $limit, $offset);
 
     /**
      * Lists all available folders.
@@ -74,11 +77,11 @@ abstract class Gateway
      * Fetches the remote resource by id.
      *
      * @param $id
-     * @param $options
+     * @param $type
      *
      * @return array
      */
-    abstract public function get($id, $options);
+    public abstract function get($id, $type);
 
     /**
      * Adds new tag to the remote resource.

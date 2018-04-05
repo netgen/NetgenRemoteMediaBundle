@@ -136,9 +136,12 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testListResource()
     {
-        $apiOptions = [
+        $apiOptions = array(
             'max_results' => 500,
-        ];
+            'tags' => true,
+            'context' => true,
+            'resource_type' => 'image'
+        );
 
         $this->cloudinaryApi->method('resources')->willReturn(new \ArrayObject(['resources' => []]));
 
@@ -147,13 +150,18 @@ class CloudinaryApiGatewayTest extends TestCase
             ->method('resources')
             ->with($apiOptions);
 
-        $this->apiGateway->listResources([], 20, 0);
+        $this->apiGateway->listResources('image', 20, 0);
     }
 
     public function testListResourcesWithMoreResults()
     {
-        $options1 = ['max_results' => 500];
-        $options2 = $options1 + ['next_cursor' => 123];
+        $options1 = array(
+            'max_results' => 500,
+            'tags' => true,
+            'context' => true,
+            'resource_type' => 'image'
+        );
+        $options2 = $options1 + array('next_cursor' => 123);
 
         $this->cloudinaryApi
             ->method('resources')
@@ -167,7 +175,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->method('resources')
             ->withConsecutive([$options1], [$options2]);
 
-        $this->apiGateway->listResources([], 0, 20);
+        $this->apiGateway->listResources('image', 0, 20);
     }
 
     public function testListFolders()
@@ -220,7 +228,12 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testGetNotExistingResource()
     {
-        $options = [];
+        $options = array(
+            'resource_type' => 'image',
+            'max_results' => 1,
+            'tags' => true,
+            'context' => true,
+        );
 
         $this->cloudinaryApi
             ->method('resources_by_ids')
@@ -231,7 +244,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->method('resources_by_ids')
             ->with(['test_id'], $options);
 
-        $result = $this->apiGateway->get('test_id', $options);
+        $result = $this->apiGateway->get('test_id', 'image');
 
         $this->assertEquals(
             [],

@@ -18,7 +18,7 @@ matrix:
 branches:
   only:
     - master
-    - dev
+    - 1.1-release
 
 # make sure to update composer to latest available version
 before_install:

@@ -118,13 +118,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function listResources($limit = 10, $offset = 0, $resource_type = 'image')
     {
-        $options = [
-            'tags' => true,
-            'context' => true,
-            'resource_type' => $resource_type,
-        ];
-
-        return $this->gateway->listResources($options, $limit, $offset);
+        return $this->gateway->listResources($resource_type, $limit, $offset);
     }
 
     /**
@@ -213,14 +207,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return new Value();
         }
 
-        $options = [
-            'resource_type' => $resourceType,
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        ];
-
-        $response = $this->gateway->get($resourceId, $options);
+        $response = $this->gateway->get($resourceId, $resourceType);
 
         if (empty($response)) {
             return new Value();

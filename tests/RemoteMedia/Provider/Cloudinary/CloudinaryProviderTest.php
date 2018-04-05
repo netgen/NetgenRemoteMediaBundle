@@ -77,15 +77,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with(
-                [
-                    'tags' => true,
-                    'context' => true,
-                    'resource_type' => 'image',
-                ],
-                10,
-                0
-            );
+            ->with('image', 10, 0)
+        ;
 
         $this->cloudinaryProvider->listResources();
     }
@@ -97,15 +90,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with(
-                [
-                    'tags' => true,
-                    'context' => true,
-                    'resource_type' => 'image',
-                ],
-                20,
-                0
-            );
+            ->with('image', 20, 0)
+        ;
 
         $this->cloudinaryProvider->listResources(20);
     }
@@ -117,15 +103,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with(
-                [
-                    'tags' => true,
-                    'context' => true,
-                    'resource_type' => 'image',
-                ],
-                20,
-                5
-            );
+            ->with('image', 20, 5)
+        ;
 
         $this->cloudinaryProvider->listResources(20, 5);
     }
@@ -243,13 +222,6 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteResource()
     {
-        $options = [
-            'resource_type' => 'image',
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        ];
-
         $this->gateway->method('get')->willReturn(
             [
                 'public_id' => 'testResourceId',
@@ -263,7 +235,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('get')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', 'image');
 
         $value = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
 
@@ -292,13 +264,6 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteVideo()
     {
-        $options = [
-            'resource_type' => 'video',
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        ];
-
         $this->gateway->method('get')->willReturn(
             [
                 'public_id' => 'testResourceId',
@@ -312,7 +277,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('get')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', 'video');
 
         $value = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'video');
 
@@ -325,13 +290,6 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteDocument()
     {
-        $options = [
-            'resource_type' => 'image',
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        ];
-
         $this->gateway->method('get')->willReturn(
             [
                 'public_id' => 'testResourceId',
@@ -346,7 +304,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('get')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', 'image');
 
         $value = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
 

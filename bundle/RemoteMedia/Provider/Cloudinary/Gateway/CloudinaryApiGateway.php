@@ -128,14 +128,19 @@ class CloudinaryApiGateway extends Gateway
      *
      * @see \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway.php
      *
-     * @param $options
+     * @param $type
      * @param $limit
      * @param $offset
      *
      * @return array
      */
-    public function listResources($options, $limit, $offset)
+    public function listResources($type, $limit, $offset)
     {
+        $options = array(
+            'tags' => true,
+            'context' => true,
+            'resource_type' => $type
+        );
         $options['max_results'] = 500;
 
         $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
@@ -212,12 +217,19 @@ class CloudinaryApiGateway extends Gateway
      * Fetches the remote resource by id.
      *
      * @param $id
-     * @param $options
+     * @param $type
      *
      * @return array
      */
-    public function get($id, $options)
+    public function get($id, $type)
     {
+        $options = array(
+            'resource_type' => $type,
+            'max_results' => 1,
+            'tags' => true,
+            'context' => true,
+        );
+
         $response = $this->cloudinaryApi->resources_by_ids(
             [$id],
             $options

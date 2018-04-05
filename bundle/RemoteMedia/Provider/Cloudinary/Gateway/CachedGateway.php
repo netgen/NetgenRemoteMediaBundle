@@ -101,19 +101,19 @@ class CachedGateway extends Gateway
     /**
      * List all available resources.
      *
-     * @param $options
+     * @param $type
      * @param $limit
      * @param $offset
      *
      * @return array
      */
-    public function listResources($options, $limit, $offset)
+    public function listResources($type, $limit, $offset)
     {
-        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST]);
+        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type));
         $list = $cacheItem->get();
 
         if ($cacheItem->isMiss()) {
-            $list = $this->gateway->listResources($options, $limit, $offset);
+            $list = $this->gateway->listResources($type, $limit, $offset);
             $this->cache->saveItem($cacheItem, $list, $this->ttl);
         }
 
@@ -172,18 +172,17 @@ class CachedGateway extends Gateway
      * Fetches the remote resource by id.
      *
      * @param $id
-     * @param $options
+     * @param $type
      *
      * @return array
      */
-    public function get($id, $options)
+    public function get($id, $type)
     {
-        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id]);
-
+        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type));
         $value = $cacheItem->get();
 
         if ($cacheItem->isMiss()) {
-            $value = $this->gateway->get($id, $options);
+            $value = $this->gateway->get($id, $type);
             $this->cache->saveItem($cacheItem, $value, $this->ttl);
         }
 
