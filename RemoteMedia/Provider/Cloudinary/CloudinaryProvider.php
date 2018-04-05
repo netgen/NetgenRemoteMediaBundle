@@ -320,14 +320,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return new Value();
         }
 
-        $options = array(
-            'resource_type' => $resourceType,
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        );
-
-        $response = $this->gateway->get($resourceId, $options);
+        $response = $this->gateway->get($resourceId, $resourceType);
 
         if (empty($response)) {
             return new Value();

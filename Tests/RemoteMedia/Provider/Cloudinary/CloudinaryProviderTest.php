@@ -224,13 +224,6 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteResource()
     {
-        $options = array(
-            'resource_type' => 'image',
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        );
-
         $this->gateway->method('get')->willReturn(
             array(
                 'public_id' => 'testResourceId',
@@ -244,7 +237,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('get')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', 'image');
 
         $value = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
 
@@ -273,13 +266,6 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteVideo()
     {
-        $options = array(
-            'resource_type' => 'video',
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        );
-
         $this->gateway->method('get')->willReturn(
             array(
                 'public_id' => 'testResourceId',
@@ -293,7 +279,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('get')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', 'video');
 
         $value = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'video');
 
@@ -306,13 +292,6 @@ class CloudinaryProviderTest extends TestCase
 
     public function testGetRemoteDocument()
     {
-        $options = array(
-            'resource_type' => 'image',
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        );
-
         $this->gateway->method('get')->willReturn(
             array(
                 'public_id' => 'testResourceId',
@@ -327,7 +306,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('get')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', 'image');
 
         $value = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
 
