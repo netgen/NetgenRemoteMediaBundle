@@ -10,7 +10,7 @@ You can do simple management of your media files while editing the content, dire
 With a simple press of a button, you can either browse the existing media (separated into images and videos) or upload the media from your own computer.
 When uploading, you can select which folder to upload to*, and when browsing and searching, you can also limit your view per folder.
 
-(*) Note: for automatic creating of folders when uploading, please remember to activate "Auto-create folders" option on your Cloudinary account.
+(*) **Note**: for automatic creating of folders when uploading, please remember to activate "Auto-create folders" option on your Cloudinary account.
 
 ### Cropping the images ###
 The editors have the ability to crop the images immediately when editing the content object. As long as the variations in the `crop` transformation are defined, editors are able to choose which part of the image they want to show for each use case.

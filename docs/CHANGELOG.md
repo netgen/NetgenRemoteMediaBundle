@@ -1,12 +1,27 @@
 # Netgen Remote Media Bundle changelog
 
+## 1.1.11
+
+### Fixed
+
+* cache keys for resource listings and fetching of a single resource
+  are now generated with having 'type' in mind (image/video)
+
+## 1.1.10
+
+### Fixed
+
+* remove slashes from cache key generation (fixes folders listing issue)
+
 ## 1.1.9
 
 ### Added
 
 * cache TTL is exposed through the parameter `netgen_remote_media.cloudinary.cache_ttl`
 
-###
+### Changed
+
+* non-media files now get uploaded with original extension
 
 ## 1.1.8
 
@@ -38,7 +53,7 @@
 
 ### Fixed
 
-* undefined offset error when requesting non-existant resource id
+* undefined offset error when requesting non-existent resource id
 * validation for required field
 
 ## 1.1.3
@@ -83,7 +98,7 @@
 
 ### Removed
 
-* suppport for eZExceed
+* support for eZExceed
 
 ## 1.0.11-alpha
 
@@ -143,13 +158,13 @@
 ### Added
 
 * add migration command
-* test for existance of array offset before testing it's value
+* test for existence of array offset before testing it's value
 
 ## 1.0.2-alpha
 
 ### Fixed
 
-* enable overwritting of the media on cloudinary.
+* enable overwriting of the media on Cloudinary.
 
 ## 1.0.1-alpha
 

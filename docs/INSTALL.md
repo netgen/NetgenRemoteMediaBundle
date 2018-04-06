@@ -1,16 +1,17 @@
-# Installation instructions for Netgen Remote Media Bundle #
+# Installation instructions for Netgen Remote Media Bundle
 
-## Requirements ##
-* eZ Publish 5.4. or eZ Platform
+## Requirements
+
+* eZ Platform
 
 **Suggested**
 * this package works best with NetgenAdminUI.
 
-## Installation steps ##
+## Installation steps
 
 * Run the following from your website root folder:
-	`$ composer require netgen/remote-media-bundle:^1.0`
-    
+	`$ composer require netgen/remote-media-bundle:^2.0`
+  
 * Configure the bundle:
     * in `config.yml` add basic configuration:
     ```
