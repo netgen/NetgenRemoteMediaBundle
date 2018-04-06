@@ -1,4 +1,4 @@
-# Netgen Remote Media Bundle #
+# Netgen Remote Media Bundle
 
 [![Build Status](https://img.shields.io/travis/netgen/NetgenRemoteMediaBundle.svg?style=flat-square)](https://travis-ci.org/netgen/NetgenRemoteMediaBundle)
 [![Code Coverage](https://img.shields.io/codecov/c/github/netgen/NetgenRemoteMediaBundle.svg?style=flat-square)](https://codecov.io/gh/netgen/NetgenRemoteMediaBundle)
@@ -10,27 +10,24 @@ Netgen Remote Media Bundle is an eZ Publish bundle providing field type which su
 
 This repository contains field type (and legacy data type) implementation and provides the interface for the legacy administration. 
 
-
-## Features ##
+## Features
 
 * field type support for remote resources (only Cloudinary supported at the moment)
 * support for images, videos, and documents upload
 * images cropping editor
 
 
-## Licence and installation instructions ##
+## Licence and installation instructions
 
 [Licence](LICENCE)
 
-[Installation instructions](Resources/docs/INSTALL.md)
+[Installation instructions](docs/INSTALL.md)
 
+## Documentation
 
-## Documentation ##
+For usage documentation see [USAGE.md](docs/USAGE.md)
 
-For usage documentation see [USAGE.md](Resources/docs/USAGE.md)
-
-
-## Copyright ## 
+## Copyright
 
 * Copyright (C) 2016 Keyteq. All rights reserved.
 * Copyright (C) 2016 Netgen. All rights reserved.
