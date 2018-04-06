@@ -109,7 +109,7 @@ class CachedGateway extends Gateway
      */
     public function listResources($type, $limit, $offset)
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type));
+        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type]);
         $list = $cacheItem->get();
 
         if ($cacheItem->isMiss()) {
@@ -178,7 +178,7 @@ class CachedGateway extends Gateway
      */
     public function get($id, $type)
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type));
+        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type]);
         $value = $cacheItem->get();
 
         if ($cacheItem->isMiss()) {

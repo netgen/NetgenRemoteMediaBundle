@@ -143,10 +143,10 @@ abstract class RemoteMediaProvider
     /**
      * Updates the resource context.
      * eg. alt text and caption:
-     * context = array(
+     * context = [
      *      'caption' => 'new caption'
      *      'alt' => 'alt text'
-     * );.
+     * ];.
      *
      * @param mixed $resourceId
      * @param string $resourceType

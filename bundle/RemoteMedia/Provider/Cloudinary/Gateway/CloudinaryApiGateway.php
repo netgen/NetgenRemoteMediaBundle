@@ -136,11 +136,11 @@ class CloudinaryApiGateway extends Gateway
      */
     public function listResources($type, $limit, $offset)
     {
-        $options = array(
+        $options = [
             'tags' => true,
             'context' => true,
             'resource_type' => $type
-        );
+        ];
         $options['max_results'] = 500;
 
         $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
@@ -223,12 +223,12 @@ class CloudinaryApiGateway extends Gateway
      */
     public function get($id, $type)
     {
-        $options = array(
+        $options = [
             'resource_type' => $type,
             'max_results' => 1,
             'tags' => true,
             'context' => true,
-        );
+        ];
 
         $response = $this->cloudinaryApi->resources_by_ids(
             [$id],
