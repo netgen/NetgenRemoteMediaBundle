@@ -48,7 +48,7 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function listResources($type, $limit, $offset);
+    abstract public function listResources($type, $limit, $offset);
 
     /**
      * Lists all available folders.
@@ -81,7 +81,7 @@ abstract class Gateway
      *
      * @return array
      */
-    public abstract function get($id, $type);
+    abstract public function get($id, $type);
 
     /**
      * Adds new tag to the remote resource.

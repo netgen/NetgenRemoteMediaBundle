@@ -139,7 +139,7 @@ class CloudinaryApiGateway extends Gateway
         $options = [
             'tags' => true,
             'context' => true,
-            'resource_type' => $type
+            'resource_type' => $type,
         ];
         $options['max_results'] = 500;
 
