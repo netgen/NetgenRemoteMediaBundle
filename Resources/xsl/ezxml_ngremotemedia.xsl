@@ -10,10 +10,10 @@
     <xsl:output method="html" indent="yes" encoding="UTF-8"/>
 
     <xsl:template match="custom[@name='ngremotemedia']">
-        <div class="remote-image-inline">
+        <div>
+            <xsl:attribute name="class">remote-image-inline <xsl:value-of select="@custom:cssclass"/></xsl:attribute>
             <img>
                 <xsl:attribute name="src"><xsl:value-of select="@custom:image_url"/></xsl:attribute>
-                <xsl:attribute name="class"><xsl:value-of select="@custom:cssclass"/></xsl:attribute>
                 <xsl:attribute name="alt"><xsl:value-of select="@custom:alttext"/></xsl:attribute>
             </img><div class="img-caption"><xsl:value-of select="@custom:caption" /></div>
         </div>
