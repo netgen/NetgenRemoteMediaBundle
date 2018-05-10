@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": "~7.0",
-        "ezsystems/ezpublish-kernel": "^6.0",
+        "ezsystems/ezpublish-kernel": "^6.11@dev|^7.0@dev",
         "doctrine/orm": "^2.4",
         "cloudinary/cloudinary_php": "^1.0"
     },
