@@ -79,6 +79,17 @@ class Psr6CachedGateway extends Gateway
         return $tags;
     }
 
+    private function washKey($key)
+    {
+        $forbiddenCharacters = ['{', '}', '(', ')', '/', '\\', '@'];
+        foreach ($forbiddenCharacters as $char) {
+            $key = str_replace($char, '_', trim($key, $char));
+        }
+
+        return $key;
+
+    }
+
     /**
      * Uploads file to cloudinary.
      *
@@ -127,8 +138,9 @@ class Psr6CachedGateway extends Gateway
      */
     public function search($query, $options = [], $limit = 10, $offset = 0)
     {
-        $searchCacheKey = implode('-',
-            [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)]);
+        $searchCacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)])
+        );
         $cacheItem = $this->cache->getItem($searchCacheKey);
 
         if ($cacheItem->isHit()) {
@@ -157,7 +169,9 @@ class Psr6CachedGateway extends Gateway
      */
     public function listResources($type, $limit, $offset)
     {
-        $listCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type]);
+        $listCacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type])
+        );
         $cacheItem = $this->cache->getItem($listCacheKey);
 
         if ($cacheItem->isHit()) {
@@ -181,7 +195,9 @@ class Psr6CachedGateway extends Gateway
      */
     public function listFolders()
     {
-        $listFolderCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST]);
+        $listFolderCacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST])
+        );
         $cacheItem = $this->cache->getItem($listFolderCacheKey);
 
         if ($cacheItem->isHit()) {
@@ -215,7 +231,9 @@ class Psr6CachedGateway extends Gateway
      */
     public function countResourcesInFolder($folder)
     {
-        $countCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder]);
+        $countCacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder])
+        );
         $cacheItem = $this->cache->getItem($countCacheKey);
 
         if ($cacheItem->isHit()) {
@@ -240,7 +258,9 @@ class Psr6CachedGateway extends Gateway
      */
     public function get($id, $type)
     {
-        $resourceCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type]);
+        $resourceCacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type])
+        );
         $cacheItem = $this->cache->getItem($resourceCacheKey);
 
         if ($cacheItem->isHit()) {
