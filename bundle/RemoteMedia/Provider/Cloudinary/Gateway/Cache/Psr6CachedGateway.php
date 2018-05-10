@@ -47,11 +47,36 @@ class Psr6CachedGateway extends Gateway
         $this->ttl = $ttl;
     }
 
+    /**
+     * All items will be tagged with this tag, so all cache can be invalidate at once.
+     *
+     * @return string
+     */
     private function getBaseTag()
     {
         $tagBase = [self::PROJECT_KEY, self::PROVIDER_KEY];
 
         return implode('-', $tagBase);
+    }
+
+    private function getCacheTags($type)
+    {
+        $tags = [
+            $this->getBaseTag(),
+            self::PROJECT_KEY . '-' . self::PROVIDER_KEY . '-' . $type,
+        ];
+
+        return $tags;
+    }
+
+    private function getItemCacheTags($resourceId)
+    {
+        $tags = [
+            $this->getBaseTag(),
+            self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $resourceId
+        ];
+
+        return $tags;
     }
 
     /**
@@ -66,7 +91,13 @@ class Psr6CachedGateway extends Gateway
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
-        $this->cache->invalidateTags([$this->getBaseTag()]);
+        $tags = [
+            $searchTags = $this->getCacheTags(self::SEARCH),
+            $this->getCacheTags(self::LIST),
+            $this->getCacheTags(self::FOLDER_LIST),
+            $this->getCacheTags(self::FOLDER_COUNT)
+        ];
+        $this->cache->invalidateTags($tags);
 
         return $uploadResult;
     }
@@ -96,7 +127,8 @@ class Psr6CachedGateway extends Gateway
      */
     public function search($query, $options = [], $limit = 10, $offset = 0)
     {
-        $searchCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)]);
+        $searchCacheKey = implode('-',
+            [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)]);
         $cacheItem = $this->cache->getItem($searchCacheKey);
 
         if ($cacheItem->isHit()) {
@@ -108,7 +140,7 @@ class Psr6CachedGateway extends Gateway
         $searchResult = $this->gateway->search($query, $options, $limit);
         $cacheItem->set($searchResult);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out which other tags are needed here? some search tag?
+        $cacheItem->tag($this->getCacheTags(self::SEARCH));
         $this->cache->save($cacheItem);
 
         return array_slice($searchResult, $offset, $limit);
@@ -137,7 +169,7 @@ class Psr6CachedGateway extends Gateway
         $list = $this->gateway->listResources($type, $limit, $offset);
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out which other tags are needed here? some list tag?
+        $cacheItem->tag($this->getCacheTags(self::LIST));
 
         return array_slice($list, $offset, $limit);
     }
@@ -159,7 +191,7 @@ class Psr6CachedGateway extends Gateway
         $list = $this->gateway->listFolders();
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out correct tags for this
+        $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
 
         return $list;
     }
@@ -193,7 +225,7 @@ class Psr6CachedGateway extends Gateway
         $count = $this->gateway->countResourcesInFolder($folder);
         $cacheItem->set($count);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out correct tags for this
+        $cacheItem->tag($this->getCacheTags(self::FOLDER_COUNT));
 
         return $count;
     }
@@ -218,7 +250,7 @@ class Psr6CachedGateway extends Gateway
         $value = $this->gateway->get($id, $type);
         $cacheItem->set($value);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out correct tags for this
+        $cacheItem->tag($this->getItemCacheTags($id));
 
         return $value;
     }
@@ -235,9 +267,7 @@ class Psr6CachedGateway extends Gateway
     {
         $value = $this->gateway->addTag($id, $tag);
 
-        // @todo: figure out which tags to clear
-        $this->cache->invalidateTags([]);
-        //$this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
+        $this->cache->invalidateTags($this->getItemCacheTags($id));
 
         return $value;
     }
@@ -254,9 +284,7 @@ class Psr6CachedGateway extends Gateway
     {
         $value = $this->gateway->removeTag($id, $tag);
 
-        // @todo: figure out which tags to clear
-        $this->cache->invalidateTags([]);
-        //$this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
+        $this->cache->invalidateTags($this->getItemCacheTags($id));
 
         return $value;
     }
@@ -271,9 +299,7 @@ class Psr6CachedGateway extends Gateway
     {
         $value = $this->gateway->update($id, $options);
 
-        // @todo: figure out which tags to clear
-        $this->cache->invalidateTags([]);
-        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
+        $this->cache->invalidateTags($this->getItemCacheTags($id));
 
         return $value;
     }
@@ -324,8 +350,15 @@ class Psr6CachedGateway extends Gateway
      */
     public function delete($id)
     {
-        // @todo: some caches probably need to be invalidated here, right?
+        $result = $this->gateway->delete($id);
 
-        return $this->gateway->delete($id);
+        $tags = [
+            $searchTags = $this->getCacheTags(self::SEARCH),
+            $this->getCacheTags(self::LIST),
+            $this->getCacheTags(self::FOLDER_COUNT)
+        ];
+        $this->cache->invalidateTags($tags);
+
+        return $result;
     }
 }
