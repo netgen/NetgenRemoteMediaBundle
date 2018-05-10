@@ -1,11 +1,12 @@
 <?php
 
-namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
+namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\Cache;
 
 use Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
-class CachedGateway extends Gateway
+class Psr6CachedGateway extends Gateway
 {
     const PROJECT_KEY = 'ngremotemedia';
     const PROVIDER_KEY = 'cloudinary';
@@ -22,7 +23,7 @@ class CachedGateway extends Gateway
     protected $gateway;
 
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper
+     * @var TagAwareAdapterInterface
      */
     protected $cache;
 
@@ -35,15 +36,22 @@ class CachedGateway extends Gateway
      * CachedGateway constructor.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway $gateway
-     * @param \Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper $cache
+     * @param TagAwareAdapterInterface $cache
      * @param int $ttl
      */
-    public function __construct(Gateway $gateway, CacheWrapper $cache, $ttl = 7200)
+    public function __construct(Gateway $gateway, TagAwareAdapterInterface $cache, $ttl = 7200)
     {
         $this->gateway = $gateway;
         $this->cache = $cache;
 
         $this->ttl = $ttl;
+    }
+
+    private function getBaseTag()
+    {
+        $tagBase = [self::PROJECT_KEY, self::PROVIDER_KEY];
+
+        return implode('-', $tagBase);
     }
 
     /**
@@ -58,7 +66,7 @@ class CachedGateway extends Gateway
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
-        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY);
+        $this->cache->invalidateTags([$this->getBaseTag()]);
 
         return $uploadResult;
     }
@@ -88,12 +96,20 @@ class CachedGateway extends Gateway
      */
     public function search($query, $options = [], $limit = 10, $offset = 0)
     {
-        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)]);
-        $searchResult = $cacheItem->get();
-        if ($cacheItem->isMiss()) {
-            $searchResult = $this->gateway->search($query, $options, $limit);
-            $this->cache->saveItem($cacheItem, $searchResult, $this->ttl);
+        $searchCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)]);
+        $cacheItem = $this->cache->getItem($searchCacheKey);
+
+        if ($cacheItem->isHit()) {
+            $searchResult = $cacheItem->get();
+
+            return array_slice($searchResult, $offset, $limit);
         }
+
+        $searchResult = $this->gateway->search($query, $options, $limit);
+        $cacheItem->set($searchResult);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out which other tags are needed here? some search tag?
+        $this->cache->save($cacheItem);
 
         return array_slice($searchResult, $offset, $limit);
     }
@@ -109,13 +125,19 @@ class CachedGateway extends Gateway
      */
     public function listResources($type, $limit, $offset)
     {
-        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type]);
-        $list = $cacheItem->get();
+        $listCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type]);
+        $cacheItem = $this->cache->getItem($listCacheKey);
 
-        if ($cacheItem->isMiss()) {
-            $list = $this->gateway->listResources($type, $limit, $offset);
-            $this->cache->saveItem($cacheItem, $list, $this->ttl);
+        if ($cacheItem->isHit()) {
+            $list = $cacheItem->get();
+
+            return array_slice($list, $offset, $limit);
         }
+
+        $list = $this->gateway->listResources($type, $limit, $offset);
+        $cacheItem->set($list);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out which other tags are needed here? some list tag?
 
         return array_slice($list, $offset, $limit);
     }
@@ -127,13 +149,17 @@ class CachedGateway extends Gateway
      */
     public function listFolders()
     {
-        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST]);
+        $listFolderCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST]);
+        $cacheItem = $this->cache->getItem($listFolderCacheKey);
 
-        $list = $cacheItem->get();
-        if ($cacheItem->isMiss()) {
-            $list = $this->gateway->listFolders();
-            $this->cache->saveItem($cacheItem, $list, $this->ttl);
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
+
+        $list = $this->gateway->listFolders();
+        $cacheItem->set($list);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out correct tags for this
 
         return $list;
     }
@@ -157,13 +183,17 @@ class CachedGateway extends Gateway
      */
     public function countResourcesInFolder($folder)
     {
-        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder]);
+        $countCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder]);
+        $cacheItem = $this->cache->getItem($countCacheKey);
 
-        $count = $cacheItem->get();
-        if ($cacheItem->isMiss()) {
-            $count = $this->gateway->countResourcesInFolder($folder);
-            $this->cache->saveItem($cacheItem, $count, $this->ttl);
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
+
+        $count = $this->gateway->countResourcesInFolder($folder);
+        $cacheItem->set($count);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out correct tags for this
 
         return $count;
     }
@@ -178,13 +208,17 @@ class CachedGateway extends Gateway
      */
     public function get($id, $type)
     {
-        $cacheItem = $this->cache->getItem([self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type]);
-        $value = $cacheItem->get();
+        $resourceCacheKey = implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type]);
+        $cacheItem = $this->cache->getItem($resourceCacheKey);
 
-        if ($cacheItem->isMiss()) {
-            $value = $this->gateway->get($id, $type);
-            $this->cache->saveItem($cacheItem, $value, $this->ttl);
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
         }
+
+        $value = $this->gateway->get($id, $type);
+        $cacheItem->set($value);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag([$this->getBaseTag()]); // @todo: figure out correct tags for this
 
         return $value;
     }
@@ -201,7 +235,9 @@ class CachedGateway extends Gateway
     {
         $value = $this->gateway->addTag($id, $tag);
 
-        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
+        // @todo: figure out which tags to clear
+        $this->cache->invalidateTags([]);
+        //$this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
 
         return $value;
     }
@@ -218,7 +254,9 @@ class CachedGateway extends Gateway
     {
         $value = $this->gateway->removeTag($id, $tag);
 
-        $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
+        // @todo: figure out which tags to clear
+        $this->cache->invalidateTags([]);
+        //$this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
 
         return $value;
     }
@@ -233,6 +271,8 @@ class CachedGateway extends Gateway
     {
         $value = $this->gateway->update($id, $options);
 
+        // @todo: figure out which tags to clear
+        $this->cache->invalidateTags([]);
         $this->cache->clear(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id);
 
         return $value;
@@ -284,6 +324,8 @@ class CachedGateway extends Gateway
      */
     public function delete($id)
     {
+        // @todo: some caches probably need to be invalidated here, right?
+
         return $this->gateway->delete($id);
     }
 }
