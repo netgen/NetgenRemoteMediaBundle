@@ -63,6 +63,20 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $config = Yaml::parse(file_get_contents($configFile));
         $container->prependExtensionConfig('ezpublish', $config);
         $container->addResource(new FileResource($configFile));
+
+        $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
+
+        $configs = [];
+        if (in_array('EzPlatformAdminUiBundle', $activatedBundles, true)) {
+            $configs['ezadminui/twig.yml'] = 'twig';
+        }
+
+        foreach ($configs as $fileName => $extensionName) {
+            $configFile = __DIR__ . '/../Resources/config/' . $fileName;
+            $config = Yaml::parse(file_get_contents($configFile));
+            $container->prependExtensionConfig($extensionName, $config);
+            $container->addResource(new FileResource($configFile));
+        }
     }
 
     /**

@@ -35,3 +35,17 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\SearchField
         tags:
             - {name: ezpublish.fieldType.indexable, alias: ngremotemedia}
+
+    ezpublish.ezadminui.form.ngremotemedia_field_type:
+        class: Netgen\Bundle\RemoteMediaBundle\Form\FieldType\RemoteMediaFieldType
+        public: false
+        arguments:
+            - "@ezpublish.api.service.field_type"
+        tags:
+            - { name: form.type }
+
+    ezpublish.fieldtype.ngremotemedia.form_mapper:
+        class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\FormMapper
+        tags:
+            - {name: ez.fieldFormMapper.value, fieldType: ngremotemedia}
+        arguments: ['@ezpublish.api.service.field_type']

@@ -1,0 +1,3 @@
+form_themes:
+    # @todo: why this doesn't work: - '@NetgenRemoteMediaBundle/ezadminui/field/edit/ngremotemedia.html.twig' ???
+    - 'NetgenRemoteMediaBundle:ezadminui/field/edit:ngremotemedia.html.twig'

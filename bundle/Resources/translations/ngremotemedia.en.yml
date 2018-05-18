@@ -1,0 +1,8 @@
+ngremotemedia:
+    field:
+        edit:
+            size: Size
+            remove_file: Remove media
+            manage_media: Browse media
+            quick_upload: Quick upload
+            crop: Crop

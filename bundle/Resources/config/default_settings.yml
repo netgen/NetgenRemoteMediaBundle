@@ -5,6 +5,11 @@ system:
                 admin_preview:
                     transformations:
                         - { name: limit, params: [600,600] }
+            ng_article:
+                test:
+                    transformations:
+                        - { name: crop, params: [1600, 900] }
+                        - { name: resize, params: [1600, 900] }
             embedded:
                 small:
                     transformations:
