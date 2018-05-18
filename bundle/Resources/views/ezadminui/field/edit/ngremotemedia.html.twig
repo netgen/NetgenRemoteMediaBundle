@@ -1,0 +1,20 @@
+{% block ezplatform_fieldtype_ngremotemedia_widget %}
+    {% set field = form.parent.vars.value.field %}
+    {% set field_value = form.parent.vars.value.value %}
+    {% set field_definition = form.parent.vars.value.fieldDefinition %}
+
+    {# @todo: check if this is needed #}
+    {% set content = app.request.get('view').content %}
+    {% set contentId = content.id %}
+    {% set version = content.versionInfo.versionNo %}
+
+    {% set type = field_value.metaData.resource_type|default('image') %}
+    {% set croppableVariations = ngrm_available_variations(content, true)  %}
+    {% set availableVariations = croppableVariations|scaling_format|json_encode %}
+
+    <div class="ngremotemedia-type" data-available-variations="{{ availableVariations }}">
+        {% include '@NetgenRemoteMedia/ezadminui/field/edit/preview.html.twig' %}
+
+        {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
+    </div>
+{% endblock %}

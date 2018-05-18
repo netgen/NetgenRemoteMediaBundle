@@ -1,0 +1,25 @@
+{% trans_default_domain 'ngremotemedia' %}
+
+<div id="ngremotemedia-buttons-{{ field.id }}" class="ngremotemedia-buttons"
+     data-id="{{ field.id }}"
+     data-contentobject-id="{{ contentId }}"
+     data-version="{{ version }}">
+
+    {{ form_row(form.resource_id, { 'attr': {'class' : 'media-id'} }) }}
+
+    {% if field_value.resourceId %}
+        {% if type == 'image' %}
+            {% if ngrm_is_croppable(content) %}
+                <input type="button" class="ngremotemedia-scale hid button" value="{{ 'ngremotemedia.field.edit.crop'|trans }}"" >
+            {% endif %}
+        {% endif %}
+
+        <input type="button" class="ngremotemedia-remove-file button" value="{{ 'ngremotemedia.field.edit.remove_file'|trans }}" />
+    {% endif %}
+
+    <input type="button" class="ngremotemedia-remote-file button" value="{{ 'ngremotemedia.field.edit.manage_media'|trans }}" />
+
+    <div class="ngremotemedia-local-file-container">
+        <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="{{ 'ngremotemedia.field.edit.quick_upload'|trans }}">
+    </div>
+</div>

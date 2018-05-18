@@ -9,6 +9,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Twig_Extension;
 use Twig_SimpleFunction;
 
@@ -35,23 +36,31 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     protected $helper;
 
     /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
+     */
+    protected $variationResolver;
+
+    /**
      * NetgenRemoteMediaExtension constructor.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
      * @param \eZ\Publish\Core\Helper\TranslationHelper $translationHelper
      * @param \eZ\Publish\API\Repository\ContentTypeService $contentTypeService
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
      */
     public function __construct(
         RemoteMediaProvider $provider,
         TranslationHelper $translationHelper,
         ContentTypeService $contentTypeService,
-        Helper $helper
+        Helper $helper,
+        VariationResolver $variationResolver
     ) {
         $this->provider = $provider;
         $this->translationHelper = $translationHelper;
         $this->contentTypeService = $contentTypeService;
         $this->helper = $helper;
+        $this->variationResolver = $variationResolver;
     }
 
     /**
@@ -62,6 +71,16 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getName()
     {
         return 'netgen_remote_media';
+    }
+
+    public function getFilters()
+    {
+        return [
+            new \Twig_Filter(
+                'scaling_format',
+                [$this, 'scalingFormat']
+            )
+        ];
     }
 
     /**
@@ -92,7 +111,36 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 'netgen_remote_media',
                 [$this, 'getRemoteResource']
             ),
+            new Twig_SimpleFunction(
+                'ngrm_is_croppable',
+                [$this, 'contentTypeIsCroppable']
+            ),
+            new Twig_SimpleFunction(
+                'ngrm_available_variations',
+                [$this, 'variationsForContent']
+            ),
         ];
+    }
+
+    public function scalingFormat(array $variations)
+    {
+        if (empty($variations)) {
+            return $variations;
+        }
+
+        $availableVariations = array();
+
+        foreach ($variations as $variationName => $variationConfig) {
+            foreach($variationConfig['transformations'] as $name => $config) {
+                if ($name !== 'crop') {
+                    continue;
+                }
+
+                $availableVariations[$variationName] = $config;
+            }
+        }
+
+        return $availableVariations;
     }
 
     /**
@@ -166,5 +214,45 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getRemoteResource(Value $value, $format)
     {
         return $this->provider->buildVariation($value, 'custom', $format, true);
+    }
+
+    /**
+     * Returns true if there is croppable variation configuration for the given content type
+     *
+     * @todo: might be better to use form buildView method to inject this instead of using twig function?
+     *
+     * @param Content $content
+     *
+     * @return bool
+     */
+    public function contentTypeIsCroppable(Content $content)
+    {
+        $contentTypeIdentifier = $this->contentTypeService->loadContentType(
+            $content->contentInfo->contentTypeId
+        )->identifier;
+
+        return !empty($this->variationResolver->getCroppbableVariations($contentTypeIdentifier));
+    }
+
+    /**
+     * Returns the list of available variations for the given content.
+     * If second parameter is true, it will return only variations with crop configuration.
+     *
+     * @todo: might be better to use form buildView method to inject this instead of using twig function?
+     *
+     * @param Content $content
+     * @param $onlyCroppable
+     *
+     * @return array
+     */
+    public function variationsForContent(Content $content, $onlyCroppable = false)
+    {
+        $contentTypeIdentifier = $this->contentTypeService->loadContentType(
+            $content->contentInfo->contentTypeId
+        )->identifier;
+
+        return $onlyCroppable ?
+            $this->variationResolver->getCroppbableVariations($contentTypeIdentifier) :
+            $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
     }
 }
