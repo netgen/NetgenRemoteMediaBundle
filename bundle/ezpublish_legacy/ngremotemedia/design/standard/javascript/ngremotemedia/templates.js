@@ -117,14 +117,12 @@ templates['scaler'] = template({"1":function(container,depth0,helpers,partials,d
     + container.escapeExpression(helpers.translate.call(depth0 != null ? depth0 : (container.nullContext || {}),"Save all",{"name":"translate","hash":{},"data":data}))
     + "</button>\n";
 },"compiler":[7,">= 4.0.0"],"main":function(container,depth0,helpers,partials,data) {
-    var stack1, alias1=container.escapeExpression, alias2=depth0 != null ? depth0 : (container.nullContext || {});
+    var stack1, alias1=depth0 != null ? depth0 : (container.nullContext || {});
 
-  return "<div class=\"customattributes\"></div>\n\n<section class=\"ngremotemedia-crop\">\n    <ul class=\"nav nav-pills inverted\"></ul>\n</section>\n\n<div class=\"ngremotemedia-crop-container\">\n    <div class=\"image-wrap\">\n        <img src=\""
-    + alias1(container.lambda((depth0 != null ? depth0.media : depth0), depth0))
-    + "\" />\n    </div>\n</div>\n\n\n<div class=\"ngremote-actions\">\n    <button class=\"btn btn-default js-close\">"
-    + alias1(helpers.translate.call(alias2,"Cancel",{"name":"translate","hash":{},"data":data}))
+  return "<div class=\"customattributes\"></div>\n\n<section class=\"ngremotemedia-crop\">\n    <ul class=\"nav nav-pills inverted\"></ul>\n</section>\n\n<div class=\"ngremotemedia-crop-container\">\n    <div class=\"image-wrap\"></div>\n</div>\n\n\n<div class=\"ngremote-actions\">\n    <button class=\"btn btn-default js-close\">"
+    + container.escapeExpression(helpers.translate.call(alias1,"Cancel",{"name":"translate","hash":{},"data":data}))
     + "</button>\n"
-    + ((stack1 = helpers["if"].call(alias2,(depth0 != null ? depth0.singleVersion : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
+    + ((stack1 = helpers["if"].call(alias1,(depth0 != null ? depth0.singleVersion : depth0),{"name":"if","hash":{},"fn":container.program(1, data, 0),"inverse":container.program(3, data, 0),"data":data})) != null ? stack1 : "")
     + "</div>\n";
 },"useData":true});
 templates['scalerattributes'] = template({"1":function(container,depth0,helpers,partials,data) {
