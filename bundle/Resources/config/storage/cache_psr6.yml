@@ -1,0 +1,7 @@
+services:
+    netgen_remote_media.provider.cloudinary.gateway.cached:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway
+        arguments:
+            - "@netgen_remote_media.provider.cloudinary.gateway"
+            - "@ezpublish.cache_pool"
+            - "%netgen_remote_media.cloudinary.cache_ttl%"

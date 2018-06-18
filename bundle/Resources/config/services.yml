@@ -14,23 +14,11 @@ services:
         calls:
             - [setVariations, ["$image_variations;netgen_remote_media$"]]
 
-    netgen_remote_media.cache.cache_wrapper:
-        class: Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper
-        arguments:
-            - "@ezpublish.cache_pool"
-
     netgen_remote_media.provider.cloudinary.gateway:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway
         calls:
             - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%"]]
             - [setInternalLimit, ["%netgen_remote_media.cloudinary.internal_limit%"]]
-
-    netgen_remote_media.provider.cloudinary.gateway.cached:
-        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway
-        arguments:
-            - "@netgen_remote_media.provider.cloudinary.gateway"
-            - "@netgen_remote_media.cache.cache_wrapper"
-            - "%netgen_remote_media.cloudinary.cache_ttl%"
 
     netgen_remote_media.provider.cloudinary:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider

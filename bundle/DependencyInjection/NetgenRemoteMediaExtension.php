@@ -28,12 +28,15 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
 
         $loader = $this->loadSettings($container);
 
-        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_name", $config['account_name']);
-        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_key", $config['account_key']);
-        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_secret", $config['account_secret']);
+        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_name",
+            $config['account_name']);
+        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_key",
+            $config['account_key']);
+        $container->setParameter("netgen_remote_media.parameters.{$config['provider']}.account_secret",
+            $config['account_secret']);
 
         $container->setParameter('netgen_remote_media.remove_unused_resources', $config['remove_unused']);
-        $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.'.$config['provider']);
+        $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.' . $config['provider']);
 
         $processor = new ConfigurationProcessor($container, 'netgen_remote_media');
         $processor->mapConfigArray('image_variations', $config, ContextualizerInterface::MERGE_FROM_SECOND_LEVEL);
@@ -41,6 +44,7 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
         $this->loadContentBrowserSettings($activatedBundles, $container);
         $this->loadOpenGraphSettings($activatedBundles, $loader);
+        $this->loadPersistenceCacheServices($activatedBundles, $loader);
     }
 
     /**
@@ -50,12 +54,12 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
      */
     public function prepend(ContainerBuilder $container)
     {
-        $configFile = __DIR__.'/../Resources/config/default_settings.yml';
+        $configFile = __DIR__ . '/../Resources/config/default_settings.yml';
         $config = Yaml::parse(file_get_contents($configFile));
         $container->prependExtensionConfig('netgen_remote_media', $config);
         $container->addResource(new FileResource($configFile));
 
-        $configFile = __DIR__.'/../Resources/config/ezpublish.yml';
+        $configFile = __DIR__ . '/../Resources/config/ezpublish.yml';
         $config = Yaml::parse(file_get_contents($configFile));
         $container->prependExtensionConfig('ezpublish', $config);
         $container->addResource(new FileResource($configFile));
@@ -70,10 +74,19 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
      */
     protected function doPrepend(ContainerBuilder $container, $fileName, $configName)
     {
-        $configFile = __DIR__.'/../Resources/config/'.$fileName;
+        $configFile = __DIR__ . '/../Resources/config/' . $fileName;
         $config = Yaml::parse(file_get_contents($configFile));
         $container->prependExtensionConfig($configName, $config);
         $container->addResource(new FileResource($configFile));
+    }
+
+    private function loadPersistenceCacheServices(array $activatedBundles, Loader\YamlFileLoader $loader)
+    {
+        // We're using the existence of EzPlatformAdminUiBundle (Admin UI v2)
+        // as the means of detecting eZ kernel version 6 or 7
+        $persistenceCache = in_array('EzPlatformAdminUiBundle', $activatedBundles, true) ? 'psr6' : 'stash';
+
+        $loader->load('storage/cache_' . $persistenceCache . '.yml');
     }
 
     private function loadContentBrowserSettings(array $activatedBundles, ContainerBuilder $container)
