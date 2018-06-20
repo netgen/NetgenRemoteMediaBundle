@@ -2,15 +2,16 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Cache;
 
+use Stash\Interfaces\PoolInterface;
 use Tedivm\StashBundle\Service\CacheItem;
 use Tedivm\StashBundle\Service\CacheService;
 
 final class CacheWrapper
 {
-    /** @var  CacheService */
+    /** @var  PoolInterface */
     private $cacheService;
 
-    public function __construct(CacheService $cacheService)
+    public function __construct(PoolInterface $cacheService)
     {
         $this->cacheService = $cacheService;
     }
