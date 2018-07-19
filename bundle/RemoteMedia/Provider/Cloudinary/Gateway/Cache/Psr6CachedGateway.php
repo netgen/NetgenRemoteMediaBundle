@@ -102,12 +102,13 @@ class Psr6CachedGateway extends Gateway
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
-        $tags = [
-            $searchTags = $this->getCacheTags(self::SEARCH),
+        $tags = array_unique(array_merge(
+            $this->getCacheTags(self::SEARCH),
             $this->getCacheTags(self::LIST),
             $this->getCacheTags(self::FOLDER_LIST),
             $this->getCacheTags(self::FOLDER_COUNT)
-        ];
+        ));
+
         $this->cache->invalidateTags($tags);
 
         return $uploadResult;
@@ -372,11 +373,12 @@ class Psr6CachedGateway extends Gateway
     {
         $result = $this->gateway->delete($id);
 
-        $tags = [
-            $searchTags = $this->getCacheTags(self::SEARCH),
+        $tags = array_unique(array_merge(
+            $this->getCacheTags(self::SEARCH),
             $this->getCacheTags(self::LIST),
             $this->getCacheTags(self::FOLDER_COUNT)
-        ];
+        ));
+
         $this->cache->invalidateTags($tags);
 
         return $result;
