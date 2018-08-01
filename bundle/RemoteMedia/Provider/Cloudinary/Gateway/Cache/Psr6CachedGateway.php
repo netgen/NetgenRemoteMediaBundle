@@ -76,6 +76,10 @@ class Psr6CachedGateway extends Gateway
             self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $resourceId
         ];
 
+        array_walk($tags, function(&$tag){
+            $tag = $this->washKey($tag);
+        });
+
         return $tags;
     }
 
