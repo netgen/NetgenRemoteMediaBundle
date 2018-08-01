@@ -61,6 +61,7 @@ class RemoteMediaStorageTest extends TestCase
         $this->contentService = $this->createMock(ContentService::class);
         $this->remoteMediaProvider = $this->createMock(RemoteMediaProvider::class);
         $this->fieldTypeService = $this->createMock(FieldTypeService::class);
+        $this->fieldTypeService->method('getFieldType')->willReturn(new Type());
 
         $gateways = ['ngremotemedia' => $this->gateway];
 
