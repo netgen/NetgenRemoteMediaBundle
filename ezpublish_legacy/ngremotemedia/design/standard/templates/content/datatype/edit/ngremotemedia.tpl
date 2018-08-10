@@ -30,7 +30,7 @@
 
 {def $user=fetch( 'user', 'current_user' )}
 
-<div class="ngremotemedia-type" data-bootstrap-media={$remote_value|json} data-user-id="{$user.contentobject_id}">
+<div class="ngremotemedia-type" data-bootstrap-media="{$remote_value|json|wash()}" data-user-id="{$user.contentobject_id}">
     {include uri="design:parts/ngremotemedia/preview.tpl"}
     {include uri="design:parts/ngremotemedia/interactions.tpl"}
 </div>
