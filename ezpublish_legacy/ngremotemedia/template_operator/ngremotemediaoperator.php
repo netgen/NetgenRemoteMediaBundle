@@ -35,7 +35,8 @@ class NgRemoteMediaOperator
                 ),
                 'only_croppable' => array(
                     'type' => 'boolean',
-                    'required' => false
+                    'required' => false,
+                    'default' => false
                 )
             ),
             'ngremotemedia' => array(
@@ -86,7 +87,8 @@ class NgRemoteMediaOperator
                 ),
                 'format' => array(
                     'type' => 'string',
-                    'required' => false
+                    'required' => false,
+                    'default' => ''
                 )
             )
         );

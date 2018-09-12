@@ -1,4 +1,4 @@
-{def $variations = ng_image_variations()}
+{def $variations = ng_image_variations($attribute.object.class_identifier)}
 
 {def
     $value = $attribute.content
