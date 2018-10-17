@@ -407,6 +407,7 @@ class CloudinaryProvider extends RemoteMediaProvider
                 'caption' => !empty($options['caption']) ? $options['caption'] : '',
             ],
             'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto',
+            'tags' => !empty($options['tags']) ? $options['tags'] : [],
         ];
     }
 
