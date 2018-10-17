@@ -158,7 +158,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
     protected function getContinue()
     {
         $question = new Question('Continue? (y/n): ', 'y');
-        $continue = $this>$this->questionHelper->ask($this->input, $this->output, $question);
+        $continue = $this->questionHelper->ask($this->input, $this->output, $question);
 
         return $continue === 'y';
     }
@@ -177,7 +177,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $query->limit = $limit;
         $query->offset = $offset;
 
-        return $this->searchService->findLocations($query, false);
+        return $this->searchService->findLocations($query, [], false);
     }
 
     protected function migrateField(Location $location, $ezimageFieldIdentifier, $remoteMediaFieldIdentifier, $forceUpdate = false, $dryRun = false)
