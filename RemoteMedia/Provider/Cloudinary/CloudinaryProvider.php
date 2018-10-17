@@ -115,7 +115,8 @@ class CloudinaryProvider extends RemoteMediaProvider
                 'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
                 'caption' => !empty($options['caption']) ? $options['caption'] : '',
             ),
-            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto'
+            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto',
+            'tags' => !empty($options['tags']) ? $options['tags'] : []
         );
     }
 
