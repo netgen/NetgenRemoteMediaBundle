@@ -10,7 +10,7 @@ class CachedGateway extends Gateway
     const PROJECT_KEY = 'ngremotemedia';
     const PROVIDER_KEY = 'cloudinary';
     const SEARCH = 'search';
-    const LIST = 'resource_list';
+    const RESOURCE_LIST = 'resource_list';
     const FOLDER_LIST = 'folder_list';
     const COUNT = 'resources_count';
     const FOLDER_COUNT = 'folder_count';
@@ -108,7 +108,7 @@ class CachedGateway extends Gateway
      */
     public function listResources($type, $limit, $offset)
     {
-        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type));
+        $cacheItem = $this->cache->getItem(array(self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_LIST, $type));
         $list = $cacheItem->get();
 
         if ($cacheItem->isMiss()) {
