@@ -7,6 +7,7 @@ use Tedivm\StashBundle\Service\CacheService;
 
 final class CacheWrapper
 {
+
     /** @var CacheService */
     private $cacheService;
 

@@ -478,6 +478,7 @@ class CloudinaryProviderTest extends TestCase
                 'caption' => '',
             ],
             'resource_type' => 'auto',
+            'tags' => [],
         ];
 
         $root = vfsStream::setup('some');
@@ -541,6 +542,7 @@ class CloudinaryProviderTest extends TestCase
                 'caption' => '',
             ],
             'resource_type' => 'auto',
+            'tags' => [],
         ];
 
         $root = vfsStream::setup('some');
