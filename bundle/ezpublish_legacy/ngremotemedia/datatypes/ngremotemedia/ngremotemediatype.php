@@ -305,6 +305,11 @@ class NgRemoteMediaType extends eZDataType
 
         return true;
     }
+
+    function isIndexable()
+    {
+        return true;
+    }
 }
 
 eZDataType::register(
