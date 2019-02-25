@@ -6,7 +6,7 @@
     var translateString = function(key) {
         var t = NgRemoteMediaTranslations[key];
         if(t){return t;}
-        console.warn('Unregistered translation: ', key);
+        //console.warn('Unregistered translation: ', key);
         return key;
     };
 
