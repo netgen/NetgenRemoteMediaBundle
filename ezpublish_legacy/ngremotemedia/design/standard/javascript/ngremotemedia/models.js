@@ -243,7 +243,7 @@
 
         // Generate thumb url for a given size
         thumb: function(width, height) {
-            var url = this.get('url').split(/\/v\d+\//);
+            var url = this.get('secure_url').split(/\/v\d+\//);
             return [url[0], 'w_' + width + ',h_' + height, url[1]].join("/");
         }
 
