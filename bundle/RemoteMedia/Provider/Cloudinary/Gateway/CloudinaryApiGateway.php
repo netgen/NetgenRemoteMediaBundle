@@ -323,7 +323,8 @@ class CloudinaryApiGateway extends Gateway
      */
     public function delete($id)
     {
-        $this->cloudinaryApi->delete_resources([$id]);
+        $options = array('invalidate' => true);
+        $this->cloudinaryUploader->destroy($id, $options);
     }
 
     /**

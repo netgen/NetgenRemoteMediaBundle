@@ -263,14 +263,4 @@ class CloudinaryApiGatewayTest extends TestCase
 
         $this->apiGateway->update('test_id', $options);
     }
-
-    public function testDeleteResource()
-    {
-        $this->cloudinaryApi
-            ->expects($this->once())
-            ->method('delete_resources')
-            ->with(['test_id']);
-
-        $this->apiGateway->delete('test_id');
-    }
 }
