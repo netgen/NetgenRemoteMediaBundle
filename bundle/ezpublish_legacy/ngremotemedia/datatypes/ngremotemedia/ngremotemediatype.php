@@ -1,6 +1,7 @@
 <?php
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 
 class NgRemoteMediaType extends eZDataType
 {
@@ -314,6 +315,39 @@ class NgRemoteMediaType extends eZDataType
 
     function isIndexable()
     {
+        return true;
+    }
+
+    function isRegularFileInsertionSupported()
+    {
+        return true;
+    }
+
+    function insertRegularFile( $object, $objectVersion, $objectLanguage,
+        $objectAttribute, $filePath,
+        &$result )
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get( 'netgen_remote_media.provider' );
+
+        $ini = eZINI::instance( 'ngremotemedia.ini' );
+        $folder = $ini->variable( 'ContentUploadSettings', 'DestinationFolder' );
+        $overwrite = (bool)$ini->variable( 'ContentUploadSettings', 'Overwrite' );
+
+        $options = array('overwrite' => $overwrite);
+
+        if (!empty($folder)) {
+            $options['folder'] = $folder;
+        }
+
+        $uploadFile = UploadFile::fromUri($filePath);
+        $value = $provider->upload($uploadFile, $options);
+
+        $objectAttribute->setAttribute(self::FIELD_VALUE, json_encode($value));
+        $objectAttribute->store();
+
+        $this->saveExternalData($objectAttribute, $value, $provider);
+
         return true;
     }
 }
