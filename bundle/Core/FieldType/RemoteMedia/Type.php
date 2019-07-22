@@ -61,7 +61,17 @@ class Type extends FieldType
             return $this->getEmptyValue();
         }
 
-        $value = new InputValue($hash);
+        if (isset($hash['input_uri'])) {
+            return new InputValue($hash);
+        }
+
+        // @todo: finish this!!!!
+        $valueHash = [
+            'resourceId' => $hash['resourceId'],
+            'secureUrl' => $hash['secure_url']
+        ];
+
+        $value = new Value($hash);
 
         return $value;
     }

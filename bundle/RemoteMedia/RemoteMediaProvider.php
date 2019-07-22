@@ -116,7 +116,7 @@ abstract class RemoteMediaProvider
      *
      * @return Value
      */
-    abstract public function getRemoteResource($resourceId, $resourceType);
+    abstract public function getRemoteResource($resourceId, $resourceType = 'image');
 
     /**
      * Adds tag to remote resource.

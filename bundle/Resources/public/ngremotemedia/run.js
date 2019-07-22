@@ -1,4 +1,7 @@
 $(function() {
+    // ez administration uses jquery.noConflict and we loose the global $ variable
+    // so we bind it back
+    window.$ = jQuery;
 
     $('.ngremotemedia-type').each(function() {
         var wrapper = $(this);
@@ -26,4 +29,5 @@ $(function() {
         });
 
     });
+
 });

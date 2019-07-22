@@ -5,6 +5,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Form\FieldType;
 use eZ\Publish\API\Repository\FieldType;
 use eZ\Publish\API\Repository\Values\Content\Field;
 use eZ\Publish\SPI\FieldType\Value;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\Form\DataTransformerInterface;
 
 class FieldValueTransformer implements DataTransformerInterface
@@ -19,10 +20,16 @@ class FieldValueTransformer implements DataTransformerInterface
      */
     private $field;
 
-    public function __construct(FieldType $fieldType, Field $field)
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
+     */
+    private $remoteMediaProvider;
+
+    public function __construct(FieldType $fieldType, Field $field, RemoteMediaProvider $remoteMediaProvider)
     {
         $this->fieldType = $fieldType;
         $this->field = $field;
+        $this->remoteMediaProvider = $remoteMediaProvider;
     }
 
     /**
@@ -38,7 +45,13 @@ class FieldValueTransformer implements DataTransformerInterface
 
         return [
             'resource_id' => $value->resourceId,
-            'alt_text' => isset($value->metaData['alt_text']) ? $value->metaData['alt_text'] : ''
+            'alt_text' => isset($value->metaData['alt_text']) ? $value->metaData['alt_text'] : '',
+            'resource_url' => $value->secure_url,
+            'url' => $value->url,
+            'size' => $value->size,
+            'tags' => implode(', ', $value->metaData['tags']),
+            'width' => isset($value->metaData['width']) ? $value->metaData['width'] : '',
+            'height' => isset($value->metaData['height']) ? $value->metaData['height'] : ''
         ];
     }
 
@@ -53,7 +66,21 @@ class FieldValueTransformer implements DataTransformerInterface
             return $this->fieldType->getEmptyValue();
         }
 
-        //@todo: create proper hash for ngremotemedia, meaning 'value' array must contain all relevant data
-        //      meaning form has to contain all that data
+        $hash = [
+            'resourceId' => $value['resource_id'],
+            'secure_url' => $value['resource_url'],
+            'mediaType' => $value['media_type'],
+            'size' => $value['size'],
+            'metaData' => [
+                'alt_text' => $value['alt_text'],
+                'tags' => explode(',', $value['tags']),
+                'width' => $value['width'],
+                'height' => $value['height']
+            ]
+        ];
+
+        $value = new \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value($hash);
+
+        return $value;
     }
 }
