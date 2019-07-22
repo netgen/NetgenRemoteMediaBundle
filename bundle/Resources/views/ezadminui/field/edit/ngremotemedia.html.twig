@@ -8,6 +8,8 @@
     {% set contentId = content.id %}
     {% set version = content.versionInfo.versionNo %}
 
+    {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' %}
+
     {% set type = field_value.metaData.resource_type|default('image') %}
     {% set croppableVariations = ngrm_available_variations(content, true)  %}
     {% set availableVariations = croppableVariations|scaling_format|json_encode %}
