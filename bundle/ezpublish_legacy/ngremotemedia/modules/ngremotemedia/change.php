@@ -44,19 +44,6 @@ $tpl->setVariable( 'ajax', true );
 
 $content = $tpl->fetch('design:content/datatype/edit/ngremotemedia.tpl');
 
-$scaling = array();
-foreach ($variations as $name => $coords) {
-    $scaling[] = array(
-        'name' => $name,
-        'coords' => array(
-            (int) $coords['x'],
-            (int) $coords['y'],
-            (int) $coords['x'] + (int) $coords['w'],
-            (int) $coords['y'] + (int) $coords['h'],
-        ),
-    );
-}
-
 $responseData = array(
     'media' => !empty($updatedValue->resourceId) ? $updatedValue : false,
     'content' => $content,

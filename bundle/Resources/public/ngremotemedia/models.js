@@ -10,16 +10,14 @@
     window.NgRemoteMediaShared.config = function() {
 
         return {
+            // @todo: where is this needed?
             plupload_swf: '/extension/ngremotemedia/design/standard/javascript/libs/plupload/Moxie.swf'
         };
     };
 
-
-
     window.NgRemoteMediaShared.url = function(url){
         return [RemoteMediaSettings.url_prefix, url].join('/').replace(/\/+/g, '/');
     };
-
 
     var Attribute = Backbone.Model.extend({
         klass: "Attribute",
@@ -77,9 +75,14 @@
             this.trigger('scale', response);
         },
 
-        change_media: function(id){
-            var url = [NgRemoteMediaShared.url("/ngremotemedia/change"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
+        change_media: function(newMedia) {
+            var id = newMedia.model.attributes.id;
+            var url = NgRemoteMediaShared.url('/ngremotemedia/load');
+
             this.get('media').variations.reset([]);
+
+            window.model = this;
+
             return this.save({}, {
                 url: url,
                 method: 'POST',
@@ -88,7 +91,6 @@
                 }
             });
         }
-
     });
 
 
@@ -173,25 +175,6 @@
             }else{
                 data.available_variations = this.get('available_variations') || {};
             }
-
-
-            // Custom attributes are used only with ezoe (online editor)
-            var custom_attributes = data.custom_attributes;
-            data.variations || (data.variations = {})
-
-            if(custom_attributes && custom_attributes.coords){
-
-                data.id = data.resourceId = custom_attributes.resourceId;
-
-                data.metaData = {
-                    alt_text: custom_attributes.alttext,
-                    caption: custom_attributes.caption
-                }
-
-                data.variations[custom_attributes.version] = this.parse_coords(custom_attributes.coords);
-            }
-
-
 
             if ('variations' in data) {
                 // Mark variations from server as cropped

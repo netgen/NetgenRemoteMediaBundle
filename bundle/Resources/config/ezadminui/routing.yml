@@ -1,0 +1,19 @@
+folders:
+    path: /folders
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.folders.list
+
+browse:
+    path: /browse
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.browse
+
+fetch:
+    path: /fetch/{contentId}/{fieldId}/{version}
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.fetch
+
+load:
+    path: /load
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.load

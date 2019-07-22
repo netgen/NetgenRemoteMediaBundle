@@ -18,9 +18,25 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
     render: function() {
         var content = this.model.get('content'), html;
 
-        if(content){
-            html = $('<div />').html(content).find('.ngremotemedia-type').html();
-            this.$el.html(html);
+        if (content){
+            // @todo: ugly hack
+            var formId = "#ngremotemedia-buttons-" + this.model.id;
+            $(formId + " .media-id").val(content.resourceId);
+            $(formId + " .media-url").val(content.secure_url);
+            $(formId + " .media-size").val(content.size);
+            $(formId + " .media-type").val(content.mediaType);
+
+            var tagsId = '#ngremotemedia-tags-' + this.model.id;
+            $(tagsId + " .media-tags").val(content.metaData.tags.join());
+
+            $(formId + " .media-width").val(content.metaData.width);
+            $(formId + " .media-height").val(content.metaData.height);
+
+            var thumb = this.thumb(content.secure_url, 600, 600);
+            $("#ngremotemedia-preview-" + this.model.id + " img").attr({"src": thumb});
+
+            //html = $('<div />').html(content).find('.ngremotemedia-type').html(); //@todo: wtf did this do?
+            //this.$el.html(html);
         }
 
         this.destination = this.$('.media-id');
@@ -29,6 +45,11 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         return this;
     },
 
+    // Generate thumb url for a given size
+    thumb: function(secure_url, width, height) {
+        var url = secure_url.split(/\/v\d+\//);
+        return [url[0], 'c_limit,' + 'w_' + width + ',h_' + height, url[1]].join("/");
+    },
 
     renderTags: function() {
         var $tags = this.$('.ngremotemedia-newtags');
@@ -50,7 +71,8 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
     },
 
     changeMedia: function(new_media){
-        this.model.change_media(new_media.id);
+        this.model.change_media(new_media);
+
         return this;
     },
 
@@ -90,8 +112,13 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         var modal = new NgRemoteMedia.views.Modal().insert().render(),
             scaler_view;
 
+        var formId = "#ngremotemedia-buttons-" + this.model.id;
+        var resourceId = $(formId + " .media-id").val();
+
         this.model.fetch({
-            transform: false
+            url: '/admin/ngremotemedia/load',
+            transform: false,
+            data: { resource_id: resourceId }
         }).done(function(){
 
             scaler_view = new NgRemoteMedia.views.Scaler({

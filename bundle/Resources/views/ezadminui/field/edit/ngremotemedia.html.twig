@@ -1,9 +1,7 @@
 {% block ezplatform_fieldtype_ngremotemedia_widget %}
     {% set field = form.parent.vars.value.field %}
     {% set field_value = form.parent.vars.value.value %}
-    {% set field_definition = form.parent.vars.value.fieldDefinition %}
 
-    {# @todo: check if this is needed #}
     {% set content = app.request.get('view').content %}
     {% set contentId = content.id %}
     {% set version = content.versionInfo.versionNo %}
@@ -16,6 +14,23 @@
 
     <div class="ngremotemedia-type" data-available-variations="{{ availableVariations }}">
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/preview.html.twig' %}
+
+        <div class="tagger">
+            <div class="ngremotemedia-alttext">
+                {{ form_row(form.alt_text) }}
+            </div>
+            {# @todo: TAGS!
+            {% set tags = field_value.metaData.tags %}
+            <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
+                {foreach $tags as $tag}
+                <option value="{$tag}" selected="selected">{$tag}</option>
+                {/foreach}
+            </select>
+            #}
+            <div id="ngremotemedia-tags-{{ field.id }}">
+                {{ form_row(form.tags, { 'attr': {'class' : 'media-tags'} }) }}
+            </div>
+        </div>
 
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
     </div>

@@ -53,11 +53,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
 
 
     upload_url: function(){
-        if (this.model.get('ezoe')) {
-            return NgRemoteMediaShared.url('/ngremotemedia/simple_upload');
-        }else{
-            return NgRemoteMediaShared.url('/ngremotemedia/upload/') +  this.model.get('contentObjectId');
-        }
+        return NgRemoteMediaShared.url('/ngremotemedia/upload/') +  this.model.get('contentObjectId');
     },
 
     render: function() {
@@ -67,7 +63,7 @@ NgRemoteMedia.views.Upload = Backbone.View.extend({
         var settings = {
             runtimes: 'html5,flash,html4',
             browse_button: this.$('.upload-from-disk').get(0),
-            flash_swf_url: NgRemoteMediaShared.config().plupload_swf,
+            flash_swf_url: NgRemoteMediaShared.config().plupload_swf, // @todo: is this needed?
             max_file_size: this.maxSize,
             url: this.upload_url(),
             multipart_params: {

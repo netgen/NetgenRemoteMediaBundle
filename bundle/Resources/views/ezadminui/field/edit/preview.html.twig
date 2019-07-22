@@ -4,11 +4,11 @@
 
 {% set thumbnail_url = type == 'image' ? netgen_remote_media(field_value, 'admin_preview').url : netgen_remote_video_thumbnail(field_value) %}
 
-<div class="ngremotemedia-image">
+<div class="ngremotemedia-image" id="ngremotemedia-preview-{{ field.id }}">
     {% if field_value.resourceId %}
         <div class="image-wrap">
             {% if field_value.mediaType == 'image' %}
-                <img src="{{ thumbnail_url }}"  />
+                <img  src="{{ thumbnail_url }}"  />
             {% elseif field_value.mediaType == 'video' %}
                 <i class="ngri-video ngri-big"></i>
             {% else %}
@@ -18,21 +18,6 @@
 
         <div class="image-meta">
             <h3 class="title">{{ field_value.resourceId }}</h3>
-
-            <div class="tagger">
-                <div class="ngremotemedia-alttext">
-                    {{ form_row(form.alt_text) }}
-                </div>
-
-                {% set tags = field_value.metaData.tags %}
-                {# @todo: TAGS!
-                <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
-                    {foreach $tags as $tag}
-                    <option value="{$tag}" selected="selected">{$tag}</option>
-                    {/foreach}
-                </select>
-                #}
-            </div>
 
             {% if field_value.size %}
                 <p>{{ 'ngremotemedia.field.edit.size'|trans }}: {{ macros.bytesToSize(field_value.size) }}</p>

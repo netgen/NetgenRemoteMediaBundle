@@ -54,20 +54,21 @@
             customAttributes.each(function(){
                 customAttributesHeight = customAttributesHeight + $(this).outerHeight(true);
             });
+
             this.SIZE = this.fitTo(
-                media.originalWidth(), 
-                media.originalHeight(), 
-                this.$el.width(), 
+                media.originalWidth(),
+                media.originalHeight(),
+                this.$el.width(),
                 this.$el.height() - customAttributesHeight - croppOptionsWrapper.height() - remoteActionsWrapper.height() - parseInt(this.$el.css('bottom'), 10));
             return this;
         },
 
         render: function() {
-            
+
             var content = template('scaler', {
                 singleVersion: this.singleVersion
             });
-            this.$el.append(content);           
+            this.$el.append(content);
 
             this.render_editor_elements();
 
@@ -77,8 +78,12 @@
 
             this.$('ul.nav').html(versionElements);
 
+
+
             this.updateScalerSize(this.model);
+
             var imgUrl = this.model.thumb(this.SIZE.w, this.SIZE.h);
+
             this.$('.image-wrap').append('<img src="' + imgUrl + '" />');
 
             var selectedVersion = this.model.get('custom_attributes').version;
@@ -87,7 +92,7 @@
                 this.$('ul.nav li[version_name="'+selectedVersion+'"]').click();
             } else {
                 this.$('ul.nav li:first-child a').click();
-            }          
+            }
 
             return this;
         },
@@ -153,6 +158,9 @@
 
             this.cropper && this.cropper.destroy();
             this.current = $(e.currentTarget).addClass('active');
+
+            var li = this.$('ul.nav li')
+            var currentTarget = e.currentTarget;
 
             var model = this.current.data('model');
 
