@@ -35,7 +35,9 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
             var thumb = this.thumb(content.secure_url, 600, 600);
             $("#ngremotemedia-preview-" + this.model.id + " img").attr({"src": thumb});
 
-            //html = $('<div />').html(content).find('.ngremotemedia-type').html(); //@todo: wtf did this do?
+            $("#ngremotemedia-preview-133512 .image-meta .title").html(content.resourceId);
+
+            //html = $('<div />').html(content).find('.ngremotemedia-type').html();
             //this.$el.html(html);
         }
 
@@ -71,7 +73,11 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
     },
 
     changeMedia: function(new_media){
-        this.model.change_media(new_media);
+        if (typeof new_media.model_attributes !== 'undefined') {
+            this.model.change_media(new_media.model_attributes.media);
+        } else {
+            this.model.change_media(new_media);
+        }
 
         return this;
     },
