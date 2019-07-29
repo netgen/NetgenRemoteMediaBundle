@@ -77,7 +77,7 @@
 
         change_media: function(newMedia) {
             var id = newMedia.model.attributes.id;
-            var url = NgRemoteMediaShared.url('/ngremotemedia/load');
+            var url = [NgRemoteMediaShared.url("/ngremotemedia/change"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
 
             this.get('media').variations.reset([]);
 
@@ -180,7 +180,7 @@
                 // Mark variations from server as cropped
                 _.each(data.variations, function(value) { value.is_cropped = true; });
 
-                var variations = $.extend({}, data.available_variations, data.variations);
+                var variations = $.extend(true, {}, data.available_variations, data.variations);
                 var x = _.map(variations, function(value, name){
                     return $.extend({name: name, media: media}, value);
                 });
@@ -214,7 +214,10 @@
 
             return Backbone.sync('create', this, {
                 url: url,
-                data: {variations: out},
+                data: {
+                    resourceId: this.resourceId,
+                    variations: out
+                },
                 transform: false
             });
         },

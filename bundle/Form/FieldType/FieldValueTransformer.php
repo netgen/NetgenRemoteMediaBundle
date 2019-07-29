@@ -66,21 +66,26 @@ class FieldValueTransformer implements DataTransformerInterface
             return $this->fieldType->getEmptyValue();
         }
 
-        $hash = [
-            'resourceId' => $value['resource_id'],
-            'secure_url' => $value['resource_url'],
-            'mediaType' => $value['media_type'],
-            'size' => $value['size'],
-            'metaData' => [
-                'alt_text' => $value['alt_text'],
-                'tags' => explode(',', $value['tags']),
-                'width' => $value['width'],
-                'height' => $value['height']
-            ]
-        ];
+//        $hash = [
+//            'resourceId' => $value['resource_id'],
+//            'secure_url' => $value['resource_url'],
+//            'mediaType' => $value['media_type'],
+//            'size' => $value['size'],
+//            'metaData' => [
+//                'alt_text' => $value['alt_text'],
+//                'tags' => explode(',', $value['tags']),
+//                'width' => $value['width'],
+//                'height' => $value['height']
+//            ]
+//        ];
+//
+//        if ($value['resource_id'] === $this->field->value->resourceId) {
+//            // update variations
+//        }
 
-        $value = new \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value($hash);
 
-        return $value;
+//        $value = new \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value($hash);
+
+        return $this->field->value;
     }
 }

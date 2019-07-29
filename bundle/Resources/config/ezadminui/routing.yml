@@ -17,3 +17,13 @@ load:
     path: /load
     defaults:
         _controller: netgen_remote_media.controllers.ezadminui.load
+
+change:
+    path: /change/{contentId}/{fieldId}/{contentVersionId}
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.change
+
+save:
+    path: /save/{contentId}/{fieldId}/{contentVersionId}
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.save

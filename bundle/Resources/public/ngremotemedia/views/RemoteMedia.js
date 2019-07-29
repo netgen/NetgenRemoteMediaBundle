@@ -112,13 +112,8 @@ NgRemoteMedia.views.NgRemoteMedia = Backbone.View.extend({
         var modal = new NgRemoteMedia.views.Modal().insert().render(),
             scaler_view;
 
-        var formId = "#ngremotemedia-buttons-" + this.model.id;
-        var resourceId = $(formId + " .media-id").val();
-
         this.model.fetch({
-            url: '/admin/ngremotemedia/load',
             transform: false,
-            data: { resource_id: resourceId }
         }).done(function(){
 
             scaler_view = new NgRemoteMedia.views.Scaler({
