@@ -27,3 +27,8 @@ save:
     path: /save/{contentId}/{fieldId}/{contentVersionId}
     defaults:
         _controller: netgen_remote_media.controllers.ezadminui.save
+
+upload:
+    path: /upload/{contentId}
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.upload

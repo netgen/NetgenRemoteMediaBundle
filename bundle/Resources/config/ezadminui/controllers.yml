@@ -30,3 +30,9 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\SaveController
         arguments:
             - '@ezpublish.api.repository'
+
+    netgen_remote_media.controllers.ezadminui.upload:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\UploadController
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@ezpublish.api.repository'
