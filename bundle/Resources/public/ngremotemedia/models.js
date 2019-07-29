@@ -76,7 +76,11 @@
         },
 
         change_media: function(newMedia) {
-            var id = newMedia.model.attributes.id;
+            if (newMedia.model) {
+                var id = newMedia.model.attributes.id;
+            } else {
+                var id = newMedia.resourceId;
+            }
             var url = [NgRemoteMediaShared.url("/ngremotemedia/change"), this.get('contentObjectId'), this.id, this.get('version')].join('/');
 
             this.get('media').variations.reset([]);
