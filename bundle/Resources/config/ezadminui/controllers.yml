@@ -19,3 +19,14 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\LoadController
         arguments:
             - '@netgen_remote_media.provider'
+
+    netgen_remote_media.controllers.ezadminui.change:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\ChangeController
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@ezpublish.api.repository'
+
+    netgen_remote_media.controllers.ezadminui.save:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\SaveController
+        arguments:
+            - '@ezpublish.api.repository'
