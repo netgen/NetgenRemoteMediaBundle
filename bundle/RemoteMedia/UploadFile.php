@@ -4,6 +4,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Image\Value;
 use eZHTTPFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadFile
 {
@@ -49,6 +50,17 @@ class UploadFile
         $uploadFile->uri = $file->Filename;
         $uploadFile->originalFilename = pathinfo($file->OriginalFilename, PATHINFO_FILENAME);
         $uploadFile->originalExtension = pathinfo($file->OriginalFilename, PATHINFO_EXTENSION);
+
+        return $uploadFile;
+    }
+
+    public static function fromUploadedFile(UploadedFile $file)
+    {
+        $uploadFile = new self();
+
+        $uploadFile->uri = $file->getRealPath();
+        $uploadFile->originalFilename = $file->getClientOriginalName();
+        $uploadFile->originalExtension = $file->getClientOriginalExtension();
 
         return $uploadFile;
     }
