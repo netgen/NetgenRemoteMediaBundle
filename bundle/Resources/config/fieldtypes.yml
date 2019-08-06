@@ -26,11 +26,6 @@ services:
         tags:
             - {name: ezpublish.fieldType.externalStorageHandler.gateway, alias: ngremotemedia, identifier: LegacyStorage}
 
-    netgen_remote_media.templating.converter.ngremotemedia:
-        class: Netgen\Bundle\RemoteMediaBundle\Templating\Converter\RemoteMediaValueConverter
-        tags:
-            - {name: ezpublish_legacy.templating.converter, for: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value}
-
     ezpublish.fieldType.indexable.netgen_remote_media:
         class: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\SearchField
         tags:
