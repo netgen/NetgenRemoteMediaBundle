@@ -42,8 +42,11 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $processor->mapConfigArray('image_variations', $config, ContextualizerInterface::MERGE_FROM_SECOND_LEVEL);
 
         $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
-	
-	$this->loadOpenGraphSettings($activatedBundles, $loader);
+
+        $this->loadContentBrowserSettings($activatedBundles, $container);
+        $this->loadOpenGraphSettings($activatedBundles, $loader);
+        $this->loadNgAdminUiSettings($activatedBundles, $loader);
+        $this->loadLegacySettings($activatedBundles, $loader);
         $this->loadPersistenceCacheServices($activatedBundles, $loader);
     }
 
@@ -103,10 +106,35 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $loader->load('storage/cache_' . $persistenceCache . '.yml');
     }
 
+    private function loadContentBrowserSettings(array $activatedBundles, ContainerBuilder $container)
+    {
+        if (in_array('NetgenContentBrowserBundle', $activatedBundles, true)) {
+            $container->setParameter('netgen_remote_media.content_browser.activated', true);
+            $this->doPrepend($container, 'content_browser/cloudinary.yml', 'netgen_content_browser');
+            $loader->load('contentbrowser.yml');
+        } else {
+            $container->setParameter('netgen_remote_media.content_browser.activated', false);
+        }
+    }
+
     private function loadOpenGraphSettings(array $activatedBundles, Loader\YamlFileLoader $loader)
     {
         if (in_array('NetgenOpenGraphBundle', $activatedBundles, true)) {
             $loader->load('opengraph.yml');
+        }
+    }
+
+    private function loadNgAdminUiSettings(array $activatedBundles, Loader\YamlFileLoader $loader)
+    {
+        if (in_array('NetgenAdminUIBundle', $activatedBundles, true)) {
+            $loader->load('ngadminui.yml');
+        }
+    }
+
+    private function loadLegacySettings(array $activatedBundles, Loader\YamlFileLoader $loader)
+    {
+        if (in_array('EzPublishLegacyBundle', $activatedBundles, true)) {
+            $loader->load('legacy.yml');
         }
     }
 
