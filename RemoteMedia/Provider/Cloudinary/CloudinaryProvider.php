@@ -4,6 +4,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
 use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
@@ -79,6 +80,27 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * @param $publicId
+     * @param UploadFile $uploadFile
+     *
+     * @return string
+     */
+    private function appendExtensionFromUploadFile($publicId, UploadFile $uploadFile)
+    {
+        $extension = $uploadFile->originalExtension();
+        if (empty($extension)) {
+            return $publicId;
+        }
+        $file = new File($uploadFile->uri());
+        $mimeCategory = $this->parseMimeCategory($file);
+        // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
+        if ($extension !== 'pdf' && !in_array($mimeCategory, $this->noExtensionMimeTypes)) {
+            $publicId .= '.' . $extension;
+        }
+        return $publicId;
+    }
+
+    /**
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
@@ -121,6 +143,9 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * @deprecated this method will have a different signature in 2.0
+     * @see \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider::uploadWithExtension
+     *
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
@@ -135,6 +160,57 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $response = $this->gateway->upload($fileUri, $options);
 
+        return Value::createFromCloudinaryResponse($response);
+    }
+
+    /**
+     * Prepares upload options for Cloudinary.
+     * Every image with the same name will be overwritten.
+     *
+     * @param UploadFile $uploadFile
+     * @param array $options
+     *
+     * @return array
+     */
+    protected function prepareUploadOptionsWithExtension(UploadFile $uploadFile, $options = array())
+    {
+        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
+        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
+        $fileName = rtrim($cleanFileName, '_');
+        // check if overwrite is set, if it is, do not append random string
+        $overwrite = isset($options['overwrite']) ? $options['overwrite'] : false;
+        $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
+        $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
+        $publicId = $this->appendExtensionFromUploadFile($publicId, $uploadFile);
+        if (!empty($options['folder'])) {
+            $publicId = $options['folder'].'/'.$publicId;
+        }
+        return array(
+            'public_id' => $publicId,
+            'overwrite' => $overwrite,
+            'invalidate' => $invalidate,
+            'discard_original_filename' =>
+                isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
+            'context' => array(
+                'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
+                'caption' => !empty($options['caption']) ? $options['caption'] : '',
+            ),
+            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto'
+        );
+    }
+
+    /**
+     * Uploads the local resource to remote storage and builds the Value from the response.
+     *
+     * @param UploadFile $uploadFile
+     * @param array $options
+     *
+     * @return Value
+     */
+    public function uploadWithExtension(UploadFile $uploadFile, $options = array())
+    {
+        $options = $this->prepareUploadOptionsWithExtension($uploadFile, $options);
+        $response = $this->gateway->upload($uploadFile->uri(), $options);
         return Value::createFromCloudinaryResponse($response);
     }
 
