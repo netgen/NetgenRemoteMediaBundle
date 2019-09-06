@@ -1,0 +1,5 @@
+services:
+    netgen_remote_media.ngadminui.menu_plugin.ngremotemedia:
+        class: Netgen\Bundle\RemoteMediaBundle\MenuPlugin\RemoteMediaMenuPlugin
+        tags:
+            - { name: "netgen_admin_ui.menu_plugin" }
