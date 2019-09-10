@@ -42,7 +42,7 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $processor->mapConfigArray('image_variations', $config, ContextualizerInterface::MERGE_FROM_SECOND_LEVEL);
 
         $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
-        $this->loadContentBrowserSettings($activatedBundles, $container);
+        //$this->loadContentBrowserSettings($activatedBundles, $container);
         $this->loadOpenGraphSettings($activatedBundles, $loader);
         $this->loadNgAdminUiSettings($activatedBundles, $loader);
         $this->loadLegacySettings($activatedBundles, $loader);
