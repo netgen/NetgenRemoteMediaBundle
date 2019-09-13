@@ -58,7 +58,7 @@ class CloudinaryProviderTest extends TestCase
 
     public function testSupportsContentBrowser()
     {
-        $this->assertTrue(
+        $this->assertFalse(
             $this->cloudinaryProvider->supportsContentBrowser()
         );
     }
