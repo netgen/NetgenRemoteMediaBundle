@@ -43,7 +43,6 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
 
         $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
 
-        //$this->loadContentBrowserSettings($activatedBundles, $container);
         $this->loadOpenGraphSettings($activatedBundles, $loader);
         $this->loadNgAdminUiSettings($activatedBundles, $loader);
         $this->loadLegacySettings($activatedBundles, $loader);
@@ -104,17 +103,6 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $persistenceCache = in_array('EzPlatformAdminUiBundle', $activatedBundles, true) ? 'psr6' : 'stash';
 
         $loader->load('storage/cache_' . $persistenceCache . '.yml');
-    }
-
-    private function loadContentBrowserSettings(array $activatedBundles, ContainerBuilder $container)
-    {
-        if (in_array('NetgenContentBrowserBundle', $activatedBundles, true)) {
-            $container->setParameter('netgen_remote_media.content_browser.activated', true);
-            $this->doPrepend($container, 'content_browser/cloudinary.yml', 'netgen_content_browser');
-            $loader->load('contentbrowser.yml');
-        } else {
-            $container->setParameter('netgen_remote_media.content_browser.activated', false);
-        }
     }
 
     private function loadOpenGraphSettings(array $activatedBundles, Loader\YamlFileLoader $loader)
