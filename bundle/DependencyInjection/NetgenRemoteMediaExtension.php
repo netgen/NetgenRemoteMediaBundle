@@ -46,7 +46,6 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $this->loadOpenGraphSettings($activatedBundles, $loader);
         $this->loadNgAdminUiSettings($activatedBundles, $loader);
         $this->loadLegacySettings($activatedBundles, $loader);
-        $this->loadPersistenceCacheServices($activatedBundles, $loader);
     }
 
     /**
@@ -96,15 +95,6 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $container->addResource(new FileResource($configFile));
     }
 
-    private function loadPersistenceCacheServices(array $activatedBundles, Loader\YamlFileLoader $loader)
-    {
-        // We're using the existence of EzPlatformAdminUiBundle (Admin UI v2)
-        // as the means of detecting eZ kernel version 6 or 7
-        $persistenceCache = in_array('EzPlatformAdminUiBundle', $activatedBundles, true) ? 'psr6' : 'stash';
-
-        $loader->load('storage/cache_' . $persistenceCache . '.yml');
-    }
-
     private function loadOpenGraphSettings(array $activatedBundles, Loader\YamlFileLoader $loader)
     {
         if (in_array('NetgenOpenGraphBundle', $activatedBundles, true)) {
@@ -134,6 +124,7 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $loader->load('services.yml');
         $loader->load('templating.yml');
         $loader->load('fieldtypes.yml');
+        $loader->load('storage/cache_psr6.yml');
 
         return $loader;
     }
