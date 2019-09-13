@@ -13,6 +13,7 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension\NetgenRemoteMediaExtension;
 use PHPUnit\Framework\TestCase;
 
@@ -42,18 +43,25 @@ class NetgenRemoteMediaExtensionTest extends TestCase
      */
     protected $helper;
 
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
+     */
+    protected $variationResolver;
+
     public function setUp()
     {
         $this->provider = $this->createMock(RemoteMediaProvider::class);
         $this->translationHelper = $this->createMock(TranslationHelper::class);
         $this->contentTypeService = $this->createMock(ContentTypeService::class);
         $this->helper = $this->createMock(Helper::class);
+        $this->variationResolver = $this->createMock(VariationResolver::class);
 
         $this->extension = new NetgenRemoteMediaExtension(
             $this->provider,
             $this->translationHelper,
             $this->contentTypeService,
-            $this->helper
+            $this->helper,
+            $this->variationResolver
         );
     }
 
