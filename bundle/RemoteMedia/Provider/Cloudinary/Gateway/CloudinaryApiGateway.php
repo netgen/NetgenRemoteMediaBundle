@@ -5,6 +5,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gatewa
 use Cloudinary;
 use Cloudinary\Api;
 use Cloudinary\Uploader;
+use Cloudinary\Search;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 
 class CloudinaryApiGateway extends Gateway
@@ -23,6 +24,8 @@ class CloudinaryApiGateway extends Gateway
      * @var \Cloudinary\Uploader
      */
     protected $cloudinaryUploader;
+
+    protected $cloudinarySearch;
 
     /**
      * @var int
@@ -49,13 +52,15 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
+        $this->cloudinarySearch = new Search();
     }
 
-    public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api)
+    public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api, Search $search)
     {
         $this->cloudinary = $cloudinary;
         $this->cloudinaryUploader = $uploader;
         $this->cloudinaryApi = $api;
+        $this->cloudinarySearch = $search;
     }
 
     /**

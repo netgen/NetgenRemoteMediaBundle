@@ -43,7 +43,6 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
 
         $activatedBundles = array_keys($container->getParameter('kernel.bundles'));
         $this->loadOpenGraphSettings($activatedBundles, $loader);
-        $this->loadNgAdminUiSettings($activatedBundles, $loader);
         $this->loadLegacySettings($activatedBundles, $loader);
     }
 
@@ -98,13 +97,6 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
     {
         if (in_array('NetgenOpenGraphBundle', $activatedBundles, true)) {
             $loader->load('opengraph.yml');
-        }
-    }
-
-    private function loadNgAdminUiSettings(array $activatedBundles, Loader\YamlFileLoader $loader)
-    {
-        if (in_array('NetgenAdminUIBundle', $activatedBundles, true)) {
-            $loader->load('ngadminui.yml');
         }
     }
 
