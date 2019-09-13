@@ -39,7 +39,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function supportsContentBrowser()
     {
-        return true;
+        return false;
     }
 
     /**

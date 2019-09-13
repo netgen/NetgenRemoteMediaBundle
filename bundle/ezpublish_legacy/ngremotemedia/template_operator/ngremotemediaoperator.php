@@ -17,7 +17,6 @@ class NgRemoteMediaOperator
             'videoThumbnail',
             'ng_image_variations',
             'scaling_format',
-            'is_content_browser_active',
         );
     }
 
@@ -96,7 +95,6 @@ class NgRemoteMediaOperator
                     'required' => false
                 )
             ),
-            'is_content_browser_active' => array()
         );
     }
 
@@ -132,20 +130,7 @@ class NgRemoteMediaOperator
             $operatorValue = $this->getImageVariations($namedParameters['class_identifier'], $onlyCroppable);
         } elseif ($operatorName === 'scaling_format') {
             $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
-        } elseif ($operatorName === 'is_content_browser_active') {
-            $operatorValue = $this->isContentBrowserActive();
         }
-    }
-
-    function isContentBrowserActive()
-    {
-        $container = ezpKernel::instance()->getServiceContainer();
-
-        $cbActive = $container->getParameter('netgen_remote_media.content_browser.activated');
-        $provider = $container->get('netgen_remote_media.provider');
-
-        return $cbActive && $provider->supportsContentBrowser();
-
     }
 
     function formatAliasForScaling($variations)

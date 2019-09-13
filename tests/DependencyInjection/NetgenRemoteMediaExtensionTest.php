@@ -28,22 +28,6 @@ class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->load(['provider' => null]);
     }
 
-    public function testIfContentBrowserIsActive()
-    {
-        $this->container->setParameter('kernel.bundles', ['NetgenContentBrowserBundle' => 'NetgenContentBrowserBundle']);
-        $this->load();
-
-        $this->assertContainerBuilderHasParameter('netgen_remote_media.content_browser.activated', true);
-    }
-
-    public function testIfContentBrowserIsNotActive()
-    {
-        $this->container->setParameter('kernel.bundles', []);
-        $this->load();
-
-        $this->assertContainerBuilderHasParameter('netgen_remote_media.content_browser.activated', false);
-    }
-
     protected function getContainerExtensions()
     {
         return [

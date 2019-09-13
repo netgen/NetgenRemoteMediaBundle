@@ -21,7 +21,6 @@
             <exclude>
                 <directory>bundle/ezpublish_legacy</directory>
                 <directory>bundle/Command</directory>
-                <directory>bundle/RemoteMedia/Provider/Cloudinary/ContentBrowser</directory>
                 <directory>bundle/Resources</directory>
                 <directory>bundle/vendor</directory>
                 <directory>bundle/update</directory>
