@@ -20,18 +20,20 @@
                 {{ form_row(form.alt_text) }}
             </div>
             {# @todo: TAGS!
-            {% set tags = field_value.metaData.tags %}
-            <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
-                {foreach $tags as $tag}
-                <option value="{$tag}" selected="selected">{$tag}</option>
-                {/foreach}
-            </select>
-            #}
+                        {% set tags = field_value.metaData.tags %}
+                        <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
+                            {foreach $tags as $tag}
+                            <option value="{$tag}" selected="selected">{$tag}</option>
+                            {/foreach}
+                        </select>
+                        #}
             <div id="ngremotemedia-tags-{{ field.id }}">
                 {{ form_row(form.tags, { 'attr': {'class' : 'media-tags'} }) }}
             </div>
         </div>
 
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
+        <!-- modal -->
+        <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
     </div>
 {% endblock %}

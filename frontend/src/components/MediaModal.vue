@@ -1,6 +1,6 @@
 <template>
   <div class="overlay">
-    <div class="modal">
+    <div class="media-modal">
       <div class="title">
         Select media
         <span @click="close" class="close">&#x00D7;</span>
@@ -61,7 +61,7 @@ export default {
         search_type: this.facets.searchType
       };
 
-      const url = `ngadminui/ngremotemedia/browse?${encodeQueryData(query)}`;
+      const url = `/ngadminui/ngremotemedia/browse?${encodeQueryData(query)}`;
 
       try {
         const response = await fetch(url, {
@@ -105,8 +105,9 @@ export default {
   left: 0em;
   right: 0em;
   background-color: rgba(0, 0, 0, 0.7);
+  z-index: 11;
 
-  .modal {
+  .media-modal {
     background-color: white;
     margin: 20px;
     height: 97%;

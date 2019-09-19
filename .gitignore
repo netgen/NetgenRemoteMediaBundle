@@ -11,6 +11,7 @@ node_modules
 *.css.map
 build
 .DS_Store
+frontend/dist/
 
 # local env files
 .env.local

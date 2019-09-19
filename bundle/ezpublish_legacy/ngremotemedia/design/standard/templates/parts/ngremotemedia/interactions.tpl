@@ -12,7 +12,7 @@
         <input type="button" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'extension/ngremotemedia/interactions' )}" />
     {/if}
 
-    <input type="button" class="ngremotemedia-remote-file button" value="{'Manage media'|i18n( 'extension/ngremotemedia/interactions' )}" />
+    <input type="button" v-on:click="browseMedia" class="ngremotemedia-remote-file button" value="{'Manage media'|i18n( 'extension/ngremotemedia/interactions' )}" />
 
     <div class="ngremotemedia-local-file-container">
         <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="{'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}">

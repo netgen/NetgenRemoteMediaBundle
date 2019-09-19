@@ -10,5 +10,6 @@ module.exports = {
         }
       }
     }
-  }
+  },
+  filenameHashing: false
 };

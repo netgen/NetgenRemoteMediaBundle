@@ -35,4 +35,5 @@
 <div class="ngremotemedia-type" data-available-variations={json_encode(scaling_format($croppableVariations))} data-user-id="{$user.contentobject_id}">
     {include uri="design:parts/ngremotemedia/preview.tpl"}
     {include uri="design:parts/ngremotemedia/interactions.tpl"}
+    <media-modal v-bind:folders="folders" v-if="modalOpen" v-on:close="handleModalClose"/>
 </div>

@@ -5,6 +5,7 @@ DesignExtensions[]=ngremotemedia
 
 [StylesheetSettings]
 BackendCSSFileList[]=ngremotemedia.css
+BackendCSSFileList[]=remotemedia.css
 
 [JavaScriptSettings]
 BackendJavaScriptList[]=ezjsc::jquery
@@ -29,9 +30,7 @@ BackendJavaScriptList[]=ngremotemedia/views/Upload.js
 BackendJavaScriptList[]=ngremotemedia/views/Browser.js
 BackendJavaScriptList[]=ngremotemedia/views/Tagger.js
 BackendJavaScriptList[]=ngremotemedia/views/EzOE.js
+BackendJavaScriptList[]=remotemedia.js
+BackendJavaScriptList[]=remotemedia-vendors.js
 
-BackendJavaScriptList[]=ngremotemedia/run.js
-
-
-*/ ?>
-
+*/
