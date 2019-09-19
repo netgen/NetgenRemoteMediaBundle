@@ -16,16 +16,16 @@
     {def $availableFormats = ng_image_variations($attribute.object.class_identifier)}
 {/if}
 
-{if not(is_set($ajax))}
-    {run-once}
-    {include uri="design:parts/js_templates_1.tpl"}
-    {/run-once}
-{/if}
-
 {if is_set($remote_value.metaData.resource_type)}
     {def $type = $remote_value.metaData.resource_type}
 {else}
     {def $type = 'image'}
+{/if}
+
+{if not(is_set($ajax))}
+    {run-once}
+    {include uri="design:parts/js_templates_1.tpl"}
+    {/run-once}
 {/if}
 
 {def $user=fetch( 'user', 'current_user' )}

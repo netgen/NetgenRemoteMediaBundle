@@ -33,4 +33,39 @@
     'ez_contentobject_version': {$version},
     'url_prefix': {'/'|ezurl}
     {literal} }; {/literal}
+
+{if $type|eq('image')}
+    {def $format = 'admin_preview'}
+    {def $media = ngremotemedia($remote_value, $attribute.object.class_identifier, $format, true)}
+    {def $thumb_url = $media.url}
+{else}
+    {def $thumb_url = videoThumbnail($remote_value)}
+{/if}
+
+{literal} RemoteMediaSelectedImage = { {/literal}
+    {if $remote_value.mediaType|eq('image')}
+        url: "{$thumb_url}",
+        type: "image",
+    {elseif $remote_value.mediaType|eq('video')}
+        url: "",
+        type: "video",
+    {else}
+        url: "",
+        type: "other",
+    {/if}
+    name: "{$remote_value.resourceId|wash}",
+    alternateText: "{$remote_value.metaData.alt_text}",
+    {literal} tags: [ {/literal}
+        {foreach $remote_value.metaData.tags as $tag}
+            "{$tag}",
+        {/foreach}
+    {literal} ], {/literal}
+    {if $remote_value.size|null()|not()}
+        size: "{$remote_value.size|si( byte )}",
+    {else}
+        size: "",
+    {/if}
+    id: "{$remote_value.resourceId}"
+{literal} }; {/literal}
+
 </script>

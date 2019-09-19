@@ -1,28 +1,24 @@
 {% trans_default_domain 'ngremotemedia' %}
 
-{% import '@NetgenRemoteMedia/ezadminui/field/edit/macros.html.twig' as macros %}
-
-{% set thumbnail_url = type == 'image' ? netgen_remote_media(field_value, 'admin_preview').url : netgen_remote_video_thumbnail(field_value) %}
-
-<div class="ngremotemedia-image" id="ngremotemedia-preview-{{ field.id }}">
+<div class="ngremotemedia-image" id="ngremotemedia-preview-{{ field.id }}" v-init:selected-image="RemoteMediaSelectedImage">
     {% if field_value.resourceId %}
         <div class="image-wrap">
-            {% if field_value.mediaType == 'image' %}
-                <img  src="{{ thumbnail_url }}"  />
-            {% elseif field_value.mediaType == 'video' %}
-                <i class="ngri-video ngri-big"></i>
-            {% else %}
-                <i class="ngri-book ngri-big"></i>
-            {% endif %}
+            <img v-if="selectedImage.type==='image'" :src="selectedImage.url"/>
+            <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="custom-icon big"></i>
         </div>
 
         <div class="image-meta">
-            <h3 class="title">{{ field_value.resourceId }}</h3>
+            {% verbatim %}
+                <h3 class="title">{{ selectedImage.name }}</h3>
+            {% endverbatim %}
 
             {% if field_value.size %}
-                <p>{{ 'ngremotemedia.field.edit.size'|trans }}: {{ macros.bytesToSize(field_value.size) }}</p>
+                <p>{{ 'ngremotemedia.field.edit.size'|trans }}:
+                    {% verbatim %}
+                        {{selectedImage.size}}
+                    {% endverbatim %}
+                </p>
             {% endif %}
         </div>
     {% endif %}
 </div>
-

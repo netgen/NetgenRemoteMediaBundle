@@ -1,14 +1,17 @@
+{% set thumbnail_url = type == 'image' ? netgen_remote_media(field_value, 'admin_preview').url : netgen_remote_video_thumbnail(field_value) %}
+{% import '@NetgenRemoteMedia/ezadminui/field/edit/macros.html.twig' as macros %}
+
 <script type="text/javascript">
     NgRemoteMediaTranslations = {
         'Search for media': "Search for media",
         'Load more': "Load more",
-        'Upload new media': 'Upload new media' ,
+        'Upload new media': 'Upload new media',
         'No results': 'No results',
         'Alternate text': 'Alternate text',
         'Class': 'CSS class',
         'Create new folder?': 'Create new folder?',
         'Folder': 'Folder',
-        'All': 'All' ,
+        'All': 'All',
         'Add tag': 'Add tag',
         'Media type': 'Media type',
         'Image': 'Image and documents',
@@ -22,14 +25,40 @@
         'name': 'name',
         'tag': 'tag',
         'Image is to small for this version': 'Image is to small for this version',
-        'close' : 'Close',
-        'next' : 'Next 25 &gt;',
-        'prev' : '&lt; Previous 25'
+        'close': 'Close',
+        'next': 'Next 25 &gt;',
+        'prev': '&lt; Previous 25'
     };
 
     RemoteMediaSettings = {
         'ez_contentobject_id': {{ content.id }},
         'ez_contentobject_version': {{ content.versionInfo.versionNo }},
         'url_prefix': '/admin'
+    };
+
+    RemoteMediaSelectedImage = {
+        {% if field_value.mediaType == 'image' %}
+        url : "{{ thumbnail_url }}",
+        type : "image",
+        {% elseif field_value.mediaType == 'video' %}
+        url : "",
+        type : "video",
+        {% else %}
+        url : "",
+        type : "other",
+        {% endif %}
+        name: "{{ field_value.resourceId }}",
+        alternateText: "{{ field_value.metaData.alt_text }}",
+        tags: [
+            {% for tag in field_value.metaData.tags %}
+            "{{ tag }}",
+            {% endfor %}
+        ],
+        {% if field_value.size %}
+            size : "{{ macros.bytesToSize(field_value.size) }}",
+        {% else %}
+            size : "",
+        {% endif %}
+        id: "{{ field_value.resourceId }}"
     };
 </script>
