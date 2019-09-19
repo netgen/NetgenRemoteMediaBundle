@@ -10,202 +10,204 @@
         <noscript>
             <strong>We're sorry but netgen-remote-media-bundle doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
         </noscript>
+        <form action="/dumy">
+            <div id="ngadminui">
 
-        <div id="ngadminui">
+                <h1>ngadminui</h1>
 
-            <h1>ngadminui</h1>
+                <div class="block ezcca-edit-datatype-ngremotemedia ezcca-edit-remote_media">
+                    <div class="edit-row">
 
-            <div class="block ezcca-edit-datatype-ngremotemedia ezcca-edit-remote_media">
-                <div class="edit-row">
+                        <div class="label-edit">
+                            <label class="attribute-label ">
+                                <span class="classattribute-name">Remote media</span>
+                            </label>
+                        </div>
+                        <div class="attribute-edit">
+                            <div class="attribute-block float-break">
+                                <script type="text/javascript">
+                                    NgRemoteMediaTranslations = {
+                                        'Search for media': "Search for media",
+                                        'Load more': "Load more",
+                                        'Upload new media': "Upload new media",
+                                        'No results': "No results",
+                                        'Alternate text': "Alternate text",
+                                        'Class': "CSS class",
+                                        'Create new folder?': "Create new folder?",
+                                        'Folder': "Folder",
+                                        'All': "All",
+                                        'Add tag': "Add tag",
+                                        'Media type': "Media type",
+                                        'Image': "Image and documents",
+                                        'Video': "Video",
+                                        'Loading...': "Loading...",
+                                        'Cancel': "Cancel",
+                                        'Save all': "Save all",
+                                        'Generate': "Generate",
+                                        'Caption': "Caption",
+                                        'by': "by",
+                                        'name': "name",
+                                        'tag': "tag",
+                                        'Image is to small for this version': "Image is to small for this version",
 
-                    <div class="label-edit">
-                        <label class="attribute-label ">
-                            <span class="classattribute-name">Remote media</span>
-                        </label>
-                    </div>
-                    <div class="attribute-edit">
-                        <div class="attribute-block float-break">
-                            <script type="text/javascript">
-                                NgRemoteMediaTranslations = {
-                                    'Search for media': "Search for media",
-                                    'Load more': "Load more",
-                                    'Upload new media': "Upload new media",
-                                    'No results': "No results",
-                                    'Alternate text': "Alternate text",
-                                    'Class': "CSS class",
-                                    'Create new folder?': "Create new folder?",
-                                    'Folder': "Folder",
-                                    'All': "All",
-                                    'Add tag': "Add tag",
-                                    'Media type': "Media type",
-                                    'Image': "Image and documents",
-                                    'Video': "Video",
-                                    'Loading...': "Loading...",
-                                    'Cancel': "Cancel",
-                                    'Save all': "Save all",
-                                    'Generate': "Generate",
-                                    'Caption': "Caption",
-                                    'by': "by",
-                                    'name': "name",
-                                    'tag': "tag",
-                                    'Image is to small for this version': "Image is to small for this version",
+                                        close: "Close",
+                                        next: "Next 25 &gt;",
+                                        prev: "&lt; Previous 25"
+                                    };
 
-                                    close: "Close",
-                                    next: "Next 25 &gt;",
-                                    prev: "&lt; Previous 25"
-                                };
+                                    RemoteMediaSettings = {
+                                        'ez_contentobject_id': 283,
+                                        'ez_contentobject_version': 10,
+                                        'url_prefix': "/ngadminui"
+                                    };
 
-                                RemoteMediaSettings = {
-                                    'ez_contentobject_id': 283,
-                                    'ez_contentobject_version': 10,
-                                    'url_prefix': "/ngadminui"
-                                };
+                                    RemoteMediaSelectedImage = {
+                                        url: 'https://res-5.cloudinary.com/marko-ab-i/image/upload/c_limit,h_600,w_600/Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
+                                        type: "image",
+                                        name: 'Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
+                                        alternateText: 'Celibate!',
+                                        tags: [
+                                            'test', 'test2'
+                                        ],
+                                        size: '44.52 kB',
+                                        id: "Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el"
+                                    }
+                                </script>
 
-                                RemoteMediaSelectedImage = {
-                                    url: 'https://res-5.cloudinary.com/marko-ab-i/image/upload/c_limit,h_600,w_600/Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
-                                    type: "image",
-                                    name: 'Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
-                                    alternateText: 'Celibate!',
-                                    tags: [
-                                        'test', 'test2'
-                                    ],
-                                    size: '44.52 kB',
-                                    id: "Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el"
-                                }
-                            </script>
+                                <div class="ngremotemedia-type" data-available-variations="[]" data-user-id="14">
 
-                            <div class="ngremotemedia-type" data-available-variations="[]" data-user-id="14">
-
-                                <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
-                                    <div class="image-wrap">
-                                        <img v-if="selectedImage.type==='image'" :src="selectedImage.url"/>
-                                        <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
-                                    </div>
-
-                                    <div class="image-meta">
-                                        <h3 class="title">{{selectedImage.name}}</h3>
-
-                                        <div class="tagger">
-                                            <div class="ngremotemedia-alttext">
-                                                <span class="help-block description">Alternate text</span>
-                                                <input type="text" name="ContentObjectAttribute_alttext_4601" v-model="selectedImage.alternateText" class="media-alttext data">
-                                            </div>
-
-                                            <select name="ContentObjectAttribute_tags_4601[]" class="ngremotemedia-newtags" multiple="multiple">
-                                                <option v-for="tag in selectedImage.tags" :value="tag" selected="selected">{{tag}}</option>
-                                            </select>
-
+                                    <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
+                                        <div class="image-wrap">
+                                            <img v-if="selectedImage.type==='image'" :src="selectedImage.url"/>
+                                            <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
                                         </div>
-                                        <p>Size:
-                                            {{selectedImage.size}}</p>
+
+                                        <div class="image-meta">
+                                            <h3 class="title">{{selectedImage.name}}</h3>
+
+                                            <div class="tagger">
+                                                <div class="ngremotemedia-alttext">
+                                                    <span class="help-block description">Alternate text</span>
+                                                    <input type="text" name="ContentObjectAttribute_alttext_4601" v-model="selectedImage.alternateText" class="media-alttext data">
+                                                </div>
+
+                                                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable push-tags></v-select>
+                                                <input hidden="hidden" type="text" name="ContentObjectAttribute_tags_4601" v-model="selectedTags" class="media-tags ez-data-source__input form-control">
+
+                                            </div>
+                                            <p>Size:
+                                                {{selectedImage.size}}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div id="ngremotemedia-buttons-4601" class="ngremotemedia-buttons" data-id="4601" data-contentobject-id="283" data-version="10">
+                                    <div id="ngremotemedia-buttons-4601" class="ngremotemedia-buttons" data-id="4601" data-contentobject-id="283" data-version="10">
 
-                                    <input type="hidden" name="ContentObjectAttribute_media_id_4601" v-model="selectedImage.id" class="media-id"/>
+                                        <input type="hidden" name="ContentObjectAttribute_media_id_4601" v-model="selectedImage.id" class="media-id"/>
 
-                                    <input type="button" class="ngremotemedia-remove-file button" value="Remove media"/>
+                                        <input type="button" class="ngremotemedia-remove-file button" value="Remove media"/>
 
-                                    <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="Manage media"/>
+                                        <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="Manage media"/>
 
-                                    <div class="ngremotemedia-local-file-container">
-                                        <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
+                                        <div class="ngremotemedia-local-file-container">
+                                            <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
+                                        </div>
                                     </div>
+                                    <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
                                 </div>
-                                <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
+                                <input type="hidden" name="ContentObjectAttribute_id[]" value="4601"/>
                             </div>
-                            <input type="hidden" name="ContentObjectAttribute_id[]" value="4601"/>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="adminv2">
-                <h2>Admin v2</h2>
+                <div id="adminv2">
+                    <h2>Admin v2</h2>
 
 
-                <script type="text/javascript">
-                    NgRemoteMediaTranslations = {
-                        'Search for media': "Search for media",
-                        'Load more': "Load more",
-                        'Upload new media': 'Upload new media',
-                        'No results': 'No results',
-                        'Alternate text': 'Alternate text',
-                        'Class': 'CSS class',
-                        'Create new folder?': 'Create new folder?',
-                        'Folder': 'Folder',
-                        'All': 'All',
-                        'Add tag': 'Add tag',
-                        'Media type': 'Media type',
-                        'Image': 'Image and documents',
-                        'Video': 'Video',
-                        'Loading...': 'Loading...',
-                        'Cancel': 'Cancel',
-                        'Save all': 'Save all',
-                        'Generate': 'Generate',
-                        'Caption': 'Caption',
-                        'by': 'by',
-                        'name': 'name',
-                        'tag': 'tag',
-                        'Image is to small for this version': 'Image is to small for this version',
-                        'close': 'Close',
-                        'next': 'Next 25 &gt;',
-                        'prev': '&lt; Previous 25'
-                    };
+                    <script type="text/javascript">
+                        NgRemoteMediaTranslations = {
+                            'Search for media': "Search for media",
+                            'Load more': "Load more",
+                            'Upload new media': 'Upload new media',
+                            'No results': 'No results',
+                            'Alternate text': 'Alternate text',
+                            'Class': 'CSS class',
+                            'Create new folder?': 'Create new folder?',
+                            'Folder': 'Folder',
+                            'All': 'All',
+                            'Add tag': 'Add tag',
+                            'Media type': 'Media type',
+                            'Image': 'Image and documents',
+                            'Video': 'Video',
+                            'Loading...': 'Loading...',
+                            'Cancel': 'Cancel',
+                            'Save all': 'Save all',
+                            'Generate': 'Generate',
+                            'Caption': 'Caption',
+                            'by': 'by',
+                            'name': 'name',
+                            'tag': 'tag',
+                            'Image is to small for this version': 'Image is to small for this version',
+                            'close': 'Close',
+                            'next': 'Next 25 &gt;',
+                            'prev': '&lt; Previous 25'
+                        };
 
-                    RemoteMediaSettings = {
-                        'ez_contentobject_id': 283,
-                        'ez_contentobject_version': 8,
-                        'url_prefix': '/admin'
-                    };
-                </script>
+                        RemoteMediaSettings = {
+                            'ez_contentobject_id': 283,
+                            'ez_contentobject_version': 8,
+                            'url_prefix': '/admin'
+                        };
+                    </script>
 
-                <div class="ngremotemedia-type" data-available-variations="{&quot;full&quot;:[500,300],&quot;mobile&quot;:[500,500],&quot;fixed_height&quot;:[0,500],&quot;fixed_width&quot;:[500,0]}">
+                    <div class="ngremotemedia-type" data-available-variations="{&quot;full&quot;:[500,300],&quot;mobile&quot;:[500,500],&quot;fixed_height&quot;:[0,500],&quot;fixed_width&quot;:[500,0]}">
 
-                    <div class="ngremotemedia-image" id="ngremotemedia-preview-4601"></div>
+                        <div class="ngremotemedia-image" id="ngremotemedia-preview-4601"></div>
 
-                    <div class="tagger">
-                        <div class="ngremotemedia-alttext">
-                            <div class="ez-data-source__field ez-data-source__field--alt_text">
-                                <div class="ez-data-source__label-wrapper">
-                                    <label class="ez-data-source__label" for="ezrepoforms_content_edit_fieldsData_remote_media_value_alt_text">Alt text</label>
+                        <div class="tagger">
+                            <div class="ngremotemedia-alttext">
+                                <div class="ez-data-source__field ez-data-source__field--alt_text">
+                                    <div class="ez-data-source__label-wrapper">
+                                        <label class="ez-data-source__label" for="ezrepoforms_content_edit_fieldsData_remote_media_value_alt_text">Alt text</label>
+                                    </div>
+                                    <div class="ez-data-source__input-wrapper"><input type="text" id="ezrepoforms_content_edit_fieldsData_remote_media_value_alt_text" name="ezrepoforms_content_edit[fieldsData][remote_media][value][alt_text]" class="ez-data-source__input form-control"></div>
                                 </div>
-                                <div class="ez-data-source__input-wrapper"><input type="text" id="ezrepoforms_content_edit_fieldsData_remote_media_value_alt_text" name="ezrepoforms_content_edit[fieldsData][remote_media][value][alt_text]" class="ez-data-source__input form-control"></div>
-                            </div>
 
-                        </div>
-                        <div id="ngremotemedia-tags-4601">
-                            <div class="ez-data-source__field ez-data-source__field--tags">
-                                <div class="ez-data-source__label-wrapper">
-                                    <label class="ez-data-source__label" for="ezrepoforms_content_edit_fieldsData_remote_media_value_tags">Tags</label>
+                            </div>
+                            <div id="ngremotemedia-tags-4601">
+                                <div class="ez-data-source__field ez-data-source__field--tags">
+                                    <div class="ez-data-source__label-wrapper">
+                                        <label class="ez-data-source__label" for="ezrepoforms_content_edit_fieldsData_remote_media_value_tags">Tags</label>
+                                    </div>
+                                    <div class="ez-data-source__input-wrapper"><input type="text" id="ezrepoforms_content_edit_fieldsData_remote_media_value_tags" name="ezrepoforms_content_edit[fieldsData][remote_media][value][tags]" class="media-tags ez-data-source__input form-control"></div>
                                 </div>
-                                <div class="ez-data-source__input-wrapper"><input type="text" id="ezrepoforms_content_edit_fieldsData_remote_media_value_tags" name="ezrepoforms_content_edit[fieldsData][remote_media][value][tags]" class="media-tags ez-data-source__input form-control"></div>
-                            </div>
 
+                            </div>
                         </div>
+
+                        <div id="ngremotemedia-buttons-4601" class="ngremotemedia-buttons" data-id="4601" data-contentobject-id="283" data-version="8">
+
+                            <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_resource_id" name="ezrepoforms_content_edit[fieldsData][remote_media][value][resource_id]" class="media-id">
+                            <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_resource_url" name="ezrepoforms_content_edit[fieldsData][remote_media][value][resource_url]" class="media-url">
+                            <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_size" name="ezrepoforms_content_edit[fieldsData][remote_media][value][size]" class="media-size">
+                            <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_media_type" name="ezrepoforms_content_edit[fieldsData][remote_media][value][media_type]" class="media-type">
+                            <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_width" name="ezrepoforms_content_edit[fieldsData][remote_media][value][width]" class="media-width">
+                            <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_height" name="ezrepoforms_content_edit[fieldsData][remote_media][value][height]" class="media-height">
+
+                            <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="Browse media">
+
+                            <div class="ngremotemedia-local-file-container">
+                                <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
+                            </div>
+                        </div>
+
+                        <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
                     </div>
 
-                    <div id="ngremotemedia-buttons-4601" class="ngremotemedia-buttons" data-id="4601" data-contentobject-id="283" data-version="8">
 
-                        <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_resource_id" name="ezrepoforms_content_edit[fieldsData][remote_media][value][resource_id]" class="media-id">
-                        <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_resource_url" name="ezrepoforms_content_edit[fieldsData][remote_media][value][resource_url]" class="media-url">
-                        <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_size" name="ezrepoforms_content_edit[fieldsData][remote_media][value][size]" class="media-size">
-                        <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_media_type" name="ezrepoforms_content_edit[fieldsData][remote_media][value][media_type]" class="media-type">
-                        <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_width" name="ezrepoforms_content_edit[fieldsData][remote_media][value][width]" class="media-width">
-                        <input type="hidden" id="ezrepoforms_content_edit_fieldsData_remote_media_value_height" name="ezrepoforms_content_edit[fieldsData][remote_media][value][height]" class="media-height">
-
-                        <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="Browse media">
-
-                        <div class="ngremotemedia-local-file-container">
-                            <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
-                        </div>
-                    </div>
-
-                    <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
                 </div>
 
-
-            </div>
+                <input type="submit">
+            </form>
         </body>
     </body>
 </html>

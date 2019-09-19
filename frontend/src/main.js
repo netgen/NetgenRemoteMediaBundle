@@ -2,6 +2,7 @@ import Vue from 'vue';
 import MediaModal from './components/MediaModal';
 import './scss/ngremotemedia.scss';
 import { initDirective } from './utility/directives';
+import vSelect from 'vue-select';
 
 Vue.config.productionTip = false;
 
@@ -16,15 +17,27 @@ var handleDOMContentLoaded = function() {
         RemoteMediaSelectedImage,
         folders: [],
         modalOpen: false,
-        selectedImage: {}
+        selectedImage: {},
+        allTags: []
       },
       computed: {
         nonImagePreviewClass() {
           return this.selectedImage.type === 'video' ? 'ng-video' : 'ng-book';
+        },
+        selectedTags: {
+          get() {
+            return this.selectedImage && this.selectedImage.tags
+              ? this.selectedImage.tags.join(',')
+              : [];
+          },
+          set(val) {
+            this.selectedImage.tags = val.split(',');
+          }
         }
       },
       components: {
-        'media-modal': MediaModal
+        'media-modal': MediaModal,
+        'v-select': vSelect
       },
       methods: {
         async browseMedia() {
@@ -36,6 +49,9 @@ var handleDOMContentLoaded = function() {
         handleModalClose() {
           this.modalOpen = false;
         }
+      },
+      mounted() {
+        this.allTags = this.selectedImage.tags;
       }
     });
   });
