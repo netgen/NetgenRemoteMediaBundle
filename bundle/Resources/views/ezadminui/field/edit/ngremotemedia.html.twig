@@ -5,10 +5,10 @@
     {% set content = app.request.get('view').content %}
     {% set contentId = content.id %}
     {% set version = content.versionInfo.versionNo %}
+    {% set type = field_value.metaData.resource_type|default('image') %}
 
     {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' %}
 
-    {% set type = field_value.metaData.resource_type|default('image') %}
     {% set croppableVariations = ngrm_available_variations(content, true)  %}
     {% set availableVariations = croppableVariations|scaling_format|json_encode %}
 
@@ -17,7 +17,7 @@
 
         <div class="tagger">
             <div class="ngremotemedia-alttext">
-                {{ form_row(form.alt_text) }}
+                {{ form_row(form.alt_text, { 'attr': {'v-model': 'selectedImage.alternateText'} }) }}
             </div>
             {# @todo: TAGS!
                         {% set tags = field_value.metaData.tags %}
@@ -28,7 +28,7 @@
                         </select>
                         #}
             <div id="ngremotemedia-tags-{{ field.id }}">
-                {{ form_row(form.tags, { 'attr': {'class' : 'media-tags'} }) }}
+                {{ form_row(form.tags, { 'attr': {'class' : 'media-tags', 'v-model': 'selectedImage.tags'} }) }}
             </div>
         </div>
 

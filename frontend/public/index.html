@@ -14,60 +14,111 @@
         <div id="ngadminui">
 
             <h1>ngadminui</h1>
-            <script type="text/javascript">
-                NgRemoteMediaTranslations = {
-                    'Search for media': "Search for media",
-                    'Load more': "Load more",
-                    'Upload new media': "Upload new media",
-                    'No results': "No results",
-                    'Alternate text': "Alternate text",
-                    'Class': "CSS class",
-                    'Create new folder?': "Create new folder?",
-                    'Folder': "Folder",
-                    'All': "All",
-                    'Add tag': "Add tag",
-                    'Media type': "Media type",
-                    'Image': "Image and documents",
-                    'Video': "Video",
-                    'Loading...': "Loading...",
-                    'Cancel': "Cancel",
-                    'Save all': "Save all",
-                    'Generate': "Generate",
-                    'Caption': "Caption",
-                    'by': "by",
-                    'name': "name",
-                    'tag': "tag",
-                    'Image is to small for this version': "Image is to small for this version",
 
-                    close: "Close",
-                    next: "Next 25 &gt;",
-                    prev: "&lt; Previous 25"
-                };
+            <div class="block ezcca-edit-datatype-ngremotemedia ezcca-edit-remote_media">
+                <div class="edit-row">
 
-                RemoteMediaSettings = {
-                    'ez_contentobject_id': 283,
-                    'ez_contentobject_version': 8,
-                    'url_prefix': "/ngadminui"
-                };
-            </script>
+                    <div class="label-edit">
+                        <label class="attribute-label ">
+                            <span class="classattribute-name">Remote media</span>
+                        </label>
+                    </div>
+                    <div class="attribute-edit">
+                        <div class="attribute-block float-break">
+                            <script type="text/javascript">
+                                NgRemoteMediaTranslations = {
+                                    'Search for media': "Search for media",
+                                    'Load more': "Load more",
+                                    'Upload new media': "Upload new media",
+                                    'No results': "No results",
+                                    'Alternate text': "Alternate text",
+                                    'Class': "CSS class",
+                                    'Create new folder?': "Create new folder?",
+                                    'Folder': "Folder",
+                                    'All': "All",
+                                    'Add tag': "Add tag",
+                                    'Media type': "Media type",
+                                    'Image': "Image and documents",
+                                    'Video': "Video",
+                                    'Loading...': "Loading...",
+                                    'Cancel': "Cancel",
+                                    'Save all': "Save all",
+                                    'Generate': "Generate",
+                                    'Caption': "Caption",
+                                    'by': "by",
+                                    'name': "name",
+                                    'tag': "tag",
+                                    'Image is to small for this version': "Image is to small for this version",
 
-            <div class="ngremotemedia-type" data-available-variations="{&quot;full&quot;:[500,300],&quot;mobile&quot;:[500,500],&quot;fixed_height&quot;:[0,500],&quot;fixed_width&quot;:[500,0]}" data-user-id="14">
+                                    close: "Close",
+                                    next: "Next 25 &gt;",
+                                    prev: "&lt; Previous 25"
+                                };
 
-                <div class="ngremotemedia-image"></div>
-                <div id="ngremotemedia-buttons-4601" class="ngremotemedia-buttons" data-id="4601" data-contentobject-id="283" data-version="8">
+                                RemoteMediaSettings = {
+                                    'ez_contentobject_id': 283,
+                                    'ez_contentobject_version': 10,
+                                    'url_prefix': "/ngadminui"
+                                };
 
-                    <input type="hidden" name="ContentObjectAttribute_media_id_4601" value="" class="media-id">
+                                RemoteMediaSelectedImage = {
+                                    url: 'https://res-5.cloudinary.com/marko-ab-i/image/upload/c_limit,h_600,w_600/Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
+                                    type: "image",
+                                    name: 'Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
+                                    alternateText: 'Celibate!',
+                                    tags: [
+                                        'test', 'test2'
+                                    ],
+                                    size: '44.52 kB',
+                                    id: "Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el"
+                                }
+                            </script>
 
-                    <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="Manage media">
+                            <div class="ngremotemedia-type" data-available-variations="[]" data-user-id="14">
 
-                    <div class="ngremotemedia-local-file-container" style="position: relative;">
-                        <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
+                                <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
+                                    <div class="image-wrap">
+                                        <img v-if="selectedImage.type==='image'" :src="selectedImage.url"/>
+                                        <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
+                                    </div>
+
+                                    <div class="image-meta">
+                                        <h3 class="title">{{selectedImage.name}}</h3>
+
+                                        <div class="tagger">
+                                            <div class="ngremotemedia-alttext">
+                                                <span class="help-block description">Alternate text</span>
+                                                <input type="text" name="ContentObjectAttribute_alttext_4601" v-model="selectedImage.alternateText" class="media-alttext data">
+                                            </div>
+
+                                            <select name="ContentObjectAttribute_tags_4601[]" class="ngremotemedia-newtags" multiple="multiple">
+                                                <option v-for="tag in selectedImage.tags" :value="tag" selected="selected">{{tag}}</option>
+                                            </select>
+
+                                        </div>
+                                        <p>Size:
+                                            {{selectedImage.size}}</p>
+                                    </div>
+                                </div>
+                                <div id="ngremotemedia-buttons-4601" class="ngremotemedia-buttons" data-id="4601" data-contentobject-id="283" data-version="10">
+
+                                    <input type="hidden" name="ContentObjectAttribute_media_id_4601" v-model="selectedImage.id" class="media-id"/>
+
+                                    <input type="button" class="ngremotemedia-remove-file button" value="Remove media"/>
+
+                                    <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="Manage media"/>
+
+                                    <div class="ngremotemedia-local-file-container">
+                                        <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
+                                    </div>
+                                </div>
+                                <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
+                            </div>
+                            <input type="hidden" name="ContentObjectAttribute_id[]" value="4601"/>
+                        </div>
                     </div>
                 </div>
-                <!-- modal -->
-                <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
             </div>
-
 
             <div id="adminv2">
                 <h2>Admin v2</h2>

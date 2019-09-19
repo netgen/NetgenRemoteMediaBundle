@@ -8,3 +8,48 @@
 }
 
 @import 'vue-select/src/scss/vue-select.scss';
+
+.ng-icon {
+  font-family: 'ngri';
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+
+  background: #888;
+  text-align: center;
+  line-height: 80px;
+  display: block;
+  color: #333;
+
+  font-size: 4.5em;
+
+  &.big {
+    font-size: 64px;
+    color: #222;
+  }
+
+  &.ng-warning:before {
+    content: '\e900';
+  }
+
+  &.ng-spinner:before {
+    content: '\e901';
+  }
+
+  &.ng-close:before {
+    content: '\e902';
+  }
+
+  &.ng-cloud:before {
+    content: '\e903';
+  }
+
+  &.ng-video:before {
+    content: '\e904';
+  }
+
+  &.ng-book:before {
+    content: '\e905';
+  }
+}

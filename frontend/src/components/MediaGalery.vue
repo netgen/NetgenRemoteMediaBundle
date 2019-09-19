@@ -8,7 +8,7 @@
           <div>{{item.width}} x {{item.height}}</div>
         </div>
         <div v-else>
-          <i class="video" />
+          <i class="ng-icon ng-video" />
           <Label>{{item.filename}}</Label>
           <div>{{item.width}} x {{item.height}}</div>
         </div>
@@ -38,26 +38,6 @@ export default {
       padding: 1em;
       flex-direction: column;
       overflow: hidden;
-
-      .video {
-        font-family: "ngri";
-        font-style: normal;
-        font-weight: normal;
-        font-variant: normal;
-        text-transform: none;
-
-        background: #888;
-        text-align: center;
-        line-height: 80px;
-        display: block;
-        color: #333;
-
-        font-size: 4.5em;
-
-        &:before {
-          content: "\e904";
-        }
-      }
     }
   }
 }

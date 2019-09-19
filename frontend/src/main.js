@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import MediaModal from './components/MediaModal';
 import './scss/ngremotemedia.scss';
+import { initDirective } from './utility/directives';
 
 Vue.config.productionTip = false;
 
@@ -8,9 +9,19 @@ var handleDOMContentLoaded = function() {
   document.querySelectorAll('.ngremotemedia-type').forEach((el, i) => {
     window[`remoteMedia${i}`] = new Vue({
       el,
+      directives: {
+        init: initDirective
+      },
       data: {
+        RemoteMediaSelectedImage,
         folders: [],
-        modalOpen: false
+        modalOpen: false,
+        selectedImage: {}
+      },
+      computed: {
+        nonImagePreviewClass() {
+          return this.selectedImage.type === 'video' ? 'ng-video' : 'ng-book';
+        }
       },
       components: {
         'media-modal': MediaModal

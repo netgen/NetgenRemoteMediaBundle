@@ -3,7 +3,7 @@
     data-contentobject-id="{$contentObjectId}"
     data-version="{$version}">
 
-    <input type="hidden" name="{$base}_media_id_{$fieldId}" value="{$remote_value.resourceId}" class="media-id" />
+    <input type="hidden" name="{$base}_media_id_{$fieldId}" v-model="selectedImage.id" class="media-id" />
 
     {if $remote_value.resourceId}
         {if $type|eq('image')}
