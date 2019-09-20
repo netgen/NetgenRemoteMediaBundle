@@ -6,9 +6,12 @@ use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\API\Repository\Values\Content\Field;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RemoteMediaFieldType extends AbstractType
@@ -43,7 +46,17 @@ class RemoteMediaFieldType extends AbstractType
             ->add('size', HiddenType::class)
             ->add('alt_text', TextType::class)
             ->add('media_type', HiddenType::class)
-            ->add('tags', TextType::class)
+            ->add(
+                'tags',
+                ChoiceType::class,
+                [
+                    "multiple" => true,
+                    "choices" => ["{{tag}}" => true],
+                    "choice_attr" => function () {
+                        return ["v-for" => "tag in allTags", ":value" => "tag"];
+                    }
+                ]
+            )
             ->add('url', HiddenType::class)
             ->add('height', HiddenType::class)
             ->add('width', HiddenType::class)

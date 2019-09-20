@@ -19,16 +19,10 @@
             <div class="ngremotemedia-alttext">
                 {{ form_row(form.alt_text, { 'attr': {'v-model': 'selectedImage.alternateText'} }) }}
             </div>
-            {# @todo: TAGS!
-                        {% set tags = field_value.metaData.tags %}
-                        <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
-                            {foreach $tags as $tag}
-                            <option value="{$tag}" selected="selected">{$tag}</option>
-                            {/foreach}
-                        </select>
-                        #}
+
             <div id="ngremotemedia-tags-{{ field.id }}">
-                {{ form_row(form.tags, { 'attr': {'class' : 'media-tags', 'v-model': 'selectedImage.tags'} }) }}
+                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
+                {{ form_row(form.tags, { 'attr': {'class' : 'media-tags', 'v-model': 'selectedImage.tags', "hidden": "hidden"} }) }}
             </div>
         </div>
 

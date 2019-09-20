@@ -7,6 +7,7 @@ import vSelect from 'vue-select';
 Vue.config.productionTip = false;
 
 var handleDOMContentLoaded = function() {
+  console.log('loaded');
   document.querySelectorAll('.ngremotemedia-type').forEach((el, i) => {
     window[`remoteMedia${i}`] = new Vue({
       el,
@@ -17,22 +18,14 @@ var handleDOMContentLoaded = function() {
         RemoteMediaSelectedImage,
         folders: [],
         modalOpen: false,
-        selectedImage: {},
+        selectedImage: {
+          tags: []
+        },
         allTags: []
       },
       computed: {
         nonImagePreviewClass() {
           return this.selectedImage.type === 'video' ? 'ng-video' : 'ng-book';
-        },
-        selectedTags: {
-          get() {
-            return this.selectedImage && this.selectedImage.tags
-              ? this.selectedImage.tags.join(',')
-              : [];
-          },
-          set(val) {
-            this.selectedImage.tags = val.split(',');
-          }
         }
       },
       components: {
@@ -48,10 +41,13 @@ var handleDOMContentLoaded = function() {
         },
         handleModalClose() {
           this.modalOpen = false;
+        },
+        handleTagsInput(value) {
+          this.allTags = [...new Set([...this.allTags, ...value])];
         }
       },
       mounted() {
-        this.allTags = this.selectedImage.tags;
+        this.allTags = [...this.selectedImage.tags];
       }
     });
   });
