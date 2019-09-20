@@ -3,10 +3,10 @@ module.exports = {
   devServer: {
     proxy: {
       '^/ngadminui': {
-        target: 'http://media.site',
+        target: 'http://remote-media.dev6.netgen.biz',
         changeOrigin: true,
         headers: {
-          cookie: 'eZSESSID=md9u8ed2f63e3fq4kljb1scb2j;'
+          cookie: 'eZSESSID=o7oaf2s3aroc8reislknrvqc4b;'
         }
       }
     }
