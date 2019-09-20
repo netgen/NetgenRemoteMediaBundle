@@ -12,9 +12,10 @@
           <Label>{{item.filename}}</Label>
           <div>{{item.width}} x {{item.height}}</div>
         </div>
+        <button type="button" @click="$emit('media-selected', item)">Select</button>
       </div>
     </div>
-    <button v-if="canLoadMore" @click="$emit('loadMore')">Load more</button>
+    <button type="button" v-if="canLoadMore" @click="$emit('loadMore')">Load more</button>
   </div>
 </template>
 

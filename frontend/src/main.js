@@ -7,7 +7,6 @@ import vSelect from 'vue-select';
 Vue.config.productionTip = false;
 
 var handleDOMContentLoaded = function() {
-  console.log('loaded');
   document.querySelectorAll('.ngremotemedia-type').forEach((el, i) => {
     window[`remoteMedia${i}`] = new Vue({
       el,
@@ -19,7 +18,13 @@ var handleDOMContentLoaded = function() {
         folders: [],
         modalOpen: false,
         selectedImage: {
-          tags: []
+          id: '',
+          name: '',
+          type: '',
+          url: '',
+          alternateText: '',
+          tags: [],
+          size: ''
         },
         allTags: []
       },
@@ -44,6 +49,19 @@ var handleDOMContentLoaded = function() {
         },
         handleTagsInput(value) {
           this.allTags = [...new Set([...this.allTags, ...value])];
+        },
+        handleMediaSelected(item) {
+          this.selectedImage = {
+            id: item.resourceId,
+            name: item.filename,
+            type: item.type,
+            url: item.url,
+            alternateText: '',
+            tags: item.tags,
+            size: item.filesize
+          };
+
+          this.modalOpen = false;
         }
       },
       mounted() {

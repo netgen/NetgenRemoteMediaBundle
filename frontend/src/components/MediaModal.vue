@@ -7,7 +7,12 @@
       </div>
       <div class="body">
         <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
-        <media-galery :media="media" :canLoadMore="canLoadMore" @loadMore="handleLoadMore" />
+        <media-galery
+          :media="media"
+          :canLoadMore="canLoadMore"
+          @loadMore="handleLoadMore"
+          @media-selected="item => $emit('media-selected', item)"
+        />
       </div>
     </div>
   </div>
