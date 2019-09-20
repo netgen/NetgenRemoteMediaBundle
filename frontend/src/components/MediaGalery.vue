@@ -4,18 +4,20 @@
       <div class="media" v-for="item in media" :key="item.id">
         <div v-if="item.type==='image'">
           <img :src="item.url" :alt="item.filename" />
-          <Label>{{item.filename}}</Label>
-          <div>{{item.width}} x {{item.height}}</div>
+          <Label class="filename">{{item.filename}}</Label>
+          <div class="wh">{{item.width}} x {{item.height}}</div>
         </div>
         <div v-else>
           <i class="ng-icon ng-video" />
-          <Label>{{item.filename}}</Label>
-          <div>{{item.width}} x {{item.height}}</div>
+          <Label class="filename">{{item.filename}}</Label>
+          <div class="wh">{{item.width}} x {{item.height}}</div>
         </div>
         <button type="button" @click="$emit('media-selected', item)">Select</button>
       </div>
     </div>
-    <button type="button" v-if="canLoadMore" @click="$emit('loadMore')">Load more</button>
+    <div class="load-more-wrapper">
+      <button type="button" v-if="canLoadMore" @click="$emit('loadMore')">Load more</button>
+    </div>
   </div>
 </template>
 
@@ -33,12 +35,49 @@ export default {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    padding: 15px;
+    color: #333;
+
     .media {
       display: flex;
-      width: 10em;
-      padding: 1em;
       flex-direction: column;
-      overflow: hidden;
+      justify-content: flex-end;
+      width: 177px;
+      background-color: #fff;
+      padding: 8px;
+      margin: 0 15px 15px 0;
+
+      .img {
+        width: 100%;
+      }
+
+      .filename {
+        overflow: hidden;
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+        text-align: center;
+        font-size: 16px;
+        line-height: 20px;
+        margin-top: 4px;
+      }
+
+      .wh {
+        font-size: 12px;
+        line-height: 14px;
+        text-align: center;
+        color: #999;
+      }
+    }
+
+    .load-more-wrapper {
+      padding: 8px;
+      background-color: #fff;
+
+      button {
+        padding: 8px;
+      }
     }
   }
 }

@@ -142,6 +142,10 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .mediaFacets {
+  width: 362px;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 0 #E4E4E4, inset -1px 0 0 0 #E4E4E4;
+
   ul {
     list-style: none;
 

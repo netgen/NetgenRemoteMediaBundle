@@ -113,13 +113,22 @@ export default {
   z-index: 11;
 
   .media-modal {
-    background-color: white;
+    background-color: #F5F5F5;
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, .5);
     margin: 20px;
     height: 97%;
     overflow: scroll;
 
     .title {
-      padding: 20px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      background: #FFF;
+      text-transform: uppercase;
+      box-shadow: inset 0 -1px 0 0 #E4E4E4;
+
       .close {
         float: right;
       }
