@@ -92,7 +92,7 @@
                                                 </div>
 
                                                 <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
-                                                <select multiple="multiple" name="ContentObjectAttribute_tags_4601[]" class="ngremotemedia-newtags" v-model="selectedImage.tags">
+                                                <select hidden="hidden" multiple="multiple" name="ContentObjectAttribute_tags_4601[]" class="ngremotemedia-newtags" v-model="selectedImage.tags">
                                                     <option v-for="tag in allTags" :value="tag">{{tag}}</option>
                                                 </select>
 
@@ -113,7 +113,7 @@
                                             <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
                                         </div>
                                     </div>
-                                    <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
+                                    <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose" @media-selected="handleMediaSelected"/>
                                 </div>
                                 <input type="hidden" name="ContentObjectAttribute_id[]" value="4601"/>
                             </div>
