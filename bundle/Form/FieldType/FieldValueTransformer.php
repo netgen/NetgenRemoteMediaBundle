@@ -49,7 +49,7 @@ class FieldValueTransformer implements DataTransformerInterface
             'resource_url' => $value->secure_url,
             'url' => $value->url,
             'size' => $value->size,
-            'tags' => implode(', ', $value->metaData['tags']),
+            'tags' => $value->metaData['tags'],
             'width' => isset($value->metaData['width']) ? $value->metaData['width'] : '',
             'height' => isset($value->metaData['height']) ? $value->metaData['height'] : ''
         ];
@@ -66,25 +66,25 @@ class FieldValueTransformer implements DataTransformerInterface
             return $this->fieldType->getEmptyValue();
         }
 
-//        $hash = [
-//            'resourceId' => $value['resource_id'],
-//            'secure_url' => $value['resource_url'],
-//            'mediaType' => $value['media_type'],
-//            'size' => $value['size'],
-//            'metaData' => [
-//                'alt_text' => $value['alt_text'],
-//                'tags' => explode(',', $value['tags']),
-//                'width' => $value['width'],
-//                'height' => $value['height']
-//            ]
-//        ];
-//
-//        if ($value['resource_id'] === $this->field->value->resourceId) {
-//            // update variations
-//        }
+        //        $hash = [
+        //            'resourceId' => $value['resource_id'],
+        //            'secure_url' => $value['resource_url'],
+        //            'mediaType' => $value['media_type'],
+        //            'size' => $value['size'],
+        //            'metaData' => [
+        //                'alt_text' => $value['alt_text'],
+        //                'tags' => explode(',', $value['tags']),
+        //                'width' => $value['width'],
+        //                'height' => $value['height']
+        //            ]
+        //        ];
+        //
+        //        if ($value['resource_id'] === $this->field->value->resourceId) {
+        //            // update variations
+        //        }
 
 
-//        $value = new \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value($hash);
+        //        $value = new \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value($hash);
 
         return $this->field->value;
     }

@@ -15,10 +15,11 @@
                             name="{$base}_alttext_{$fieldId}" v-model="selectedImage.alternateText" class="media-alttext data">
                 </div>
 
-                <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
-                    {literal}<option v-for="tag in selectedImage.tags" :value="tag" selected="selected">{{tag}}</option>{/literal}
+                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
+                <select hidden v-model="selectedImage.tags" name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
+                    {/literal}<option v-for="tag in allTags">{{tag}}</option>{/literal}
                 </select>
-
+                
             </div>
             {if $remote_value.size|null()|not()}
                 <p>{'Size'|i18n( 'content/edit' )}: {literal}{{selectedImage.size}}{/literal}</p>

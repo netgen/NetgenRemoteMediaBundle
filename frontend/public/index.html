@@ -91,8 +91,14 @@
                                                     <input type="text" name="ContentObjectAttribute_alttext_4601" v-model="selectedImage.alternateText" class="media-alttext data">
                                                 </div>
 
-                                                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable push-tags></v-select>
-                                                <input hidden="hidden" type="text" name="ContentObjectAttribute_tags_4601" v-model="selectedTags" class="media-tags ez-data-source__input form-control">
+                                                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
+                                                <select hidden multiple="multiple" name="ContentObjectAttribute_tags_4601[]" class="ngremotemedia-newtags" v-model="selectedImage.tags">
+                                                    <option v-for="tag in allTags">{{tag}}</option>
+                                                </select>
+
+                                                <select id="ezrepoforms_content_edit_fieldsData_remote_media_value_tags" name="ezrepoforms_content_edit[fieldsData][remote_media][value][tags][]" class="media-tags ez-data-source__input form-control" v-model="selectedImage.tags" multiple="multiple">
+                                                    <option value="1" v-for="tag in allTags">{{tag}}</option>
+                                                </select>
 
                                             </div>
                                             <p>Size:
