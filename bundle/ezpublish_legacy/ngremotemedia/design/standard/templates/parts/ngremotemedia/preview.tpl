@@ -22,7 +22,7 @@
                 
             </div>
             {if $remote_value.size|null()|not()}
-                <p>{'Size'|i18n( 'content/edit' )}: {literal}{{selectedImage.size}}{/literal}</p>
+                <p>{'Size'|i18n( 'content/edit' )}: {literal}{{formattedSize}}{/literal}</p>
             {/if}
         </div>
     {/if}

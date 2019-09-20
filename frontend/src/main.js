@@ -3,6 +3,7 @@ import MediaModal from './components/MediaModal';
 import './scss/ngremotemedia.scss';
 import { initDirective } from './utility/directives';
 import vSelect from 'vue-select';
+import { formatByteSize } from './utility/utility';
 
 Vue.config.productionTip = false;
 
@@ -20,7 +21,7 @@ var handleDOMContentLoaded = function() {
         selectedImage: {
           id: '',
           name: '',
-          type: '',
+          type: 'image',
           url: '',
           alternateText: '',
           tags: [],
@@ -31,6 +32,9 @@ var handleDOMContentLoaded = function() {
       computed: {
         nonImagePreviewClass() {
           return this.selectedImage.type === 'video' ? 'ng-video' : 'ng-book';
+        },
+        formattedSize() {
+          return formatByteSize(this.selectedImage.size);
         }
       },
       components: {
@@ -38,7 +42,7 @@ var handleDOMContentLoaded = function() {
         'v-select': vSelect
       },
       methods: {
-        async browseMedia() {
+        async handleBrowseMediaClicked() {
           const response = await fetch('/ngadminui/ngremotemedia/folders');
           const folders = await response.json();
           this.folders = folders;
@@ -62,6 +66,17 @@ var handleDOMContentLoaded = function() {
           };
 
           this.modalOpen = false;
+        },
+        handleRemoveMediaClicked() {
+          this.selectedImage = {
+            id: "",
+            name: "",
+            type: "image",
+            url: "",
+            alternateText: '',
+            tags: [],
+            size: 0
+          };
         }
       },
       mounted() {
