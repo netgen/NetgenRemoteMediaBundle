@@ -60,11 +60,7 @@
             "{$tag}",
         {/foreach}
     {literal} ], {/literal}
-    {if $remote_value.size|null()|not()}
-        size: "{$remote_value.size|si( byte )}",
-    {else}
-        size: "",
-    {/if}
+    size: {$remote_value.size},
     id: "{$remote_value.resourceId}"
 {literal} }; {/literal}
 

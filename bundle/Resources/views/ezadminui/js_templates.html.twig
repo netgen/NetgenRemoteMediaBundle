@@ -1,5 +1,4 @@
 {% set thumbnail_url = type == 'image' ? netgen_remote_media(field_value, 'admin_preview').url : netgen_remote_video_thumbnail(field_value) %}
-{% import '@NetgenRemoteMedia/ezadminui/field/edit/macros.html.twig' as macros %}
 
 <script type="text/javascript">
     NgRemoteMediaTranslations = {
@@ -54,11 +53,7 @@
             "{{ tag }}",
             {% endfor %}
         ],
-        {% if field_value.size %}
-            size : "{{ macros.bytesToSize(field_value.size) }}",
-        {% else %}
-            size : "",
-        {% endif %}
+        size : {{ field_value.size }},
         id: "{{ field_value.resourceId }}"
     };
 </script>

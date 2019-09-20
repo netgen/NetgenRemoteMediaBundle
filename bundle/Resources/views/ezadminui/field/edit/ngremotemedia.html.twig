@@ -28,6 +28,6 @@
 
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
         <!-- modal -->
-        <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose"/>
+        <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose" @media-selected="handleMediaSelected"/>
     </div>
 {% endblock %}

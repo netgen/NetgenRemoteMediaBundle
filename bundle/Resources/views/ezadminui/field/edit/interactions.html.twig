@@ -16,10 +16,10 @@
             {% endif %}
         {% endif %}
 
-        <input type="button" class="ngremotemedia-remove-file button" value="{{ 'ngremotemedia.field.edit.remove_file'|trans }}"/>
+        <input type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" value="{{ 'ngremotemedia.field.edit.remove_file'|trans }}"/>
     {% endif %}
 
-    <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="{{ 'ngremotemedia.field.edit.manage_media'|trans }}"/>
+    <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="{{ 'ngremotemedia.field.edit.manage_media'|trans }}"/>
 
     <div class="ngremotemedia-local-file-container">
         <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="{{ 'ngremotemedia.field.edit.quick_upload'|trans }}">

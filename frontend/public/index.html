@@ -72,7 +72,7 @@
                                         tags: [
                                             'test', 'test2'
                                         ],
-                                        size: '44.52 kB',
+                                        size: 45260.8,
                                         id: "Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el"
                                     }
                                 </script>
@@ -101,16 +101,16 @@
 
                                             </div>
                                             <p>Size:
-                                                {{selectedImage.size}}</p>
+                                                {{formattedSize}}</p>
                                         </div>
                                     </div>
                                     <div id="ngremotemedia-buttons-4601" class="ngremotemedia-buttons" data-id="4601" data-contentobject-id="283" data-version="10">
 
                                         <input type="hidden" name="ContentObjectAttribute_media_id_4601" v-model="selectedImage.id" class="media-id"/>
 
-                                        <input type="button" class="ngremotemedia-remove-file button" value="Remove media"/>
+                                        <input type="button" class="ngremotemedia-remove-file button" value="Remove media" @click="handleRemoveMediaClicked"/>
 
-                                        <input type="button" @click="browseMedia" class="ngremotemedia-remote-file button" value="Manage media"/>
+                                        <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="Manage media"/>
 
                                         <div class="ngremotemedia-local-file-container">
                                             <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
