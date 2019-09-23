@@ -43,10 +43,10 @@ var handleDOMContentLoaded = function() {
       },
       methods: {
         async handleBrowseMediaClicked() {
+          this.modalOpen = true;
           const response = await fetch('/ngadminui/ngremotemedia/folders');
           const folders = await response.json();
           this.folders = folders;
-          this.modalOpen = true;
         },
         handleModalClose() {
           this.modalOpen = false;

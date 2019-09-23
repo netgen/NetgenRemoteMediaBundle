@@ -8,11 +8,13 @@
       <div class="body">
         <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
         <media-galery
+          v-if="!loading"
           :media="media"
           :canLoadMore="canLoadMore"
           @loadMore="handleLoadMore"
           @media-selected="item => $emit('media-selected', item)"
         />
+        <i v-else class="ng-icon ng-spinner" />
       </div>
     </div>
   </div>
@@ -38,6 +40,7 @@ export default {
     return {
       media: [],
       canLoadMore: false,
+      loading: true,
       facets: {
         folder: "",
         searchType: SEARCH_NAME,
@@ -54,6 +57,7 @@ export default {
       this.load(options);
     }, 500),
     async load({ patch } = { patch: false }) {
+      this.loading = true;
       this.abortController && this.abortController.abort();
       this.abortController = new AbortController();
 
@@ -76,6 +80,8 @@ export default {
 
         this.media = patch ? this.media.concat(media.hits) : media.hits;
         this.canLoadMore = media.load_more;
+        this.loading = false;
+
       } catch (err) {
         //user aborted request
         if (err.code !== 20) {
