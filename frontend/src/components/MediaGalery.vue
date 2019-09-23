@@ -1,6 +1,7 @@
 <template>
   <div class="mediaGalery">
     <div class="items">
+      <div v-if="!media.length">Folder is empty. Upload media from your local storage.</div>
       <div class="media" v-for="item in media" :key="item.id">
         <div v-if="item.type==='image'">
           <img :src="item.url" :alt="item.filename" />
