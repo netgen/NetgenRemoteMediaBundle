@@ -2,7 +2,7 @@
   <div class="mediaGalery">
     <div class="items">
       <div v-if="!media.length">Folder is empty. Upload media from your local storage.</div>
-      <div class="media" v-for="item in media" :key="item.id">
+      <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
         <div v-if="item.type==='image'">
           <img :src="item.url" :alt="item.filename" />
           <Label class="filename">{{item.filename}}</Label>
@@ -25,7 +25,7 @@
 <script>
 export default {
   name: "MediaGalery",
-  props: ["media", "canLoadMore", "onLoadMore"]
+  props: ["media", "canLoadMore", "onLoadMore", "selectedMediaId"]
 };
 </script>
 
@@ -69,6 +69,10 @@ export default {
         line-height: 14px;
         text-align: center;
         color: #999;
+      }
+
+      &.selected {
+        border: 1px black solid;
       }
     }
 

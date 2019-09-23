@@ -15,7 +15,6 @@ var handleDOMContentLoaded = function() {
         init: initDirective
       },
       data: {
-        RemoteMediaSelectedImage,
         folders: [],
         modalOpen: false,
         selectedImage: {

@@ -11,6 +11,7 @@
           v-if="!loading"
           :media="media"
           :canLoadMore="canLoadMore"
+          :selectedMediaId="selectedMediaId"
           @loadMore="handleLoadMore"
           @media-selected="item => $emit('media-selected', item)"
         />
@@ -31,7 +32,7 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["folders"],
+  props: ["folders", "selectedMediaId"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGalery
