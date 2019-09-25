@@ -13,7 +13,7 @@
         <noscript>
             <strong>We're sorry but netgen-remote-media-bundle doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
         </noscript>
-        <form action="/dumy">
+        <form action="/dumy" method="POST">
             <div id="ngadminui">
 
                 <h1>ngadminui</h1>
@@ -113,7 +113,12 @@
                                         <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="Manage media"/>
 
                                         <div class="ngremotemedia-local-file-container">
-                                            <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="Quick upload">
+                                            <button type="button">
+                                                <Label for="new_file">
+                                                    Upload
+                                                </Label>
+                                                <input hidden id="new_file" name="new_file" type="file" @change="handleFileInputChange">
+                                            </button>
                                         </div>
                                     </div>
                                     <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="modalOpen" @close="handleModalClose" @media-selected="handleMediaSelected"/>

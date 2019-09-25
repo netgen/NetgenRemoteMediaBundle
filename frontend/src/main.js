@@ -69,14 +69,39 @@ var handleDOMContentLoaded = function() {
         },
         handleRemoveMediaClicked() {
           this.selectedImage = {
-            id: "",
-            name: "",
-            type: "image",
-            url: "",
+            id: '',
+            name: '',
+            type: 'image',
+            url: '',
             alternateText: '',
             tags: [],
             size: 0
           };
+        },
+        handleFileInputChange(e) {
+          const file = e.target.files.item(0);
+          var reader = new FileReader();
+          if (file) {
+            this.selectedImage = {
+              id: file.name,
+              name: file.name,
+              type: 'image',
+              url: '',
+              alternateText: '',
+              tags: [],
+              size: file.size
+            };
+
+            reader.addEventListener(
+              'load',
+              function() {
+                this.selectedImage.url = reader.result;
+              }.bind(this),
+              false
+            );
+
+            reader.readAsDataURL(file);
+          }
         }
       },
       mounted() {
