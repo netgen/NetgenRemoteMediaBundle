@@ -1,24 +1,16 @@
 <template>
-  <div class="overlay">
-    <div class="media-modal">
-      <div class="title">
-        Select media
-        <span @click="close" class="close">&#x00D7;</span>
-      </div>
-      <div class="body">
-        <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
-        <media-galery
-          v-if="!loading"
-          :media="media"
-          :canLoadMore="canLoadMore"
-          :selectedMediaId="selectedMediaId"
-          @loadMore="handleLoadMore"
-          @media-selected="item => $emit('media-selected', item)"
-        />
-        <i v-else class="ng-icon ng-spinner" />
-      </div>
-    </div>
-  </div>
+  <modal title="Select media" @close="$emit('close')">
+    <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
+    <media-galery
+      v-if="!loading"
+      :media="media"
+      :canLoadMore="canLoadMore"
+      :selectedMediaId="selectedMediaId"
+      @loadMore="handleLoadMore"
+      @media-selected="item => $emit('media-selected', item)"
+    />
+    <i v-else class="ng-icon ng-spinner" />
+  </modal>
 </template>
 
 <script>
@@ -27,6 +19,7 @@ import MediaGalery from "./MediaGalery";
 import { FOLDER_ALL, SEARCH_NAME, TYPE_IMAGE } from "../constants/facets";
 import { encodeQueryData } from "../utility/utility";
 import debounce from "debounce";
+import Modal from "./Modal";
 
 const NUMBER_OF_ITEMS = 25;
 
@@ -35,7 +28,8 @@ export default {
   props: ["folders", "selectedMediaId"],
   components: {
     "media-facets": MediaFacets,
-    "media-galery": MediaGalery
+    "media-galery": MediaGalery,
+    modal: Modal
   },
   data() {
     return {
@@ -82,7 +76,6 @@ export default {
         this.media = patch ? this.media.concat(media.hits) : media.hits;
         this.canLoadMore = media.load_more;
         this.loading = false;
-
       } catch (err) {
         //user aborted request
         if (err.code !== 20) {
@@ -120,8 +113,8 @@ export default {
   z-index: 11;
 
   .media-modal {
-    background-color: #F5F5F5;
-    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, .5);
+    background-color: #f5f5f5;
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
     margin: 20px;
     height: 97%;
     overflow: scroll;
@@ -132,9 +125,9 @@ export default {
       font-weight: 700;
       line-height: 20px;
       color: #333;
-      background: #FFF;
+      background: #fff;
       text-transform: uppercase;
-      box-shadow: inset 0 -1px 0 0 #E4E4E4;
+      box-shadow: inset 0 -1px 0 0 #e4e4e4;
 
       .close {
         float: right;
