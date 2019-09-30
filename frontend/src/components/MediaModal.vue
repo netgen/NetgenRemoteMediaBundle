@@ -117,14 +117,14 @@ export default {
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
     margin: 20px;
     height: 97%;
-    overflow: scroll;
+    overflow: hidden;
+    position: relative;
 
     .title {
       padding: 15px;
       font-size: 16px;
       font-weight: 700;
       line-height: 20px;
-      color: #333;
       background: #fff;
       text-transform: uppercase;
       box-shadow: inset 0 -1px 0 0 #e4e4e4;
@@ -137,6 +137,13 @@ export default {
     .body {
       display: flex;
       flex-direction: row;
+
+      .ng-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        animation: spinning 1500ms linear infinite;
+      }
     }
   }
 }

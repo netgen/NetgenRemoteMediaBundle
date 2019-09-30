@@ -10,18 +10,16 @@
 @import 'vue-select/src/scss/vue-select.scss';
 
 .ng-icon {
+  font-size: 4.5em;
   font-family: 'ngri';
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
   text-transform: none;
-
   text-align: center;
   line-height: 80px;
   display: block;
   color: #333;
-
-  font-size: 4.5em;
 
   &.big {
     font-size: 64px;
@@ -59,8 +57,52 @@
   }
 }
 
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
-    font-family: 'Roboto', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #333;
+}
+
+// Overriding vue-select styles
+.v-select {
+  font-size: 14px;
+  line-height: 16px;
+
+  .vs__dropdown-toggle {
+    border-radius: 0;
+    border: 1px solid #e4e4e4;
+    padding: 3px 5px 6px;
+  }
+}
+
+// Placeholder colors
+::-webkit-input-placeholder {
+  color: #999;
+}
+
+:-ms-input-placeholder {
+  color: #999;
+}
+
+::placeholder {
+  color: #999;
+}
+
+// Keyframes
+@keyframes spinning {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
