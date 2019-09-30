@@ -4,7 +4,8 @@
       <div v-if="!media.length">Folder is empty. Upload media from your local storage.</div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
         <div v-if="item.type==='image'">
-          <img :src="item.url" :alt="item.filename"/>
+
+          <img :src="item.url" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
           <div class="wh">{{item.width}} x {{item.height}}</div>
         </div>
@@ -13,12 +14,12 @@
           <Label class="filename">{{item.filename}}</Label>
           <div class="wh">{{item.width}} x {{item.height}}</div>
         </div>
-        <button type="button" @click="$emit('media-selected', item)">Select</button>
+        <button type="button" @click="$emit('media-selected', item)" class="btn-select">Select</button>
       </div>
     </div>
 
-    <div class="load-more-wrapper">
-      <button v-if="canLoadMore" @click="$emit('loadMore')">Load more</button>
+    <div class="load-more-wrapper" v-if="canLoadMore">
+      <button type="button" @click="$emit('loadMore')">Load more</button>
     </div>
   </div>
 </template>
@@ -33,24 +34,28 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .mediaGalery {
+  height: calc(100vh - 88px);
+  overflow-y: auto;
+  padding-bottom: 50px;
+
   .items {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     padding: 15px;
-    color: #333;
 
     .media {
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       width: 177px;
-      background-color: #FFF;
+      min-height: 182px;
+      background-color: #fff;
       padding: 8px;
       margin: 0 15px 15px 0;
 
       .img {
-        width: 100%;
+        margin-bottom: 8px;
       }
 
       .filename {
@@ -75,15 +80,41 @@ export default {
       &.selected {
         border: 1px black solid;
       }
-    }
 
-    .load-more-wrapper {
-      padding: 8px;
-      background-color: #FFF;
-
-      button {
-        padding: 8px;
+      .btn-select {
+        background-color: #009AC7;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 14px;
+        line-height: 18px;
+        color: #FFF;
+        margin-top: 8px;
+        padding: 3px;
+        border: 0;
       }
+    }
+  }
+
+  .load-more-wrapper {
+    padding: 8px 15px;
+    background-color: #FFF;
+    text-align: right;
+    box-shadow: inset 1px 0 0 0 #E4E4E4, 0 -1px 0 0 #E4E4E4;
+    position: absolute;
+    bottom: 0;
+    left: 361px;
+    right: 0;
+
+    button {
+      padding: 8px;
+      background-color: #009AC7;
+      border-radius: 4px;
+      color: #FFF;
+      margin: 0 15px;
+      min-width: 100px;
+      border: 0;
+      font-size: 14px;
+      line-height: 18px;
     }
   }
 }
