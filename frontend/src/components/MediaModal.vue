@@ -116,7 +116,7 @@ export default {
   bottom: 0em;
   left: 0em;
   right: 0em;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, .7);
   z-index: 11;
 
   .media-modal {
@@ -124,14 +124,14 @@ export default {
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, .5);
     margin: 20px;
     height: 97%;
-    overflow: scroll;
+    overflow: hidden;
+    position: relative;
 
     .title {
       padding: 15px;
       font-size: 16px;
       font-weight: 700;
       line-height: 20px;
-      color: #333;
       background: #FFF;
       text-transform: uppercase;
       box-shadow: inset 0 -1px 0 0 #E4E4E4;
@@ -144,6 +144,14 @@ export default {
     .body {
       display: flex;
       flex-direction: row;
+    //   min-height: calc(100% - 50px);
+
+      .ng-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        animation: spinning 1500ms linear infinite;
+      }
     }
   }
 }

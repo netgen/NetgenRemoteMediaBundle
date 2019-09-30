@@ -17,7 +17,7 @@
           v-model="selectedFolder"
           @input="handleFolderChange"
           :reduce="option => option.id"
-          placeholder="showing all files"
+          placeholder="All"
         >
           <template v-slot:search="search">
             <input
@@ -39,21 +39,24 @@
         </v-select>
       </div>
 
-      <div class="search">
-        <ul class="searchType">
-          <li :class="{active: isSearch(SEARCH_NAME)}">
-            <span @click="handleSearchChange(SEARCH_NAME)">Name</span>
-          </li>
-          <li :class="{active: isSearch(SEARCH_TAG)}">
-            <span @click="handleSearchChange(SEARCH_TAG)">Tag</span>
-          </li>
-        </ul>
-        <input
-          type="text"
-          :placeholder="`Search by ${searchName}`"
-          v-model="query"
-          @keyup="handleQueryChange"
-        />
+      <div class="search-wrapper">
+        <span class="search-label">Search</span>
+        <div class="search">
+            <ul class="searchType">
+            <li :class="{active: isSearch(SEARCH_NAME)}">
+                <span @click="handleSearchChange(SEARCH_NAME)">Name</span>
+            </li>
+            <li :class="{active: isSearch(SEARCH_TAG)}">
+                <span @click="handleSearchChange(SEARCH_TAG)">Tag</span>
+            </li>
+            </ul>
+            <input
+            type="text"
+            :placeholder="`Search by ${searchName}`"
+            v-model="query"
+            @keyup="handleQueryChange"
+            />
+        </div>
       </div>
     </div>
   </div>
@@ -144,16 +147,99 @@ export default {
 .mediaFacets {
   width: 362px;
   flex-shrink: 0;
-  box-shadow: inset 0 1px 0 0 #E4E4E4, inset -1px 0 0 0 #E4E4E4;
+  box-shadow: inset -1px 0 0 0 #E4E4E4;
 
-  ul {
+  .tabs {
     list-style: none;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    margin: 0;
 
     li {
-      display: inline;
-      padding: 1em;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 16px;
+      text-align: center;
+      text-transform: uppercase;
+      flex-grow: 1;
+      color: #999999;
+      cursor: pointer;
+      min-width: 120px;
+
+      span {
+        display: inline-block;
+        padding: 17px 20px;
+      }
+
       &.active {
-        text-decoration: underline;
+        color: #009AC7;
+        box-shadow: inset 0 -4px 0 0 #009AC7;
+      }
+    }
+  }
+
+  .body {
+    box-shadow: inset 0 -1px 0 0 #E4E4E4, inset 0 1px 0 0 #E4E4E4, inset -1px 0 0 0 #E4E4E4;
+    background: #FFF;
+    padding: 30px 15px;
+
+    .form-field label,
+    .search-wrapper .search-label {
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 18px;
+      color: #757575;
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    .search-wrapper {
+      margin: 30px 0 0;;
+
+      .search {
+        display: flex;
+        align-items: center;
+
+        ul, input {
+          font-size: 14px;
+          line-height: 16px;
+        }
+
+        ul {
+          margin: 0;
+          padding: 5px;
+          list-style: none;
+          display: flex;
+          align-items: center;
+          border: 1px solid #e4e4e4;
+
+          li {
+            cursor: pointer;
+            margin-right: 10px;
+            padding: 4px 10px;
+            min-width: 45px;
+
+            &:last-child,
+            &:only-child {
+              margin: 0;
+            }
+
+            &.active {
+              background: #009AC7;
+              color: #FFF;
+              border-radius: 4px;
+              box-shadow: inset -1px 0 0 0 #D7D7D7, inset 1px 0 0 0 #D7D7D7, inset 0 1px 0 0 #D7D7D7, inset 0 -1px 0 0 #D7D7D7;
+            }
+          }
+        }
+
+        input {
+          border: 1px solid #E4E4E4;
+          padding: 9px 10px;
+          margin-left: 14px;
+          flex-grow: 1;
+        }
       }
     }
   }
