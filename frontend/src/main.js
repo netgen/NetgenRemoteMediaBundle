@@ -1,9 +1,14 @@
 import Vue from 'vue';
-import MediaModal from './components/MediaModal';
 import './scss/ngremotemedia.scss';
+import 'cropperjs/dist/cropper.css';
+import MediaModal from './components/MediaModal';
+import CropModal from './components/CropModal';
 import { initDirective } from './utility/directives';
 import vSelect from 'vue-select';
 import { formatByteSize } from './utility/utility';
+import './utility/polyfills';
+import { truthy } from './utility/predicates';
+import { objectFilter } from './utility/functional';
 
 Vue.config.productionTip = false;
 
@@ -17,7 +22,8 @@ var handleDOMContentLoaded = function() {
       data: {
         RemoteMediaSelectedImage,
         folders: [],
-        modalOpen: false,
+        mediaModalOpen: false,
+        cropModalOpen: false,
         selectedImage: {
           id: '',
           name: '',
@@ -25,7 +31,8 @@ var handleDOMContentLoaded = function() {
           url: '',
           alternateText: '',
           tags: [],
-          size: ''
+          size: '',
+          variations: {}
         },
         allTags: []
       },
@@ -35,21 +42,33 @@ var handleDOMContentLoaded = function() {
         },
         formattedSize() {
           return formatByteSize(this.selectedImage.size);
+        },
+        stringifiedVariations() {
+          return JSON.stringify(
+            objectFilter(truthy)(this.selectedImage.variations)
+          );
         }
       },
       components: {
         'media-modal': MediaModal,
-        'v-select': vSelect
+        'v-select': vSelect,
+        'crop-modal': CropModal
       },
       methods: {
         async handleBrowseMediaClicked() {
-          this.modalOpen = true;
+          this.mediaModalOpen = true;
           const response = await fetch('/ngadminui/ngremotemedia/folders');
           const folders = await response.json();
           this.folders = folders;
         },
-        handleModalClose() {
-          this.modalOpen = false;
+        handleCropClicked() {
+          this.cropModalOpen = true;
+        },
+        handleMediaModalClose() {
+          this.mediaModalOpen = false;
+        },
+        handleCropModalClose() {
+          this.cropModalOpen = false;
         },
         handleTagsInput(value) {
           this.allTags = [...new Set([...this.allTags, ...value])];
@@ -65,7 +84,7 @@ var handleDOMContentLoaded = function() {
             size: item.filesize
           };
 
-          this.modalOpen = false;
+          this.mediaModalOpen = false;
         },
         handleRemoveMediaClicked() {
           this.selectedImage = {
@@ -102,6 +121,15 @@ var handleDOMContentLoaded = function() {
 
             reader.readAsDataURL(file);
           }
+        },
+        handleVariationCropChange(newValues) {
+          this.selectedImage = {
+            ...this.selectedImage,
+            variations: {
+              ...this.selectedImage.variations,
+              ...newValues
+            }
+          };
         }
       },
       mounted() {

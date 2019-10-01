@@ -45,9 +45,6 @@ export default {
     };
   },
   methods: {
-    close() {
-      this.$emit("close");
-    },
     debouncedLoad: debounce(function(options) {
       this.load(options);
     }, 500),
