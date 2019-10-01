@@ -138,6 +138,8 @@ export default {
 
       .close {
         float: right;
+        padding: 3px 10px;
+        cursor: pointer;
       }
     }
 
