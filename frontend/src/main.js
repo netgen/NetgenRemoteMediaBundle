@@ -32,7 +32,9 @@ var handleDOMContentLoaded = function() {
           alternateText: '',
           tags: [],
           size: '',
-          variations: {}
+          variations: {},
+          height: 0,
+          width: 0
         },
         allTags: []
       },
@@ -81,7 +83,10 @@ var handleDOMContentLoaded = function() {
             url: item.url,
             alternateText: '',
             tags: item.tags,
-            size: item.filesize
+            size: item.filesize,
+            variations: {},
+            height: item.height,
+            width: item.width
           };
 
           this.mediaModalOpen = false;
@@ -94,7 +99,10 @@ var handleDOMContentLoaded = function() {
             url: '',
             alternateText: '',
             tags: [],
-            size: 0
+            size: 0,
+            variations: {},
+            height: 0,
+            width: 0
           };
         },
         handleFileInputChange(e) {
