@@ -73,11 +73,21 @@
                                             'test', 'test2'
                                         ],
                                         size: 45260.8,
-                                        id: "Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el"
+                                        id: "Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el",
+                                        variations: {
+                                            full: {
+                                                h: 100,
+                                                w: 150,
+                                                x: 41,
+                                                y: 9
+                                            }
+                                        },
+                                        width: 210,
+                                        height: 120
                                     }
                                 </script>
 
-                                <div class="ngremotemedia-type" data-available-variations="[]" data-user-id="14">
+                                <div class="ngremotemedia-type" data-user-id="14">
 
                                     <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
                                         <div class="image-wrap">
@@ -109,6 +119,7 @@
                                         <input type="hidden" name="ContentObjectAttribute_media_id_4601" v-model="selectedImage.id" class="media-id"/>
 
                                         <input type="button" class="ngremotemedia-remove-file button" value="Remove media" @click="handleRemoveMediaClicked"/>
+                                        <input type="button" class="ngremotemedia-remove-file button" value="Crop" @click="handleCropClicked"/>
 
                                         <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="Manage media"/>
 
@@ -121,7 +132,9 @@
                                             </button>
                                         </div>
                                     </div>
-                                    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="modalOpen" @close="handleModalClose" @media-selected="handleMediaSelected"/>
+                                    <input type="text" name="image_variations" v-model="stringifiedVariations" class="media-id"/>
+                                    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="{'full':[150,100],'mobile':[70,70], 'oneSize': [100, 0]}"></crop-modal>
+                                    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"></media-modal>
                                 </div>
                                 <input type="hidden" name="ContentObjectAttribute_id[]" value="4601"/>
                             </div>
