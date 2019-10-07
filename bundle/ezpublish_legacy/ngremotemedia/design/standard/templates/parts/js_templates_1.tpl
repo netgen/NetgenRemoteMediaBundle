@@ -61,7 +61,19 @@
         {/foreach}
     {literal} ], {/literal}
     size: {$remote_value.size},
-    id: "{$remote_value.resourceId}"
+    id: "{$remote_value.resourceId}",
+    {literal}
+    variations: {
+        full: {
+            h: 100,
+            w: 150,
+            x: 41,
+            y: 9
+        }
+    },
+    {/literal}
+    width: 210,
+    height: 120
 {literal} }; {/literal}
-
+<!-- TODO get current variations and image height and width -->
 </script>
