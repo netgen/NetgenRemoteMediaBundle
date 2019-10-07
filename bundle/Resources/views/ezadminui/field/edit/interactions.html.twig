@@ -12,7 +12,7 @@
     {% if field_value.resourceId %}
         {% if type == 'image' %}
             {% if ngrm_is_croppable(content) %}
-                <input type="button" class="ngremotemedia-scale hid button" value="{{ 'ngremotemedia.field.edit.crop'|trans }}">
+                <input type="button" @click="handleCropClicked" class="ngremotemedia-scale hid button" value="{{ 'ngremotemedia.field.edit.crop'|trans }}">
             {% endif %}
         {% endif %}
 
@@ -22,6 +22,11 @@
     <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="{{ 'ngremotemedia.field.edit.manage_media'|trans }}"/>
 
     <div class="ngremotemedia-local-file-container">
-        <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="{{ 'ngremotemedia.field.edit.quick_upload'|trans }}">
+        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">
+            <Label for="new_file">
+                {{ 'ngremotemedia.field.edit.quick_upload'|trans }}
+            </Label>
+            <input hidden id="new_file" name="new_file" type="file" @change="handleFileInputChange">
+        </button>
     </div>
 </div>

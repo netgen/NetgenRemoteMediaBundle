@@ -15,6 +15,11 @@
     <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="{'Manage media'|i18n( 'extension/ngremotemedia/interactions' )}" />
 
     <div class="ngremotemedia-local-file-container">
-        <input type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" value="{'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}">
+        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">
+            <Label for="new_file">
+                {'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}
+            </Label>
+            <input hidden id="new_file" name="new_file" type="file" @change="handleFileInputChange">
+        </button>
     </div>
 </div>

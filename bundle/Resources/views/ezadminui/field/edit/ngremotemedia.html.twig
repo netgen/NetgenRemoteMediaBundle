@@ -12,7 +12,7 @@
     {% set croppableVariations = ngrm_available_variations(content, true)  %}
     {% set availableVariations = croppableVariations|scaling_format|json_encode %}
 
-    <div class="ngremotemedia-type" data-available-variations="{{ availableVariations }}">
+    <div class="ngremotemedia-type">
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/preview.html.twig' %}
 
         <div class="tagger">
@@ -27,7 +27,9 @@
         </div>
 
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
-        <!-- modal -->
-        <media-modal :folders="folders" v-if="modalOpen" @close="handleModalClose" @media-selected="handleMediaSelected"/>
+        <!-- TODO render whis hidden field through symfony forms -->
+        <input type="text" name="image_variations" v-model="stringifiedVariations" class="media-id"/>
+        <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="{{ availableVariations }}"></crop-modal>
+        <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"/>
     </div>
 {% endblock %}

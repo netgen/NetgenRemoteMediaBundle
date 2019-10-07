@@ -37,23 +37,30 @@
 
     RemoteMediaSelectedImage = {
         {% if field_value.mediaType == 'image' %}
-        url : "{{ thumbnail_url }}",
+            url : "{{ thumbnail_url }}",
         type : "image",
         {% elseif field_value.mediaType == 'video' %}
-        url : "",
+            url : "",
         type : "video",
         {% else %}
-        url : "",
+            url : "",
         type : "other",
         {% endif %}
         name: "{{ field_value.resourceId }}",
         alternateText: "{{ field_value.metaData.alt_text }}",
-        tags: [
-            {% for tag in field_value.metaData.tags %}
-            "{{ tag }}",
-            {% endfor %}
-        ],
-        size : {{ field_value.size }},
-        id: "{{ field_value.resourceId }}"
+        tags: [{% for tag in field_value.metaData.tags %}"{{ tag }}",{% endfor %}],
+        size: {{ field_value.size }},
+        id: "{{ field_value.resourceId }}",
+        variations: {
+            full: {
+                h: 100,
+                w: 150,
+                x: 41,
+                y: 9
+            }
+        },
+        width: 210,
+        height: 120
     };
 </script>
+<!-- TODO add real data for variations and image height and width -->
