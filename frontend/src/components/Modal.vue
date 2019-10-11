@@ -60,6 +60,7 @@ export default {
     .body {
       display: flex;
       flex-direction: row;
+      position: relative;
     }
   }
 }
