@@ -2,7 +2,7 @@
     {% set field = form.parent.vars.value.field %}
     {% set field_value = form.parent.vars.value.value %}
 
-    {% set content = app.request.get('view').content %}
+    {% set content = app.request.get('view').location.content %}
     {% set contentId = content.id %}
     {% set version = content.versionInfo.versionNo %}
     {% set type = field_value.metaData.resource_type|default('image') %}
