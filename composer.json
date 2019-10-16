@@ -29,7 +29,7 @@
         "netgen/admin-ui-bundle": "^2.0",
         "matthiasnoback/symfony-config-test": "^2.0",
         "matthiasnoback/symfony-dependency-injection-test": "^1.0",
-        "mikey179/vfsStream": "^1.0",
+        "mikey179/vfsstream": "^1.0",
         "phpunit/phpunit": "^5.7",
         "friendsofphp/php-cs-fixer": "^2.0"
     },
