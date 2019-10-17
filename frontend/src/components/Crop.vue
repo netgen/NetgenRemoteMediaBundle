@@ -3,8 +3,8 @@
     <div class="cropper" :style="cropperStyle">
       <img :src="src" ref="image" />
       <div class="buttons" ref="buttons" :style="applyButtonStyle">
-        <button type="button" @click="handleReset">Reset</button>
-        <button type="button" @click="handleApply">Apply</button>
+        <button type="button" class="btn" @click="handleReset">Reset</button>
+        <button type="button" class="btn btn-blue" @click="handleApply">Apply</button>
       </div>
     </div>
     <h4>Preview</h4>

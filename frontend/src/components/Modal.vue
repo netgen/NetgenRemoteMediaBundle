@@ -26,20 +26,22 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@import "../scss/variables";
+
 .overlay {
   position: fixed;
-  top: 0em;
-  bottom: 0em;
-  left: 0em;
-  right: 0em;
-  background-color: rgba(0, 0, 0, 0.7);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, .8);
   z-index: 11;
 
   .media-modal {
-    background-color: #f5f5f5;
+    background-color: $wild-sand;
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
-    margin: 20px;
-    height: 97%;
+    margin: 32px;
+    height: calc(100% - 64px);
     overflow: scroll;
 
     .title {
@@ -47,13 +49,15 @@ export default {
       font-size: 16px;
       font-weight: 700;
       line-height: 20px;
-      color: #333;
-      background: #fff;
+      color: $mine-shaft;
+      background: $white;
       text-transform: uppercase;
-      box-shadow: inset 0 -1px 0 0 #e4e4e4;
+      box-shadow: inset 0 -1px 0 0 $mercury;
 
       .close {
         float: right;
+        cursor: pointer;
+        padding: 2px 10px;
       }
     }
 
@@ -61,6 +65,7 @@ export default {
       display: flex;
       flex-direction: row;
       position: relative;
+      height: calc(100% - 50px);
     }
   }
 }
