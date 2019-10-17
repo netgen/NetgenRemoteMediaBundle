@@ -2,12 +2,12 @@
   <modal title="Select media" @close="$emit('close')">
     <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
     <media-galery
-      v-if="!loading"
-      :media="media"
-      :canLoadMore="canLoadMore"
-      :selectedMediaId="selectedMediaId"
-      @loadMore="handleLoadMore"
-      @media-selected="item => $emit('media-selected', item)"
+        v-if="!loading"
+        :media="media"
+        :canLoadMore="canLoadMore"
+        :selectedMediaId="selectedMediaId"
+        @loadMore="handleLoadMore"
+        @media-selected="item => $emit('media-selected', item)"
     />
     <i v-else class="ng-icon ng-spinner" />
   </modal>
@@ -101,7 +101,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .ng-spinner {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   animation: spinning 1500ms linear infinite;

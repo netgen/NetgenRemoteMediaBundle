@@ -6,18 +6,18 @@
         <div v-if="item.type==='image'">
           <img :src="item.url" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
-          <div class="wh">{{item.width}} x {{item.height}}</div>
+          <div class="size-description">{{item.width}} x {{item.height}}</div>
         </div>
         <div v-else>
-          <i class="ng-icon ng-video" />
+          <span class="video-icon"></span>
           <Label class="filename">{{item.filename}}</Label>
-          <div class="wh">{{item.width}} x {{item.height}}</div>
+          <div class="size-description">{{item.width}} x {{item.height}}</div>
         </div>
-        <button type="button" @click="$emit('media-selected', item)" class="btn-select">Select</button>
+        <button type="button" @click="$emit('media-selected', item)" class="btn btn-blue select-btn">Select</button>
       </div>
     </div>
     <div class="load-more-wrapper" v-if="canLoadMore">
-      <button type="button" @click="$emit('loadMore')">Load more</button>
+      <button type="button" class="btn btn-blue" @click="$emit('loadMore')">Load more</button>
     </div>
   </div>
 </template>
@@ -31,10 +31,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@import "../scss/variables";
+
 .mediaGalery {
-  height: calc(100vh - 88px);
   overflow-y: auto;
-  padding-bottom: 50px;
+  margin-bottom: 50px;
 
   .items {
     display: flex;
@@ -48,12 +49,46 @@ export default {
       justify-content: flex-end;
       width: 177px;
       min-height: 182px;
-      background-color: #fff;
+      background-color: $white;
       padding: 8px;
       margin: 0 15px 15px 0;
 
       .img {
+        display: block;
         margin-bottom: 8px;
+        object-fit: cover;
+        height: 92px;
+        width: 100%;
+      }
+
+      .video-icon {
+        position: relative;
+        height: 92px;
+        display: block;
+
+        &:before,
+        &:after {
+          position: absolute;
+          content: '';
+        }
+
+        &:before {
+          background-color: rgba(0, 0, 0, .7);
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+        }
+
+        &:after {
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="32" height="32" viewBox="0 0 512 512"%3E%3Cg%3E%3C/g%3E%3Cpath d="M152.443 136.417l207.114 119.573-207.114 119.593z" fill="%23FFF"/%3E%3C/svg%3E');
+          background-position: center center;
+          width: 32px;
+          height: 32px;
+        }
       }
 
       .filename {
@@ -68,52 +103,33 @@ export default {
         margin-top: 4px;
       }
 
-      .wh {
+      .size-description {
         font-size: 12px;
         line-height: 14px;
         text-align: center;
-        color: #999;
+        color: $dusty-gray;
       }
 
       &.selected {
         border: 1px black solid;
       }
 
-      .btn-select {
-        background-color: #009AC7;
-        border-radius: 4px;
-        text-align: center;
-        font-size: 14px;
-        line-height: 18px;
-        color: #FFF;
+      .select-btn {
         margin-top: 8px;
         padding: 3px;
-        border: 0;
       }
     }
   }
 
   .load-more-wrapper {
     padding: 8px 15px;
-    background-color: #FFF;
+    background-color: $white;
     text-align: right;
-    box-shadow: inset 1px 0 0 0 #E4E4E4, 0 -1px 0 0 #E4E4E4;
+    box-shadow: inset 1px 0 0 0 $mercury, 0 -1px 0 0 $mercury;
     position: absolute;
     bottom: 0;
     left: 361px;
     right: 0;
-
-    button {
-      padding: 8px;
-      background-color: #009AC7;
-      border-radius: 4px;
-      color: #FFF;
-      margin: 0 15px;
-      min-width: 100px;
-      border: 0;
-      font-size: 14px;
-      line-height: 18px;
-    }
   }
 }
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="sidebar-crop">
     <div class="buttons">
-      <button v-if="!addingVariations" type="button" @click="handleAddCropSize">Add crop size</button>
-      <button v-if="addingVariations" type="button" @click="handleCancel">Cancel</button>
-      <button v-if="addingVariations" type="button" @click="handleAdd">Add</button>
+      <button v-if="!addingVariations" type="button" class="btn" @click="handleAddCropSize">Add crop size</button>
+      <button v-if="addingVariations" type="button" class="btn" @click="handleCancel">Cancel</button>
+      <button v-if="addingVariations" type="button" class="btn crop-btn-add" @click="handleAdd">Add</button>
     </div>
     <div v-if="addingVariations" class="unselectedVariations">
       <div v-for="name in unselectedVariations" :key="name">
@@ -96,6 +96,32 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@import "../scss/variables";
+
+.sidebar-crop {
+  width: 264px;
+  flex-shrink: 0;
+  box-shadow: inset -1px 0 0 0 $mercury;
+
+  .buttons {
+    background: $white;
+    padding: 15px;
+    display: flex;
+
+    button {
+      flex-grow: 1;
+
+      &.crop-btn-add {
+        margin-left: 10px;
+      }
+    }
+
+    button:only-child {
+      width: 100%;
+    }
+  }
+}
+
 .selectedVariations {
   .set {
     color: green;

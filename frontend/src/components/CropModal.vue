@@ -1,5 +1,5 @@
 <template>
-  <modal title="Crop" @close="$emit('close')">
+  <modal title="Crop" @close="$emit('close')" class="blabla">
     <crop-sizes
       :availableVariations="availableVariations"
       :allVariationValues="allVariationValues"
@@ -19,9 +19,9 @@
         @change="val => handleVariationValueChange(variation, val)"
       ></crop>
     </div>
-    <div class="buttons">
-      <button type="button" @click="handleCancelClicked">Cancel</button>
-      <button type="button" @click="handleSaveClicked">Save sizes</button>
+    <div class="action-strip">
+      <button type="button" class="btn" @click="handleCancelClicked">Cancel</button>
+      <button type="button" class="btn btn-blue" @click="handleSaveClicked">Save sizes</button>
     </div>
   </modal>
 </template>
@@ -102,4 +102,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.action-strip {
+  position: absolute;
+  left: 264px;
+  bottom: 0;
+}
 </style>

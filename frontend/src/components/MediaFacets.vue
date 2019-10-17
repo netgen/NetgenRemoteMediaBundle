@@ -144,10 +144,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@import "../scss/variables";
+
 .mediaFacets {
   width: 362px;
   flex-shrink: 0;
-  box-shadow: inset -1px 0 0 0 #E4E4E4;
+  box-shadow: inset -1px 0 0 0 $mercury;
 
   .tabs {
     list-style: none;
@@ -163,7 +165,7 @@ export default {
       text-align: center;
       text-transform: uppercase;
       flex-grow: 1;
-      color: #999999;
+      color: $dusty-gray;
       cursor: pointer;
       min-width: 120px;
 
@@ -173,15 +175,15 @@ export default {
       }
 
       &.active {
-        color: #009AC7;
-        box-shadow: inset 0 -4px 0 0 #009AC7;
+        color: $pacific-blue;
+        box-shadow: inset 0 -4px 0 0 $pacific-blue;
       }
     }
   }
 
   .body {
-    box-shadow: inset 0 -1px 0 0 #E4E4E4, inset 0 1px 0 0 #E4E4E4, inset -1px 0 0 0 #E4E4E4;
-    background: #FFF;
+    box-shadow: inset 0 -1px 0 0 $mercury, inset 0 1px 0 0 $mercury, inset -1px 0 0 0 $mercury;
+    background: $white;
     padding: 30px 15px;
 
     .form-field label,
@@ -189,7 +191,7 @@ export default {
       font-size: 12px;
       font-weight: 700;
       line-height: 18px;
-      color: #757575;
+      color: $boulder;
       margin-bottom: 3px;
       display: block;
     }
@@ -212,7 +214,7 @@ export default {
           list-style: none;
           display: flex;
           align-items: center;
-          border: 1px solid #e4e4e4;
+          border: 1px solid $mercury;
 
           li {
             cursor: pointer;
@@ -226,16 +228,16 @@ export default {
             }
 
             &.active {
-              background: #009AC7;
-              color: #FFF;
+              background: $pacific-blue;
+              color: $white;
               border-radius: 4px;
-              box-shadow: inset -1px 0 0 0 #D7D7D7, inset 1px 0 0 0 #D7D7D7, inset 0 1px 0 0 #D7D7D7, inset 0 -1px 0 0 #D7D7D7;
+              box-shadow: inset -1px 0 0 0 $alto, inset 1px 0 0 0 $alto, inset 0 1px 0 0 $alto, inset 0 -1px 0 0 $alto;
             }
           }
         }
 
         input {
-          border: 1px solid #E4E4E4;
+          border: 1px solid $mercury;
           padding: 9px 10px;
           margin-left: 14px;
           flex-grow: 1;
