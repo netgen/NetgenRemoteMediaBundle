@@ -1,5 +1,5 @@
 <template>
-  <modal title="Crop" @close="$emit('close')" class="blabla">
+  <modal title="Crop" @close="$emit('close')">
     <crop-sizes
       :availableVariations="availableVariations"
       :allVariationValues="allVariationValues"
@@ -9,7 +9,7 @@
       @addedVariations="handleAddedVariations"
       @removedVariation="handleRemovedVariation"
     />
-    <div v-for="(variationSize, variation) in availableVariations" :key="variation">
+    <div v-for="(variationSize, variation) in availableVariations" :key="variation" class="crop-container">
       <crop
         v-if="variation===selectedVariation"
         :value="allVariationValues[variation]"

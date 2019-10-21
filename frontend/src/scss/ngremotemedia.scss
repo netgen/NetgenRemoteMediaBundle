@@ -93,12 +93,12 @@ body {
   }
 
   &.btn-blue {
-    background: $pacific-blue;
+    background: $netgen-primary;
     border: 0;
     color: $white;
 
     &:active {
-      background: darken($pacific-blue, 10%);
+      background: darken($netgen-primary, 10%);
     }
   }
 }

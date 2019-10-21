@@ -113,7 +113,7 @@ export default {
       }
 
       &.selected {
-        border: 1px black solid;
+        border: 1px solid $netgen-primary;
       }
 
       .select-btn {

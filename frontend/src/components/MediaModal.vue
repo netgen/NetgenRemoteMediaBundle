@@ -104,6 +104,11 @@ export default {
   position: fixed;
   top: 50%;
   left: 50%;
-  animation: spinning 1500ms linear infinite;
+  transform: translate(-50%, -50%);
+
+  &:before {
+    display: inline-block;
+    animation: spinning 1500ms linear infinite;
+  }
 }
 </style>
