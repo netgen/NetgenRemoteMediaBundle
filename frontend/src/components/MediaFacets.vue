@@ -175,8 +175,8 @@ export default {
       }
 
       &.active {
-        color: $pacific-blue;
-        box-shadow: inset 0 -4px 0 0 $pacific-blue;
+        color: $netgen-primary;
+        box-shadow: inset 0 -4px 0 0 $netgen-primary;
       }
     }
   }
@@ -228,7 +228,7 @@ export default {
             }
 
             &.active {
-              background: $pacific-blue;
+              background: $netgen-primary;
               color: $white;
               border-radius: 4px;
               box-shadow: inset -1px 0 0 0 $alto, inset 1px 0 0 0 $alto, inset 0 1px 0 0 $alto, inset 0 -1px 0 0 $alto;
