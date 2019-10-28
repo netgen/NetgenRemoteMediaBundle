@@ -4,7 +4,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\Helper\TranslationHelper;
-use eZ\Publish\Core\Repository\Values\Content\Content;
+use eZ\Publish\API\Repository\Values\Content\Content;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
