@@ -60,7 +60,7 @@
             "{$tag}",
         {/foreach}
     {literal} ], {/literal}
-    size: {$remote_value.size},
+    size: {if $remote_value.size|eq("")}0{else}{$remote_value.size}{/if},
     id: "{$remote_value.resourceId}",
     {literal}
     variations: {
