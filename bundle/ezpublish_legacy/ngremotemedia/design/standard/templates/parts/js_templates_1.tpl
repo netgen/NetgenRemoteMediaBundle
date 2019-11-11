@@ -47,10 +47,10 @@
         url: "{$thumb_url}",
         type: "image",
     {elseif $remote_value.mediaType|eq('video')}
-        url: "",
+        url: "{$thumb_url}",
         type: "video",
     {else}
-        url: "",
+        url: "{$remote_value.secure_url}",
         type: "other",
     {/if}
     name: "{$remote_value.resourceId|wash}",
@@ -72,8 +72,8 @@
         }
     },
     {/literal}
-    width: 210,
-    height: 120
+    width: {if $remote_value.metaData.width|eq("")}0{else}{$remote_value.metaData.width}{/if},
+    height: {if $remote_value.metaData.height|eq("")}0{else}{$remote_value.metaData.height}{/if}
 {literal} }; {/literal}
 <!-- TODO get current variations and image height and width -->
 </script>
