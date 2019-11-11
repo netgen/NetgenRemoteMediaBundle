@@ -36,6 +36,6 @@
     {include uri="design:parts/ngremotemedia/interactions.tpl"}
     <input type="text" name="image_variations" v-model="stringifiedVariations" class="media-id"/>
     <!-- TODO available variations render with double quotes, breaking up the HTML -->
-    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="{json_encode(scaling_format($croppableVariations))}" data-user-id="{$user.contentobject_id}"></crop-modal>
+    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations={json_encode(scaling_format($croppableVariations))} data-user-id="{$user.contentobject_id}"></crop-modal>
     <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"/>
 </div>
