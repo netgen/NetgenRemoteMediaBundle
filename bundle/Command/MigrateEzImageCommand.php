@@ -273,7 +273,6 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             if (!$contentType->getFieldDefinition($remoteMediaFieldIdentifier)) {
                 throw new \InvalidArgumentException('Could not find the field with the identifier:'. $remoteMediaFieldIdentifier);
             }
-            $overwrite = true;
 
         } else {
             $this->listFields();
@@ -282,8 +281,9 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             $contentType = $this->getContentType();
             $ezimageFieldIdentifier = $this->getFieldIdentifier($contentType, 'source');
             $remoteMediaFieldIdentifier = $this->getFieldIdentifier($contentType, 'destination');
-            $overwrite = $this->getOverwrite();
         }
+
+        $overwrite = $this->getOverwrite();
 
         $siteaccess = $this->getContainer()->get('ezpublish.siteaccess');
         $updated = 0;
