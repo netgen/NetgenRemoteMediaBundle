@@ -116,7 +116,8 @@ var handleDOMContentLoaded = function() {
               url: '',
               alternateText: '',
               tags: [],
-              size: file.size
+              size: file.size,
+              variations: {}
             };
 
             reader.addEventListener(
