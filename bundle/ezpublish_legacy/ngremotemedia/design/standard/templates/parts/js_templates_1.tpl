@@ -62,18 +62,8 @@
     {literal} ], {/literal}
     size: {if $remote_value.size|eq("")}0{else}{$remote_value.size}{/if},
     id: "{$remote_value.resourceId}",
-    {literal}
-    variations: {
-        full: {
-            h: 100,
-            w: 150,
-            x: 41,
-            y: 9
-        }
-    },
-    {/literal}
+    variations: {json_encode($remote_value.variations)},
     width: {if $remote_value.metaData.width|eq("")}0{else}{$remote_value.metaData.width}{/if},
     height: {if $remote_value.metaData.height|eq("")}0{else}{$remote_value.metaData.height}{/if}
 {literal} }; {/literal}
-<!-- TODO get current variations -->
 </script>
