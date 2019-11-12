@@ -12,7 +12,15 @@
 {/if}
 
 {run-once}
-{include uri="design:parts/js_templates_1.tpl"}
+{symfony_include(
+    '@NetgenRemoteMedia/ezadminui/js_templates.html.twig',
+    hash(
+        'field_value', $remote_value,
+        'type', $type,
+        'contentId', $contentObjectId,
+        'version', $version
+    )
+)}
 {/run-once}
 
 {def $user=fetch( 'user', 'current_user' )}
