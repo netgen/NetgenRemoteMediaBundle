@@ -2,7 +2,9 @@
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
+use eZHTTPFile;
 use \eZHTTPTool;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 
 final class AdminInputValue
 {
@@ -18,7 +20,7 @@ final class AdminInputValue
     /** @var array  */
     private $variations = [];
 
-    /** @var  */
+    /** @var UploadFile */
     private $newFile;
 
     /**
@@ -52,9 +54,11 @@ final class AdminInputValue
         $variations = $http->variable($base.'_image_variations_'.$attributeId, array());
         $variations = json_decode($variations, true);
 
-        //$file = eZHTTPFile::fetch($base.'_new_file_'.$attributeId );
+        $file = eZHTTPFile::fetch( $base.'_new_file_'.$attributeId );
 
-        return new AdminInputValue($resourceId, $tags, $alttext, $variations, null);
+        $file = UploadFile::fromZHTTPFile($file);
+
+        return new AdminInputValue($resourceId, $tags, $alttext, $variations, $file);
     }
 
     public static function fromHash(array $hash): AdminInputValue
@@ -62,12 +66,14 @@ final class AdminInputValue
         $tags = empty($hash['tags']) ? [] : $hash['tags'];
         $altText = empty($hash['alt_text']) ? '' : $hash['alt_text'];
 
+        $file = UploadFile::fromUploadedFile($hash['new_file']);
+
         return new AdminInputValue(
             $hash['resource_id'],
             $tags,
             $altText,
              \json_decode($hash['image_variations'], true),
-            $hash['new_file']
+            $file
         );
     }
 
@@ -104,7 +110,7 @@ final class AdminInputValue
     }
 
     /**
-     * @return null
+     * @return UploadFile|null
      */
     public function getNewFile()
     {
