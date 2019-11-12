@@ -1,1 +1,0 @@
-Update templates with /src/Netgen/Bundle/RemoteMediaBundle/build_templates.sh
