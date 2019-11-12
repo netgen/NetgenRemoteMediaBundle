@@ -4,14 +4,14 @@ namespace Netgen\Bundle\RemoteMediaBundle\Form\FieldType;
 
 use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\API\Repository\Values\Content\Field;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RemoteMediaFieldType extends AbstractType
@@ -26,10 +26,16 @@ class RemoteMediaFieldType extends AbstractType
      */
     private $remoteMediaProvider;
 
-    public function __construct(FieldTypeService $fieldTypeService, RemoteMediaProvider $remoteMediaProvider)
+    /**
+     * @var UpdateFieldHelper
+     */
+    private $updateHelper;
+
+    public function __construct(FieldTypeService $fieldTypeService, RemoteMediaProvider $remoteMediaProvider, UpdateFieldHelper $updateHelper)
     {
         $this->fieldTypeService = $fieldTypeService;
         $this->remoteMediaProvider = $remoteMediaProvider;
+        $this->updateHelper = $updateHelper;
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -42,10 +48,7 @@ class RemoteMediaFieldType extends AbstractType
     {
         $builder
             ->add('resource_id', HiddenType::class)
-            ->add('resource_url', HiddenType::class)
-            ->add('size', HiddenType::class)
             ->add('alt_text', TextType::class)
-            ->add('media_type', HiddenType::class)
             ->add(
                 'tags',
                 ChoiceType::class,
@@ -57,14 +60,14 @@ class RemoteMediaFieldType extends AbstractType
                     }
                 ]
             )
-            ->add('url', HiddenType::class)
-            ->add('height', HiddenType::class)
-            ->add('width', HiddenType::class)
+            ->add('image_variations', TextType::class)
+            ->add('new_file', FileType::class)
             ->addModelTransformer(
                 new FieldValueTransformer(
                     $this->fieldTypeService->getFieldType('ngremotemedia'),
                     $options['field'],
-                    $this->remoteMediaProvider
+                    $this->remoteMediaProvider,
+                    $this->updateHelper
                 )
             );
     }

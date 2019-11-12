@@ -14,21 +14,10 @@
 
     <div class="ngremotemedia-type">
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/preview.html.twig' %}
-
-        <div class="tagger">
-            <div class="ngremotemedia-alttext">
-                {{ form_row(form.alt_text, { 'attr': {'v-model': 'selectedImage.alternateText'} }) }}
-            </div>
-
-            <div id="ngremotemedia-tags-{{ field.id }}">
-                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
-                {{ form_row(form.tags, { 'attr': {'class' : 'media-tags', 'v-model': 'selectedImage.tags', "hidden": "hidden"} }) }}
-            </div>
-        </div>
-
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
-        <!-- TODO render whis hidden field through symfony forms -->
-        <input type="text" name="image_variations" v-model="stringifiedVariations" class="media-id"/>
+
+        {# @todo: make it hidden #}
+        {{ form_row(form.image_variations, { 'attr': {'class' : 'media-id', 'v-model': 'stringifiedVariations'} }) }}
         <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="{{ availableVariations }}"></crop-modal>
         <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"/>
     </div>
