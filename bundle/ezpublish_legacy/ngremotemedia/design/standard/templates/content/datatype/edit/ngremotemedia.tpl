@@ -16,9 +16,7 @@
     '@NetgenRemoteMedia/ezadminui/js_templates.html.twig',
     hash(
         'field_value', $remote_value,
-        'type', $type,
-        'contentId', $contentObjectId,
-        'version', $version
+        'type', $type
     )
 )}
 {/run-once}
