@@ -63,6 +63,8 @@ class NgRemoteMediaType extends eZDataType
     {
         $attributeId = $contentObjectAttribute->attribute('id');
 
+        $file = eZHTTPFile::fetch( $base.'_new_file_'.$attributeId );
+
         $input = AdminInputValue::fromEzHttp($http, $base, $attributeId);
 
         $container = ezpKernel::instance()->getServiceContainer();

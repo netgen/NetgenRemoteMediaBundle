@@ -31,13 +31,13 @@ final class UpdateFieldHelper
             return new Value();
         }
 
-        if ($oldValue->resourceId === $adminInputValue->getResourceId() || empty($adminInputValue->getNewFile())) {
+        if ($oldValue->resourceId === $adminInputValue->getResourceId() && empty($adminInputValue->getNewFile())) {
             $updatedValue = $this->remoteMediaProvider->getRemoteResource($adminInputValue->getResourceId());
         }
 
         if (!empty($adminInputValue->getNewFile())) {
-            // 1. image has been uploaded, we need to upload it to cloudinary and save to the database, together with variations
-            // @todo
+            // @todo find which folder to upload to
+            $updatedValue = $this->remoteMediaProvider->upload($adminInputValue->getNewFile());
         }
 
         $this->updateContext($updatedValue, $oldValue, $adminInputValue);
