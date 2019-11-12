@@ -75,5 +75,5 @@
     width: {if $remote_value.metaData.width|eq("")}0{else}{$remote_value.metaData.width}{/if},
     height: {if $remote_value.metaData.height|eq("")}0{else}{$remote_value.metaData.height}{/if}
 {literal} }; {/literal}
-<!-- TODO get current variations and image height and width -->
+<!-- TODO get current variations -->
 </script>

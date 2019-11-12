@@ -6,8 +6,9 @@
     <input type="hidden" name="{$base}_media_id_{$fieldId}" v-model="selectedImage.id" class="media-id" />
 
     {if $remote_value.resourceId}
-        {if $type|eq('image')}
-            {include uri="design:parts/scale_button.tpl"}
+        {def $croppable = ng_remote_croppable($attribute.object.class_identifier)}
+        {if and( $type|eq('image'), $croppable )}
+            <input type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" value="{'Scale'|i18n( 'extension/ngremotemedia/interactions' )}" >
         {/if}
         <input type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'extension/ngremotemedia/interactions' )}" />
     {/if}
@@ -19,7 +20,7 @@
             <Label for="new_file">
                 {'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}
             </Label>
-            <input hidden id="new_file" name="new_file" type="file" @change="handleFileInputChange">
+            <input hidden id="new_file" name="{$base}_new_file_{$fieldId}" type="file" @change="handleFileInputChange">
         </button>
     </div>
 </div>
