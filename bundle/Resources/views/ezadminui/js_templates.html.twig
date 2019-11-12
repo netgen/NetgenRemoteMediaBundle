@@ -29,21 +29,15 @@
         'prev': '&lt; Previous 25'
     };
 
-    RemoteMediaSettings = {
-        'ez_contentobject_id': {{ content.id }},
-        'ez_contentobject_version': {{ content.versionInfo.versionNo }},
-        'url_prefix': '/admin'
-    };
-
     RemoteMediaSelectedImage = {
         {% if field_value.mediaType == 'image' %}
             url : "{{ thumbnail_url }}",
         type : "image",
         {% elseif field_value.mediaType == 'video' %}
-            url : "",
+            url : "{{ thumbnail_url }}",
         type : "video",
         {% else %}
-            url : "",
+            url : "{{ field_value.secure_url }}",
         type : "other",
         {% endif %}
         name: "{{ field_value.resourceId }}",
@@ -51,16 +45,8 @@
         tags: [{% for tag in field_value.metaData.tags %}"{{ tag }}",{% endfor %}],
         size: {{ field_value.size }},
         id: "{{ field_value.resourceId }}",
-        variations: {
-            full: {
-                h: 100,
-                w: 150,
-                x: 41,
-                y: 9
-            }
-        },
-        width: 210,
-        height: 120
+        variations: {{ field_value.variations|json_encode|raw }},
+        width: {{ field_value.metaData.width }},
+        height: {{ field_value.metaData.height }}
     };
 </script>
-<!-- TODO add real data for variations and image height and width -->
