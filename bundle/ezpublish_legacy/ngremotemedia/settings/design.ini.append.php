@@ -5,6 +5,7 @@ DesignExtensions[]=ngremotemedia
 
 [StylesheetSettings]
 BackendCSSFileList[]=remotemedia.css
+BackendCSSFileList[]=remotemedia-vendors.css
 
 [JavaScriptSettings]
 BackendJavaScriptList[]=remotemedia.js
