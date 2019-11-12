@@ -3,6 +3,7 @@
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
 
 class NgRemoteMediaType extends eZDataType
 {
@@ -62,88 +63,22 @@ class NgRemoteMediaType extends eZDataType
     {
         $attributeId = $contentObjectAttribute->attribute('id');
 
-        $input = NgRemoteMediaInput::fromEzHttp($http, $base, $attributeId);
+        $input = AdminInputValue::fromEzHttp($http, $base, $attributeId);
 
         $container = ezpKernel::instance()->getServiceContainer();
-        /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider $provider */
-        $provider = $container->get( 'netgen_remote_media.provider' );
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper $updateHelper */
+        $updateHelper = $container->get( 'netgen_remote_media.admin.field_update.helper' );
+        $provider = $container->get('netgen_remote_media.provider');
 
         /** @var Value $oldValue */
         $oldValue = $contentObjectAttribute->Content();
-        $updatedValue = new Value();
 
-        if ($input->getResourceId() === '' && empty($input->getNewFile())) {
-            $updatedValue = new Value();
-        }
-
-        if ($oldValue->resourceId === $input->getResourceId()) {
-            $updatedValue = $this->handleUpdatedContextOnly(
-                $oldValue,
-                $input,
-                $provider
-            );
-        }
-
-        if (empty($input->getNewFile())) {
-            $updatedValue = $this->handleSelectedFromBrowser(
-                $input,
-                $provider
-            );
-        }
-
-        // 1. image has been uploaded, we need to upload it to cloudinary and save to the database, together with variations
-        // @todo
-
-        $this->updateVariations($updatedValue, $oldValue, $input);
+        $updatedValue = $updateHelper->updateValue($oldValue, $input);
 
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
         $this->saveExternalData($contentObjectAttribute, $updatedValue, $provider);
 
         return true;
-    }
-
-    private function handleUpdatedContextOnly(Value $oldValue, NgRemoteMediaInput $input, RemoteMediaProvider $provider)
-    {
-        $updatedValue = $provider->getRemoteResource($input->getResourceId());
-
-        if ($oldValue->metaData['alt_text'] === $input->getAltText() && $oldValue->metaData['tags'] === $input->getTags()) {
-            return $updatedValue;
-        }
-
-        $dataToChange = [];
-        if ($oldValue->metaData['alt_text'] !== $input->getAltText()) {
-            $dataToChange['alt_text'] = $input->getAltText();
-            $updatedValue->metaData['alt_text'] = $input->getAltText();
-        }
-
-        if ($oldValue->metaData['tags'] !== $input->getTags()) {
-            $dataToChange['tags'] = $input->getTags();
-            $updatedValue->metaData['tags'] = $input->getAltText();
-        }
-
-        if (!empty($dataToChange)) {
-            $provider->updateResourceContext(
-                $updatedValue->resourceId,
-                $updatedValue->mediaType,
-                $dataToChange
-            );
-        }
-
-        return $updatedValue;
-    }
-
-    private function handleSelectedFromBrowser(NgRemoteMediaInput $input, RemoteMediaProvider $provider)
-    {
-        $updatedValue = $provider->getRemoteResource($input->getResourceId());
-
-        return $updatedValue;
-    }
-
-    private function updateVariations(Value $updatedValue, Value $oldValue, NgRemoteMediaInput $input)
-    {
-        $updatedValue->variations = $input->getVariations() + $oldValue->variations;
-
-        return $updatedValue;
     }
 
     public static function saveExternalData($contentObjectAttribute, $value, $provider)

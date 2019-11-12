@@ -3,11 +3,6 @@
 <div id="ngremotemedia-buttons-{{ field.id }}" class="ngremotemedia-buttons" data-id="{{ field.id }}" data-contentobject-id="{{ contentId }}" data-version="{{ version }}">
 
     {{ form_row(form.resource_id, { 'attr': {'class' : 'media-id', 'v-model': 'selectedImage.id'} }) }}
-    {{ form_row(form.resource_url, { 'attr': {'class' : 'media-url'} }) }}
-    {{ form_row(form.size, { 'attr': {'class' : 'media-size'} }) }}
-    {{ form_row(form.media_type, { 'attr': {'class' : 'media-type'} }) }}
-    {{ form_row(form.width, { 'attr': {'class' : 'media-width'} }) }}
-    {{ form_row(form.height, { 'attr': {'class' : 'media-height'} }) }}
 
     {% if field_value.resourceId %}
         {% if type == 'image' %}
@@ -26,7 +21,7 @@
             <Label for="new_file">
                 {{ 'ngremotemedia.field.edit.quick_upload'|trans }}
             </Label>
-            <input hidden id="new_file" name="new_file" type="file" @change="handleFileInputChange">
+            {{ form_row(form.new_file, { 'attr': {'@change': 'handleFileInputChange'} }) }}
         </button>
     </div>
 </div>

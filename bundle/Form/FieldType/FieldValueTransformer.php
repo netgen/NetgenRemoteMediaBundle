@@ -5,6 +5,8 @@ namespace Netgen\Bundle\RemoteMediaBundle\Form\FieldType;
 use eZ\Publish\API\Repository\FieldType;
 use eZ\Publish\API\Repository\Values\Content\Field;
 use eZ\Publish\SPI\FieldType\Value;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\Form\DataTransformerInterface;
 
@@ -25,11 +27,17 @@ class FieldValueTransformer implements DataTransformerInterface
      */
     private $remoteMediaProvider;
 
-    public function __construct(FieldType $fieldType, Field $field, RemoteMediaProvider $remoteMediaProvider)
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper
+     */
+    private $updateHelper;
+
+    public function __construct(FieldType $fieldType, Field $field, RemoteMediaProvider $remoteMediaProvider, UpdateFieldHelper $updateFieldHelper)
     {
         $this->fieldType = $fieldType;
         $this->field = $field;
         $this->remoteMediaProvider = $remoteMediaProvider;
+        $this->updateHelper = $updateFieldHelper;
     }
 
     /**
@@ -46,12 +54,8 @@ class FieldValueTransformer implements DataTransformerInterface
         return [
             'resource_id' => $value->resourceId,
             'alt_text' => isset($value->metaData['alt_text']) ? $value->metaData['alt_text'] : '',
-            'resource_url' => $value->secure_url,
-            'url' => $value->url,
-            'size' => $value->size,
             'tags' => $value->metaData['tags'],
-            'width' => isset($value->metaData['width']) ? $value->metaData['width'] : '',
-            'height' => isset($value->metaData['height']) ? $value->metaData['height'] : ''
+            'image_variations' => $value->variations
         ];
     }
 
@@ -66,26 +70,11 @@ class FieldValueTransformer implements DataTransformerInterface
             return $this->fieldType->getEmptyValue();
         }
 
-        //        $hash = [
-        //            'resourceId' => $value['resource_id'],
-        //            'secure_url' => $value['resource_url'],
-        //            'mediaType' => $value['media_type'],
-        //            'size' => $value['size'],
-        //            'metaData' => [
-        //                'alt_text' => $value['alt_text'],
-        //                'tags' => explode(',', $value['tags']),
-        //                'width' => $value['width'],
-        //                'height' => $value['height']
-        //            ]
-        //        ];
-        //
-        //        if ($value['resource_id'] === $this->field->value->resourceId) {
-        //            // update variations
-        //        }
+        $oldValue = $this->field->value;
+        $adminInputValue = AdminInputValue::fromHash($value);
 
+        $updatedValue = $this->updateHelper->updateValue($oldValue, $adminInputValue);
 
-        //        $value = new \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value($hash);
-
-        return $this->field->value;
+        return $updatedValue;
     }
 }

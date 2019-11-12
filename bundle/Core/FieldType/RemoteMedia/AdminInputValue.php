@@ -1,6 +1,10 @@
 <?php
 
-class NgRemoteMediaInput
+namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
+
+use \eZHTTPTool;
+
+final class AdminInputValue
 {
     /** @var string  */
     private $resourceId;
@@ -40,7 +44,7 @@ class NgRemoteMediaInput
         $this->newFile = $newFile;
     }
 
-    public static function fromEzHttp(eZHTTPTool $http, $base, $attributeId): NgRemoteMediaInput
+    public static function fromEzHttp(eZHTTPTool $http, $base, $attributeId): AdminInputValue
     {
         $resourceId = $http->variable($base . '_media_id_' . $attributeId);
         $alttext =  $http->variable($base . '_alttext_' . $attributeId, '');
@@ -50,7 +54,21 @@ class NgRemoteMediaInput
 
         //$file = eZHTTPFile::fetch($base.'_new_file_'.$attributeId );
 
-        return new NgRemoteMediaInput($resourceId, $tags, $alttext, $variations, null);
+        return new AdminInputValue($resourceId, $tags, $alttext, $variations, null);
+    }
+
+    public static function fromHash(array $hash): AdminInputValue
+    {
+        $tags = empty($hash['tags']) ? [] : $hash['tags'];
+        $altText = empty($hash['alt_text']) ? '' : $hash['alt_text'];
+
+        return new AdminInputValue(
+            $hash['resource_id'],
+            $tags,
+            $altText,
+             \json_decode($hash['image_variations'], true),
+            $hash['new_file']
+        );
     }
 
     /**
