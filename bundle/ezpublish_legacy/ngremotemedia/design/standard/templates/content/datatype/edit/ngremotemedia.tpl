@@ -11,8 +11,6 @@
     {def $type = 'image'}
 {/if}
 
-{$remote_value.variations|dump()}
-
 {run-once}
 {include uri="design:parts/js_templates_1.tpl"}
 {/run-once}
