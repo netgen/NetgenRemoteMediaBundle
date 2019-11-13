@@ -7,28 +7,3 @@ browse:
     path: /browse
     defaults:
         _controller: netgen_remote_media.controllers.ezadminui.browse
-
-fetch:
-    path: /fetch/{contentId}/{fieldId}/{version}
-    defaults:
-        _controller: netgen_remote_media.controllers.ezadminui.fetch
-
-load:
-    path: /load
-    defaults:
-        _controller: netgen_remote_media.controllers.ezadminui.load
-
-change:
-    path: /change/{contentId}/{fieldId}/{contentVersionId}
-    defaults:
-        _controller: netgen_remote_media.controllers.ezadminui.change
-
-save:
-    path: /save/{contentId}/{fieldId}/{contentVersionId}
-    defaults:
-        _controller: netgen_remote_media.controllers.ezadminui.save
-
-upload:
-    path: /upload/{contentId}
-    defaults:
-        _controller: netgen_remote_media.controllers.ezadminui.upload
