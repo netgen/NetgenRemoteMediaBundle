@@ -14,13 +14,21 @@
     "authors": [
         {
             "name": "Netgen",
-            "homepage": "http://www.netgenlabs.com",
-            "email": "info@netgen.hr"
+            "homepage": "http://netgen.io",
+            "email": "info@netgen.io"
+        },
+        {
+            "name": "Ivan Herak",
+            "email": "ivan@netgen.io"
+        },
+        {
+            "name": "Jurica Hladek",
+            "email": "jurica@netgen.io"
         }
     ],
     "require": {
-        "php": "~7.0",
-        "ezsystems/ezpublish-kernel": "^6.11@dev|^7.0@dev",
+        "php": "^7.2",
+        "ezsystems/ezpublish-kernel": "^7.4",
         "doctrine/orm": "^2.4",
         "cloudinary/cloudinary_php": "^1.0"
     },
