@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation;
 
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;

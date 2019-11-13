@@ -8,7 +8,7 @@ $helper = $container->get( 'netgen_remote_media.helper' );
 
 $limit = 26;
 $userQuery = $http->getVariable('q', '');
-$offset = $http->getVariable('offset', 0);
+$offset = intval($http->getVariable('offset', 0));
 
 $type = $http->getVariable('mediatype', 'image');
 $folder = $http->getVariable('folder', 'all');

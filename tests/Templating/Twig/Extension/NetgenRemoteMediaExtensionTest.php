@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Templating\Twig\Extension;
 
 use eZ\Publish\API\Repository\ContentTypeService;
@@ -106,23 +108,21 @@ class NetgenRemoteMediaExtensionTest extends TestCase
 
         $this->translationHelper->expects($this->once())
             ->method('getTranslatedField')
-            ->will($this->returnValue($field));
+            ->willReturn($field);
 
         $this->contentTypeService->expects($this->once())
             ->method('loadContentType')
-            ->will(
-                $this->returnValue(
+            ->willReturn(
                     new ContentType(
                         [
                             'fieldDefinitions' => [],
                         ]
                     )
-                )
             );
 
         $this->provider->expects($this->once())
             ->method('buildVariation')
-            ->will($this->returnValue($variation));
+            ->willReturn($variation);
 
         $this->assertEquals($variation, $this->extension->getRemoteImageVariation($content, 'some_field', 'test_format'));
     }
@@ -149,23 +149,21 @@ class NetgenRemoteMediaExtensionTest extends TestCase
 
         $this->translationHelper->expects($this->once())
             ->method('getTranslatedField')
-            ->will($this->returnValue($field));
+            ->willReturn($field);
 
         $this->contentTypeService->expects($this->once())
             ->method('loadContentType')
-            ->will(
-                $this->returnValue(
+            ->willReturn(
                     new ContentType(
                         [
                             'fieldDefinitions' => [],
                         ]
                     )
-                )
             );
 
         $this->provider->expects($this->once())
             ->method('generateVideoTag')
-            ->will($this->returnValue('test_tag'));
+            ->willReturn('test_tag');
 
         $this->assertEquals('test_tag', $this->extension->getRemoteVideoTag($content, 'some_field', 'some_format'));
     }
@@ -174,7 +172,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
     {
         $this->provider->expects($this->once())
             ->method('getVideoThumbnail')
-            ->will($this->returnValue('test_thumbnail'));
+            ->willReturn('test_thumbnail');
 
         $this->assertEquals('test_thumbnail', $this->extension->getVideoThumbnail(new Value(), []));
     }
@@ -183,7 +181,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
     {
         $this->provider->expects($this->once())
             ->method('generateDownloadLink')
-            ->will($this->returnValue('http://cloudinary.com/some/url/download'));
+            ->willReturn('http://cloudinary.com/some/url/download');
 
         $this->assertEquals('http://cloudinary.com/some/url/download', $this->extension->getResourceDownloadLink(new Value(), []));
     }
@@ -194,7 +192,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
 
         $this->provider->expects($this->once())
             ->method('buildVariation')
-            ->will($this->returnValue($variation));
+            ->willReturn($variation);
 
         $this->assertEquals($variation, $this->extension->getRemoteResource(new Value(), 'some_format'));
     }

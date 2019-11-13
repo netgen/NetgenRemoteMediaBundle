@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary\Gateway;
 
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
@@ -136,12 +138,12 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testListResource()
     {
-        $apiOptions = array(
+        $apiOptions = [
             'max_results' => 500,
             'tags' => true,
             'context' => true,
-            'resource_type' => 'image'
-        );
+            'resource_type' => 'image',
+        ];
 
         $this->cloudinaryApi->method('resources')->willReturn(new \ArrayObject(['resources' => []]));
 
@@ -155,13 +157,13 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testListResourcesWithMoreResults()
     {
-        $options1 = array(
+        $options1 = [
             'max_results' => 500,
             'tags' => true,
             'context' => true,
-            'resource_type' => 'image'
-        );
-        $options2 = $options1 + array('next_cursor' => 123);
+            'resource_type' => 'image',
+        ];
+        $options2 = $options1 + ['next_cursor' => 123];
 
         $this->cloudinaryApi
             ->method('resources')
@@ -228,12 +230,12 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testGetNotExistingResource()
     {
-        $options = array(
+        $options = [
             'resource_type' => 'image',
             'max_results' => 1,
             'tags' => true,
             'context' => true,
-        );
+        ];
 
         $this->cloudinaryApi
             ->method('resources_by_ids')

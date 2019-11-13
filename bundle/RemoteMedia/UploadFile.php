@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Image\Value;
@@ -30,16 +32,14 @@ class UploadFile
         $uploadFile = new self();
 
         $uploadFile->uri = $uri;
-        $uploadFile->originalFilename = pathinfo($uri, PATHINFO_FILENAME);
-        $uploadFile->originalExtension = pathinfo($uri, PATHINFO_EXTENSION);
+        $uploadFile->originalFilename = \pathinfo($uri, PATHINFO_FILENAME);
+        $uploadFile->originalExtension = \pathinfo($uri, PATHINFO_EXTENSION);
 
         return $uploadFile;
     }
 
     /**
      * Constructs UploadFile from given eZHTTPFile (usually uploaded through the legacy admin).
-     *
-     * @param eZHTTPFile $file
      *
      * @return UploadFile
      */
@@ -48,8 +48,8 @@ class UploadFile
         $uploadFile = new self();
 
         $uploadFile->uri = $file->Filename;
-        $uploadFile->originalFilename = pathinfo($file->OriginalFilename, PATHINFO_FILENAME);
-        $uploadFile->originalExtension = pathinfo($file->OriginalFilename, PATHINFO_EXTENSION);
+        $uploadFile->originalFilename = \pathinfo($file->OriginalFilename, PATHINFO_FILENAME);
+        $uploadFile->originalExtension = \pathinfo($file->OriginalFilename, PATHINFO_EXTENSION);
 
         return $uploadFile;
     }
@@ -68,7 +68,6 @@ class UploadFile
     /**
      * Constructs UploadFile from given eZImage field Value.
      *
-     * @param Value $value
      * @param $webRoot
      *
      * @return UploadFile
@@ -77,9 +76,9 @@ class UploadFile
     {
         $uploadFile = new self();
 
-        $uploadFile->uri = $webRoot.$value->uri;
-        $uploadFile->originalFilename = pathinfo($value->fileName, PATHINFO_FILENAME);
-        $uploadFile->originalExtension = pathinfo($value->fileName, PATHINFO_EXTENSION);
+        $uploadFile->uri = $webRoot . $value->uri;
+        $uploadFile->originalFilename = \pathinfo($value->fileName, PATHINFO_FILENAME);
+        $uploadFile->originalExtension = \pathinfo($value->fileName, PATHINFO_EXTENSION);
 
         return $uploadFile;
     }

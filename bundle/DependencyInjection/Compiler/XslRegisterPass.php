@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler;
 
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver;
@@ -13,8 +15,6 @@ class XslRegisterPass implements CompilerPassInterface
      * XmlText field type.
      *
      * Avoids having it in %kernel.root_dir%/Resources folder
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      */
     public function process(ContainerBuilder $container)
     {
@@ -22,7 +22,7 @@ class XslRegisterPass implements CompilerPassInterface
             return;
         }
 
-        $scopes = array_merge(
+        $scopes = \array_merge(
             [ConfigResolver::SCOPE_DEFAULT],
             $container->getParameter('ezpublish.siteaccess.list')
         );
@@ -37,7 +37,7 @@ class XslRegisterPass implements CompilerPassInterface
             }
 
             $xslConfig = $container->getParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl");
-            $xslConfig[] = ['path' => __DIR__.'/../../Resources/xsl/ezxml_ngremotemedia.xsl', 'priority' => 5000];
+            $xslConfig[] = ['path' => __DIR__ . '/../../Resources/xsl/ezxml_ngremotemedia.xsl', 'priority' => 5000];
             $container->setParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl", $xslConfig);
         }
     }

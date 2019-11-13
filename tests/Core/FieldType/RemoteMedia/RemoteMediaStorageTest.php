@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\API\Repository\ContentService;
@@ -99,7 +101,7 @@ class RemoteMediaStorageTest extends TestCase
 
         $this->fieldTypeService->expects($this->once())
             ->method('getFieldType')
-            ->will($this->returnValue(new Type()));
+            ->willReturn(new Type());
 
         $this->gateway->expects($this->once())
             ->method('storeFieldData');
@@ -127,7 +129,7 @@ class RemoteMediaStorageTest extends TestCase
 
         $this->remoteMediaProvider->expects($this->once())
             ->method('upload')
-            ->will($this->returnValue(new Value()));
+            ->willReturn(new Value());
 
         $this->remoteMediaProvider->expects($this->once())
             ->method('getIdentifier');
@@ -227,18 +229,18 @@ class RemoteMediaStorageTest extends TestCase
 
         $this->contentService->expects($this->once())
             ->method('loadContent')
-            ->will($this->returnValue($content));
+            ->willReturn($content);
 
         $this->gateway->expects($this->once())
             ->method('loadFromTable')
-            ->will($this->returnValue(['some_field']));
+            ->willReturn(['some_field']);
 
         $this->gateway->expects($this->once())
             ->method('deleteFieldData');
 
         $this->gateway->expects($this->once())
             ->method('remoteResourceConnected')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $this->remoteMediaProvider->expects($this->once())
             ->method('deleteResource');
@@ -287,7 +289,7 @@ class RemoteMediaStorageTest extends TestCase
 
         $this->contentService->expects($this->once())
             ->method('loadContent')
-            ->will($this->returnValue($content));
+            ->willReturn($content);
 
         $this->gateway->expects($this->once())
             ->method('deleteFieldData');
@@ -341,7 +343,7 @@ class RemoteMediaStorageTest extends TestCase
 
         $this->fieldTypeService->expects($this->once())
             ->method('getFieldType')
-            ->will($this->returnValue(new Type()));
+            ->willReturn(new Type());
 
         $this->assertNotTrue($this->storage->copyLegacyField($this->versionInfo, $field, $originalField, $this->context));
     }

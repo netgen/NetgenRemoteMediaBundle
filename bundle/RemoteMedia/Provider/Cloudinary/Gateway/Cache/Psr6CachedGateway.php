@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\Cache;
 
-use Netgen\Bundle\RemoteMediaBundle\Cache\CacheWrapper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
@@ -35,8 +36,6 @@ class Psr6CachedGateway extends Gateway
     /**
      * CachedGateway constructor.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway $gateway
-     * @param TagAwareAdapterInterface $cache
      * @param int $ttl
      */
     public function __construct(Gateway $gateway, TagAwareAdapterInterface $cache, $ttl = 7200)
@@ -56,7 +55,7 @@ class Psr6CachedGateway extends Gateway
     {
         $tagBase = [self::PROJECT_KEY, self::PROVIDER_KEY];
 
-        return implode('-', $tagBase);
+        return \implode('-', $tagBase);
     }
 
     private function getCacheTags($type)
@@ -73,10 +72,10 @@ class Psr6CachedGateway extends Gateway
     {
         $tags = [
             $this->getBaseTag(),
-            self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $resourceId
+            self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $resourceId,
         ];
 
-        array_walk($tags, function(&$tag){
+        \array_walk($tags, function (&$tag) {
             $tag = $this->washKey($tag);
         });
 
@@ -87,11 +86,10 @@ class Psr6CachedGateway extends Gateway
     {
         $forbiddenCharacters = ['{', '}', '(', ')', '/', '\\', '@'];
         foreach ($forbiddenCharacters as $char) {
-            $key = str_replace($char, '_', trim($key, $char));
+            $key = \str_replace($char, '_', \trim($key, $char));
         }
 
         return $key;
-
     }
 
     /**
@@ -106,7 +104,7 @@ class Psr6CachedGateway extends Gateway
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
-        $tags = array_unique(array_merge(
+        $tags = \array_unique(\array_merge(
             $this->getCacheTags(self::SEARCH),
             $this->getCacheTags(self::LIST),
             $this->getCacheTags(self::FOLDER_LIST),
@@ -144,14 +142,14 @@ class Psr6CachedGateway extends Gateway
     public function search($query, $options = [], $limit = 10, $offset = 0)
     {
         $searchCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, implode('|', $options)])
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, \implode('|', $options)])
         );
         $cacheItem = $this->cache->getItem($searchCacheKey);
 
         if ($cacheItem->isHit()) {
             $searchResult = $cacheItem->get();
 
-            return array_slice($searchResult, $offset, $limit);
+            return \array_slice($searchResult, $offset, $limit);
         }
 
         $searchResult = $this->gateway->search($query, $options, $limit);
@@ -160,7 +158,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->tag($this->getCacheTags(self::SEARCH));
         $this->cache->save($cacheItem);
 
-        return array_slice($searchResult, $offset, $limit);
+        return \array_slice($searchResult, $offset, $limit);
     }
 
     /**
@@ -175,14 +173,14 @@ class Psr6CachedGateway extends Gateway
     public function listResources($type, $limit, $offset)
     {
         $listCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type])
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type])
         );
         $cacheItem = $this->cache->getItem($listCacheKey);
 
         if ($cacheItem->isHit()) {
             $list = $cacheItem->get();
 
-            return array_slice($list, $offset, $limit);
+            return \array_slice($list, $offset, $limit);
         }
 
         $list = $this->gateway->listResources($type, $limit, $offset);
@@ -190,7 +188,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->expiresAfter($this->ttl);
         $cacheItem->tag($this->getCacheTags(self::LIST));
 
-        return array_slice($list, $offset, $limit);
+        return \array_slice($list, $offset, $limit);
     }
 
     /**
@@ -201,7 +199,7 @@ class Psr6CachedGateway extends Gateway
     public function listFolders()
     {
         $listFolderCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST])
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST])
         );
         $cacheItem = $this->cache->getItem($listFolderCacheKey);
 
@@ -237,7 +235,7 @@ class Psr6CachedGateway extends Gateway
     public function countResourcesInFolder($folder)
     {
         $countCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder])
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder])
         );
         $cacheItem = $this->cache->getItem($countCacheKey);
 
@@ -264,7 +262,7 @@ class Psr6CachedGateway extends Gateway
     public function get($id, $type)
     {
         $resourceCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type])
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type])
         );
         $cacheItem = $this->cache->getItem($resourceCacheKey);
 
@@ -377,7 +375,7 @@ class Psr6CachedGateway extends Gateway
     {
         $result = $this->gateway->delete($id);
 
-        $tags = array_unique(array_merge(
+        $tags = \array_unique(\array_merge(
             $this->getCacheTags(self::SEARCH),
             $this->getCacheTags(self::LIST),
             $this->getCacheTags(self::FOLDER_COUNT)

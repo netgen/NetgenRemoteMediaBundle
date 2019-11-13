@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -25,9 +27,7 @@ class Format implements HandlerInterface
      * Takes options from the configuration and returns
      * properly configured array of options.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
-     * @param array $config
      *
      * @throws \Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException
      *
