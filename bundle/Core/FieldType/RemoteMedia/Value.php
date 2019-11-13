@@ -15,7 +15,7 @@ class Value extends BaseValue
     public $resourceId = null;
     public $url = null;
     public $secure_url = null;
-    public $size = null;
+    public $size = 0;
 
     public $mediaType = 'image';
 
