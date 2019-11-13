@@ -43,10 +43,10 @@
         name: "{{ field_value.resourceId }}",
         alternateText: "{{ field_value.metaData.alt_text }}",
         tags: [{% for tag in field_value.metaData.tags %}"{{ tag }}",{% endfor %}],
-        size: {{ field_value.size }},
+        size: {{ field_value.size|default(0) }},
         id: "{{ field_value.resourceId }}",
         variations: {{ field_value.variations|json_encode|raw }},
-        width: {{ field_value.metaData.width }},
-        height: {{ field_value.metaData.height }}
+        width: {{ field_value.metaData.width|default(0) }},
+        height: {{ field_value.metaData.height|default(0) }}
     };
 </script>
