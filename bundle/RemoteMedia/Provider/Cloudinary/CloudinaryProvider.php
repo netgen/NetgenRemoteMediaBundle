@@ -9,6 +9,8 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
@@ -108,20 +110,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * Lists all available resources from the remote storage.
-     *
-     * @param int $limit
-     * @param int $offset
-     * @param string $resource_type
-     *
-     * @return array
-     */
-    public function listResources($limit = 10, $offset = 0, $resource_type = 'image')
-    {
-        return $this->gateway->listResources($resource_type, $limit, $offset);
-    }
-
-    /**
      * Counts available resources from the remote storage.
      *
      * @return int
@@ -154,42 +142,13 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Searches for the remote resource containing term in the query.
      *
-     * @param string $query
-     * @param int $limit
-     * @param int $offset
-     * @param string $resourceType
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
      *
-     * @return array
+     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
-    public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image')
+    public function searchResources(Query $query): Result
     {
-        $options = [
-            'SearchByTags' => false,
-            'type' => 'upload',
-            'resource_type' => $resourceType,
-        ];
-
-        return $this->gateway->search($query, $options, $limit, $offset);
-    }
-
-    /**
-     * Searches for the remote resource tagged with a provided tag.
-     *
-     * @param string $tag
-     * @param string $resourceType
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return array
-     */
-    public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image')
-    {
-        $options = [
-            'SearchByTags' => true,
-            'resource_type' => $resourceType,
-        ];
-
-        return $this->gateway->search(\urlencode($tag), $options, $limit, $offset);
+        return $this->gateway->search($query);
     }
 
     /**
