@@ -99,7 +99,7 @@ class Configuration extends SiteAccessConfiguration
                                     ->beforeNormalization()
                                         ->ifTrue(
                                             function ($v) {
-                                                // Check if passed array only contains a "params" key (BC with <=5.3).
+                                                // Check if passed array only contains a "params" key
                                                 return is_array($v) && 1 === count($v) && isset($v['params']);
                                             }
                                         )
