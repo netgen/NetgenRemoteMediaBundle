@@ -56,7 +56,7 @@ final class AdminInputValue
         /** @var string $alttext */
         $alttext = $http->variable($base . '_alttext_' . $attributeId, '');
         $tags = $http->variable($base . '_tags_' . $attributeId, []);
-        $variations = $http->variable($base . '_image_variations_' . $attributeId, []);
+        $variations = $http->variable($base . '_image_variations_' . $attributeId, '{}');
         $variations = \json_decode($variations, true);
 
         $file = eZHTTPFile::fetch($base . '_new_file_' . $attributeId);
@@ -73,6 +73,9 @@ final class AdminInputValue
         $tags = empty($hash['tags']) ? [] : $hash['tags'];
         $altText = empty($hash['alt_text']) ? '' : $hash['alt_text'];
 
+        $variations = $hash['image_variations'] ?? '{}';
+        $variations = \json_decode($variations, true);
+
         $file = $hash['new_file'];
         if ($file instanceof UploadedFile) {
             $file = UploadFile::fromUploadedFile($file);
@@ -82,7 +85,7 @@ final class AdminInputValue
             $hash['resource_id'] ?? '',
             $tags,
             $altText,
-             \json_decode($hash['image_variations'], true),
+             $variations,
             $file
         );
     }
