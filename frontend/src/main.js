@@ -117,13 +117,21 @@ var handleDOMContentLoaded = function() {
               alternateText: '',
               tags: [],
               size: file.size,
-              variations: {}
+              variations: {},
+              height: 0,
+              width: 0
             };
 
             reader.addEventListener(
               'load',
               function() {
-                this.selectedImage.url = reader.result;
+                debugger;
+                this.$refs.image.onload = function() {
+                  this.selectedImage.width = this.$refs.image.naturalWidth,
+                  this.selectedImage.height = this.$refs.image.naturalHeight;
+                }.bind(this);
+
+                this.selectedImage.url = reader.result;                
               }.bind(this),
               false
             );

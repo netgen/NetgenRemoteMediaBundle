@@ -1,7 +1,7 @@
 <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
     {if $remote_value.resourceId}
         <div class="image-wrap">
-            <img v-if="selectedImage.type==='image'" :src="selectedImage.url"  />
+            <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image" />
             <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
         </div>
 
