@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle;
 
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler\TransformationHandlersCompilerPass;
@@ -11,8 +13,6 @@ class NetgenRemoteMediaBundle extends Bundle
 {
     /**
      * Builds the bundle.
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      */
     public function build(ContainerBuilder $container)
     {

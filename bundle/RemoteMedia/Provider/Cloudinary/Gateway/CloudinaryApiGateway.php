@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 
 use Cloudinary;
 use Cloudinary\Api;
-use Cloudinary\Uploader;
 use Cloudinary\Search;
+use Cloudinary\Uploader;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 
 class CloudinaryApiGateway extends Gateway
@@ -25,7 +27,7 @@ class CloudinaryApiGateway extends Gateway
      */
     protected $cloudinaryUploader;
 
-    protected $cloudinarySearch;
+    //protected $cloudinarySearch;
 
     /**
      * @var int
@@ -52,15 +54,15 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
-        $this->cloudinarySearch = new Search();
+        //$this->cloudinarySearch = new Search();
     }
 
-    public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api, Search $search)
+    public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api/*, Search $search*/)
     {
         $this->cloudinary = $cloudinary;
         $this->cloudinaryUploader = $uploader;
         $this->cloudinaryApi = $api;
-        $this->cloudinarySearch = $search;
+        //$this->cloudinarySearch = $search;
     }
 
     /**
@@ -114,7 +116,7 @@ class CloudinaryApiGateway extends Gateway
      */
     public function search($query, $options = [], $limit = 10, $offset = 0)
     {
-        if (isset($options['SearchByTags']) && true === $options['SearchByTags']) {
+        if (isset($options['SearchByTags']) && $options['SearchByTags'] === true) {
             if (isset($options['resource_type'])) {
                 return $this->searchByTags($query, $options['resource_type']);
             }
@@ -160,7 +162,7 @@ class CloudinaryApiGateway extends Gateway
             $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
 
             if (!empty($resources['resources'])) {
-                $items = array_merge($items, $resources['resources']);
+                $items = \array_merge($items, $resources['resources']);
             }
         }
 
@@ -206,13 +208,13 @@ class CloudinaryApiGateway extends Gateway
 
         $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
 
-        $count = count($resources['resources']);
+        $count = \count($resources['resources']);
 
         while (!empty($resources['next_cursor'])) {
             $options['next_cursor'] = $resources['next_cursor'];
             $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
 
-            $count += count($resources['resources']);
+            $count += \count($resources['resources']);
         }
 
         return $count;
@@ -328,7 +330,7 @@ class CloudinaryApiGateway extends Gateway
      */
     public function delete($id)
     {
-        $options = array('invalidate' => true);
+        $options = ['invalidate' => true];
         $this->cloudinaryUploader->destroy($id, $options);
     }
 
@@ -364,7 +366,7 @@ class CloudinaryApiGateway extends Gateway
             $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
 
             if (!empty($resources['resources'])) {
-                $items = array_merge($items, $resources['resources']);
+                $items = \array_merge($items, $resources['resources']);
             }
         }
 
@@ -383,7 +385,7 @@ class CloudinaryApiGateway extends Gateway
     {
         $apiOptions = [
             'prefix' => $query,
-            'type' => isset($options['type']) ? $options['type'] : 'upload',
+            'type' => $options['type'] ?? 'upload',
             'tags' => true,
             'max_results' => 500,
         ];
@@ -399,7 +401,7 @@ class CloudinaryApiGateway extends Gateway
             $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
 
             if (!empty($resources['resources'])) {
-                $items = array_merge($items, $resources['resources']);
+                $items = \array_merge($items, $resources['resources']);
             }
         }
 

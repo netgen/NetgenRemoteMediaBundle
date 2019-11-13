@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
 use eZ\Publish\API\Repository\Repository;
@@ -54,8 +56,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
                 'l',
                 InputOption::VALUE_OPTIONAL,
                 ''
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -71,7 +72,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         $repository = $this->getContainer()->get('ezpublish.api.repository');
         $contentService = $repository->getContentService();
         $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
-        $imagePath = $rootDir.'/'.$imagePath;
+        $imagePath = $rootDir . '/' . $imagePath;
 
         $repository->beginTransaction();
 
@@ -96,7 +97,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         $contentUpdateStruct->setField($fieldIdentifier, $imageInput);
         try {
             $content = $repository->sudo(
-                function (Repository $repository) use ($contentInfo, $contentUpdateStruct) {
+                static function (Repository $repository) use ($contentInfo, $contentUpdateStruct) {
                     $contentDraft = $repository->getContentService()->createContentDraft($contentInfo);
                     $contentDraft = $repository->getContentService()->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
 
@@ -107,7 +108,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
             $repository->commit();
         } catch (\Exception $e) {
             $repository->rollback();
-            $output->writeln('<error>'.$e->getMessage().'<error>');
+            $output->writeln('<error>' . $e->getMessage() . '<error>');
             dump($e->getTraceAsString());
 
             return;

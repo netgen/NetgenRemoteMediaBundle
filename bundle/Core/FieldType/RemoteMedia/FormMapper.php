@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use EzSystems\RepositoryForms\Data\Content\FieldData;
@@ -19,11 +21,11 @@ class FormMapper implements FieldDefinitionFormMapperInterface, FieldValueFormMa
                     ->create(
                         'value',
                         RemoteMediaFieldType::class,
-                        array(
+                        [
                             'required' => $data->fieldDefinition->isRequired,
                             'label' => $data->fieldDefinition->getName(),
                             'field' => $data->field,
-                        )
+                        ]
                     )
                     ->setAutoInitialize(false)
                     ->getForm()

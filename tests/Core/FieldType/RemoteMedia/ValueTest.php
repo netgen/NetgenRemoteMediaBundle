@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
@@ -89,21 +91,21 @@ class ValueTest extends TestCase
     {
         $value = new Value(self::EXAMPLE_PARAMETERS);
 
-        $this->assertEquals(json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
+        $this->assertEquals(\json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
     }
 
     public function testConstructionWithoutParameters()
     {
         $value = new Value();
 
-        $this->assertEquals(json_encode(self::EMPTY_PARAMETERS), (string) $value);
+        $this->assertEquals(\json_encode(self::EMPTY_PARAMETERS), (string) $value);
     }
 
     public function testImageConstructionFromCloudinaryResponse()
     {
         $value = Value::createFromCloudinaryResponse(self::EXAMPLE_CLOUDINARY_RESPONSE);
 
-        $this->assertEquals(json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
+        $this->assertEquals(\json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
     }
 
     public function testVideoConstructionFromCloudinaryResponse()
@@ -117,7 +119,7 @@ class ValueTest extends TestCase
         $exampleParameters['mediaType'] = 'video';
         $exampleParameters['metaData']['resource_type'] = 'video';
 
-        $this->assertEquals(json_encode($exampleParameters), (string) $value);
+        $this->assertEquals(\json_encode($exampleParameters), (string) $value);
     }
 
     public function testPdfConstructionFromCloudinaryResponse()
@@ -131,6 +133,6 @@ class ValueTest extends TestCase
         $exampleParameters['mediaType'] = 'other';
         $exampleParameters['metaData']['resource_type'] = 'pdf';
 
-        $this->assertEquals(json_encode($exampleParameters), (string) $value);
+        $this->assertEquals(\json_encode($exampleParameters), (string) $value);
     }
 }

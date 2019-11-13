@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Converter;
 
 use eZ\Publish\Core\MVC\Legacy\Templating\Converter\ObjectConverter;

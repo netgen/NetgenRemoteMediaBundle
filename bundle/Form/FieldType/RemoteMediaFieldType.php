@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Form\FieldType;
 
 use eZ\Publish\API\Repository\FieldTypeService;
@@ -40,7 +42,7 @@ class RemoteMediaFieldType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setRequired(array('field'));
+        $resolver->setRequired(['field']);
         $resolver->setAllowedTypes('field', Field::class);
     }
 
@@ -53,11 +55,11 @@ class RemoteMediaFieldType extends AbstractType
                 'tags',
                 ChoiceType::class,
                 [
-                    "multiple" => true,
-                    "choices" => ["{{tag}}" => true],
-                    "choice_attr" => function () {
-                        return ["v-for" => "tag in allTags", ":value" => "tag"];
-                    }
+                    'multiple' => true,
+                    'choices' => ['{{tag}}' => true],
+                    'choice_attr' => static function () {
+                        return ['v-for' => 'tag in allTags', ':value' => 'tag'];
+                    },
                 ]
             )
             ->add('image_variations', TextType::class)

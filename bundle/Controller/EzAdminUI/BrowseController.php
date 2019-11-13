@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI;
-
 
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
@@ -21,9 +19,6 @@ final class BrowseController
 
     /**
      * BrowseController constructor.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $remoteMediaProvider
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper $remoteMediaHelper
      */
     public function __construct(
         RemoteMediaProvider $remoteMediaProvider,
@@ -33,12 +28,11 @@ final class BrowseController
         $this->remoteMediaHelper = $remoteMediaHelper;
     }
 
-
     public function __invoke(Request $request)
     {
         $limit = 26;
         $userQuery = $request->get('q', '');
-        $offset = $request->get('offset', 0);
+        $offset = intval($request->get('offset', 0));
 
         $type = $request->get('mediatype', 'image');
         $folder = $request->get('folder', 'all');
@@ -49,7 +43,7 @@ final class BrowseController
         if (empty($userQuery) && $folder === 'all') {
             $list = $this->remoteMediaProvider->listResources($limit, $offset, $type);
         } else {
-            $query = $folder === 'all' ? $userQuery : $folder.'/'.$userQuery;
+            $query = $folder === 'all' ? $userQuery : $folder . '/' . $userQuery;
 
             // search by name or by tag
             if ($searchType === 'tag') {
@@ -77,15 +71,15 @@ final class BrowseController
         }
 
         $loadMore = false;
-        if (count($list) > 25) {
-            array_pop($list);
+        if (\count($list) > 25) {
+            \array_pop($list);
             $loadMore = true;
         }
 
-        $result = array(
+        $result = [
             'hits' => $this->remoteMediaHelper->formatBrowseList($list),
-            'load_more' => $loadMore
-        );
+            'load_more' => $loadMore,
+        ];
 
         return new JsonResponse($result);
     }

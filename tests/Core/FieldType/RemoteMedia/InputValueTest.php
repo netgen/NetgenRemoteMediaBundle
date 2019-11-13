@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
@@ -24,7 +26,7 @@ class InputValueTest extends TestCase
 
         $inputValue = new InputValue($parameters);
 
-        $this->assertEquals(json_encode($parameters), (string) $inputValue);
+        $this->assertEquals(\json_encode($parameters), (string) $inputValue);
     }
 
     public function testConstructionWithoutParameters()
@@ -38,6 +40,6 @@ class InputValueTest extends TestCase
 
         $inputValue = new InputValue();
 
-        $this->assertEquals(json_encode($expectedResponseArray), (string) $inputValue);
+        $this->assertEquals(\json_encode($expectedResponseArray), (string) $inputValue);
     }
 }

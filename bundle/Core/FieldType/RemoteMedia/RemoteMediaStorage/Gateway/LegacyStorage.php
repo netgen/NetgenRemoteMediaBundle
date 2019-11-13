@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
 
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
@@ -20,11 +22,10 @@ class LegacyStorage extends Gateway
     /**
      * Sets the data storage connection to use.
      *
-     *
      * @param \eZ\Publish\Core\Persistence\Database\DatabaseHandler $connection
      *
      * @throws \RuntimeException if $connection is not an instance of
-     *         {@link \eZ\Publish\Core\Persistence\Database\DatabaseHandler}
+     *                           {@link \eZ\Publish\Core\Persistence\Database\DatabaseHandler}
      */
     public function setConnection($connection)
     {
@@ -73,7 +74,7 @@ class LegacyStorage extends Gateway
         $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($rows) > 0) {
+        if (\count($rows) > 0) {
             $updateQuery = $connection->createUpdateQuery();
             $updateQuery
                 ->update('ngremotemedia_field_link')
@@ -212,8 +213,8 @@ class LegacyStorage extends Gateway
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(
-            function ($item) {
+        return \array_map(
+            static function ($item) {
                 return $item['resource_id'];
             },
             $rows
@@ -249,7 +250,7 @@ class LegacyStorage extends Gateway
         $statement->execute();
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($rows) > 0) {
+        if (\count($rows) > 0) {
             return true;
         }
 
@@ -265,7 +266,7 @@ class LegacyStorage extends Gateway
      */
     protected function getConnection()
     {
-        if (null === $this->connection) {
+        if ($this->connection === null) {
             throw new RuntimeException('Missing database connection.');
         }
 

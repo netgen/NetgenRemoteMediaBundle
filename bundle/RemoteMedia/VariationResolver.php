@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 class VariationResolver
@@ -29,7 +31,7 @@ class VariationResolver
         $contentTypeVariations = isset($this->variations[$contentTypeIdentifier]) ?
             $this->variations[$contentTypeIdentifier] : [];
 
-        return array_merge($defaultVariations, $contentTypeVariations);
+        return \array_merge($defaultVariations, $contentTypeVariations);
     }
 
     /**

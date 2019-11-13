@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\Persistence\Legacy\Content\FieldValue\Converter;
 
 use eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter;
@@ -48,7 +50,7 @@ class RemoteMediaConverterTest extends TestCase
         $storageFieldValue = new StorageFieldValue();
 
         $this->converter->toStorageValue($fieldValue, $storageFieldValue);
-        $this->assertEquals($storageFieldValue->dataText, json_encode($fieldValue->data));
+        $this->assertEquals($storageFieldValue->dataText, \json_encode($fieldValue->data));
     }
 
     public function testToFieldValue()
@@ -62,7 +64,7 @@ class RemoteMediaConverterTest extends TestCase
         $fieldValue = new FieldValue();
 
         $this->converter->toFieldValue($storageFieldValue, $fieldValue);
-        $this->assertEquals($fieldValue->data, json_decode($storageFieldValue->dataText, true));
+        $this->assertEquals($fieldValue->data, \json_decode($storageFieldValue->dataText, true));
     }
 
     public function testToStorageFieldDefinition()
