@@ -15,8 +15,6 @@ final class UpdateFieldHelper
 
     /**
      * UpdateFieldHelper constructor.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $remoteMediaProvider
      */
     public function __construct(RemoteMediaProvider $remoteMediaProvider)
     {

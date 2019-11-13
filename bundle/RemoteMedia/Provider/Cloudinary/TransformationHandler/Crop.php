@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -19,9 +21,7 @@ class Crop implements HandlerInterface
      * Takes options from the configuration and returns
      * properly configured array of options.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
-     * @param array $config
      *
      * @throws \Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException
      *
@@ -29,7 +29,7 @@ class Crop implements HandlerInterface
      */
     public function process(Value $value, $variationName, array $config = [])
     {
-        if (array_key_exists($variationName, $value->variations)) {
+        if (\array_key_exists($variationName, $value->variations)) {
             $coords = $value->variations[$variationName];
             $options[] = [
                 'x' => (int) $coords['x'],

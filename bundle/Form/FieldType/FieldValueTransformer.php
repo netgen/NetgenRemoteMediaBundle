@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Form\FieldType;
 
 use eZ\Publish\API\Repository\FieldType;
@@ -55,7 +57,7 @@ class FieldValueTransformer implements DataTransformerInterface
             'resource_id' => $value->resourceId,
             'alt_text' => isset($value->metaData['alt_text']) ? $value->metaData['alt_text'] : '',
             'tags' => $value->metaData['tags'],
-            'image_variations' => $value->variations
+            'image_variations' => $value->variations,
         ];
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -53,7 +55,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
-     * @param UploadFile $uploadFile
      * @param array $options
      *
      * @return Value
@@ -71,7 +72,6 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Gets the remote media Variation.
      * If $variationName is an array, it is treated as an explicit set of options to build the variation.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
      * @param string|array $variationName
      * @param bool $secure
@@ -88,7 +88,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $variation;
         }
 
-        if (is_array($variationName)) {
+        if (\is_array($variationName)) {
             /*
              * This means the 'variationName' is actually an array with all the configuration
              * options provided, and we can pass those directly to the cloudinary
@@ -154,7 +154,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Searches for the remote resource containing term in the query.
      *
-     *
      * @param string $query
      * @param int $limit
      * @param int $offset
@@ -190,7 +189,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             'resource_type' => $resourceType,
         ];
 
-        return $this->gateway->search(urlencode($tag), $options, $limit, $offset);
+        return $this->gateway->search(\urlencode($tag), $options, $limit, $offset);
     }
 
     /**
@@ -278,7 +277,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Returns thumbnail url for the video with provided id.
      *
-     * @param Value $value
      * @param array $options
      *
      * @return string
@@ -305,7 +303,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param Value $value
      * @param string $contentTypeIdentifier
      * @param string $variationName
      *
@@ -321,7 +318,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
         }
 
-        if (is_array($variationName)) {
+        if (\is_array($variationName)) {
             $finalOptions = $variationName + $finalOptions;
         } else {
             $options = $this->processConfiguredVariation($value, $variationName, $contentTypeIdentifier);
@@ -335,8 +332,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Generates the link to the remote resource.
-     *
-     * @param Value $value
      *
      * @return string
      */
@@ -375,33 +370,32 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
-     * @param UploadFile $uploadFile
      * @param array $options
      *
      * @return array
      */
     protected function prepareUploadOptions(UploadFile $uploadFile, $options = [])
     {
-        $clean = preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
-        $cleanFileName = preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
-        $fileName = rtrim($cleanFileName, '_');
+        $clean = \preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
+        $cleanFileName = \preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
+        $fileName = \rtrim($cleanFileName, '_');
 
         // check if overwrite is set, if it is, do not append random string
-        $overwrite = isset($options['overwrite']) ? $options['overwrite'] : false;
-        $invalidate = isset($options['invalidate']) ? $options['invalidate'] : $overwrite;
+        $overwrite = $options['overwrite'] ?? false;
+        $invalidate = $options['invalidate'] ?? $overwrite;
 
-        $publicId = $overwrite ? $fileName : $fileName.'_'.base_convert(uniqid(), 16, 36);
+        $publicId = $overwrite ? $fileName : $fileName . '_' . \base_convert(\uniqid(), 16, 36);
         $publicId = $this->appendExtension($publicId, $uploadFile);
 
         if (!empty($options['folder'])) {
-            $publicId = $options['folder'].'/'.$publicId;
+            $publicId = $options['folder'] . '/' . $publicId;
         }
 
         return [
             'public_id' => $publicId,
             'overwrite' => $overwrite,
             'invalidate' => $invalidate,
-            'discard_original_filename' => isset($options['discard_original_filename']) ? $options['discard_original_filename'] : true,
+            'discard_original_filename' => $options['discard_original_filename'] ?? true,
             'context' => [
                 'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
                 'caption' => !empty($options['caption']) ? $options['caption'] : '',
@@ -414,7 +408,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Builds transformation options for the provider to consume.
      *
-     * @param Value $value
      * @param string $variationName
      * @param string $contentTypeIdentifier
      *
@@ -455,16 +448,14 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * @param File $file
-     *
      * @throws MimeCategoryParseException
      *
      * @return mixed
      */
     private function parseMimeCategory(File $file)
     {
-        $parsedMime = explode('/', $file->getMimeType());
-        if (2 !== count($parsedMime)) {
+        $parsedMime = \explode('/', $file->getMimeType());
+        if (\count($parsedMime) !== 2) {
             throw new MimeCategoryParseException($file->getMimeType());
         }
 
@@ -473,7 +464,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * @param $publicId
-     * @param UploadFile $uploadFile
      *
      * @return string
      */
@@ -489,8 +479,8 @@ class CloudinaryProvider extends RemoteMediaProvider
         $mimeCategory = $this->parseMimeCategory($file);
 
         // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
-        if ('pdf' !== $extension && !in_array($mimeCategory, $this->noExtensionMimeTypes, true)) {
-            $publicId .= '.'.$extension;
+        if ($extension !== 'pdf' && !\in_array($mimeCategory, $this->noExtensionMimeTypes, true)) {
+            $publicId .= '.' . $extension;
         }
 
         return $publicId;

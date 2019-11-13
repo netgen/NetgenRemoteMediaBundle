@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -37,7 +39,6 @@ abstract class RemoteMediaProvider
     /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
-     * @param UploadFile $uploadFile
      * @param array $options
      *
      * @return Value
@@ -49,7 +50,6 @@ abstract class RemoteMediaProvider
      * If the remote media does not support variations, this method should return the Variation
      * with the url set to original resource.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
      * @param string|array $format
      * @param bool $secure
@@ -169,7 +169,6 @@ abstract class RemoteMediaProvider
     /**
      * Returns thumbnail url for the video with provided id.
      *
-     * @param Value $value
      * @param array $options
      *
      * @return string
@@ -179,7 +178,6 @@ abstract class RemoteMediaProvider
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param Value $value
      * @param string $contentTypeIdentifier
      * @param string $format
      *
@@ -196,8 +194,6 @@ abstract class RemoteMediaProvider
 
     /**
      * Generates the link to the remote resource.
-     *
-     * @param Value $value
      *
      * @return string
      */

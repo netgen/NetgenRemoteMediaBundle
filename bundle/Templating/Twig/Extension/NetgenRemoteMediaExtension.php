@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
 use eZ\Publish\API\Repository\ContentTypeService;
-use eZ\Publish\Core\Helper\TranslationHelper;
 use eZ\Publish\API\Repository\Values\Content\Content;
+use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
@@ -43,9 +45,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * NetgenRemoteMediaExtension constructor.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
-     * @param \eZ\Publish\Core\Helper\TranslationHelper $translationHelper
-     * @param \eZ\Publish\API\Repository\ContentTypeService $contentTypeService
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
      */
@@ -79,7 +78,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
             new \Twig_Filter(
                 'scaling_format',
                 [$this, 'scalingFormat']
-            )
+            ),
         ];
     }
 
@@ -128,10 +127,10 @@ class NetgenRemoteMediaExtension extends Twig_Extension
             return $variations;
         }
 
-        $availableVariations = array();
+        $availableVariations = [];
 
         foreach ($variations as $variationName => $variationConfig) {
-            foreach($variationConfig['transformations'] as $name => $config) {
+            foreach ($variationConfig['transformations'] as $name => $config) {
                 if ($name !== 'crop') {
                     continue;
                 }
@@ -146,7 +145,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Returns variation by specified format.
      *
-     * @param Content $content
      * @param string $fieldIdentifier
      * @param string $format
      * @param bool $secure
@@ -157,14 +155,13 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     {
         $field = $this->translationHelper->getTranslatedField($content, $fieldIdentifier);
         $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
-        
+
         return $this->provider->buildVariation($field->value, $contentTypeIdentifier, $format, $secure);
     }
 
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param Content $content
      * @param string $fieldIdentifier
      * @param string $format
      *
@@ -181,7 +178,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Returns thumbnail url.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param array $options
      *
      * @return string
@@ -194,8 +190,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Returns the link to the remote resource.
      *
-     * @param Value $value
-     *
      * @return string
      */
     public function getResourceDownloadLink(Value $value)
@@ -206,7 +200,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Creates variation directly form Value, without the need for Content.
      *
-     * @param Value $value
      * @param $format
      *
      * @return Variation
@@ -217,11 +210,9 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
-     * Returns true if there is croppable variation configuration for the given content type
+     * Returns true if there is croppable variation configuration for the given content type.
      *
      * @todo: might be better to use form buildView method to inject this instead of using twig function?
-     *
-     * @param Content $content
      *
      * @return bool
      */
@@ -240,7 +231,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      *
      * @todo: might be better to use form buildView method to inject this instead of using twig function?
      *
-     * @param Content $content
      * @param $onlyCroppable
      *
      * @return array

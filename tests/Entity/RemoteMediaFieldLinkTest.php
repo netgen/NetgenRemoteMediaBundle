@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Entity;
 
 use Netgen\Bundle\RemoteMediaBundle\Entity\RemoteMediaFieldLink;

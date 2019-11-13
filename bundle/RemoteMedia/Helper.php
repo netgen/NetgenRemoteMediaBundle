@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -29,8 +31,6 @@ class Helper
 
     /**
      * Formats browse list to comply with javascript.
-     *
-     * @param array $list
      *
      * @return array
      */
@@ -70,9 +70,9 @@ class Helper
      */
     private function determineType($hit)
     {
-        if ('video' === $hit['resource_type']) {
+        if ($hit['resource_type'] === 'video') {
             return Value::TYPE_VIDEO;
-        } elseif ('image' === $hit['resource_type'] && (!isset($hit['format']) || !in_array($hit['format'], ['pdf', 'doc', 'docx'], true))) {
+        } elseif ($hit['resource_type'] === 'image' && (!isset($hit['format']) || !\in_array($hit['format'], ['pdf', 'doc', 'docx'], true))) {
             return Value::TYPE_IMAGE;
         }
 

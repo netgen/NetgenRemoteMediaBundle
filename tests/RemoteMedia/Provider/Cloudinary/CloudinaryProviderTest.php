@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -77,8 +79,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with('image', 10, 0)
-        ;
+            ->with('image', 10, 0);
 
         $this->cloudinaryProvider->listResources();
     }
@@ -90,8 +91,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with('image', 20, 0)
-        ;
+            ->with('image', 20, 0);
 
         $this->cloudinaryProvider->listResources(20);
     }
@@ -103,8 +103,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('listResources')
-            ->with('image', 20, 5)
-        ;
+            ->with('image', 20, 5);
 
         $this->cloudinaryProvider->listResources(20, 5);
     }
@@ -320,8 +319,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('addTag')
-            ->with('testResourceId', 'testTag')
-        ;
+            ->with('testResourceId', 'testTag');
 
         $this->cloudinaryProvider->addTagToResource('testResourceId', 'testTag');
     }
@@ -331,8 +329,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('removeTag')
-            ->with('testResourceId', 'testTag')
-        ;
+            ->with('testResourceId', 'testTag');
 
         $this->cloudinaryProvider->removeTagFromResource('testResourceId', 'testTag');
     }

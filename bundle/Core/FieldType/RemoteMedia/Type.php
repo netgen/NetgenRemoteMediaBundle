@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
@@ -24,8 +26,6 @@ class Type extends FieldType
      * Returns a human readable string representation from the given $value
      * It will be used to generate content name and url alias if current field
      * is designated to be used in the content name/urlAlias pattern.
-     *
-     * @param \eZ\Publish\SPI\FieldType\Value $value
      *
      * @return int
      */
@@ -57,7 +57,7 @@ class Type extends FieldType
      */
     public function fromHash($hash)
     {
-        if (!is_array($hash)) {
+        if (!\is_array($hash)) {
             return $this->getEmptyValue();
         }
 
@@ -68,7 +68,7 @@ class Type extends FieldType
         // @todo: finish this!!!!
         $valueHash = [
             'resourceId' => $hash['resourceId'],
-            'secureUrl' => $hash['secure_url']
+            'secureUrl' => $hash['secure_url'],
         ];
 
         $value = new Value($hash);
@@ -90,8 +90,6 @@ class Type extends FieldType
 
     /**
      * Converts a $value to a persistence value.
-     *
-     * @param \eZ\Publish\SPI\FieldType\Value $value
      *
      * @return \eZ\Publish\SPI\Persistence\Content\FieldValue
      */
@@ -124,13 +122,11 @@ class Type extends FieldType
     /**
      * Converts a persistence $fieldValue to a Value.
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\FieldValue $fieldValue
-     *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function fromPersistenceValue(FieldValue $fieldValue)
     {
-        if (null === $fieldValue->data) {
+        if ($fieldValue->data === null) {
             return $this->getEmptyValue();
         } elseif ($fieldValue->data === $this->getEmptyValue()) {
             return $this->getEmptyValue();
@@ -158,7 +154,7 @@ class Type extends FieldType
             return false;
         }
 
-        return null === $value || $value === $this->getEmptyValue() || empty($value->resourceId);
+        return $value === null || $value === $this->getEmptyValue() || empty($value->resourceId);
     }
 
     /**
@@ -173,8 +169,6 @@ class Type extends FieldType
 
     /**
      * Returns information for FieldValue->$sortKey relevant to the field type.
-     *
-     * @param \eZ\Publish\Core\FieldType\Value $value
      *
      * @return bool
      */
@@ -194,12 +188,12 @@ class Type extends FieldType
     {
         if ($inputValue instanceof InputValue) {
             return $inputValue;
-        } elseif (is_string($inputValue)) {
+        } elseif (\is_string($inputValue)) {
             $newValue = new InputValue();
             $newValue->input_uri = $inputValue;
 
             return $newValue;
-        } elseif (is_array($inputValue)) {
+        } elseif (\is_array($inputValue)) {
             return new InputValue($inputValue);
         }
 
@@ -209,31 +203,19 @@ class Type extends FieldType
     /**
      * Throws an exception if value structure is not of expected format.
      *
-     *
-     * @param \eZ\Publish\Core\FieldType\Value $value
-     *
      * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException if the value does not match the expected structure
      */
     protected function checkValueStructure(BaseValue $value)
     {
-        if ($value instanceof Value && !is_string($value->resourceId)) {
-            throw new InvalidArgumentType(
-                '$value',
-                'string',
-                $value->resourceId
-            );
-        } elseif ($value instanceof InputValue && !is_string($value->input_uri)) {
-            throw new InvalidArgumentType(
-                '$value',
-                'string',
-                $value->input_uri
-            );
+        if ($value instanceof Value && !\is_string($value->resourceId)) {
+            throw new InvalidArgumentType('$value', 'string', $value->resourceId);
+        } elseif ($value instanceof InputValue && !\is_string($value->input_uri)) {
+            throw new InvalidArgumentType('$value', 'string', $value->input_uri);
         }
     }
 
     /**
      * Throws an exception if the given $value is not an instance of the supported value subtype.
-     *
      *
      * @param mixed $value a value returned by {@see createValueFromInput()}
      *
@@ -242,11 +224,7 @@ class Type extends FieldType
     protected static function checkValueType($value)
     {
         if (!$value instanceof Value && !$value instanceof InputValue) {
-            throw new InvalidArgumentType(
-                '$value',
-                'Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value or "Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\InputValue",',
-                $value
-            );
+            throw new InvalidArgumentType('$value', 'Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value or "Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\InputValue",', $value);
         }
     }
 }
