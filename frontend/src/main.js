@@ -59,7 +59,7 @@ var handleDOMContentLoaded = function() {
       methods: {
         async handleBrowseMediaClicked() {
           this.mediaModalOpen = true;
-          const response = await fetch('/ngadminui/ngremotemedia/folders');
+          const response = await fetch('/ngadminui/ngremotemedia/folders'); //@todo: can't have this hardcoded here
           const folders = await response.json();
           this.folders = folders;
         },
@@ -131,7 +131,7 @@ var handleDOMContentLoaded = function() {
                   this.selectedImage.height = this.$refs.image.naturalHeight;
                 }.bind(this);
 
-                this.selectedImage.url = reader.result;                
+                this.selectedImage.url = reader.result;
               }.bind(this),
               false
             );

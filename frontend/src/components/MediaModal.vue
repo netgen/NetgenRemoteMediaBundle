@@ -35,6 +35,7 @@ export default {
     return {
       media: [],
       canLoadMore: false,
+      nextCursor: null,
       loading: true,
       facets: {
         folder: "",
@@ -59,9 +60,11 @@ export default {
         q: this.facets.query,
         mediatype: this.facets.mediaType,
         folder: this.facets.folder || FOLDER_ALL,
-        search_type: this.facets.searchType
+        search_type: this.facets.searchType,
+        next_cursor: patch ? this.nextCursor : null
       };
 
+      // @todo: we can't have 'ngadminui' hard-coded
       const url = `/ngadminui/ngremotemedia/browse?${encodeQueryData(query)}`;
 
       try {
@@ -72,6 +75,7 @@ export default {
 
         this.media = patch ? this.media.concat(media.hits) : media.hits;
         this.canLoadMore = media.load_more;
+        this.nextCursor = media.next_cursor;
         this.loading = false;
       } catch (err) {
         //user aborted request

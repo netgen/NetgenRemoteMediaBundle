@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\Cache;
 
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
 class Psr6CachedGateway extends Gateway
@@ -132,63 +134,32 @@ class Psr6CachedGateway extends Gateway
     /**
      * Perform search.
      *
-     * @param string $query
-     * @param array $options
-     * @param int $limit
-     * @param int $offset
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
      *
-     * @return array
+     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
-    public function search($query, $options = [], $limit = 10, $offset = 0)
+    public function search(Query $query): Result
     {
-        $searchCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, \implode('|', $options)])
-        );
-        $cacheItem = $this->cache->getItem($searchCacheKey);
+        return $this->gateway->search($query);
 
-        if ($cacheItem->isHit()) {
-            $searchResult = $cacheItem->get();
-
-            return \array_slice($searchResult, $offset, $limit);
-        }
-
-        $searchResult = $this->gateway->search($query, $options, $limit);
-        $cacheItem->set($searchResult);
-        $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::SEARCH));
-        $this->cache->save($cacheItem);
-
-        return \array_slice($searchResult, $offset, $limit);
-    }
-
-    /**
-     * List all available resources.
-     *
-     * @param $type
-     * @param $limit
-     * @param $offset
-     *
-     * @return array
-     */
-    public function listResources($type, $limit, $offset)
-    {
-        $listCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::LIST, $type])
-        );
-        $cacheItem = $this->cache->getItem($listCacheKey);
-
-        if ($cacheItem->isHit()) {
-            $list = $cacheItem->get();
-
-            return \array_slice($list, $offset, $limit);
-        }
-
-        $list = $this->gateway->listResources($type, $limit, $offset);
-        $cacheItem->set($list);
-        $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::LIST));
-
-        return \array_slice($list, $offset, $limit);
+//        $searchCacheKey = $this->washKey(
+//            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, \implode('|', $options)])
+//        );
+//        $cacheItem = $this->cache->getItem($searchCacheKey);
+//
+//        if ($cacheItem->isHit()) {
+//            $searchResult = $cacheItem->get();
+//
+//            return \array_slice($searchResult, $offset, $limit);
+//        }
+//
+//        $searchResult = $this->gateway->search($query, $options, $limit);
+//        $cacheItem->set($searchResult);
+//        $cacheItem->expiresAfter($this->ttl);
+//        $cacheItem->tag($this->getCacheTags(self::SEARCH));
+//        $this->cache->save($cacheItem);
+//
+//        return \array_slice($searchResult, $offset, $limit);
     }
 
     /**

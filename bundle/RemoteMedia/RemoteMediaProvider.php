@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Psr\Log\LoggerInterface;
 
@@ -59,17 +61,6 @@ abstract class RemoteMediaProvider
     abstract public function buildVariation(Value $value, $contentTypeIdentifier, $format, $secure = true);
 
     /**
-     * Lists all available resources from the remote storage.
-     *
-     * @param int $limit
-     * @param int $offset
-     * @param string $resource_type
-     *
-     * @return array
-     */
-    abstract public function listResources($limit = 10, $offset = 0, $resource_type = 'image');
-
-    /**
      * Lists all available folders.
      * If folders are not supported, should return empty array.
      *
@@ -87,26 +78,11 @@ abstract class RemoteMediaProvider
     /**
      * Searches for the remote resource containing term in the query.
      *
-     * @param string $query
-     * @param int $limit
-     * @param int $offset
-     * @param string $resourceType
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
      *
-     * @return array
+     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
-    abstract public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image');
-
-    /**
-     * Searches for the remote resource tagged with a provided tag.
-     *
-     * @param string $tag
-     * @param string $resourceType
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return array
-     */
-    abstract public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image');
+    abstract public function searchResources(Query $query): Result;
 
     /**
      * Returns the remote resource with provided id and type.

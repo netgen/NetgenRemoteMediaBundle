@@ -9,6 +9,8 @@ use Cloudinary\Api;
 use Cloudinary\Search;
 use Cloudinary\Uploader;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 
 class CloudinaryApiGateway extends Gateway
 {
@@ -27,7 +29,10 @@ class CloudinaryApiGateway extends Gateway
      */
     protected $cloudinaryUploader;
 
-    //protected $cloudinarySearch;
+    /**
+     * @var \Cloudinary\Search
+     */
+    protected $cloudinarySearch;
 
     /**
      * @var int
@@ -54,15 +59,15 @@ class CloudinaryApiGateway extends Gateway
 
         $this->cloudinaryUploader = new Uploader();
         $this->cloudinaryApi = new Api();
-        //$this->cloudinarySearch = new Search();
+        $this->cloudinarySearch = new Search();
     }
 
-    public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api/*, Search $search*/)
+    public function setServices(Cloudinary $cloudinary, Uploader $uploader, Api $api, Search $search)
     {
         $this->cloudinary = $cloudinary;
         $this->cloudinaryUploader = $uploader;
         $this->cloudinaryApi = $api;
-        //$this->cloudinarySearch = $search;
+        $this->cloudinarySearch = $search;
     }
 
     /**
@@ -100,73 +105,41 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
-     * Offset and limit are ignored here, as cloudinary API does not support pagination.
-     * All search results will be returned here, and caching layer takes care of slicing
-     * the result.
-     * Max limit for this endpoint is 500.
+     * Perform search
      *
-     * @see \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway.php
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query
      *
-     * @param string $query
-     * @param array $options
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return array
+     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
-    public function search($query, $options = [], $limit = 10, $offset = 0)
+    public function search(Query $query): Result
     {
-        if (isset($options['SearchByTags']) && $options['SearchByTags'] === true) {
-            if (isset($options['resource_type'])) {
-                return $this->searchByTags($query, $options['resource_type']);
-            }
-
-            return $this->searchByTags($query);
+        $expression = "resource_type:{$query->getResourceType()}";
+        if ($query->getQuery() !== '') {
+            $expression = "{$query->getQuery()} AND " .$expression;
         }
 
-        return $this->searchByPrefix($query, $options);
-    }
-
-    /**
-     * Offset and limit are ignored here, as cloudinary API does not support
-     * pagination. Everything is fetched here, and caching layer takes care of slicing
-     * the result.
-     * Max limit for this endpoint is 500.
-     *
-     * @see \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CachedGateway.php
-     *
-     * @param $type
-     * @param $limit
-     * @param $offset
-     *
-     * @return array
-     */
-    public function listResources($type, $limit, $offset)
-    {
-        $options = [
-            'tags' => true,
-            'context' => true,
-            'resource_type' => $type,
-        ];
-        $options['max_results'] = 500;
-
-        $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
-
-        $items = $resources['resources'];
-        if ($this->internalLimit <= 500) {
-            return !empty($items) ? $items : [];
+        if ($query->getTag()) {
+            $expression .= " AND tags:{$query->getTag()}";
         }
 
-        while (!empty($resources['next_cursor'])) {
-            $options['next_cursor'] = $resources['next_cursor'];
-            $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
-
-            if (!empty($resources['resources'])) {
-                $items = \array_merge($items, $resources['resources']);
-            }
+        if ($query->getFolder()) {
+            $expression .= " AND folder:{$query->getFolder()}/*";
         }
 
-        return !empty($items) ? $items : [];
+        $search = $this->cloudinarySearch
+            ->expression($expression)
+            ->max_results($query->getLimit())
+            ->with_field('context')
+            ->with_field('tags');
+
+        if ($query->getNextCursor() !== null) {
+            $search->next_cursor($query->getNextCursor());
+        }
+
+        $response = $search->execute();
+        $result = Result::fromResponse($response);
+
+        return $result;
     }
 
     /**
@@ -332,79 +305,5 @@ class CloudinaryApiGateway extends Gateway
     {
         $options = ['invalidate' => true];
         $this->cloudinaryUploader->destroy($id, $options);
-    }
-
-    /**
-     * Perform search by tags.
-     *
-     * @param $query
-     * @param $resourceType
-     *
-     * @return array
-     */
-    protected function searchByTags($query, $resourceType = 'image')
-    {
-        $resources = $this->cloudinaryApi->resources_by_tag(
-            $query,
-            [
-                'tags' => true,
-                'context' => true,
-                'resource_type' => $resourceType,
-                'max_results' => 500,
-            ]
-        );
-
-        if (empty($resources)) {
-            return [];
-        }
-
-        $resources = $resources->getArrayCopy();
-
-        $items = $resources['resources'];
-        while (!empty($resources['next_cursor'])) {
-            $apiOptions['next_cursor'] = $resources['next_cursor'];
-            $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
-
-            if (!empty($resources['resources'])) {
-                $items = \array_merge($items, $resources['resources']);
-            }
-        }
-
-        return !empty($items) ? $items : [];
-    }
-
-    /**
-     * Perform search by prefix.
-     *
-     * @param $query
-     * @param $options
-     *
-     * @return array
-     */
-    protected function searchByPrefix($query, $options)
-    {
-        $apiOptions = [
-            'prefix' => $query,
-            'type' => $options['type'] ?? 'upload',
-            'tags' => true,
-            'max_results' => 500,
-        ];
-        if (isset($options['resource_type'])) {
-            $apiOptions['resource_type'] = $options['resource_type'];
-        }
-
-        $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
-
-        $items = $resources['resources'];
-        while (!empty($resources['next_cursor'])) {
-            $apiOptions['next_cursor'] = $resources['next_cursor'];
-            $resources = $this->cloudinaryApi->resources($apiOptions)->getArrayCopy();
-
-            if (!empty($resources['resources'])) {
-                $items = \array_merge($items, $resources['resources']);
-            }
-        }
-
-        return !empty($items) ? $items : [];
     }
 }
