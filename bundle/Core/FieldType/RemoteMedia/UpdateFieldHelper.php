@@ -38,6 +38,7 @@ final class UpdateFieldHelper
         if (!empty($adminInputValue->getNewFile())) {
             // @todo find which folder to upload to
             $updatedValue = $this->remoteMediaProvider->upload($adminInputValue->getNewFile());
+            $oldValue = new Value();
         }
 
         $this->updateContext($updatedValue, $oldValue, $adminInputValue);
