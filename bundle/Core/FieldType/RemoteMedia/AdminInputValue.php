@@ -5,6 +5,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 use eZHTTPFile;
 use \eZHTTPTool;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class AdminInputValue
 {
@@ -56,7 +57,9 @@ final class AdminInputValue
 
         $file = eZHTTPFile::fetch( $base.'_new_file_'.$attributeId );
 
-        $file = UploadFile::fromZHTTPFile($file);
+        if ($file instanceof eZHTTPFile) {
+            $file = UploadFile::fromZHTTPFile($file);
+        }
 
         return new AdminInputValue($resourceId, $tags, $alttext, $variations, $file);
     }
@@ -66,7 +69,10 @@ final class AdminInputValue
         $tags = empty($hash['tags']) ? [] : $hash['tags'];
         $altText = empty($hash['alt_text']) ? '' : $hash['alt_text'];
 
-        $file = UploadFile::fromUploadedFile($hash['new_file']);
+        $file = $hash['new_file'];
+        if ($file instanceof UploadedFile) {
+            $file = UploadFile::fromUploadedFile($file);
+        }
 
         return new AdminInputValue(
             $hash['resource_id'],
