@@ -5,13 +5,8 @@
 
     <input type="hidden" name="{$base}_media_id_{$fieldId}" v-model="selectedImage.id" class="media-id" />
 
-    {if $remote_value.resourceId}
-        {def $croppable = ng_remote_croppable($attribute.object.class_identifier)}
-        {if and( $type|eq('image'), $croppable )}
-            <input type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" value="{'Scale'|i18n( 'extension/ngremotemedia/interactions' )}" >
-        {/if}
-        <input type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'extension/ngremotemedia/interactions' )}" />
-    {/if}
+    <input type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" value="{'Scale'|i18n( 'extension/ngremotemedia/interactions' )}" >
+    <input type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" value="{'Remove media'|i18n( 'extension/ngremotemedia/interactions' )}" />
 
     <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="{'Manage media'|i18n( 'extension/ngremotemedia/interactions' )}" />
 

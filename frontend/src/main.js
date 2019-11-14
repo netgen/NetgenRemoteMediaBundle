@@ -52,6 +52,9 @@ var handleDOMContentLoaded = function() {
           return JSON.stringify(
             objectFilter(truthy)(this.selectedImage.variations)
           );
+        },
+        isCroppable(){
+          return !!this.selectedImage.id && this.selectedImage.type === "image";
         }
       },
       components: {

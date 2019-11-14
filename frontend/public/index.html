@@ -118,8 +118,8 @@
 
                                         <input type="hidden" name="ContentObjectAttribute_media_id_4601" v-model="selectedImage.id" class="media-id"/>
 
-                                        <input type="button" class="ngremotemedia-remove-file button" value="Remove media" @click="handleRemoveMediaClicked"/>
-                                        <input type="button" class="ngremotemedia-remove-file button" value="Crop" @click="handleCropClicked"/>
+                                        <input v-if="!!selectedImage.id" type="button" class="ngremotemedia-remove-file button" value="Remove media" @click="handleRemoveMediaClicked"/>
+                                        <input v-if="isCroppable" type="button" class="ngremotemedia-remove-file button" value="Crop" @click="handleCropClicked"/>
 
                                         <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="Manage media"/>
 
