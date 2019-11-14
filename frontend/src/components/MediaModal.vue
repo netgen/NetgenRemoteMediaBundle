@@ -25,7 +25,7 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["folders", "selectedMediaId"],
+  props: ["folders", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGalery,
@@ -64,8 +64,7 @@ export default {
         next_cursor: patch ? this.nextCursor : null
       };
 
-      // @todo: we can't have 'ngadminui' hard-coded
-      const url = `/ngadminui/ngremotemedia/browse?${encodeQueryData(query)}`;
+      const url = `${this.paths.browse}?${encodeQueryData(query)}`;
 
       try {
         const response = await fetch(url, {

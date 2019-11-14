@@ -48,8 +48,8 @@ export default {
   },
   computed: {
     unselectedVariations() {
-      const available = Object.getOwnPropertyNames(this.availableVariations);
-      const set = Object.getOwnPropertyNames(this.allVariationValues);
+      const available = Object.keys(this.availableVariations);
+      const set = Object.keys(this.allVariationValues);
 
       return available.difference(set);
     },
