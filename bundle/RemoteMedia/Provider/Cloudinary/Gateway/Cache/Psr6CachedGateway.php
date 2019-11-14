@@ -140,26 +140,24 @@ class Psr6CachedGateway extends Gateway
      */
     public function search(Query $query): Result
     {
-        return $this->gateway->search($query);
+        $searchCacheKey = $this->washKey(
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, (string)$query])
+        );
 
-//        $searchCacheKey = $this->washKey(
-//            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, $query, \implode('|', $options)])
-//        );
-//        $cacheItem = $this->cache->getItem($searchCacheKey);
-//
-//        if ($cacheItem->isHit()) {
-//            $searchResult = $cacheItem->get();
-//
-//            return \array_slice($searchResult, $offset, $limit);
-//        }
-//
-//        $searchResult = $this->gateway->search($query, $options, $limit);
-//        $cacheItem->set($searchResult);
-//        $cacheItem->expiresAfter($this->ttl);
-//        $cacheItem->tag($this->getCacheTags(self::SEARCH));
-//        $this->cache->save($cacheItem);
-//
-//        return \array_slice($searchResult, $offset, $limit);
+        $cacheItem = $this->cache->getItem($searchCacheKey);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
+
+        $result = $this->gateway->search($query);
+
+        $cacheItem->set($result);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag($this->getCacheTags(self::SEARCH));
+        $this->cache->save($cacheItem);
+
+        return $result;
     }
 
     /**

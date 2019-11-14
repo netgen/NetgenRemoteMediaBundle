@@ -112,6 +112,12 @@ final class Query
         return $this->sortBy;
     }
 
+    public function __toString()
+    {
+        $vars = get_class_vars(Query::class);
+        $sort = http_build_query($vars['sortBy'], '', ',');
+        unset($vars['sortBy']);
 
-
+        return implode('|', $vars) . $sort;
+    }
 }
