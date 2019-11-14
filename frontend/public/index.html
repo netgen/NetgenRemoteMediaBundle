@@ -135,6 +135,7 @@
                                     <input type="text" name="image_variations" v-model="stringifiedVariations" class="media-id"/>
                                     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="{'full':[150,100],'mobile':[70,70], 'oneSize': [100, 0]}"></crop-modal>
                                     <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"></media-modal>
+                                    <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name"></upload-modal>
                                 </div>
                                 <input type="hidden" name="ContentObjectAttribute_id[]" value="4601"/>
                             </div>
