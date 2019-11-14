@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary\Gateway;
 
+use Cloudinary;
+use Cloudinary\Api;
+use Cloudinary\Search;
+use Cloudinary\Uploader;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_Constraint_IsAnything;
+use PHPUnit_Framework_Constraint_Or;
 
 class CloudinaryApiGatewayTest extends TestCase
 {
@@ -29,16 +36,51 @@ class CloudinaryApiGatewayTest extends TestCase
      */
     protected $cloudinaryApi;
 
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $cloudinarySearch;
+
     public function setUp()
     {
-        $this->cloudinary = $this->createMock('\Cloudinary');
-        $this->cloudinaryUploader = $this->createMock('\Cloudinary\Uploader');
-        $this->cloudinaryApi = $this->createMock('\Cloudinary\Api');
+        $this->cloudinary = $this->createMock(Cloudinary::class);
+        $this->cloudinaryUploader = $this->createMock(Uploader::class);
+        $this->cloudinaryApi = $this->createMock(Api::class);
+        $this->cloudinarySearch = $this->createMock(Search::class);
+
+        $this->setUpSearch();
 
         $apiGateway = new CloudinaryApiGateway();
-        $apiGateway->setServices($this->cloudinary, $this->cloudinaryUploader, $this->cloudinaryApi);
+        $apiGateway->setServices($this->cloudinary, $this->cloudinaryUploader, $this->cloudinaryApi, $this->cloudinarySearch);
         $apiGateway->setInternalLimit(1000);
         $this->apiGateway = $apiGateway;
+    }
+
+    private function setUpSearch()
+    {
+        $constraints = new PHPUnit_Framework_Constraint_Or();
+        $constraints->setConstraints([
+            'expression', 'max_results', 'with_field'
+        ]);
+        $this->cloudinarySearch->expects($this->any())->method($constraints)->will($this->returnSelf());
+    }
+
+    private function getSearchResponse()
+    {
+        $response = new \stdClass();
+        $response->body = \json_encode([
+            'total_count' => 200,
+            'next_cursor' => '123',
+            'resources' => []
+        ]);
+        $response->responseCode = 200;
+        $response->headers = [
+            'X-FeatureRateLimit-Reset' => 'test',
+            'X-FeatureRateLimit-Limit' => 'test',
+            'X-FeatureRateLimit-Remaining' => 'test'
+        ];
+
+        return $response;
     }
 
     public function testGetVariationUrl()
@@ -60,124 +102,74 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testSearchByTags()
     {
-        $options = [
-            'SearchByTags' => true,
-        ];
+        $query = new Query('', 'image', 25, null, 'tag');
 
-        $this->cloudinaryApi
+        $this->cloudinarySearch
             ->expects($this->once())
-            ->method('resources_by_tag')
-            ->with(
-                'query',
-                [
-                    'tags' => true,
-                    'context' => true,
-                    'resource_type' => 'image',
-                    'max_results' => 500,
-                ]
-            );
+            ->method('expression');
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('max_results');
+        $this->cloudinarySearch
+            ->expects($this->exactly(2))
+            ->method('with_field');
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(
+                new Api\Response($this->getSearchResponse())
+            ); // @todo: finish this
 
-        $this->apiGateway->search('query', $options);
+        $this->apiGateway->search($query);
     }
 
     public function testSearch()
     {
-        $apiOptions = [
-            'prefix' => 'query',
-            'type' => 'upload',
-            'tags' => true,
-            'max_results' => 500,
-        ];
+        $query = new Query('query', 'image', 25);
 
-        $this->cloudinaryApi->method('resources')->willReturn(new \ArrayObject(['resources' => []]));
-
-        $this->cloudinaryApi
+        $this->cloudinarySearch
             ->expects($this->once())
-            ->method('resources')
-            ->with($apiOptions);
+            ->method('expression');
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('max_results');
+        $this->cloudinarySearch
+            ->expects($this->exactly(2))
+            ->method('with_field');
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(
+                new Api\Response($this->getSearchResponse())
+            ); // @todo: finish this
 
-        $this->apiGateway->search('query');
+        $this->apiGateway->search($query);
     }
 
     public function testSearchWithMoreResults()
     {
-        $options1 = [
-            'prefix' => 'query',
-            'type' => 'upload',
-            'tags' => true,
-            'max_results' => 500,
-        ];
-        $options2 = $options1 + ['next_cursor' => 123];
+        $query = new Query('query', 'image', 25, null, null, '823b');
 
-        $this->cloudinaryApi
-            ->method('resources')
-            ->willReturnOnConsecutiveCalls(
-                new \ArrayObject(
-                    [
-                        'resources' => [],
-                        'next_cursor' => 123,
-                    ]
-                ),
-                new \ArrayObject(
-                    [
-                        'resource' => [],
-                    ]
-                )
-            );
-
-        $this->cloudinaryApi
-            ->expects($this->exactly(2))
-            ->method('resources')
-            ->withConsecutive(
-                [$options1],
-                [$options2]
-            );
-
-        $this->apiGateway->search('query');
-    }
-
-    public function testListResource()
-    {
-        $apiOptions = [
-            'max_results' => 500,
-            'tags' => true,
-            'context' => true,
-            'resource_type' => 'image',
-        ];
-
-        $this->cloudinaryApi->method('resources')->willReturn(new \ArrayObject(['resources' => []]));
-
-        $this->cloudinaryApi
+        $this->cloudinarySearch
             ->expects($this->once())
-            ->method('resources')
-            ->with($apiOptions);
-
-        $this->apiGateway->listResources('image', 20, 0);
-    }
-
-    public function testListResourcesWithMoreResults()
-    {
-        $options1 = [
-            'max_results' => 500,
-            'tags' => true,
-            'context' => true,
-            'resource_type' => 'image',
-        ];
-        $options2 = $options1 + ['next_cursor' => 123];
-
-        $this->cloudinaryApi
-            ->method('resources')
-            ->willReturnOnConsecutiveCalls(
-                new \ArrayObject(['resources' => [], 'next_cursor' => 123]),
-                new \ArrayObject(['resources' => []])
-            );
-
-        $this->cloudinaryApi
+            ->method('expression');
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('max_results');
+        $this->cloudinarySearch
             ->expects($this->exactly(2))
-            ->method('resources')
-            ->withConsecutive([$options1], [$options2]);
+            ->method('with_field');
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('next_cursor');
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(
+                new Api\Response($this->getSearchResponse())
+            ); // @todo: finish this
 
-        $this->apiGateway->listResources('image', 0, 20);
+        $this->apiGateway->search($query);
     }
 
     public function testListFolders()
@@ -196,34 +188,16 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testCountResourcesInFolder()
     {
-        $options = ['type' => 'upload', 'max_results' => 500, 'prefix' => 'folderName'];
+        $expression = "folder:folderName/*";
 
-        $this->cloudinaryApi->method('resources')->willReturn(new \ArrayObject(['resources' => []]));
-
-        $this->cloudinaryApi
+        $this->cloudinarySearch
             ->expects($this->once())
-            ->method('resources')
-            ->with($options);
-
-        $this->apiGateway->countResourcesInFolder('folderName');
-    }
-
-    public function testCountResourcesInFolderWithMoreResults()
-    {
-        $options1 = ['type' => 'upload', 'max_results' => 500, 'prefix' => 'folderName'];
-        $options2 = $options1 + ['next_cursor' => 123];
-
-        $this->cloudinaryApi
-            ->method('resources')
-            ->willReturnOnConsecutiveCalls(
-                new \ArrayObject(['resources' => [], 'next_cursor' => 123]),
-                new \ArrayObject(['resources' => []])
-            );
-
-        $this->cloudinaryApi
-            ->expects($this->exactly(2))
-            ->method('resources')
-            ->withConsecutive([$options1], [$options2]);
+            ->method('expression')
+            ->with($expression);
+        $this->cloudinarySearch
+            ->expects($this->once())
+            ->method('max_results')
+            ->with(0);
 
         $this->apiGateway->countResourcesInFolder('folderName');
     }

@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary;
 
+use Cloudinary\Api\Response;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 
 class CloudinaryProviderTest extends TestCase
 {
@@ -50,6 +53,24 @@ class CloudinaryProviderTest extends TestCase
         );
     }
 
+    private function getSearchResponse()
+    {
+        $response = new \stdClass();
+        $response->body = \json_encode([
+            'total_count' => 200,
+            'next_cursor' => '123',
+            'resources' => []
+        ]);
+        $response->responseCode = 200;
+        $response->headers = [
+            'X-FeatureRateLimit-Reset' => 'test',
+            'X-FeatureRateLimit-Limit' => 'test',
+            'X-FeatureRateLimit-Remaining' => 'test'
+        ];
+
+        return $response;
+    }
+
     public function testIdentifier()
     {
         $this->assertEquals(
@@ -70,42 +91,6 @@ class CloudinaryProviderTest extends TestCase
         $this->assertTrue(
             $this->cloudinaryProvider->supportsFolders()
         );
-    }
-
-    public function testListResources()
-    {
-        $this->gateway->method('listResources')->willReturn([]);
-
-        $this->gateway
-            ->expects($this->once())
-            ->method('listResources')
-            ->with('image', 10, 0);
-
-        $this->cloudinaryProvider->listResources();
-    }
-
-    public function testListResourcesWithLimit()
-    {
-        $this->gateway->method('listResources')->willReturn([]);
-
-        $this->gateway
-            ->expects($this->once())
-            ->method('listResources')
-            ->with('image', 20, 0);
-
-        $this->cloudinaryProvider->listResources(20);
-    }
-
-    public function testListResourcesWithLimitAndOffset()
-    {
-        $this->gateway->method('listResources')->willReturn([]);
-
-        $this->gateway
-            ->expects($this->once())
-            ->method('listResources')
-            ->with('image', 20, 5);
-
-        $this->cloudinaryProvider->listResources(20, 5);
     }
 
     public function testCountResources()
@@ -137,72 +122,47 @@ class CloudinaryProviderTest extends TestCase
 
     public function testSearchResources()
     {
+        $query = new Query('query', 'image', 0);
+
         $this->gateway
             ->expects($this->once())
             ->method('search')
-            ->with(
-                'queryTerm',
-                [
-                    'SearchByTags' => false,
-                    'type' => 'upload',
-                    'resource_type' => 'image',
-                ],
-                10,
-                0
+            ->with($query)
+            ->willReturn(
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
-        $this->cloudinaryProvider->searchResources('queryTerm');
+        $this->cloudinaryProvider->searchResources($query);
     }
 
     public function testSearchResourcesWithLimitAndOffset()
     {
+        $query = new Query('query', 'image', 25, null, null, '823b');
+
         $this->gateway
             ->expects($this->once())
             ->method('search')
-            ->with(
-                'queryTerm',
-                [
-                    'SearchByTags' => false,
-                    'type' => 'upload',
-                    'resource_type' => 'image',
-                ],
-                25,
-                50
+            ->with($query)
+            ->willReturn(
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
-        $this->cloudinaryProvider->searchResources('queryTerm', 25, 50);
+        $this->cloudinaryProvider->searchResources($query);
     }
 
     public function testSearchResourcesByTag()
     {
+        $query = new Query('', 'image', 25, null, 'tag');
+
         $this->gateway
             ->expects($this->once())
             ->method('search')
-            ->with(
-                'queryTerm',
-                [
-                    'SearchByTags' => true,
-                    'resource_type' => 'image',
-                ]
+            ->with($query)
+            ->willReturn(
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
-        $this->cloudinaryProvider->searchResourcesBytag('queryTerm');
-    }
-
-    public function testSearchResourcesByTagWithEncoding()
-    {
-        $this->gateway
-            ->expects($this->once())
-            ->method('search')
-            ->with(
-                'test%2Fsomething',
-                [
-                    'SearchByTags' => true,
-                    'resource_type' => 'image',
-                ]
-            );
-
-        $this->cloudinaryProvider->searchResourcesBytag('test/something');
+        $this->cloudinaryProvider->searchResources($query);
     }
 
     public function testGetEmptyResourceId()

@@ -173,24 +173,15 @@ class CloudinaryApiGateway extends Gateway
      */
     public function countResourcesInFolder($folder)
     {
-        $options = ['type' => 'upload', 'max_results' => 500];
+        $expression = "folder:{$folder}/*";
 
-        if (!empty($folder)) {
-            $options['prefix'] = $folder;
-        }
+        $search = $this->cloudinarySearch
+            ->expression($expression)
+            ->max_results(0);
 
-        $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
+        $response = $search->execute();
 
-        $count = \count($resources['resources']);
-
-        while (!empty($resources['next_cursor'])) {
-            $options['next_cursor'] = $resources['next_cursor'];
-            $resources = $this->cloudinaryApi->resources($options)->getArrayCopy();
-
-            $count += \count($resources['resources']);
-        }
-
-        return $count;
+        return $response['total_count'];
     }
 
     /**
