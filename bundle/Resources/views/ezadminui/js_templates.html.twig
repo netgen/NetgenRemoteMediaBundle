@@ -1,4 +1,6 @@
 {% set thumbnail_url = type == 'image' ? netgen_remote_media(field_value, 'admin_preview').url : netgen_remote_video_thumbnail(field_value) %}
+{% set paths = paths|default([]) %}
+{% set available_variations = available_variations|default([]|json_encode) %}
 
 <script type="text/javascript">
     NgRemoteMediaTranslations = {
@@ -49,4 +51,9 @@
         width: {{ field_value.metaData.width|default(0) }},
         height: {{ field_value.metaData.height|default(0) }}
     };
+
+    RemoteMediaConfig = {
+        paths: {{ paths|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }},
+        availableVariations: {{ available_variations|raw }}
+    }
 </script>

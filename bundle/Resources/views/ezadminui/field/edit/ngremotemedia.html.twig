@@ -7,10 +7,16 @@
     {% set version = content.versionInfo.versionNo %}
     {% set type = field_value.metaData.resource_type|default('image') %}
 
-    {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' %}
-
     {% set croppableVariations = ngrm_available_variations(content, true)  %}
     {% set availableVariations = croppableVariations|scaling_format|json_encode %}
+
+    {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' with {
+        'paths': {
+            'browse': path('netgen_remote_media_ezadmin_browse'),
+            'folders': path('netgen_remote_media_ezadmin_folders')
+        },
+        'available_variations': availableVariations
+    } %}
 
     <div class="ngremotemedia-type">
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/preview.html.twig' %}
