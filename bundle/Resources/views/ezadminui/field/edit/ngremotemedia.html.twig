@@ -20,5 +20,6 @@
         {{ form_row(form.image_variations, { 'attr': {'class' : 'media-id', 'v-model': 'stringifiedVariations'} }) }}
         <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="{{ availableVariations }}"></crop-modal>
         <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"/>
+        <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" />
     </div>
 {% endblock %}

@@ -33,4 +33,5 @@
     <input type="text" name="{$base}_image_variations_{$fieldId}" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations={json_encode(scaling_format($croppableVariations))} data-user-id="{$user.contentobject_id}"></crop-modal>
     <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"/>
+    <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" />
 </div>

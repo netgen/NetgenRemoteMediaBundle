@@ -2,6 +2,7 @@ import Vue from 'vue';
 import './scss/ngremotemedia.scss';
 import 'cropperjs/dist/cropper.css';
 import MediaModal from './components/MediaModal';
+import UploadModal from './components/UploadModal';
 import CropModal from './components/CropModal';
 import { initDirective } from './utility/directives';
 import vSelect from 'vue-select';
@@ -24,6 +25,8 @@ var handleDOMContentLoaded = function() {
         folders: [],
         mediaModalOpen: false,
         cropModalOpen: false,
+        uploadModalOpen: false,
+        uploadModalLoading: false,
         selectedImage: {
           id: '',
           name: '',
@@ -54,14 +57,19 @@ var handleDOMContentLoaded = function() {
       components: {
         'media-modal': MediaModal,
         'v-select': vSelect,
-        'crop-modal': CropModal
+        'crop-modal': CropModal,
+        'upload-modal': UploadModal,
       },
       methods: {
-        async handleBrowseMediaClicked() {
-          this.mediaModalOpen = true;
+
+        async fetchFolders() {
           const response = await fetch('/ngadminui/ngremotemedia/folders'); //@todo: can't have this hardcoded here
           const folders = await response.json();
           this.folders = folders;
+        },
+        async handleBrowseMediaClicked() {
+          this.mediaModalOpen = true;
+          this.fetchFolders();
         },
         handleCropClicked() {
           this.cropModalOpen = true;
@@ -71,6 +79,9 @@ var handleDOMContentLoaded = function() {
         },
         handleCropModalClose() {
           this.cropModalOpen = false;
+        },
+        handleUploadModalClose() {
+          this.uploadModalOpen = false;
         },
         handleTagsInput(value) {
           this.allTags = [...new Set([...this.allTags, ...value])];
@@ -106,8 +117,13 @@ var handleDOMContentLoaded = function() {
           };
         },
         handleFileInputChange(e) {
+          this.uploadModalOpen = true;
+          this.uploadModalLoading = true;
+
+          this.fetchFolders();
+
           const file = e.target.files.item(0);
-          var reader = new FileReader();
+          const reader = new FileReader();
           if (file) {
             this.selectedImage = {
               id: file.name,
@@ -125,10 +141,10 @@ var handleDOMContentLoaded = function() {
             reader.addEventListener(
               'load',
               function() {
-                debugger;
                 this.$refs.image.onload = function() {
                   this.selectedImage.width = this.$refs.image.naturalWidth,
                   this.selectedImage.height = this.$refs.image.naturalHeight;
+                  this.uploadModalLoading = false;
                 }.bind(this);
 
                 this.selectedImage.url = reader.result;
@@ -147,6 +163,14 @@ var handleDOMContentLoaded = function() {
               ...newValues
             }
           };
+        },
+        handleUploadModalSave(name){
+          this.selectedImage = {
+            ...this.selectedImage,
+            name,
+            id: name
+          };
+          this.uploadModalOpen = false;
         }
       },
       mounted() {

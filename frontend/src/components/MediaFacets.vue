@@ -12,31 +12,13 @@
       <div class="form-field">
         <label for="folder">Select Folder</label>
         <v-select
-          :options="foldersWithNew"
+          :options="folders"
           label="name"
           v-model="selectedFolder"
           @input="handleFolderChange"
           :reduce="option => option.id"
           placeholder="All"
-        >
-          <template v-slot:search="search">
-            <input
-              class="vs__search"
-              v-bind="search.attributes"
-              v-on="search.events"
-              v-model="folderSearchQuery"
-            />
-          </template>
-
-          <template v-slot:option="option">
-            <div v-if="option.new">
-              {{option.name}}
-              <button>Create new</button>
-            </div>
-            <div v-else-if="option.added">{{option.name}} (new)</div>
-            <div v-else>{{option.name}}</div>
-          </template>
-        </v-select>
+        />
       </div>
 
       <div class="search-wrapper">
@@ -84,35 +66,13 @@ export default {
       SEARCH_TAG,
       FOLDER_ALL,
       selectedFolder: this.facets.folder,
-      folderSearchQuery: "",
       query: this.facets.query,
-      addedFolders: []
     };
   },
   computed: {
     searchName() {
       return this.facets.searchType === SEARCH_NAME ? "name" : "tag";
     },
-    foldersWithNew() {
-      const allFolders = [...this.folders, ...this.addedFolders];
-
-      if (this.folderSearchQuery.length === 0) {
-        return allFolders;
-      }
-
-      if (allFolders.find(folder => folder.name === this.folderSearchQuery)) {
-        return allFolders;
-      }
-
-      return [
-        {
-          name: this.folderSearchQuery,
-          id: this.folderSearchQuery,
-          new: true
-        },
-        ...allFolders
-      ];
-    }
   },
   methods: {
     handleSearchChange(searchType) {
@@ -128,8 +88,6 @@ export default {
       return this.facets.searchType === type;
     },
     handleFolderChange(value) {
-      this.folderSearchQuery = "";
-      this.addedFolders.push({ id: value, name: value, added: true });
       this.$emit("change", { folder: this.selectedFolder });
     },
     handleQueryChange() {
