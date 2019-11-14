@@ -11,18 +11,24 @@
     {def $type = 'image'}
 {/if}
 
+{def $croppableVariations = ng_image_variations($attribute.object.class_identifier, true)}
+
 {run-once}
 {symfony_include(
     '@NetgenRemoteMedia/ezadminui/js_templates.html.twig',
     hash(
         'field_value', $remote_value,
-        'type', $type
+        'type', $type,
+        'paths', hash(
+            'browse', "/browse"|ezurl('no', 'relative'),
+            'folders', "/folders"|ezurl('no', 'relative')
+        ),
+        'available_variations', json_encode(scaling_format($croppableVariations))
     )
 )}
 {/run-once}
 
 {def $user=fetch( 'user', 'current_user' )}
-{def $croppableVariations = ng_image_variations($attribute.object.class_identifier, true)}
 
 <div class="ngremotemedia-type" data-user-id="{$user.contentobject_id}">
 
