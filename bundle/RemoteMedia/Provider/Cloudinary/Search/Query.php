@@ -42,9 +42,9 @@ final class Query
         string $query,
         string $resourceType,
         int $limit,
-        ?string $folder,
-        ?string $tag,
-        ?string $nextCursor,
+        ?string $folder = null,
+        ?string $tag = null,
+        ?string $nextCursor = null,
         array $sortBy = ['created_at' => 'desc']
     ) {
         $this->query = $query;

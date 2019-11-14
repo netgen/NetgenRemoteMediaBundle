@@ -41,7 +41,7 @@ class ValueTest extends TestCase
         'resourceId' => null,
         'url' => null,
         'secure_url' => null,
-        'size' => null,
+        'size' => 0,
         'mediaType' => 'image',
         'variations' => [],
         'metaData' => [
