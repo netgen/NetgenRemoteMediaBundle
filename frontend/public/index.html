@@ -85,11 +85,16 @@
                                         width: 210,
                                         height: 120
                                     }
+
+                                    RemoteMediaConfig = {
+                                        paths: {"browse":"/ngadminui/ngremotemedia/browse","folders":"/ngadminui/ngremotemedia/folders"},
+                                        availableVariations: {"full":[500,300],"mobile":[500,500],"fixed_height":[0,500],"fixed_width":[500,0]}
+                                    }
                                 </script>
 
                                 <div class="ngremotemedia-type" data-user-id="14">
 
-                                    <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
+                                    <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
                                         <div class="image-wrap">
                                             <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image"/>
                                             <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
@@ -133,8 +138,8 @@
                                         </div>
                                     </div>
                                     <input type="text" name="image_variations" v-model="stringifiedVariations" class="media-id"/>
-                                    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="{'full':[150,100],'mobile':[70,70], 'oneSize': [100, 0]}"></crop-modal>
-                                    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected"></media-modal>
+                                    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations"></crop-modal>
+                                    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
                                     <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name"></upload-modal>
                                 </div>
                                 <input type="hidden" name="ContentObjectAttribute_id[]" value="4601"/>

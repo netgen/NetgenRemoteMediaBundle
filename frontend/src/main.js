@@ -22,6 +22,7 @@ var handleDOMContentLoaded = function() {
       },
       data: {
         RemoteMediaSelectedImage,
+        RemoteMediaConfig,
         folders: [],
         mediaModalOpen: false,
         cropModalOpen: false,
@@ -39,6 +40,10 @@ var handleDOMContentLoaded = function() {
           height: 0,
           width: 0
         },
+        config: {
+          paths: {},
+          availableVariations: {}
+        },
         allTags: []
       },
       computed: {
@@ -54,7 +59,7 @@ var handleDOMContentLoaded = function() {
           );
         },
         isCroppable(){
-          return !!this.selectedImage.id && this.selectedImage.type === "image";
+          return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.config.availableVariations).length > 0;
         }
       },
       components: {
@@ -66,7 +71,7 @@ var handleDOMContentLoaded = function() {
       methods: {
 
         async fetchFolders() {
-          const response = await fetch('/ngadminui/ngremotemedia/folders'); //@todo: can't have this hardcoded here
+          const response = await fetch(this.config.paths.folders);
           const folders = await response.json();
           this.folders = folders;
         },
