@@ -1,5 +1,4 @@
 <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
-    {if $remote_value.resourceId}
         <div class="image-wrap">
             <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image" />
             <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
@@ -21,9 +20,6 @@
                 </select>
 
             </div>
-            {if $remote_value.size|null()|not()}
-                <p>{'Size'|i18n( 'content/edit' )}: {literal}{{formattedSize}}{/literal}</p>
-            {/if}
-        </div>
-    {/if}
+            <p>{'Size'|i18n( 'content/edit' )}: {literal}{{formattedSize}}{/literal}</p>
+        </div>    
 </div>

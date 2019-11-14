@@ -1,33 +1,31 @@
 {% trans_default_domain 'ngremotemedia' %}
 
 <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage">
-    {% if field_value.resourceId %}
-        <div class="image-wrap">
-            <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image"/>
-            <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="custom-icon big"></i>
-        </div>
+    <div class="image-wrap">
+        <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image"/>
+        <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="custom-icon big"></i>
+    </div>
 
-        <div class="image-meta">
-            {% verbatim %}
-                <h3 class="title">{{ selectedImage.name }}</h3>
-            {% endverbatim %}
+    <div class="image-meta">
+        {% verbatim %}
+            <h3 class="title">{{ selectedImage.name }}</h3>
+        {% endverbatim %}
 
-            <div class="image-meta-data">
-                <div class="ngremotemedia-alttext">
-                    {{ form_row(form.alt_text, { 'attr': {'v-model': 'selectedImage.alternateText'} }) }}
-                </div>
-
-                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
-                {{ form_row(form.tags, { 'attr': {'class' : 'media-tags', 'v-model': 'selectedImage.tags', "hidden": "hidden"} }) }}
+        <div class="image-meta-data">
+            <div class="ngremotemedia-alttext">
+                {{ form_row(form.alt_text, { 'attr': {'v-model': 'selectedImage.alternateText'} }) }}
             </div>
 
-            {% if field_value.size %}
-                <p>{{ 'ngremotemedia.field.edit.size'|trans }}:
-                    {% verbatim %}
-                        {{formattedSize}}
-                    {% endverbatim %}
-                </p>
-            {% endif %}
+            <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
+            {{ form_row(form.tags, { 'attr': {'class' : 'media-tags', 'v-model': 'selectedImage.tags', "hidden": "hidden"} }) }}
         </div>
-    {% endif %}
+
+        {% if field_value.size %}
+            <p>{{ 'ngremotemedia.field.edit.size'|trans }}:
+                {% verbatim %}
+                    {{formattedSize}}
+                {% endverbatim %}
+            </p>
+        {% endif %}
+    </div>
 </div>
