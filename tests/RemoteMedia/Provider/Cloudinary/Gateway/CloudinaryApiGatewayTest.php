@@ -11,8 +11,7 @@ use Cloudinary\Uploader;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_Constraint_IsAnything;
-use PHPUnit_Framework_Constraint_Or;
+use PHPUnit\Framework\Constraint\LogicalOr;
 
 class CloudinaryApiGatewayTest extends TestCase
 {
@@ -58,7 +57,7 @@ class CloudinaryApiGatewayTest extends TestCase
 
     private function setUpSearch()
     {
-        $constraints = new PHPUnit_Framework_Constraint_Or();
+        $constraints = new LogicalOr();
         $constraints->setConstraints([
             'expression', 'max_results', 'with_field'
         ]);

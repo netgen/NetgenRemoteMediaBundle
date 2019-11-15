@@ -55,6 +55,9 @@ class LegacyStorageTest extends TestCase
         $handler = $this->getMockForAbstractClass(DatabaseHandler::class);
 
         $this->storage->setConnection($handler);
+
+        // Avoid detecting risky tests
+        $this->assertTrue(true);
     }
 
     /**
@@ -66,6 +69,9 @@ class LegacyStorageTest extends TestCase
         $handler = new \stdClass();
 
         $this->storage->setConnection($handler);
+
+        // Avoid detecting risky tests
+        $this->assertTrue(true);
     }
 
     public function testStoreFieldDataInsertNew()
