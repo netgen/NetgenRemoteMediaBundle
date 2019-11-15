@@ -114,7 +114,7 @@ final class Query
 
     public function __toString()
     {
-        $vars = get_class_vars(Query::class);
+        $vars = get_object_vars($this);
         $sort = http_build_query($vars['sortBy'], '', ',');
         unset($vars['sortBy']);
 
