@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Folders;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 
 final class ListController
 {
@@ -14,7 +15,7 @@ final class ListController
     /**
      * ListController constructor.
      */
-    public function __construct(\Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $remoteMediaProvider)
+    public function __construct(RemoteMediaProvider $remoteMediaProvider)
     {
         $this->remoteMediaProvider = $remoteMediaProvider;
     }
