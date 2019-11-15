@@ -27,7 +27,7 @@ final class Result
     public static function fromResponse(Response $response): self
     {
         $totalCount = $response['total_count'];
-        $nextCursor = $response['next_cursor'];
+        $nextCursor = $response['next_cursor'] ?? null;
         $results = $response['resources'];
 
         return new Result($totalCount, $nextCursor, $results);
