@@ -55,6 +55,9 @@ class XslRegisterPassTest extends AbstractCompilerPassTestCase
         $this->setParameter('ezpublish.siteaccess.list', $siteaccessList);
 
         $this->compile();
+
+        // Avoid detecting risky tests
+        $this->assertTrue(true);
     }
 
     protected function registerCompilerPass(ContainerBuilder $container)
