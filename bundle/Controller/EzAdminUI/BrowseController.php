@@ -33,6 +33,7 @@ final class BrowseController
 
         $type = $request->get('mediatype', 'image');
         $folder = $request->get('folder', 'all');
+        $folder = $folder !== 'all' ? $folder : null;
 
         $searchType = $request->get('search_type', 'name'); // 'name' or 'tag'
 
@@ -52,7 +53,7 @@ final class BrowseController
             $nextCursor
         );
 
-        $results = $this->remoteMediaProvider->listResources($query);
+        $results = $this->remoteMediaProvider->searchResources($query);
         $list = $results->getResults();
 
         $result = [

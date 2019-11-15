@@ -20,8 +20,8 @@
         'field_value', $remote_value,
         'type', $type,
         'paths', hash(
-            'browse', "/browse"|ezurl('no', 'relative'),
-            'folders', "/folders"|ezurl('no', 'relative')
+            'browse', "/ngremotemedia/browse"|ezurl('no', 'relative'),
+            'folders', "/ngremotemedia/folders"|ezurl('no', 'relative')
         ),
         'available_variations', json_encode(scaling_format($croppableVariations))
     )
