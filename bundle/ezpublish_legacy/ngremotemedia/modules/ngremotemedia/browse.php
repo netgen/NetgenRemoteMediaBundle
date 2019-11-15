@@ -10,6 +10,7 @@ $helper = $container->get( 'netgen_remote_media.helper' );
 
 $limit = 25;
 $userQuery = $http->getVariable('q', '');
+$tag = $http->getVariable('tag', '');
 $type = $http->getVariable('mediatype', 'image');
 $folder = $http->getVariable('folder', 'all');
 $folder = $folder !== 'all' ? $folder : null;
@@ -18,10 +19,6 @@ $nextCursor = $http->getVariable('next_cursor', null);
 if ($nextCursor === 'null') {
     $nextCursor = null;
 }
-
-$searchType = $http->getVariable('search_type', 'name'); // 'name' or 'tag'
-
-$tag = $searchType === 'name' ? '' : $userQuery;
 
 $query = new Query(
     $userQuery,

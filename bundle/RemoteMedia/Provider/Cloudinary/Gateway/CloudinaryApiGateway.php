@@ -115,7 +115,7 @@ class CloudinaryApiGateway extends Gateway
     {
         $expression = "resource_type:{$query->getResourceType()}";
         if ($query->getQuery() !== '') {
-            $expression = "{$query->getQuery()} AND " .$expression;
+            $expression = "{$query->getQuery()}* AND " .$expression;
         }
 
         if ($query->getTag()) {
