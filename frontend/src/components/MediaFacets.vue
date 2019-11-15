@@ -25,20 +25,30 @@
         <span class="search-label">Search</span>
         <div class="search">
             <ul class="searchType">
-            <li :class="{active: isSearch(SEARCH_NAME)}">
-                <span @click="handleSearchChange(SEARCH_NAME)">Name</span>
-            </li>
-            <li :class="{active: isSearch(SEARCH_TAG)}">
-                <span @click="handleSearchChange(SEARCH_TAG)">Tag</span>
-            </li>
+                <li class="active">
+                    <span>Name</span>
+                </li>
             </ul>
             <input
             type="text"
-            :placeholder="`Search by ${searchName}`"
+            :placeholder="`Search by name`"
             v-model="query"
             @keyup="handleQueryChange"
             />
         </div>
+          <div class="search">
+              <ul class="searchType">
+                  <li>
+                      <span>Tag</span>
+                  </li>
+              </ul>
+              <input
+                  type="text"
+                  :placeholder="`With tag`"
+                  v-model="tag"
+                  @keyup="handleTagChange"
+              />
+          </div>
       </div>
     </div>
   </div>
@@ -69,11 +79,6 @@ export default {
       query: this.facets.query,
     };
   },
-  computed: {
-    searchName() {
-      return this.facets.searchType === SEARCH_NAME ? "name" : "tag";
-    },
-  },
   methods: {
     handleSearchChange(searchType) {
       this.$emit("change", { searchType });
@@ -84,14 +89,14 @@ export default {
     isType(type) {
       return this.facets.mediaType === type;
     },
-    isSearch(type) {
-      return this.facets.searchType === type;
-    },
     handleFolderChange(value) {
       this.$emit("change", { folder: this.selectedFolder });
     },
     handleQueryChange() {
       this.$emit("change", { query: this.query });
+    },
+    handleTagChange() {
+      this.$emit("change", { tag: this.tag });
     }
   },
   components: {

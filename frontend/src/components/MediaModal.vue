@@ -41,7 +41,8 @@ export default {
         folder: "",
         searchType: SEARCH_NAME,
         mediaType: TYPE_IMAGE,
-        query: ""
+        query: "",
+        tag: ""
       }
     };
   },
@@ -61,7 +62,8 @@ export default {
         mediatype: this.facets.mediaType,
         folder: this.facets.folder || FOLDER_ALL,
         search_type: this.facets.searchType,
-        next_cursor: patch ? this.nextCursor : null
+        next_cursor: patch ? this.nextCursor : null,
+        tag: this.facets.tag
       };
 
       const url = `${this.paths.browse}?${encodeQueryData(query)}`;
