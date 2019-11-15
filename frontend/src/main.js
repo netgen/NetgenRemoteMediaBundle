@@ -13,7 +13,7 @@ import { objectFilter } from './utility/functional';
 
 Vue.config.productionTip = false;
 
-var handleDOMContentLoaded = function() {
+const handleDOMContentLoaded = function() {
   document.querySelectorAll('.ngremotemedia-type').forEach((el, i) => {
     window[`remoteMedia${i}`] = new Vue({
       el,
@@ -131,12 +131,12 @@ var handleDOMContentLoaded = function() {
           this.fetchFolders();
 
           const file = e.target.files.item(0);
-          const reader = new FileReader();
+
           if (file) {
             this.selectedImage = {
               id: file.name,
               name: file.name,
-              type: 'image',
+              type: this.getFileType(file),
               url: '',
               alternateText: '',
               tags: [],
@@ -145,22 +145,27 @@ var handleDOMContentLoaded = function() {
               height: 0,
               width: 0
             };
-
-            reader.addEventListener(
-              'load',
-              function() {
-                this.$refs.image.onload = function() {
-                  this.selectedImage.width = this.$refs.image.naturalWidth,
-                  this.selectedImage.height = this.$refs.image.naturalHeight;
-                  this.uploadModalLoading = false;
-                }.bind(this);
-
-                this.selectedImage.url = reader.result;
-              }.bind(this),
-              false
-            );
-
-            reader.readAsDataURL(file);
+            
+            if (this.selectedImage.type === "image"){
+              const reader = new FileReader();
+              reader.addEventListener(
+                'load',
+                function() {
+                  this.$refs.image.onload = function() {
+                    this.selectedImage.width = this.$refs.image.naturalWidth,
+                    this.selectedImage.height = this.$refs.image.naturalHeight;
+                    this.uploadModalLoading = false;
+                  }.bind(this);
+  
+                  this.selectedImage.url = reader.result;
+                }.bind(this),
+                false
+              );
+  
+              reader.readAsDataURL(file);
+            } else {
+              this.uploadModalLoading = false;
+            }
           }
         },
         handleVariationCropChange(newValues) {
@@ -179,6 +184,15 @@ var handleDOMContentLoaded = function() {
             id: name
           };
           this.uploadModalOpen = false;
+        },
+        getFileType(file){
+          const type = file.type.split("/")[0];
+  
+          if (type !== "video" && type !== "image"){
+            return "other";
+          }
+  
+          return type;
         }
       },
       mounted() {
