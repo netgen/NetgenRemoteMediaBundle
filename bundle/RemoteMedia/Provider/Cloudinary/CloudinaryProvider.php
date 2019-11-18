@@ -41,7 +41,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * @return bool
      */
-    public function supportsContentBrowser()
+    public function supportsContentBrowser(): bool
     {
         return false;
     }
@@ -239,9 +239,9 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Generates html5 video tag for the video with provided id.
      *
      * @param string $contentTypeIdentifier
-     * @param string $format
+     * @param string|array $format
      */
-    public function generateVideoTag(Value $value, $contentTypeIdentifier, ?string $format = ''): string
+    public function generateVideoTag(Value $value, $contentTypeIdentifier, $format = ''): string
     {
         $finalOptions = [
             'fallback_content' => 'Your browser does not support HTML5 video tags',

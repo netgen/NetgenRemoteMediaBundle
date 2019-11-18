@@ -97,7 +97,8 @@ class CloudinaryProviderTest extends TestCase
     {
         $this->gateway
             ->expects($this->once())
-            ->method('countResources');
+            ->method('countResources')
+            ->willReturn(0);
 
         $this->cloudinaryProvider->countResources();
     }
@@ -106,7 +107,8 @@ class CloudinaryProviderTest extends TestCase
     {
         $this->gateway
             ->expects($this->once())
-            ->method('listFolders');
+            ->method('listFolders')
+            ->willReturn([]);
 
         $this->cloudinaryProvider->listFolders();
     }
@@ -115,7 +117,8 @@ class CloudinaryProviderTest extends TestCase
     {
         $this->gateway
             ->expects($this->once())
-            ->method('countResourcesInFolder');
+            ->method('countResourcesInFolder')
+            ->willReturn(0);
 
         $this->cloudinaryProvider->countResourcesInFolder('testFolder');
     }
@@ -322,7 +325,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoThumbnail')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -343,7 +347,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoThumbnail')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -360,7 +365,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoTag')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -382,7 +388,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoTag')
-            ->with('testResourceId', $options + $variationConfig);
+            ->with('testResourceId', $options + $variationConfig)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -408,7 +415,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getDownloadLink')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $this->cloudinaryProvider->generateDownloadLink($value);
     }
