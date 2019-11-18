@@ -57,7 +57,7 @@ class FieldValueTransformer implements DataTransformerInterface
             'resource_id' => $value->resourceId,
             'alt_text' => $value->metaData['alt_text'] ?? '',
             'tags' => $value->metaData['tags'],
-            'image_variations' => $value->variations,
+            'image_variations' => \json_encode($value->variations),
         ];
     }
 
