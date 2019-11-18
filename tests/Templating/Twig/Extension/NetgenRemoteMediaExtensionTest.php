@@ -185,7 +185,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             ->method('generateDownloadLink')
             ->willReturn('http://cloudinary.com/some/url/download');
 
-        $this->assertEquals('http://cloudinary.com/some/url/download', $this->extension->getResourceDownloadLink(new Value(), []));
+        $this->assertEquals('http://cloudinary.com/some/url/download', $this->extension->getResourceDownloadLink(new Value()));
     }
 
     public function testGetRemoteResource()
