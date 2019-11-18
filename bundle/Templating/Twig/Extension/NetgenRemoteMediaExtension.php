@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
+use eZ\Publish\API\Repository\Values\Content\Field;
 use Twig_Filter;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
@@ -236,11 +237,13 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      *
      * @return array
      */
-    public function variationsForContent(Content $content, $onlyCroppable = false)
+    public function variationsForContent($contentTypeIdentifier, $onlyCroppable = false)
     {
-        $contentTypeIdentifier = $this->contentTypeService->loadContentType(
-            $content->contentInfo->contentTypeId
-        )->identifier;
+        if ($contentTypeIdentifier instanceof Content) {
+            $contentTypeIdentifier = $this->contentTypeService->loadContentType(
+                $content->contentInfo->contentTypeId
+            )->identifier;
+        }
 
         return $onlyCroppable ?
             $this->variationResolver->getCroppbableVariations($contentTypeIdentifier) :
