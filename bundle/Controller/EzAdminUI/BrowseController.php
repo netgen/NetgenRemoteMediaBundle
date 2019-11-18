@@ -30,12 +30,11 @@ final class BrowseController
     {
         $limit = 25;
         $userQuery = $request->get('q', '');
-        $tag = $request->get('tag', '');;
+        $tag = $request->get('tag', '');
 
         $type = $request->get('mediatype', 'image');
         $folder = $request->get('folder', 'all');
         $folder = $folder !== 'all' ? $folder : null;
-
 
         $nextCursor = $request->get('next_cursor', null);
         if ($nextCursor === 'null') {

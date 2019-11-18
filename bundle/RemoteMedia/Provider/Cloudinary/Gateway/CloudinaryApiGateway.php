@@ -105,17 +105,15 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
-     * Perform search
+     * Perform search.
      *
      * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
     public function search(Query $query): Result
     {
         $expression = "resource_type:{$query->getResourceType()}";
         if ($query->getQuery() !== '') {
-            $expression = "{$query->getQuery()}* AND " .$expression;
+            $expression = "{$query->getQuery()}* AND " . $expression;
         }
 
         if ($query->getTag()) {

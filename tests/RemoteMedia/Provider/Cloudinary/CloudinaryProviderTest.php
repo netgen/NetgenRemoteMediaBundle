@@ -10,13 +10,13 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 
 class CloudinaryProviderTest extends TestCase
 {
@@ -59,13 +59,13 @@ class CloudinaryProviderTest extends TestCase
         $response->body = \json_encode([
             'total_count' => 200,
             'next_cursor' => '123',
-            'resources' => []
+            'resources' => [],
         ]);
         $response->responseCode = 200;
         $response->headers = [
             'X-FeatureRateLimit-Reset' => 'test',
             'X-FeatureRateLimit-Limit' => 'test',
-            'X-FeatureRateLimit-Remaining' => 'test'
+            'X-FeatureRateLimit-Remaining' => 'test',
         ];
 
         return $response;
