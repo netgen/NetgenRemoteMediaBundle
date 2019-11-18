@@ -16,6 +16,6 @@ class TransformationHandlerFailedException extends Exception
      */
     public function __construct($handlerClass)
     {
-        parent::__construct("Transformation handler '$handlerClass' identifier failed.");
+        parent::__construct(sprintf('Transformation handler \'%s\' identifier failed.', $handlerClass));
     }
 }

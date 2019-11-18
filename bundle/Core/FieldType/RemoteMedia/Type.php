@@ -71,9 +71,7 @@ class Type extends FieldType
             'secureUrl' => $hash['secure_url'],
         ];
 
-        $value = new Value($hash);
-
-        return $value;
+        return new Value($hash);
     }
 
     /**
@@ -136,9 +134,7 @@ class Type extends FieldType
             return $fieldValue->data;
         }
 
-        $value = new Value($fieldValue->data);
-
-        return $value;
+        return new Value($fieldValue->data);
     }
 
     /**

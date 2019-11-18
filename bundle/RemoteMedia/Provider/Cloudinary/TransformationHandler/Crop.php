@@ -31,6 +31,7 @@ class Crop implements HandlerInterface
     {
         if (\array_key_exists($variationName, $value->variations)) {
             $coords = $value->variations[$variationName];
+            $options = (array) $options;
             $options[] = [
                 'x' => (int) $coords['x'],
                 'y' => (int) $coords['y'],

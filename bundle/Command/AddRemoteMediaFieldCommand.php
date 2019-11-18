@@ -87,15 +87,15 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
             );
 
             $repository->commit();
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $repository->rollback();
-            $output->writeln('<error>' . $e->getMessage() . '<error>');
-            dump($e->getTraceAsString());
+            $output->writeln('<error>' . $exception->getMessage() . '<error>');
+            dump($exception->getTraceAsString());
 
             return;
         }
 
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
-        $output->writeln("<info>Added new field {$fieldDefIdentifier} to content type {$contentTypeIdentifier}</info>");
+        $output->writeln(sprintf('<info>Added new field %s to content type %s</info>', $fieldDefIdentifier, $contentTypeIdentifier));
     }
 }

@@ -8,8 +8,17 @@ use eZ\Publish\Core\FieldType\Value as BaseValue;
 
 class Value extends BaseValue
 {
+    /**
+     * @var string
+     */
     const TYPE_IMAGE = 'image';
+    /**
+     * @var string
+     */
     const TYPE_VIDEO = 'video';
+    /**
+     * @var string
+     */
     const TYPE_OTHER = 'other';
 
     public $resourceId = null;

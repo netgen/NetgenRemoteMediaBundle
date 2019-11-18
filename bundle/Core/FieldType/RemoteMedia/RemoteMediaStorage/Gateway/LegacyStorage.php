@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
 
+use Countable;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
@@ -72,9 +73,10 @@ class LegacyStorage extends Gateway
             );
         $statement = $selectQuery->prepare();
         $statement->execute();
+
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if (\count($rows) > 0) {
+        if ((is_array($rows) || $rows instanceof Countable ? \count($rows) : 0) > 0) {
             $updateQuery = $connection->createUpdateQuery();
             $updateQuery
                 ->update('ngremotemedia_field_link')
@@ -248,13 +250,9 @@ class LegacyStorage extends Gateway
             );
         $statement = $selectQuery->prepare();
         $statement->execute();
+
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        if (\count($rows) > 0) {
-            return true;
-        }
-
-        return false;
+        return (is_array($rows) || $rows instanceof Countable ? \count($rows) : 0) > 0;
     }
 
     /**

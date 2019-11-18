@@ -11,13 +11,37 @@ use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
 class Psr6CachedGateway extends Gateway
 {
+    /**
+     * @var string
+     */
     const PROJECT_KEY = 'ngremotemedia';
+    /**
+     * @var string
+     */
     const PROVIDER_KEY = 'cloudinary';
+    /**
+     * @var string
+     */
     const SEARCH = 'search';
+    /**
+     * @var string
+     */
     const LIST = 'resource_list';
+    /**
+     * @var string
+     */
     const FOLDER_LIST = 'folder_list';
+    /**
+     * @var string
+     */
     const COUNT = 'resources_count';
+    /**
+     * @var string
+     */
     const FOLDER_COUNT = 'folder_count';
+    /**
+     * @var string
+     */
     const RESOURCE_ID = 'resource';
 
     /**
@@ -62,12 +86,10 @@ class Psr6CachedGateway extends Gateway
 
     private function getCacheTags($type)
     {
-        $tags = [
+        return [
             $this->getBaseTag(),
             self::PROJECT_KEY . '-' . self::PROVIDER_KEY . '-' . $type,
         ];
-
-        return $tags;
     }
 
     private function getItemCacheTags($resourceId)

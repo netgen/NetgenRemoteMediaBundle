@@ -15,6 +15,6 @@ class MimeCategoryParseException extends Exception
      */
     public function __construct($mimeType)
     {
-        parent::__construct("Could not parse mime category for given mime type: {$mimeType}.");
+        parent::__construct(sprintf('Could not parse mime category for given mime type: %s.', $mimeType));
     }
 }
