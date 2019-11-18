@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build && node copyFiles.js",
+    "dev": "vue-cli-service build --mode development && node copyFilesDev.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
