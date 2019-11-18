@@ -14,7 +14,7 @@
             <Label for="new_file">
                 {{ 'ngremotemedia.field.edit.quick_upload'|trans }}
             </Label>
-            {{ form_row(form.new_file, { 'attr': {'@change': 'handleFileInputChange'} }) }}
+            {{ form_row(form.new_file, { 'attr': {'@change': 'handleFileInputChange',  'ref': 'fileInput'} }) }}
         </button>
     </div>
 </div>

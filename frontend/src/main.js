@@ -123,6 +123,7 @@ const handleDOMContentLoaded = function() {
             height: 0,
             width: 0
           };
+          this.$refs.fileInput.value = null;
         },
         handleFileInputChange(e) {
           this.uploadModalOpen = true;
