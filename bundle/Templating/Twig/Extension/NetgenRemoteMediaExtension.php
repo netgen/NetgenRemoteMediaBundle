@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
+use Twig_Filter;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\Core\Helper\TranslationHelper;
@@ -75,7 +76,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_Filter(
+            new Twig_Filter(
                 'scaling_format',
                 [$this, 'scalingFormat']
             ),

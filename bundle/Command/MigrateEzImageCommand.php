@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use InvalidArgumentException;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeIdentifier;
+use Exception;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
@@ -140,7 +145,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $field = $contentType->getFieldDefinition($fieldIdentifier);
 
         if (!$field) {
-            throw new \InvalidArgumentException('Could not find the field with the selected identifier.');
+            throw new InvalidArgumentException('Could not find the field with the selected identifier.');
         }
 
         return $fieldIdentifier;
@@ -167,10 +172,10 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $rootLocation = $this->locationService->loadLocation($this->rootLocationId);
 
         $query = new LocationQuery();
-        $query->filter = new Query\Criterion\LogicalAnd(
+        $query->filter = new LogicalAnd(
             [
-                new Query\Criterion\Subtree($rootLocation->pathString),
-                new Query\Criterion\ContentTypeIdentifier($contentType->identifier),
+                new Subtree($rootLocation->pathString),
+                new ContentTypeIdentifier($contentType->identifier),
             ]
         );
         $query->limit = $limit;
@@ -220,7 +225,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
                 }
             );
             $repository->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $repository->rollback();
 
             throw $e;
@@ -241,7 +246,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
                 }
             );
             $repository->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $repository->rollback();
 
             throw $e;
@@ -303,7 +308,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
                         $this->output->writeln('<error>No change</error>');
                         $this->output->writeln('-----------------------------');
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     if ($continueOnError) {
                         $this->output->writeln("<error>ContentId: {$searchHit->valueObject->contentInfo->id}: " . $e->getMessage() . '</error>');
                     } else {

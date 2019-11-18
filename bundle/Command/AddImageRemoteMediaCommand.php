@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use Exception;
 use eZ\Publish\API\Repository\Repository;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -106,7 +107,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
             );
 
             $repository->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $repository->rollback();
             $output->writeln('<error>' . $e->getMessage() . '<error>');
             dump($e->getTraceAsString());
