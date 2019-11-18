@@ -15,7 +15,7 @@
             <Label for="new_file">
                 {'Quick upload'|i18n( 'extension/ngremotemedia/interactions' )}
             </Label>
-            <input hidden id="new_file" name="{$base}_new_file_{$fieldId}" type="file" @change="handleFileInputChange">
+            <input hidden id="new_file" name="{$base}_new_file_{$fieldId}" type="file" @change="handleFileInputChange" ref="fileInput">
         </button>
     </div>
 </div>
