@@ -57,10 +57,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param array $options
-     *
-     * @return Value
      */
     public function upload(UploadFile $uploadFile, ?array $options = []): Value
     {
@@ -75,12 +72,8 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Gets the remote media Variation.
      * If $variationName is an array, it is treated as an explicit set of options to build the variation.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param string $contentTypeIdentifier
      * @param string|array $variationName
      * @param bool $secure
-     *
-     * @return Variation
      */
     public function buildVariation(Value $value, string $contentTypeIdentifier, $variationName, ?bool $secure = true): Variation
     {
@@ -113,8 +106,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Counts available resources from the remote storage.
-     *
-     * @return int
      */
     public function countResources(): int
     {
@@ -123,8 +114,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Lists all available folders.
-     *
-     * @return array
      */
     public function listFolders(): array
     {
@@ -133,8 +122,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * @param $folder
-     *
-     * @return int
      */
     public function countResourcesInFolder(string $folder): int
     {
@@ -143,10 +130,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Searches for the remote resource containing term in the query.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
     public function searchResources(Query $query): Result
     {
@@ -156,10 +139,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Returns the remote resource with provided id and type.
      *
-     * @param string $resourceId
      * @param string $resourceType
-     *
-     * @return Value
      */
     public function getRemoteResource(string $resourceId, ?string $resourceType = 'image'): Value
     {
@@ -179,9 +159,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Adds tag to remote resource.
      *
-     * @param string $resourceId
-     * @param string $tag
-     *
      * @return mixed
      */
     public function addTagToResource(string $resourceId, string $tag)
@@ -191,9 +168,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Removes tag from remote resource.
-     *
-     * @param string $resourceId
-     * @param string $tag
      *
      * @return mixed
      */
@@ -225,10 +199,6 @@ class CloudinaryProvider extends RemoteMediaProvider
      *      'alt' => 'alt text'
      * ];.
      *
-     * @param string $resourceId
-     * @param string $resourceType
-     * @param array $context
-     *
      * @return mixed
      */
     public function updateResourceContext(string $resourceId, string $resourceType, array $context)
@@ -244,10 +214,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Returns thumbnail url for the video with provided id.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param array $options
-     *
-     * @return string
      */
     public function getVideoThumbnail(Value $value, $options = []): string
     {
@@ -271,11 +238,8 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
      * @param string $format
-     *
-     * @return string
      */
     public function generateVideoTag(Value $value, $contentTypeIdentifier, ?string $format = ''): string
     {
@@ -301,10 +265,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Generates the link to the remote resource.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     *
-     * @return string
      */
     public function generateDownloadLink(Value $value): string
     {
@@ -319,8 +279,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Removes the resource from the remote.
-     *
-     * @param string $resourceId
      */
     public function deleteResource(string $resourceId)
     {
@@ -329,8 +287,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Returns unique identifier of the provided.
-     *
-     * @return string
      */
     public function getIdentifier(): string
     {
@@ -341,10 +297,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param array $options
-     *
-     * @return array
      */
     protected function prepareUploadOptions(UploadFile $uploadFile, $options = []): array
     {
@@ -436,10 +389,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param $publicId
-     *
-     * @return string
      */
     private function appendExtension($publicId, UploadFile $uploadFile): string
     {

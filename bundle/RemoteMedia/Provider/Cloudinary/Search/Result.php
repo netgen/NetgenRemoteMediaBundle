@@ -33,9 +33,6 @@ final class Result
         return new Result($totalCount, $nextCursor, $results);
     }
 
-    /**
-     * @return int
-     */
     public function getTotalCount(): int
     {
         return $this->totalCount;
@@ -49,9 +46,6 @@ final class Result
         return $this->nextCursor;
     }
 
-    /**
-     * @return array
-     */
     public function getResults(): array
     {
         return $this->results;

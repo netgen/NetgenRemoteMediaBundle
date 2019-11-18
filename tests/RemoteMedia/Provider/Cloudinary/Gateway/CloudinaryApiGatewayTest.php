@@ -10,8 +10,8 @@ use Cloudinary\Search;
 use Cloudinary\Uploader;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Constraint\LogicalOr;
+use PHPUnit\Framework\TestCase;
 
 class CloudinaryApiGatewayTest extends TestCase
 {
@@ -59,9 +59,9 @@ class CloudinaryApiGatewayTest extends TestCase
     {
         $constraints = new LogicalOr();
         $constraints->setConstraints([
-            'expression', 'max_results', 'with_field'
+            'expression', 'max_results', 'with_field',
         ]);
-        $this->cloudinarySearch->expects($this->any())->method($constraints)->will($this->returnSelf());
+        $this->cloudinarySearch->expects($this->any())->method($constraints)->willReturnSelf();
     }
 
     private function getSearchResponse()
@@ -70,13 +70,13 @@ class CloudinaryApiGatewayTest extends TestCase
         $response->body = \json_encode([
             'total_count' => 200,
             'next_cursor' => '123',
-            'resources' => []
+            'resources' => [],
         ]);
         $response->responseCode = 200;
         $response->headers = [
             'X-FeatureRateLimit-Reset' => 'test',
             'X-FeatureRateLimit-Limit' => 'test',
-            'X-FeatureRateLimit-Remaining' => 'test'
+            'X-FeatureRateLimit-Remaining' => 'test',
         ];
 
         return $response;
@@ -187,7 +187,7 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testCountResourcesInFolder()
     {
-        $expression = "folder:folderName/*";
+        $expression = 'folder:folderName/*';
 
         $this->cloudinarySearch
             ->expects($this->once())

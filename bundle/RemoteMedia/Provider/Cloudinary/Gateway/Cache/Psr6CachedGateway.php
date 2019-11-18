@@ -133,21 +133,17 @@ class Psr6CachedGateway extends Gateway
 
     /**
      * Perform search.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
     public function search(Query $query): Result
     {
         $searchCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, (string)$query])
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, (string) $query])
         );
 
         $cacheItem = $this->cache->getItem($searchCacheKey);
 
         if ($cacheItem->isHit()) {
-            return $cacheItem->get();
+            //return $cacheItem->get();
         }
 
         $result = $this->gateway->search($query);

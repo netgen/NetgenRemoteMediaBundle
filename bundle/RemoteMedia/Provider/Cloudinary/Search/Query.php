@@ -24,19 +24,11 @@ final class Query
     /** @var string|null */
     private $nextCursor;
 
-    /** @var array  */
+    /** @var array */
     private $sortBy = ['created_at' => 'desc'];
 
     /**
      * Query constructor.
-     *
-     * @param string $query
-     * @param string $resourceType
-     * @param string|null $folder
-     * @param string|null $tag
-     * @param int $limit
-     * @param string|null $nextCursor
-     * @param array $sortBy
      */
     public function __construct(
         string $query,
@@ -56,17 +48,11 @@ final class Query
         $this->sortBy = $sortBy;
     }
 
-    /**
-     * @return string
-     */
     public function getQuery(): string
     {
         return $this->query;
     }
 
-    /**
-     * @return string
-     */
     public function getResourceType(): string
     {
         return $this->resourceType;
@@ -88,9 +74,6 @@ final class Query
         return $this->tag;
     }
 
-    /**
-     * @return int
-     */
     public function getLimit(): int
     {
         return $this->limit;
@@ -104,9 +87,6 @@ final class Query
         return $this->nextCursor;
     }
 
-    /**
-     * @return array
-     */
     public function getSortBy(): array
     {
         return $this->sortBy;
@@ -114,10 +94,10 @@ final class Query
 
     public function __toString()
     {
-        $vars = get_object_vars($this);
-        $sort = http_build_query($vars['sortBy'], '', ',');
+        $vars = \get_object_vars($this);
+        $sort = \http_build_query($vars['sortBy'], '', ',');
         unset($vars['sortBy']);
 
-        return implode('|', $vars) . $sort;
+        return \implode('|', $vars) . $sort;
     }
 }

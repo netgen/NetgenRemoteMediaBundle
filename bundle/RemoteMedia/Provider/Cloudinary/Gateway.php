@@ -34,10 +34,6 @@ abstract class Gateway
 
     /**
      * Perform search.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result
      */
     abstract public function search(Query $query): Result;
 
