@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
+use InvalidArgumentException;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\ConfigurationProcessor;
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\ContextualizerInterface;
 use Symfony\Component\Config\FileLocator;
@@ -25,7 +27,7 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $config = $this->processConfiguration($configuration, $configs);
 
         if (!isset($config['provider'])) {
-            throw new \InvalidArgumentException('The "provider" option must be set');
+            throw new InvalidArgumentException('The "provider" option must be set');
         }
 
         $loader = $this->loadSettings($container);
@@ -92,14 +94,14 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
         $container->addResource(new FileResource($configFile));
     }
 
-    private function loadOpenGraphSettings(array $activatedBundles, Loader\YamlFileLoader $loader)
+    private function loadOpenGraphSettings(array $activatedBundles, YamlFileLoader $loader)
     {
         if (\in_array('NetgenOpenGraphBundle', $activatedBundles, true)) {
             $loader->load('opengraph.yml');
         }
     }
 
-    private function loadLegacySettings(array $activatedBundles, Loader\YamlFileLoader $loader)
+    private function loadLegacySettings(array $activatedBundles, YamlFileLoader $loader)
     {
         if (\in_array('EzPublishLegacyBundle', $activatedBundles, true)) {
             $loader->load('legacy.yml');
@@ -108,7 +110,7 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
 
     private function loadSettings(ContainerBuilder $container)
     {
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('default_parameters.yml');
         $loader->load('transformation_handlers.yml');
         $loader->load('services.yml');
