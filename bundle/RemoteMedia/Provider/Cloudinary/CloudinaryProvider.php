@@ -57,11 +57,12 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param array $options
      *
      * @return Value
      */
-    public function upload(UploadFile $uploadFile, $options = [])
+    public function upload(UploadFile $uploadFile, ?array $options = []): Value
     {
         $options = $this->prepareUploadOptions($uploadFile, $options);
 
@@ -74,13 +75,14 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Gets the remote media Variation.
      * If $variationName is an array, it is treated as an explicit set of options to build the variation.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
      * @param string|array $variationName
      * @param bool $secure
      *
      * @return Variation
      */
-    public function buildVariation(Value $value, $contentTypeIdentifier, $variationName, $secure = true)
+    public function buildVariation(Value $value, string $contentTypeIdentifier, $variationName, ?bool $secure = true): Variation
     {
         $variation = new Variation();
         $url = $secure ? $value->secure_url : $value->url;
@@ -114,7 +116,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return int
      */
-    public function countResources()
+    public function countResources(): int
     {
         return $this->gateway->countResources();
     }
@@ -124,7 +126,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return array
      */
-    public function listFolders()
+    public function listFolders(): array
     {
         return $this->gateway->listFolders();
     }
@@ -134,7 +136,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return int
      */
-    public function countResourcesInFolder($folder)
+    public function countResourcesInFolder(string $folder): int
     {
         return $this->gateway->countResourcesInFolder($folder);
     }
@@ -154,12 +156,12 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Returns the remote resource with provided id and type.
      *
-     * @param mixed $resourceId
+     * @param string $resourceId
      * @param string $resourceType
      *
      * @return Value
      */
-    public function getRemoteResource($resourceId, $resourceType = 'image')
+    public function getRemoteResource(string $resourceId, ?string $resourceType = 'image'): Value
     {
         if (empty($resourceId)) {
             return new Value();
@@ -182,7 +184,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return mixed
      */
-    public function addTagToResource($resourceId, $tag)
+    public function addTagToResource(string $resourceId, string $tag)
     {
         return $this->gateway->addTag($resourceId, $tag);
     }
@@ -195,12 +197,18 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return mixed
      */
-    public function removeTagFromResource($resourceId, $tag)
+    public function removeTagFromResource(string $resourceId, string $tag)
     {
         return $this->gateway->removeTag($resourceId, $tag);
     }
 
-    public function updateTags($resourceId, $tags)
+    /**
+     * @param $resourceId
+     * @param $tags
+     *
+     * @return mixed
+     */
+    public function updateTags(string $resourceId, string $tags)
     {
         $options = [
             'tags' => $tags,
@@ -217,13 +225,13 @@ class CloudinaryProvider extends RemoteMediaProvider
      *      'alt' => 'alt text'
      * ];.
      *
-     * @param mixed $resourceId
+     * @param string $resourceId
      * @param string $resourceType
      * @param array $context
      *
      * @return mixed
      */
-    public function updateResourceContext($resourceId, $resourceType, $context)
+    public function updateResourceContext(string $resourceId, string $resourceType, array $context)
     {
         $options = [
             'context' => $context,
@@ -236,11 +244,12 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Returns thumbnail url for the video with provided id.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param array $options
      *
      * @return string
      */
-    public function getVideoThumbnail(Value $value, $options = [])
+    public function getVideoThumbnail(Value $value, $options = []): string
     {
         if (!empty($options)) {
             $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
@@ -262,25 +271,26 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Generates html5 video tag for the video with provided id.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
-     * @param string $variationName
+     * @param string $format
      *
      * @return string
      */
-    public function generateVideoTag(Value $value, $contentTypeIdentifier, $variationName = '')
+    public function generateVideoTag(Value $value, $contentTypeIdentifier, ?string $format = ''): string
     {
         $finalOptions = [
             'fallback_content' => 'Your browser does not support HTML5 video tags',
         ];
 
-        if (empty($variationName)) {
+        if (empty($format)) {
             return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
         }
 
-        if (\is_array($variationName)) {
-            $finalOptions = $variationName + $finalOptions;
+        if (\is_array($format)) {
+            $finalOptions = $format + $finalOptions;
         } else {
-            $options = $this->processConfiguredVariation($value, $variationName, $contentTypeIdentifier);
+            $options = $this->processConfiguredVariation($value, $format, $contentTypeIdentifier);
 
             $finalOptions['transformation'] = $options;
             $finalOptions['secure'] = true;
@@ -292,9 +302,11 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Generates the link to the remote resource.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     *
      * @return string
      */
-    public function generateDownloadLink(Value $value)
+    public function generateDownloadLink(Value $value): string
     {
         $options = [
             'type' => $value->metaData['type'],
@@ -308,9 +320,9 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Removes the resource from the remote.
      *
-     * @param $resourceId
+     * @param string $resourceId
      */
-    public function deleteResource($resourceId)
+    public function deleteResource(string $resourceId)
     {
         $this->gateway->delete($resourceId);
     }
@@ -320,7 +332,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return string
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return 'cloudinary';
     }
@@ -329,11 +341,12 @@ class CloudinaryProvider extends RemoteMediaProvider
      * Prepares upload options for Cloudinary.
      * Every image with the same name will be overwritten.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param array $options
      *
      * @return array
      */
-    protected function prepareUploadOptions(UploadFile $uploadFile, $options = [])
+    protected function prepareUploadOptions(UploadFile $uploadFile, $options = []): array
     {
         $clean = \preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
         $cleanFileName = \preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
@@ -367,12 +380,13 @@ class CloudinaryProvider extends RemoteMediaProvider
     /**
      * Builds transformation options for the provider to consume.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      * @param string $variationName
      * @param string $contentTypeIdentifier
      *
      * @return array options of the total sum of transformations for the provider to use
      */
-    protected function processConfiguredVariation(Value $value, $variationName, $contentTypeIdentifier)
+    protected function processConfiguredVariation(Value $value, $variationName, $contentTypeIdentifier): array
     {
         $configuredVariations = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
 
@@ -422,11 +436,12 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param $publicId
      *
      * @return string
      */
-    private function appendExtension($publicId, UploadFile $uploadFile)
+    private function appendExtension($publicId, UploadFile $uploadFile): string
     {
         $extension = $uploadFile->originalExtension();
 

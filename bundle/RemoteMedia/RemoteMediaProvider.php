@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
@@ -31,7 +32,7 @@ abstract class RemoteMediaProvider
     /**
      * @return bool
      */
-    abstract public function supportsContentBrowser();
+    abstract public function supportsContentBrowser(): bool;
 
     /**
      * @return bool
@@ -41,24 +42,26 @@ abstract class RemoteMediaProvider
     /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param array $options
      *
      * @return Value
      */
-    abstract public function upload(UploadFile $uploadFile, $options = []);
+    abstract public function upload(UploadFile $uploadFile, ?array $options = []): Value;
 
     /**
      * Gets the remote media Variation.
      * If the remote media does not support variations, this method should return the Variation
      * with the url set to original resource.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
      * @param string|array $format
      * @param bool $secure
      *
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    abstract public function buildVariation(Value $value, $contentTypeIdentifier, $format, $secure = true);
+    abstract public function buildVariation(Value $value, string $contentTypeIdentifier, $format, ?bool $secure = true): Variation;
 
     /**
      * Lists all available folders.
@@ -66,14 +69,21 @@ abstract class RemoteMediaProvider
      *
      * @return array
      */
-    abstract public function listFolders();
+    abstract public function listFolders(): array;
+
+    /**
+     * @param $folder
+     *
+     * @return int
+     */
+    abstract function countResourcesInFolder(string $folder): int;
 
     /**
      * Counts available resources from the remote storage.
      *
      * @return int
      */
-    abstract public function countResources();
+    abstract public function countResources(): int;
 
     /**
      * Searches for the remote resource containing term in the query.
@@ -92,7 +102,7 @@ abstract class RemoteMediaProvider
      *
      * @return Value
      */
-    abstract public function getRemoteResource($resourceId, $resourceType = 'image');
+    abstract public function getRemoteResource(string $resourceId, ?string $resourceType = 'image'): Value;
 
     /**
      * Adds tag to remote resource.
@@ -102,7 +112,7 @@ abstract class RemoteMediaProvider
      *
      * @return mixed
      */
-    abstract public function addTagToResource($resourceId, $tag);
+    abstract public function addTagToResource(string $resourceId, string $tag);
 
     /**
      * Removes tag from remote resource.
@@ -112,9 +122,15 @@ abstract class RemoteMediaProvider
      *
      * @return mixed
      */
-    abstract public function removeTagFromResource($resourceId, $tag);
+    abstract public function removeTagFromResource(string $resourceId, string $tag);
 
-    abstract public function updateTags($resourceId, $tags);
+    /**
+     * @param $resourceId
+     * @param $tags
+     *
+     * @return mixed
+     */
+    abstract public function updateTags(string $resourceId, string $tags);
 
     /**
      * Updates the resource context.
@@ -124,60 +140,64 @@ abstract class RemoteMediaProvider
      *      'alt' => 'alt text'
      * ];.
      *
-     * @param mixed $resourceId
+     * @param string $resourceId
      * @param string $resourceType
      * @param array $context
      *
      * @return mixed
      */
-    abstract public function updateResourceContext($resourceId, $resourceType, $context);
+    abstract public function updateResourceContext(string $resourceId, string $resourceType, array $context);
 
     /**
      * Returns thumbnail url for the video with provided id.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param array $options
      *
      * @return string
      */
-    abstract public function getVideoThumbnail(Value $value, $options = []);
+    abstract public function getVideoThumbnail(Value $value, ?array $options = []): string;
 
     /**
      * Generates html5 video tag for the video with provided id.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $contentTypeIdentifier
      * @param string $format
      *
      * @return string
      */
-    abstract public function generateVideoTag(Value $value, $contentTypeIdentifier, $format = '');
+    abstract public function generateVideoTag(Value $value, string $contentTypeIdentifier, ?string $format = ''): string;
 
     /**
      * Removes the resource from the remote.
      *
-     * @param $resourceId
+     * @param string $resourceId
      */
-    abstract public function deleteResource($resourceId);
+    abstract public function deleteResource(string $resourceId);
 
     /**
      * Generates the link to the remote resource.
      *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     *
      * @return string
      */
-    abstract public function generateDownloadLink(Value $value);
+    abstract public function generateDownloadLink(Value $value): string;
 
     /**
      * Returns unique identifier of the provided.
      *
      * @return string
      */
-    abstract public function getIdentifier();
+    abstract public function getIdentifier(): string;
 
     /**
      * Logs the error if the logger is available.
      *
      * @param $message
      */
-    protected function logError($message)
+    protected function logError(string $message)
     {
         if ($this->logger instanceof LoggerInterface) {
             $this->logger->error($message);
