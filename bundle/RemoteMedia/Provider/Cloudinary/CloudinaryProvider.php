@@ -301,8 +301,8 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     protected function prepareUploadOptions(UploadFile $uploadFile, $options = []): array
     {
-        $clean = \preg_replace("/[^\p{L}|\p{N}]+/u", '_', $uploadFile->originalFilename());
-        $cleanFileName = \preg_replace("/[\p{Z}]{2,}/u", '_', $clean);
+        $clean = \preg_replace("#[^\\p{L}|\\p{N}]+#u", '_', $uploadFile->originalFilename());
+        $cleanFileName = \preg_replace("#[\\p{Z}]{2,}#u", '_', $clean);
         $fileName = \rtrim($cleanFileName, '_');
 
         // check if overwrite is set, if it is, do not append random string
@@ -355,16 +355,16 @@ class CloudinaryProvider extends RemoteMediaProvider
                 $transformationHandler = $this->registry->getHandler(
                     $transformationIdentifier, $this->getIdentifier()
                 );
-            } catch (TransformationHandlerNotFoundException $e) {
-                $this->logError($e->getMessage());
+            } catch (TransformationHandlerNotFoundException $transformationHandlerNotFoundException) {
+                $this->logError($transformationHandlerNotFoundException->getMessage());
 
                 continue;
             }
 
             try {
                 $options[] = $transformationHandler->process($value, $variationName, $config);
-            } catch (TransformationHandlerFailedException $e) {
-                $this->logError($e->getMessage());
+            } catch (TransformationHandlerFailedException $transformationHandlerFailedException) {
+                $this->logError($transformationHandlerFailedException->getMessage());
 
                 continue;
             }

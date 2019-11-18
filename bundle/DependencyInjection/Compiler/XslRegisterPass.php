@@ -32,13 +32,13 @@ class XslRegisterPass implements CompilerPassInterface
         }
 
         foreach ($scopes as $scope) {
-            if (!$container->hasParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl")) {
+            if (!$container->hasParameter(sprintf('ezsettings.%s.fieldtypes.ezxml.custom_xsl', $scope))) {
                 continue;
             }
 
-            $xslConfig = $container->getParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl");
+            $xslConfig = $container->getParameter(sprintf('ezsettings.%s.fieldtypes.ezxml.custom_xsl', $scope));
             $xslConfig[] = ['path' => __DIR__ . '/../../Resources/xsl/ezxml_ngremotemedia.xsl', 'priority' => 5000];
-            $container->setParameter("ezsettings.$scope.fieldtypes.ezxml.custom_xsl", $xslConfig);
+            $container->setParameter(sprintf('ezsettings.%s.fieldtypes.ezxml.custom_xsl', $scope), $xslConfig);
         }
     }
 }

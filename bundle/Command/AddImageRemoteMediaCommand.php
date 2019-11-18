@@ -107,14 +107,14 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
             );
 
             $repository->commit();
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $repository->rollback();
-            $output->writeln('<error>' . $e->getMessage() . '<error>');
-            dump($e->getTraceAsString());
+            $output->writeln('<error>' . $exception->getMessage() . '<error>');
+            dump($exception->getTraceAsString());
 
             return;
         }
 
-        $output->writeln("<info>Uploaded image {$imagePath} to {$fieldIdentifier} to content with id {$contentId}</info>");
+        $output->writeln(sprintf('<info>Uploaded image %s to %s to content with id %s</info>', $imagePath, $fieldIdentifier, $contentId));
     }
 }

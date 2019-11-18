@@ -15,7 +15,7 @@ final class Result
     private $nextCursor;
 
     /** @var array */
-    private $results;
+    private $results = [];
 
     private function __construct(int $totalCount, ?string $nextCursor, array $results)
     {

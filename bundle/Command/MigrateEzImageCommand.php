@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use Countable;
 use InvalidArgumentException;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
@@ -318,7 +319,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             }
 
             $offset += $limit;
-        } while (\count($result->searchHits) > 0);
+        } while ((is_array($result->searchHits) || $result->searchHits instanceof Countable ? \count($result->searchHits) : 0) > 0);
 
         $this->output->writeln("<info>Updated {$updated} objects.</info>");
     }

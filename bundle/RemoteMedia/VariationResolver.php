@@ -27,9 +27,8 @@ class VariationResolver
      */
     public function getVariationsForContentType($contentTypeIdentifier)
     {
-        $defaultVariations = isset($this->variations['default']) ? $this->variations['default'] : [];
-        $contentTypeVariations = isset($this->variations[$contentTypeIdentifier]) ?
-            $this->variations[$contentTypeIdentifier] : [];
+        $defaultVariations = $this->variations['default'] ?? [];
+        $contentTypeVariations = $this->variations[$contentTypeIdentifier] ?? [];
 
         return \array_merge($defaultVariations, $contentTypeVariations);
     }
@@ -62,8 +61,7 @@ class VariationResolver
      */
     public function getEmbedVariations()
     {
-        $variations = isset($this->variations['embedded']) ?
-            $this->variations['embedded'] : [];
+        $variations = $this->variations['embedded'] ?? [];
 
         $croppableVariations = [];
         foreach ($variations as $variationName => $variationOptions) {

@@ -111,17 +111,17 @@ class CloudinaryApiGateway extends Gateway
      */
     public function search(Query $query): Result
     {
-        $expression = "resource_type:{$query->getResourceType()}";
+        $expression = sprintf('resource_type:%s', $query->getResourceType());
         if ($query->getQuery() !== '') {
-            $expression = "{$query->getQuery()}* AND " . $expression;
+            $expression = sprintf('%s* AND ', $query->getQuery()) . $expression;
         }
 
         if ($query->getTag()) {
-            $expression .= " AND tags:{$query->getTag()}";
+            $expression .= sprintf(' AND tags:%s', $query->getTag());
         }
 
         if ($query->getFolder()) {
-            $expression .= " AND folder:{$query->getFolder()}/*";
+            $expression .= sprintf(' AND folder:%s/*', $query->getFolder());
         }
 
         $search = $this->cloudinarySearch
@@ -135,9 +135,8 @@ class CloudinaryApiGateway extends Gateway
         }
 
         $response = $search->execute();
-        $result = Result::fromResponse($response);
 
-        return $result;
+        return Result::fromResponse($response);
     }
 
     /**
@@ -171,7 +170,7 @@ class CloudinaryApiGateway extends Gateway
      */
     public function countResourcesInFolder($folder)
     {
-        $expression = "folder:{$folder}/*";
+        $expression = sprintf('folder:%s/*', $folder);
 
         $search = $this->cloudinarySearch
             ->expression($expression)

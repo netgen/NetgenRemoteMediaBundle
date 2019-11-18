@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
-use eZ\Publish\Core\FieldType\Value as BaseValue;
+use eZ\Publish\Core\FieldType\Value;
 
-class InputValue extends BaseValue
+class InputValue extends Value
 {
     public $input_uri = null;
     public $alt_text = '';

@@ -55,7 +55,7 @@ class FieldValueTransformer implements DataTransformerInterface
 
         return [
             'resource_id' => $value->resourceId,
-            'alt_text' => isset($value->metaData['alt_text']) ? $value->metaData['alt_text'] : '',
+            'alt_text' => $value->metaData['alt_text'] ?? '',
             'tags' => $value->metaData['tags'],
             'image_variations' => $value->variations,
         ];
@@ -75,8 +75,6 @@ class FieldValueTransformer implements DataTransformerInterface
         $oldValue = $this->field->value;
         $adminInputValue = AdminInputValue::fromHash($value);
 
-        $updatedValue = $this->updateHelper->updateValue($oldValue, $adminInputValue);
-
-        return $updatedValue;
+        return $this->updateHelper->updateValue($oldValue, $adminInputValue);
     }
 }

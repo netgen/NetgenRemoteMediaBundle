@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
-use eZ\Publish\Core\FieldType\Value as BaseValue;
+use eZ\Publish\Core\FieldType\Value;
 
-class Variation extends BaseValue
+class Variation extends Value
 {
     public $url = null;
     public $width = null;
