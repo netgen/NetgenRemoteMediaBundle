@@ -1,6 +1,6 @@
 {% trans_default_domain 'ngremotemedia' %}
 
-<div id="ngremotemedia-buttons-{{ field.id }}" class="ngremotemedia-buttons" data-id="{{ field.id }}" data-contentobject-id="{{ contentId }}" data-version="{{ version }}">
+<div id="ngremotemedia-buttons-{{ field.id }}" class="ngremotemedia-buttons">
 
     {{ form_row(form.resource_id, { 'attr': {'class' : 'media-id', 'v-model': 'selectedImage.id'} }) }}
 
