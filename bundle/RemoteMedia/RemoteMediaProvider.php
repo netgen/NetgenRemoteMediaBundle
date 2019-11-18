@@ -127,9 +127,10 @@ abstract class RemoteMediaProvider
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param string $format
+     *
+     * @param string|array $format
      */
-    abstract public function generateVideoTag(Value $value, string $contentTypeIdentifier, ?string $format = ''): string;
+    abstract public function generateVideoTag(Value $value, string $contentTypeIdentifier, $format = ''): string;
 
     /**
      * Removes the resource from the remote.

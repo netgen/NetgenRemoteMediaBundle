@@ -116,6 +116,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                     new ContentType(
                         [
                             'fieldDefinitions' => [],
+                            'identifier' => 'test_identifier'
                         ]
                     )
             );
@@ -157,6 +158,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                     new ContentType(
                         [
                             'fieldDefinitions' => [],
+                            'identifier' => 'test_identifier'
                         ]
                     )
             );
