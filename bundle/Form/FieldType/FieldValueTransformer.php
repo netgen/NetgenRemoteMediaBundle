@@ -73,6 +73,9 @@ class FieldValueTransformer implements DataTransformerInterface
         }
 
         $oldValue = $this->field->value;
+        if ($oldValue === null) {
+            $oldValue = $this->fieldType->getEmptyValue();
+        }
         $adminInputValue = AdminInputValue::fromHash($value);
 
         return $this->updateHelper->updateValue($oldValue, $adminInputValue);
