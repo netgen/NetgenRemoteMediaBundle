@@ -13,8 +13,10 @@
         </button>
       </div>
     </div>
-    <h4>Preview</h4>
-    <div class="preview" ref="preview"></div>
+    <div>
+      <h4>Preview</h4>
+      <div class="preview" ref="preview"></div>
+    </div>
   </div>
 </template>
 
@@ -108,6 +110,7 @@ export default {
 .crop {
   .cropper {
     position: relative;
+    margin: 0 auto;
 
     button {
       margin-left: 8px;
