@@ -1,7 +1,10 @@
 <template>
   <div class="mediaGalery">
-    <div class="items">
-      <div v-if="!media.length">Folder is empty. Upload media from your local storage.</div>
+    <div class="items" :class="{itemsOverflow: canLoadMore }">
+      <div v-if="!media.length" class="folder-empty">
+        <span class="icon-folder"></span>
+        <span><strong>Folder is empty</strong>Upload media from your local storage.</span>
+      </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
         <div v-if="item.type==='image'">
           <img :src="item.url" :alt="item.filename" class="img"/>
@@ -9,7 +12,9 @@
           <div class="size-description">{{item.width}} x {{item.height}}</div>
         </div>
         <div v-else>
-          <span class="video-icon"></span>
+          <span class="video-placeholder">
+            <span class="icon-play"></span>
+          </span>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description">{{item.width}} x {{item.height}}</div>
         </div>
@@ -34,14 +39,16 @@ export default {
 @import "../scss/variables";
 
 .mediaGalery {
-  overflow-y: auto;
-  margin-bottom: 50px;
+  position: relative;
+  flex-grow: 1;
 
   .items {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     padding: 15px;
+    height: auto;
+    overflow-y: auto;
 
     .media {
       display: flex;
@@ -59,15 +66,24 @@ export default {
         object-fit: cover;
         height: 92px;
         width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      .video-icon {
+      .video-placeholder {
         position: relative;
         height: 92px;
         display: block;
 
-        &:before,
-        &:after {
+        .icon-play {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: $white;
+        }
+
+        &:before {
           position: absolute;
           content: '';
         }
@@ -78,16 +94,6 @@ export default {
           bottom: 0;
           left: 0;
           right: 0;
-        }
-
-        &:after {
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="32" height="32" viewBox="0 0 512 512"%3E%3Cg%3E%3C/g%3E%3Cpath d="M152.443 136.417l207.114 119.573-207.114 119.593z" fill="%23FFF"/%3E%3C/svg%3E');
-          background-position: center center;
-          width: 32px;
-          height: 32px;
         }
       }
 
@@ -121,6 +127,36 @@ export default {
     }
   }
 
+  .itemsOverflow {
+    height: calc(100% - 50px);
+  }
+
+  .folder-empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    span {
+      display: block;
+      text-align: center;
+      font-size: 14px;
+      line-height: 16px;
+
+      &.icon-folder {
+        color: $dusty-gray;
+        font-size: 33px;
+      }
+
+      strong {
+        display: block;
+        margin: 5px 0;
+        font-size: 16px;
+        line-height: 19px;
+      }
+    }
+  }
+
   .load-more-wrapper {
     padding: 8px 15px;
     background-color: $white;
@@ -128,7 +164,7 @@ export default {
     box-shadow: inset 1px 0 0 0 $mercury, 0 -1px 0 0 $mercury;
     position: absolute;
     bottom: 0;
-    left: 361px;
+    left: 0;
     right: 0;
   }
 }

@@ -19,9 +19,13 @@
         @change="val => handleVariationValueChange(variation, val)"
       ></crop>
     </div>
+    <img v-if="!selectedVariation" :src="selectedImage.url" />
     <div class="action-strip">
       <button type="button" class="btn" @click="handleCancelClicked">Cancel</button>
-      <button type="button" class="btn btn-blue" @click="handleSaveClicked">Save sizes</button>
+      <button type="button" class="btn btn-blue" @click="handleSaveClicked">
+        <span class="icon-floppy"></span>
+        <span>Save sizes</span>
+      </button>
     </div>
   </modal>
 </template>
@@ -102,9 +106,33 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.crop-container {
+  overflow-y: auto;
+  margin-bottom: 50px;
+  width: 100%;
+
+  &:empty {
+    display: none;
+  }
+}
+
 .action-strip {
+  padding: 8px 15px;
+  background-color: #FFFFFF;
+  text-align: right;
+  -webkit-box-shadow: inset 1px 0 0 0 #E4E4E4, 0 -1px 0 0 #E4E4E4;
+  box-shadow: inset 1px 0 0 0 #E4E4E4, 0 -1px 0 0 #E4E4E4;
   position: absolute;
-  left: 264px;
   bottom: 0;
+  left: 264px;
+  right: 0;
+
+  button {
+    margin-left: 10px;
+  }
+
+  .icon-floppy {
+    margin-right: 5px;
+  }
 }
 </style>
