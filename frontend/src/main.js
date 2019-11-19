@@ -14,6 +14,7 @@ import { objectFilter } from './utility/functional';
 Vue.config.productionTip = false;
 
 const handleDOMContentLoaded = function() {
+  console.log("attaching vue")
   document.querySelectorAll('.ngremotemedia-type').forEach((el, i) => {
     window[`remoteMedia${i}`] = new Vue({
       el,
@@ -203,11 +204,14 @@ const handleDOMContentLoaded = function() {
   });
 };
 
+console.log("initializing");
 if (
   document.readyState === 'complete' ||
   (document.readyState !== 'loading' && !document.documentElement.doScroll)
 ) {
+  console.log("document already ready")
   handleDOMContentLoaded();
 } else {
+  console.log("adding listener")
   document.addEventListener('DOMContentLoaded', handleDOMContentLoaded);
 }
