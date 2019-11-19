@@ -56,6 +56,7 @@ final class BrowseController
         $result = [
             'hits' => $this->remoteMediaHelper->formatBrowseList($list),
             'load_more' => $results->getTotalCount() > $limit,
+            'next_cursor' => $results->getNextCursor(),
         ];
 
         return new JsonResponse($result);
