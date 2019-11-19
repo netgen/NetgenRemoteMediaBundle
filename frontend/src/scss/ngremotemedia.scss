@@ -58,6 +58,12 @@
   .image-meta {
     overflow: visible;
   }
+
+  .image-wrap{
+    img {
+      max-width: 100%;
+    }
+  }
 }
 
 // General styles
