@@ -3,7 +3,9 @@
     <div class="media-modal">
       <div class="title">
         {{title}}
-        <span @click="close" class="close">&#x00D7;</span>
+        <span @click="close" class="close">
+          <span class="icon-cancel"></span>
+        </span>
       </div>
       <div class="body">
         <slot></slot>
