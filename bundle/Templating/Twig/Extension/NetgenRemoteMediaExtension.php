@@ -214,8 +214,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Returns true if there is croppable variation configuration for the given content type.
      *
-     * @todo: might be better to use form buildView method to inject this instead of using twig function?
-     *
      * @return bool
      */
     public function contentTypeIsCroppable(Content $content)
@@ -230,8 +228,6 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     /**
      * Returns the list of available variations for the given content.
      * If second parameter is true, it will return only variations with crop configuration.
-     *
-     * @todo: might be better to use form buildView method to inject this instead of using twig function?
      *
      * @param $onlyCroppable
      *
