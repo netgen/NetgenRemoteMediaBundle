@@ -22,7 +22,7 @@
       </div>
 
       <div class="search-wrapper">
-        <span class="search-label">Search</span>
+        <span class="search-label">Search (by name, tag or both)</span>
         <div class="search">
             <ul class="searchType">
                 <!-- <li class="active">

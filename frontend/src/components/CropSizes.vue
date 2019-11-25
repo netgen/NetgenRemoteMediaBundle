@@ -8,13 +8,16 @@
     <div class="sidebar-crop-label">
         <span>Addded for Confirmation</span>
     </div>
-    <div v-show="addingVariations" :class="{ unselectedVariations: addingVariations}">
-      <div v-for="name in unselectedVariations" :key="name">
-        <input type="checkbox" :id="name" :value="name" v-model="newSelection" />
+    <div v-show="addingVariations" :class="{ unselectedVariations: addingVariations }">
+      <div v-for="name in unselectedVariations" :key="name" :class="{ disabled: !isVariationSelectable(name) }">
+        <input type="checkbox" :id="name" :value="name" v-model="newSelection" disabled="{ !isVariationSelectable(name) }" />
         <label :for="name">
           <span class="name">{{name}}</span>
           <span class="formatted-size">{{formattedSize(name)}}</span>
         </label>
+        <div v-if="!isVariationSelectable(name)" class="legend-not-selectable">
+          <span>Media is too small.</span>
+        </div>
       </div>
     </div>
     <div class="selectedVariations">
@@ -184,6 +187,32 @@ export default {
       line-height: 18px;
       display: block;
     }
+  }
+
+  > div.disabled {
+    flex-wrap: wrap;
+    background-color: $wild-sand;
+    cursor: auto;
+    color: #ddd;
+    padding: 15px 15px 5px;
+
+    label, input, span {
+      cursor: auto;
+    }
+
+    label {
+      flex-grow: 1;
+      width: auto;
+      color: $dusty-gray;
+    }
+  }
+
+  .legend-not-selectable {
+    width: 100%;
+    font-size: .75rem;
+    color: #a41034;
+    display: inline-block;
+    text-align: right;
   }
 }
 
