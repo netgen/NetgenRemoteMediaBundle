@@ -26,17 +26,12 @@ final class AdminInputValue
     /** @var UploadFile */
     private $newFile;
 
-    /**
-     * NgRemoteMediaInput constructor.
-     *
-     * @param $resourceId
-     * @param $tags
-     * @param $altText
-     * @param $variations
-     * @param $newFile
-     */
+    /** @var string */
+    private $mediaType;
+
     public function __construct(
         string $resourceId,
+        string $mediaType,
         array $tags = [],
         string $altText = '',
         array $variations = [],
@@ -47,6 +42,7 @@ final class AdminInputValue
         $this->altText = $altText;
         $this->variations = $variations;
         $this->newFile = $newFile;
+        $this->mediaType = $mediaType;
     }
 
     public static function fromEzHttp(eZHTTPTool $http, $base, $attributeId): AdminInputValue
@@ -57,6 +53,7 @@ final class AdminInputValue
         $alttext = $http->variable($base . '_alttext_' . $attributeId, '');
         $tags = $http->variable($base . '_tags_' . $attributeId, []);
         $variations = $http->variable($base . '_image_variations_' . $attributeId, '{}');
+        $mediaType = $http->variable($base . '_media_type_' . $attributeId, 'image'); // @todo: add this field to legacy templates!!!
         $variations = \json_decode($variations, true);
 
         $file = eZHTTPFile::fetch($base . '_new_file_' . $attributeId);
@@ -65,7 +62,7 @@ final class AdminInputValue
             $file = UploadFile::fromZHTTPFile($file);
         }
 
-        return new AdminInputValue($resourceId, $tags, $alttext, $variations, $file);
+        return new AdminInputValue($resourceId, $mediaType, $tags, $alttext, $variations, $file);
     }
 
     public static function fromHash(array $hash): AdminInputValue
@@ -76,6 +73,8 @@ final class AdminInputValue
         $variations = $hash['image_variations'] ?? '{}';
         $variations = \json_decode($variations, true);
 
+        $mediaType = $hash['media_type'] ?? 'image';
+
         $file = $hash['new_file'];
         if ($file instanceof UploadedFile) {
             $file = UploadFile::fromUploadedFile($file);
@@ -83,9 +82,10 @@ final class AdminInputValue
 
         return new AdminInputValue(
             $hash['resource_id'] ?? '',
+            $mediaType,
             $tags,
             $altText,
-             $variations,
+            $variations,
             $file
         );
     }
@@ -110,11 +110,13 @@ final class AdminInputValue
         return $this->variations;
     }
 
-    /**
-     * @return UploadFile|null
-     */
-    public function getNewFile()
+    public function getNewFile(): ?UploadFile
     {
         return $this->newFile;
+    }
+
+    public function getMediaType(): string
+    {
+        return $this->mediaType;
     }
 }

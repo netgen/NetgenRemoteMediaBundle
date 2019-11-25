@@ -19,6 +19,8 @@
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/preview.html.twig' %}
         {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
 
+        {{ form_row(form.media_type, { 'attr': {'v-model': 'selectedImage.type'} }) }}
+
         {{ form_row(form.image_variations, { 'attr': {'class' : 'media-id', 'v-model': 'stringifiedVariations'} }) }}
         <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations"></crop-modal>
         <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"/>

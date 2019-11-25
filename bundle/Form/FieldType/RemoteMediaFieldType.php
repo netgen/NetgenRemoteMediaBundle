@@ -65,6 +65,7 @@ class RemoteMediaFieldType extends AbstractType
                 ]
             )
             ->add('image_variations', HiddenType::class)
+            ->add('media_type', HiddenType::class)
             ->add('new_file', FileType::class)
             ->addModelTransformer(
                 new FieldValueTransformer(

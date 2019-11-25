@@ -58,6 +58,7 @@ class FieldValueTransformer implements DataTransformerInterface
             'alt_text' => $value->metaData['alt_text'] ?? '',
             'tags' => $value->metaData['tags'],
             'image_variations' => \json_encode($value->variations),
+            'type' => $value->mediaType
         ];
     }
 
@@ -68,6 +69,7 @@ class FieldValueTransformer implements DataTransformerInterface
      */
     public function reverseTransform($value)
     {
+
         if ($value === null) {
             return $this->fieldType->getEmptyValue();
         }
