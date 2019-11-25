@@ -6,12 +6,12 @@
         <span><strong>Folder is empty</strong>Upload media from your local storage.</span>
       </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
-        <div v-if="item.type==='image'">
+        <div v-if="item.type==='image'" class="media-container">
           <img :src="item.url" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description">{{item.width}} x {{item.height}}</div>
         </div>
-        <div v-else>
+        <div v-else class="media-container">
           <span class="video-placeholder">
             <span class="icon-play"></span>
           </span>
@@ -59,6 +59,10 @@ export default {
       background-color: $white;
       padding: 8px;
       margin: 0 15px 15px 0;
+
+      .media-container {
+        width: 100%;
+      }
 
       .img {
         display: block;
@@ -123,6 +127,7 @@ export default {
       .select-btn {
         margin-top: 8px;
         padding: 3px;
+        width: 100%;
       }
     }
   }

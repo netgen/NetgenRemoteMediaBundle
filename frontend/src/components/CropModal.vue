@@ -122,14 +122,15 @@ export default {
 
 .img-placeholder {
   flex-grow: 1;
-  padding: 60px;
+  padding: 60px 60px 110px;
 
   img {
     max-width: 100%;
     height: auto;
     margin: 0 auto;
     display: block;
-    width: 100%;
+    max-width: 100%;
+    height: 100%;
   }
 }
 
