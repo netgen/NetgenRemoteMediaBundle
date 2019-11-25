@@ -10,7 +10,7 @@
     </div>
     <div v-show="addingVariations" :class="{ unselectedVariations: addingVariations }">
       <div v-for="name in unselectedVariations" :key="name" :class="{ disabled: !isVariationSelectable(name) }">
-        <input type="checkbox" :id="name" :value="name" v-model="newSelection" disabled="{ !isVariationSelectable(name) }" />
+        <input type="checkbox" :id="name" :value="name" v-model="newSelection" :disabled="!isVariationSelectable(name)" />
         <label :for="name">
           <span class="name">{{name}}</span>
           <span class="formatted-size">{{formattedSize(name)}}</span>
@@ -90,10 +90,8 @@ export default {
       }`;
     },
     isVariationSelectable(name) {
-      if (this.addingVariations) {
-        return false;
-      }
       const [width, height] = this.availableVariations[name];
+
       return this.imageSize.width >= width && this.imageSize.height >= height;
     },
     handleVariationClicked(name) {
