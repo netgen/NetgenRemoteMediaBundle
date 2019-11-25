@@ -23,8 +23,6 @@ final class UpdateFieldHelper
 
     public function updateValue(Value $oldValue, AdminInputValue $adminInputValue)
     {
-        $updatedValue = new Value();
-
         if ($adminInputValue->getResourceId() === '' && empty($adminInputValue->getNewFile())) {
             return new Value();
         }

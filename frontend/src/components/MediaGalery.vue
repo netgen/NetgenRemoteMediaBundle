@@ -7,7 +7,7 @@
       </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
         <div v-if="item.type==='image'" class="media-container">
-          <img :src="item.url" :alt="item.filename" class="img"/>
+          <img :src="item.browse_url" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description">{{item.width}} x {{item.height}}</div>
         </div>
