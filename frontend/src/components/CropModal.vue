@@ -129,8 +129,6 @@ export default {
     height: auto;
     margin: 0 auto;
     display: block;
-    max-width: 100%;
-    height: 100%;
   }
 }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="mediaGalery">
-    <div class="items" :class="{itemsOverflow: canLoadMore }">
+    <div class="items">
       <div v-if="!media.length" class="folder-empty">
         <span class="icon-folder"></span>
         <span><strong>Folder is empty</strong>Upload media from your local storage.</span>
@@ -48,8 +48,8 @@ export default {
     flex-direction: row;
     flex-wrap: wrap;
     padding: 15px;
-    height: auto;
     overflow-y: auto;
+    height: calc(100% - 50px);
 
     .media {
       display: flex;
@@ -57,9 +57,10 @@ export default {
       justify-content: flex-end;
       width: 177px;
       min-height: 182px;
-      background-color: $white;
+      max-height: 190px;
       padding: 8px;
       margin: 0 15px 15px 0;
+      background-color: $white;
 
       .media-container {
         width: 100%;
@@ -131,10 +132,6 @@ export default {
         width: 100%;
       }
     }
-  }
-
-  .itemsOverflow {
-    height: calc(100% - 50px);
   }
 
   .folder-empty {
