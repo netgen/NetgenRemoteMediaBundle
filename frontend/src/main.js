@@ -33,6 +33,7 @@ const handleDOMContentLoaded = function() {
           name: '',
           type: 'image',
           url: '',
+          browse_url: '',
           alternateText: '',
           tags: [],
           size: '',
@@ -146,7 +147,7 @@ const handleDOMContentLoaded = function() {
               height: 0,
               width: 0
             };
-            
+
             if (this.selectedImage.type === "image"){
               const reader = new FileReader();
               reader.addEventListener(
@@ -157,12 +158,12 @@ const handleDOMContentLoaded = function() {
                     this.selectedImage.height = this.$refs.image.naturalHeight;
                     this.uploadModalLoading = false;
                   }.bind(this);
-  
+
                   this.selectedImage.url = reader.result;
                 }.bind(this),
                 false
               );
-  
+
               reader.readAsDataURL(file);
             } else {
               this.uploadModalLoading = false;
@@ -188,11 +189,11 @@ const handleDOMContentLoaded = function() {
         },
         getFileType(file){
           const type = file.type.split("/")[0];
-  
+
           if (type !== "video" && type !== "image"){
             return "other";
           }
-  
+
           return type;
         }
       },
