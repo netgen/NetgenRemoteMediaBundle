@@ -165,7 +165,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem = $this->cache->getItem($searchCacheKey);
 
         if ($cacheItem->isHit()) {
-            //return $cacheItem->get();
+            return $cacheItem->get();
         }
 
         $result = $this->gateway->search($query);
