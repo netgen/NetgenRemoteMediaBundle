@@ -1,0 +1,46 @@
+@font-face {
+  font-family: 'fa-ngrm';
+  src: url('../font/fa-ngrm.eot?75641014');
+  src: url('../font/fa-ngrm.eot?75641014#iefix') format('embedded-opentype'),
+       url('../font/fa-ngrm.woff2?75641014') format('woff2'),
+       url('../font/fa-ngrm.woff?75641014') format('woff'),
+       url('../font/fa-ngrm.ttf?75641014') format('truetype'),
+       url('../font/fa-ngrm.svg?75641014#fa-ngrm') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+ 
+ [class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "fa-ngrm";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+ 
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+ 
+  /* For safety - reset parent styles, that can break glyph codes*/
+  font-variant: normal;
+  text-transform: none;
+ 
+  /* fix buttons height, for twitter bootstrap */
+  line-height: 1em;
+ 
+  margin-left: .2em;
+
+  /* Font smoothing. That was taken from TWBS */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+ 
+.icon-cancel:before { content: '\e800'; } /* '' */
+.icon-floppy:before { content: '\e801'; } /* '' */
+.icon-ok:before { content: '\e802'; } /* '' */
+.icon-ccw:before { content: '\e803'; } /* '' */
+.icon-folder:before { content: '\e804'; } /* '' */
+.icon-upload:before { content: '\e805'; } /* '' */
+.icon-play:before { content: '\e811'; } /* '' */
+.icon-trash:before { content: '\f1f8'; } /* '' */

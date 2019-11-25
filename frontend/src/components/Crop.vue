@@ -3,12 +3,20 @@
     <div class="cropper" :style="cropperStyle">
       <img :src="src" ref="image" />
       <div class="buttons" ref="buttons" :style="applyButtonStyle">
-        <button type="button" class="btn" @click="handleReset">Reset</button>
-        <button type="button" class="btn btn-blue" @click="handleApply">Apply</button>
+        <button type="button" class="btn btn-blue" @click="handleReset">
+          <span class="icon-ccw"></span>
+          <span>Reset</span>
+        </button>
+        <button type="button" class="btn btn-blue" @click="handleApply">
+          <span class="icon-ok"></span>
+          <span>Apply</span>
+        </button>
       </div>
     </div>
-    <h4>Preview</h4>
-    <div class="preview" ref="preview"></div>
+    <div>
+      <h4>Preview</h4>
+      <div class="preview" ref="preview"></div>
+    </div>
   </div>
 </template>
 
@@ -51,6 +59,8 @@ export default {
         guides: true,
         movable: false,
         rotatable: false,
+        guides: false,
+        center: false,
         zoomable: false,
         scalable: true,
         minCropBoxWidth: variationWidth,
@@ -82,7 +92,7 @@ export default {
       const offset = this.$refs.buttons ? this.$refs.buttons.clientWidth : 0;
       return {
         top: `${y + height + 10}px`,
-        left: `${x + width - offset}px`
+        left: `${x + width + offset}px`
       };
     },
     cropperStyle() {
@@ -100,11 +110,17 @@ export default {
 .crop {
   .cropper {
     position: relative;
+    margin: 0 auto;
+
+    button {
+      margin-left: 8px;
+    }
 
     .buttons {
       position: absolute;
     }
   }
+
   .preview {
     width: 100%;
     height: 500px;

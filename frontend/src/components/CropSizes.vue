@@ -5,12 +5,15 @@
       <button v-if="addingVariations" type="button" class="btn" @click="handleCancel">Cancel</button>
       <button v-if="addingVariations" type="button" class="btn crop-btn-add" @click="handleAdd">Add</button>
     </div>
-    <div v-if="addingVariations" class="unselectedVariations">
+    <div class="sidebar-crop-label">
+        <span>Addded for Confirmation</span>
+    </div>
+    <div v-show="addingVariations" :class="{ unselectedVariations: addingVariations}">
       <div v-for="name in unselectedVariations" :key="name">
         <input type="checkbox" :id="name" :value="name" v-model="newSelection" />
         <label :for="name">
-          <span>{{name}}</span>
-          <span>{{formattedSize(name)}}</span>
+          <span class="name">{{name}}</span>
+          <span class="formatted-size">{{formattedSize(name)}}</span>
         </label>
       </div>
     </div>
@@ -22,9 +25,14 @@
           :class="{set: !!allVariationValues[name], selected: selectedVariation === name, disabled: !isVariationSelectable(name)}"
           @click="handleVariationClicked(name)"
         >
-          <span>{{name}}</span>
-          <span>{{formattedSize(name)}}</span>
-          <a v-if="!addingVariations" href="#" @click.prevent.stop="removeItem(name)">remove</a>
+          <div>
+            <span class="name">{{name}}</span>
+            <span class="formatted-size">{{formattedSize(name)}}</span>
+          </div>
+          <a v-if="!addingVariations" href="#">
+            <span class="circle-orange"></span>
+            <span class="icon-trash" @click="removeItem(name)"></span>
+          </a>
         </li>
       </ul>
     </div>
@@ -107,6 +115,8 @@ export default {
     background: $white;
     padding: 15px;
     display: flex;
+    box-shadow: inset 0 -1px 0 0 $mercury;
+    margin-right: 1px;
 
     button {
       flex-grow: 1;
@@ -122,20 +132,125 @@ export default {
   }
 }
 
+.sidebar-crop-label span {
+	color: $dusty-gray;
+	font-size: 14px;
+    line-height: 18px;
+    display: inline-block;
+    padding: 31px 15px 15px;
+    width: 100%;
+    box-shadow: inset 0 -1px 0 0 $mercury;
+}
+
+.unselectedVariations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 264px;
+  height: 100%;
+  transform: translateX(264px);
+  background: $white;
+  box-shadow: inset -1px 0 0 0 $mercury;
+  z-index: 10;
+
+  > div {
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    background-color: $white;
+    box-shadow: inset 0 -1px 0 0 $mercury, inset -1px 0 0 0 $mercury;
+
+    input, label {
+      cursor: pointer;
+    }
+
+    input {
+      margin-right: 11px;
+    }
+
+    label {
+      width: 100%;
+    }
+
+    .name {
+      color: $mine-shaft;
+      font-size: 14px;
+      line-height: 18px;
+    }
+
+    .formatted-size {
+      color: $dusty-gray;
+      font-size: 12px;
+      line-height: 18px;
+      display: block;
+    }
+  }
+}
+
 .selectedVariations {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      padding: 15px 0 15px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset -1px 0 0 0 $mercury, inset 0 -1px 0 0 $mercury;
+      background-color: $white;
+      cursor: pointer;
+
+      &.disabled {
+        background-color: $wild-sand;
+        cursor: auto;
+      }
+
+      &.selected {
+        &.set {
+          color: lightgreen;
+        }
+      }
+
+      span {
+        display: block;
+        color: $mine-shaft;
+        font-size: 14px;
+        line-height: 18px;
+      }
+
+      a {
+        display: flex;
+        align-items: center;
+
+        span {
+          padding: 5px;
+        }
+
+        .icon-trash {
+          color: $netgen-primary;
+          padding: 10px;
+        }
+      }
+
+      .formatted-size {
+        color: $dusty-gray;
+        font-size: 12px;
+        line-height: 18px;
+      }
+
+      .circle-orange {
+        width: 8px;
+        height: 8px;
+        background-color: orange;
+        border-radius: 50%;
+      }
+    }
+  }
   .set {
-    color: green;
-  }
-
-  .disabled {
-    color: red !important;
-  }
-
-  .selected {
-    background-color: gray;
-    color: white;
-    &.set {
-      color: lightgreen;
+    .circle-orange {
+      display: none;
     }
   }
 }

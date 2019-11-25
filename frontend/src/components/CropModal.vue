@@ -19,9 +19,15 @@
         @change="val => handleVariationValueChange(variation, val)"
       ></crop>
     </div>
+    <div v-if="!selectedVariation" class="img-placeholder">
+      <img :src="selectedImage.url" />
+    </div>
     <div class="action-strip">
       <button type="button" class="btn" @click="handleCancelClicked">Cancel</button>
-      <button type="button" class="btn btn-blue" @click="handleSaveClicked">Save sizes</button>
+      <button type="button" class="btn btn-blue" @click="handleSaveClicked">
+        <span class="icon-floppy"></span>
+        <span>Save sizes</span>
+      </button>
     </div>
   </modal>
 </template>
@@ -102,9 +108,48 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@import '../scss/variables';
+
+.crop-container {
+  overflow-y: auto;
+  flex-grow: 1;
+  margin: 30px 30px 80px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.img-placeholder {
+  flex-grow: 1;
+  padding: 60px;
+
+  img {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+    width: 100%;
+  }
+}
+
 .action-strip {
+  padding: 8px 15px;
+  background-color: $white;
+  text-align: right;
+  -webkit-box-shadow: inset 1px 0 0 0 $mercury, 0 -1px 0 0 $mercury;
+  box-shadow: inset 1px 0 0 0 $mercury, 0 -1px 0 0 $mercury;
   position: absolute;
-  left: 264px;
   bottom: 0;
+  left: 264px;
+  right: 0;
+
+  button {
+    margin-left: 10px;
+  }
+
+  .icon-floppy {
+    margin-right: 5px;
+  }
 }
 </style>

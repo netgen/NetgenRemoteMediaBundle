@@ -25,9 +25,9 @@
         <span class="search-label">Search</span>
         <div class="search">
             <ul class="searchType">
-                <li class="active">
+                <!-- <li class="active">
                     <span>Name</span>
-                </li>
+                </li> -->
             </ul>
             <input
             type="text"
@@ -38,13 +38,13 @@
         </div>
           <div class="search">
               <ul class="searchType">
-                  <li>
+                  <!-- <li>
                       <span>Tag</span>
-                  </li>
+                  </li> -->
               </ul>
               <input
                   type="text"
-                  :placeholder="`With tag`"
+                  :placeholder="`Search with tag`"
                   v-model="tag"
                   @keyup="handleTagChange"
               />
@@ -165,6 +165,7 @@ export default {
       .search {
         display: flex;
         align-items: center;
+        margin: 5px 0;
 
         ul, input {
           font-size: 14px;
@@ -178,9 +179,11 @@ export default {
           display: flex;
           align-items: center;
           border: 1px solid $mercury;
+          min-width: 75px;
+          display: none;
 
           li {
-            cursor: pointer;
+            cursor: auto;
             margin-right: 10px;
             padding: 4px 10px;
             min-width: 45px;
@@ -202,7 +205,7 @@ export default {
         input {
           border: 1px solid $mercury;
           padding: 9px 10px;
-          margin-left: 14px;
+          // margin-left: 14px;
           flex-grow: 1;
         }
       }
