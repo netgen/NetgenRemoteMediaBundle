@@ -29,14 +29,12 @@ final class UpdateFieldHelper
             return new Value();
         }
 
-        if ($oldValue->resourceId === $adminInputValue->getResourceId() && empty($adminInputValue->getNewFile())) {
+        if (empty($adminInputValue->getNewFile())) {
             $updatedValue = $this->remoteMediaProvider->getRemoteResource($adminInputValue->getResourceId());
-        }
-
-        if (!empty($adminInputValue->getNewFile())) {
+        } else {
             // @todo find which folder to upload to
             $updatedValue = $this->remoteMediaProvider->upload($adminInputValue->getNewFile());
-            $oldValue = new Value();
+            $oldValue = new Value(); // reset the context and variations
         }
 
         $this->updateContext($updatedValue, $oldValue, $adminInputValue);
