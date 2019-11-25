@@ -1,8 +1,27 @@
-ngremotemedia:
-    field:
-        edit:
-            size: Size
-            remove_file: Remove media
-            manage_media: Browse media
-            quick_upload: Quick upload
-            crop: Crop
+ngrm:
+    edit:
+        form:
+            field:
+                alt_text: 'Alt text'
+                tags: 'Tags'
+        label:
+            size: 'Size'
+            crop: 'Crop'
+            remove_media: 'Remove media'
+            browse: 'Browse media'
+            upload: 'Upload'
+        vue:
+            browse:
+                title: 'Select media'
+                facets:
+                    image_and_documents: 'Image and documents'
+                    video: 'Video'
+                    select_folder: 'Select folder'
+                    all_folders: 'All folders'
+                    search: 'Search (by name, tag, or both)'
+                    search_by_name: 'Search by name'
+                    search_by_tag: 'Search by tag'
+                empty_folder: 'Folder is empty'
+                empty_folder_hint: 'Upload media from your local storage'
+                select: 'Select'
+                load_more: 'Load more'

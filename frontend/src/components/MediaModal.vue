@@ -1,5 +1,5 @@
 <template>
-  <modal title="Select media" @close="$emit('close')">
+  <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
     <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
     <media-galery
         v-if="!loading"

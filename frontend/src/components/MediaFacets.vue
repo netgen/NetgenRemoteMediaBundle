@@ -2,49 +2,43 @@
   <div class="mediaFacets">
     <ul class="tabs">
       <li :class="{active: isType(TYPE_IMAGE)}">
-        <span @click="handleTypeChange(TYPE_IMAGE)">Image and documents</span>
+        <span @click="handleTypeChange(TYPE_IMAGE)">{{ this.$root.$data.NgRemoteMediaTranslations.browse_image_and_documents }}</span>
       </li>
       <li :class="{active: isType(TYPE_VIDEO)}">
-        <span @click="handleTypeChange(TYPE_VIDEO)">Video</span>
+        <span @click="handleTypeChange(TYPE_VIDEO)">{{ this.$root.$data.NgRemoteMediaTranslations.browse_video }}</span>
       </li>
     </ul>
     <div class="body">
       <div class="form-field">
-        <label for="folder">Select Folder</label>
+        <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_folder }}</label>
         <v-select
           :options="folders"
           label="name"
           v-model="selectedFolder"
           @input="handleFolderChange"
           :reduce="option => option.id"
-          placeholder="All"
+          :placeholder="this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
         />
       </div>
 
       <div class="search-wrapper">
-        <span class="search-label">Search (by name, tag or both)</span>
+        <span class="search-label">{{ this.$root.$data.NgRemoteMediaTranslations.search }}</span>
         <div class="search">
             <ul class="searchType">
-                <!-- <li class="active">
-                    <span>Name</span>
-                </li> -->
             </ul>
             <input
             type="text"
-            :placeholder="`Search by name`"
+            :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_name"
             v-model="query"
             @keyup="handleQueryChange"
             />
         </div>
           <div class="search">
               <ul class="searchType">
-                  <!-- <li>
-                      <span>Tag</span>
-                  </li> -->
               </ul>
               <input
                   type="text"
-                  :placeholder="`Search with tag`"
+                  :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_tag"
                   v-model="tag"
                   @keyup="handleTagChange"
               />

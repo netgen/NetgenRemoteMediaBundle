@@ -21,6 +21,7 @@ const handleDOMContentLoaded = function() {
         init: initDirective
       },
       data: {
+        NgRemoteMediaTranslations,
         RemoteMediaSelectedImage,
         RemoteMediaConfig,
         folders: [],
