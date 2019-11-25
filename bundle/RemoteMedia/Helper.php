@@ -54,7 +54,8 @@ class Helper
                 'width' => $hit['width'],
                 'height' => $hit['height'],
                 'filename' => $hit['public_id'],
-                'url' => $this->provider->buildVariation($value, 'admin', $thumbOptions)->url,
+                'browse_url' => $this->provider->buildVariation($value, 'admin', $thumbOptions)->url,
+                'url' => $this->provider->buildVariation($value, 'admin', 'admin_preview')->url,
             ];
         }
 
