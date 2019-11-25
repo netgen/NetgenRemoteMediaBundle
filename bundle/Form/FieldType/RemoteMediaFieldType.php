@@ -44,13 +44,14 @@ class RemoteMediaFieldType extends AbstractType
     {
         $resolver->setRequired(['field']);
         $resolver->setAllowedTypes('field', Field::class);
+        $resolver->setDefault('translation_domain', 'ngremotemedia');
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('resource_id', HiddenType::class)
-            ->add('alt_text', TextType::class)
+            ->add('alt_text', TextType::class, ['label' => 'ngrm.edit.form.field.alt_text'])
             ->add(
                 'tags',
                 ChoiceType::class,
@@ -60,6 +61,7 @@ class RemoteMediaFieldType extends AbstractType
                     'choice_attr' => static function () {
                         return ['v-for' => 'tag in allTags', ':value' => 'tag'];
                     },
+                    'label' => 'ngrm.edit.form.field.tags'
                 ]
             )
             ->add('image_variations', HiddenType::class)
