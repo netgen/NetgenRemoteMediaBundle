@@ -2,14 +2,13 @@
   <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
     <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
     <media-galery
-        v-if="!loading"
         :media="media"
         :canLoadMore="canLoadMore"
         :selectedMediaId="selectedMediaId"
         @loadMore="handleLoadMore"
         @media-selected="item => $emit('media-selected', item)"
     />
-    <i v-else class="ng-icon ng-spinner" />
+    <i v-if="loading" class="ng-icon ng-spinner" />
   </modal>
 </template>
 
