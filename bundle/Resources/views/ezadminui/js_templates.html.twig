@@ -45,7 +45,7 @@
         'prev': '&lt; Previous 25'
     };
 
-    RemoteMediaSelectedImage = {
+    RemoteMediaSelectedImage_{{ field.id }} = {
         {% if field_value.mediaType == 'image' %}
             url : "{{ thumbnail_url }}",
             type : "image",
