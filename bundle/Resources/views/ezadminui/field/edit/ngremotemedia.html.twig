@@ -12,7 +12,8 @@
             'browse': path('netgen_remote_media_ezadmin_browse'),
             'folders': path('netgen_remote_media_ezadmin_folders')
         },
-        'available_variations': availableVariations
+        'available_variations': availableVariations,
+        'fieldId': field.id
     } %}
 
     <div class="ngremotemedia-type" data-id="{{ field.id }}">
@@ -23,7 +24,7 @@
 
         {{ form_row(form.image_variations, { 'attr': {'class' : 'media-id', 'v-model': 'stringifiedVariations'} }) }}
         <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations"></crop-modal>
-        <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"/>
-        <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" />
+        <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+        <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name"></upload-modal>
     </div>
 {% endblock %}
