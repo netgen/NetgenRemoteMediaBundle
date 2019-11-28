@@ -44,23 +44,19 @@ export default {
   flex-grow: 1;
 
   .items {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
     padding: 15px;
     overflow-y: auto;
     height: calc(100% - 50px);
 
     .media {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
       width: 177px;
       min-height: 182px;
       max-height: 190px;
       padding: 8px;
       margin: 0 15px 15px 0;
       background-color: $white;
+
+      display: inline-block;
 
       .media-container {
         width: 100%;
