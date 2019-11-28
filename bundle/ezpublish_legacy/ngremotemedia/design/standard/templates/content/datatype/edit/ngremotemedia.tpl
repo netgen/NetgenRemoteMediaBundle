@@ -30,7 +30,7 @@
 
 {def $user=fetch( 'user', 'current_user' )}
 
-<div class="ngremotemedia-type" data-user-id="{$user.contentobject_id}">
+<div class="ngremotemedia-type" data-user-id="{$user.contentobject_id}" data-id="{$fieldId}">
 
     {include uri="design:parts/ngremotemedia/preview.tpl"}
 

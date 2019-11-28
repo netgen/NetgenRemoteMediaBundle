@@ -22,7 +22,7 @@ const handleDOMContentLoaded = function() {
       },
       data: {
         NgRemoteMediaTranslations,
-        RemoteMediaSelectedImage,
+        RemoteMediaSelectedImage : window[`RemoteMediaSelectedImage_${el.dataset.id}`],
         RemoteMediaConfig,
         folders: [],
         mediaModalOpen: false,
