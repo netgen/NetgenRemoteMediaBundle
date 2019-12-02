@@ -1,6 +1,6 @@
 <template>
   <div class="crop">
-    <div class="cropper" :style="cropperStyle">
+    <div class="cropper" :style="cropperStyle" ref="cropper">
       <img :src="src" ref="image" />
       <div class="buttons" ref="buttons" :style="applyButtonStyle">
         <button type="button" class="btn btn-blue" @click="handleReset">
@@ -50,6 +50,8 @@ export default {
 
       this.destroyCropper();
 
+      const scale = this.$refs.cropper.clientWidth / this.imageSize.width;
+
       this.cropper = new Cropper(this.$refs.image, {
         viewMode: 2,
         dragMode: "none",
@@ -63,8 +65,8 @@ export default {
         center: false,
         zoomable: false,
         scalable: true,
-        minCropBoxWidth: variationWidth,
-        minCropBoxHeight: variationHeight,
+        minCropBoxWidth: 50,
+        minCropBoxHeight: 50,
         crop: this.handleCrop,
         preview: this.$refs.preview
       });
@@ -90,15 +92,18 @@ export default {
     applyButtonStyle() {
       const { x, y, width, height } = this.crop;
       const offset = this.$refs.buttons ? this.$refs.buttons.clientWidth : 0;
+      const scale = this.$refs.cropper ? this.$refs.cropper.clientWidth / this.imageSize.width : 1;
       return {
-        top: `${y + height + 10}px`,
-        left: `${x + width + offset}px`
+        top: `${(y + height) * scale + 10}px`,
+        left: `${(x + width) * scale - offset -1}px`
       };
     },
     cropperStyle() {
+      let ratio = this.imageSize.height / this.imageSize.width * 100;
       return {
-        height: `${this.imageSize.height}px`,
-        width: `${this.imageSize.width}px`
+        "padding-bottom": `${ratio}%`,
+        height: "0px",
+        width: `100%`
       };
     }
   }
