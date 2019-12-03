@@ -13,7 +13,6 @@
 
 {def $croppableVariations = ng_image_variations($attribute.object.class_identifier, true)}
 
-{run-once}
 {symfony_include(
     '@NetgenRemoteMedia/ezadminui/js_templates.html.twig',
     hash(
@@ -27,7 +26,6 @@
         'fieldId', $fieldId
     )
 )}
-{/run-once}
 
 {def $user=fetch( 'user', 'current_user' )}
 
