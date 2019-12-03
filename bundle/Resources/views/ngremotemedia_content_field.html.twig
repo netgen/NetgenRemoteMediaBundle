@@ -71,6 +71,9 @@
         {% endif %}
 
     {% elseif field.value.mediaType == videoConst %}
+        {% if format == 'admin_preview' %}
+            {% set format = { controls: true, crop: "limit", width: "600", height: "600" } %}
+        {% endif %}
         {{ netgen_remote_video(content, field.fieldDefIdentifier, format)|raw }}
     {% else %}
         <a href="{{ netgen_remote_download(field.value) }}" target="_blank">{{ field.value.resourceId }}</a>
