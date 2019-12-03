@@ -4,8 +4,8 @@
 
     {{ form_row(form.resource_id, { 'attr': {'class' : 'media-id', 'v-model': 'selectedImage.id'} }) }}
 
-    <input v-if="!!selectedImage.id" type="button" @click="handleCropClicked" class="ngremotemedia-scale hid button" value="{{ 'ngrm.edit.label.crop'|trans }}">
-    <input v-if="isCroppable" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" value="{{ 'ngrm.edit.label.remove_media'|trans }}"/>
+    <input v-if="isCroppable" type="button" @click="handleCropClicked" class="ngremotemedia-scale hid button" value="{{ 'ngrm.edit.label.crop'|trans }}">
+    <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" value="{{ 'ngrm.edit.label.remove_media'|trans }}"/>
 
     <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" value="{{ 'ngrm.edit.label.browse'|trans }}"/>
 
