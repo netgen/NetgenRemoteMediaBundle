@@ -6,7 +6,7 @@
         <span><strong>Folder is empty</strong>Upload media from your local storage.</span>
       </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
-        <div v-if="item.type==='image'" class="media-container">
+        <div v-if="item.type==='image' || item.type==='video'" class="media-container">
           <img :src="item.browse_url" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description">{{item.width}} x {{item.height}}</div>
