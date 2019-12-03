@@ -184,7 +184,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      *
      * @return string
      */
-    public function getVideoThumbnail(Value $value, $options)
+    public function getVideoThumbnail(Value $value, ?array $options = [])
     {
         return $this->provider->getVideoThumbnail($value, $options);
     }
@@ -237,7 +237,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     {
         if ($contentTypeIdentifier instanceof Content) {
             $contentTypeIdentifier = $this->contentTypeService->loadContentType(
-                $content->contentInfo->contentTypeId
+                $contentTypeIdentifier->contentInfo->contentTypeId
             )->identifier;
         }
 
