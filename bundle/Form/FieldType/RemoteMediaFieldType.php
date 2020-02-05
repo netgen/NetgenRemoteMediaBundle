@@ -14,6 +14,8 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RemoteMediaFieldType extends AbstractType
@@ -75,6 +77,22 @@ class RemoteMediaFieldType extends AbstractType
                     $this->updateHelper
                 )
             );
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            $form = $event->getForm();
+            $data = $event->getData();
+
+            $form->remove('tags');
+
+            $form->add('tags', ChoiceType::class, array(
+                'multiple' => true,
+                'choices' => array_key_exists('tags', $data) ? $data['tags'] : [],
+                'choice_attr' => static function () {
+                    return ['v-for' => 'tag in allTags', ':value' => 'tag'];
+                },
+                'label' => 'ngrm.edit.form.field.tags'
+            ));
+        });
     }
 
     public function getBlockPrefix()
