@@ -31,6 +31,7 @@
             :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_name"
             v-model="query"
             @keyup="handleQueryChange"
+            @keydown.enter.prevent="null" 
             />
         </div>
           <div class="search">
@@ -41,6 +42,7 @@
                   :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_tag"
                   v-model="tag"
                   @keyup="handleTagChange"
+                  @keydown.enter.prevent="null" 
               />
           </div>
       </div>
