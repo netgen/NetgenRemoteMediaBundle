@@ -44,7 +44,6 @@ export default {
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
     margin: 32px;
     height: calc(100% - 64px);
-    overflow: scroll;
 
     .title {
       padding: 15px;
