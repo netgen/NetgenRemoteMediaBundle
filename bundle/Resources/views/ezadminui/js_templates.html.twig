@@ -1,6 +1,5 @@
 {% trans_default_domain 'ngremotemedia' %}
 
-{% set thumbnail_url = type == 'image' ? netgen_remote_media(field_value, 'admin_preview').url : netgen_remote_video_thumbnail(field_value) %}
 {% set paths = paths|default([]) %}
 {% set available_variations = available_variations|default([]|json_encode) %}
 
@@ -46,14 +45,12 @@
     };
 
     RemoteMediaSelectedImage_{{ fieldId }} = {
+        url : "{{ field_value.secure_url }}",
         {% if field_value.mediaType == 'image' %}
-            url : "{{ thumbnail_url }}",
             type : "image",
         {% elseif field_value.mediaType == 'video' %}
-            url : "{{ thumbnail_url }}",
             type : "video",
         {% else %}
-            url : "{{ field_value.secure_url }}",
             type : "other",
         {% endif %}
         name: "{{ field_value.resourceId }}",
