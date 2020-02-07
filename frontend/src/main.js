@@ -80,6 +80,7 @@ const handleDOMContentLoaded = function() {
         async handleBrowseMediaClicked() {
           this.mediaModalOpen = true;
           this.fetchFolders();
+          document.querySelector('.ez-page-builder-wrapper').style.transform = "none";
         },
         handleCropClicked() {
           this.cropModalOpen = true;
