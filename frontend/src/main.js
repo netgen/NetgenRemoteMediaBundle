@@ -71,7 +71,18 @@ const handleDOMContentLoaded = function() {
         'upload-modal': UploadModal,
       },
       methods: {
-
+        prepareDomForModal() {
+          const query = document.querySelector('.ez-page-builder-wrapper')
+          if (query) {
+            query.style.transform = "none";
+          }
+        },
+        resetDomAfterModal() {
+          const query = document.querySelector('.ez-page-builder-wrapper')
+          if (query) {
+            query.removeAttribute("style");
+          }
+        },
         async fetchFolders() {
           const response = await fetch(this.config.paths.folders);
           const folders = await response.json();
@@ -79,19 +90,20 @@ const handleDOMContentLoaded = function() {
         },
         async handleBrowseMediaClicked() {
           this.mediaModalOpen = true;
+          this.prepareDomForModal();
           this.fetchFolders();
-          if (document.querySelector('.ez-page-builder-wrapper')) {
-            document.querySelector('.ez-page-builder-wrapper').style.transform = "none";
-          }
         },
         handleCropClicked() {
           this.cropModalOpen = true;
+          this.prepareDomForModal();
         },
         handleMediaModalClose() {
           this.mediaModalOpen = false;
+          this.resetDomAfterModal();
         },
         handleCropModalClose() {
           this.cropModalOpen = false;
+          this.resetDomAfterModal();
         },
         handleUploadModalClose() {
           this.uploadModalOpen = false;
