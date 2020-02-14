@@ -30,7 +30,7 @@ $ npm run serve
 ```
 
 Template for dev server is in **_frontend/public/index.html_**, where it could be changed when needed. If it is changed, don't forget to change admin templates, also:
-**_bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl_**
+**_bundle/Resources/views/ezadminui/field/edit/ngremotemedia.html.twig_**
 **_bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl_**
 
 ## Building the project
