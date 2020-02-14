@@ -31,6 +31,10 @@ $ npm run serve
 
 Template for dev server is in **_frontend/public/index.html_**, where it could be changed when needed.
 
+Admin templates must be changed also at:
+**_bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl_**
+**_bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl_**
+
 ## Building the project
 
 You need to be positioned in frontend directory:
