@@ -29,9 +29,7 @@ For development, it is best to use webpack dev server, which can be started with
 $ npm run serve
 ```
 
-Template for dev server is in **_frontend/public/index.html_**, where it could be changed when needed.
-
-Admin templates must be changed also at:
+Template for dev server is in **_frontend/public/index.html_**, where it could be changed when needed. If it is changed, don't forget to change admin templates, also:
 **_bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl_**
 **_bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl_**
 
