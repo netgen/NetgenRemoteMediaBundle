@@ -81,7 +81,7 @@ $ npm run dev
 
 Bundled JS file is in [frontend/dist](frontend/dist), but is also copied to two different directories for ngadminui and ez admin v2, respectively.
 
-Files are copied with frontend/copyFilesDev.js node script which can be started independently with:
+File is copied with frontend/copyFilesDev.js node script which can be started independently with:
 
 ```bash
 $ node copyFilesDev.js
