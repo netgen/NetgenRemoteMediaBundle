@@ -84,7 +84,7 @@ Bundled JS file is in [frontend/dist](frontend/dist), but is also copied to two 
 Files are copied with frontend/copyFilesDev.js node script which can be started independently with:
 
 ```bash
-$ node copyFiles.js
+$ node copyFilesDev.js
 ```
 
 This script fakes additional files (normally created with production build).
