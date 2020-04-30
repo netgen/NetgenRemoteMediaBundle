@@ -61,8 +61,11 @@ final class UpdateFieldHelper
         }
 
         if ($oldValue->metaData['tags'] !== $input->getTags()) {
-            $dataToChange['tags'] = $input->getTags();
-            $updatedValue->metaData['tags'] = $input->getAltText();
+            $this->remoteMediaProvider->updateTags(
+                $updatedValue->resourceId,
+                implode(',', $input->getTags())
+            );
+            $updatedValue->metaData['tags'] = $input->getTags();
         }
 
         if (!empty($dataToChange)) {
