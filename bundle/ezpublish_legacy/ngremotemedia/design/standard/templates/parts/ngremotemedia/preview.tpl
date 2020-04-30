@@ -11,7 +11,11 @@
                 <div class="ngremotemedia-alttext">
                     <span class="help-block description">{'Alternate text'|i18n('ngremotemedia')}</span>
                     <input type="text"
-                            name="{$base}_alttext_{$fieldId}" v-model="selectedImage.alternateText" class="media-alttext data">
+                           name="{$base}_alttext_{$fieldId}"
+                           v-model="selectedImage.alternateText"
+                           class="media-alttext data"
+                           {if $remote_value.metaData.alt_text}{$remote_value.metaData.alt_text}{/if}
+                    >
                 </div>
 
                 <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
@@ -21,5 +25,5 @@
 
             </div>
             <p>{'Size'|i18n( 'content/edit' )}: {literal}{{formattedSize}}{/literal}</p>
-        </div>    
+        </div>
 </div>

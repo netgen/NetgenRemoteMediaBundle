@@ -67,7 +67,7 @@ class Value extends BaseValue
             'type' => !empty($response['type']) ? $response['type'] : '',
             'etag' => !empty($response['etag']) ? $response['etag'] : '',
             'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
-            'alt_text' => !empty($response['context']['custom']['alt']) ? $response['context']['custom']['alt'] : '',
+            'alt_text' => !empty($response['context']['custom']['alt_text']) ? $response['context']['custom']['alt_text'] : '',
             'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
         ];
 
