@@ -30,8 +30,15 @@ final class UpdateFieldHelper
         if (empty($adminInputValue->getNewFile())) {
             $updatedValue = $this->remoteMediaProvider->getRemoteResource($adminInputValue->getResourceId(), $adminInputValue->getMediaType());
         } else {
-            // @todo find which folder to upload to
-            $updatedValue = $this->remoteMediaProvider->upload($adminInputValue->getNewFile());
+            $options = [];
+            if ($adminInputValue->getResourceId()) {
+                $exploded = explode('/', $adminInputValue->getResourceId());
+                if (count($exploded) > 1) {
+                    $options['folder'] = $exploded[0];
+                }
+            }
+
+            $updatedValue = $this->remoteMediaProvider->upload($adminInputValue->getNewFile(), $options);
             $oldValue = new Value(); // reset the context and variations
         }
 
