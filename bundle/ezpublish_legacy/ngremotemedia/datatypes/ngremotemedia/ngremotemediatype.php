@@ -73,7 +73,7 @@ class NgRemoteMediaType extends eZDataType
         $provider = $container->get('netgen_remote_media.provider');
 
         /** @var Value $oldValue */
-        $oldValue = $contentObjectAttribute->Content();
+        $oldValue = $this->buildAttributeContent($contentObjectAttribute);
 
         $updatedValue = $updateHelper->updateValue($oldValue, $input);
 
@@ -246,6 +246,11 @@ class NgRemoteMediaType extends eZDataType
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function objectAttributeContent($attribute)
+    {
+        return $this->buildAttributeContent($attribute);
+    }
+
+    private function buildAttributeContent($attribute)
     {
         $attributeValue = json_decode($attribute->attribute(self::FIELD_VALUE), true);
         $attributeValue = $attributeValue ?: array();
