@@ -14,7 +14,7 @@
                            name="{$base}_alttext_{$fieldId}"
                            v-model="selectedImage.alternateText"
                            class="media-alttext data"
-                           {if $remote_value.metaData.alt_text}{$remote_value.metaData.alt_text}{/if}
+                           {if $remote_value.metaData.alt_text}value="{$remote_value.metaData.alt_text}"{/if}
                     >
                 </div>
 
