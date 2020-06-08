@@ -48,7 +48,7 @@ class Helper
             $mediaType = $this->determineType($hit);
 
             if ($mediaType === Value::TYPE_IMAGE) {
-                $url = $this->provider->buildVariation($value, 'admin', 'admin_preview')->url;
+                //$url = $this->provider->buildVariation($value, 'admin', 'admin_preview')->url;
                 $browseUrl = $this->provider->buildVariation($value, 'admin', $thumbOptions)->url;
             } else if ($mediaType === Value::TYPE_VIDEO) {
                 $url = $this->provider->getVideoThumbnail($value);
@@ -69,7 +69,7 @@ class Helper
                 'height' => $hit['height'],
                 'filename' => $hit['public_id'],
                 'browse_url' => $browseUrl,
-                'url' => $url,
+                'url' => $value->secure_url,
             ];
         }
 
