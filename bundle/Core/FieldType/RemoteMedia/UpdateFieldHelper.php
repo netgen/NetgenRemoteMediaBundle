@@ -39,8 +39,9 @@ final class UpdateFieldHelper
             }
 
             $updatedValue = $this->remoteMediaProvider->upload($adminInputValue->getNewFile(), $options);
-            $oldValue = new Value(); // reset the context and variations
         }
+
+        $oldValue = new Value(); // reset the context and variations
 
         $this->updateContext($updatedValue, $oldValue, $adminInputValue);
         $this->updateVariations($updatedValue, $oldValue, $adminInputValue);
