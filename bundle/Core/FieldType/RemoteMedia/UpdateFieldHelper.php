@@ -52,6 +52,9 @@ final class UpdateFieldHelper
     private function updateContext(Value $updatedValue, Value $oldValue, AdminInputValue $input)
     {
         if ($oldValue->metaData['alt_text'] === $input->getAltText() && $oldValue->metaData['tags'] === $input->getTags()) {
+            $updatedValue->metaData['alt_text'] = $input->getAltText();
+            $updatedValue->metaData['tags'] = $input->getTags();
+
             return;
         }
 
