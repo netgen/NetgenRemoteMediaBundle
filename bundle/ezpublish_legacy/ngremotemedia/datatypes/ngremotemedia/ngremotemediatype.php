@@ -301,12 +301,17 @@ class NgRemoteMediaType extends eZDataType
         $updatedValue = new Value();
 
         if (!empty($string)) {
-            $updatedValue = $value;
+            $updatedValue = \json_decode($string);  // expecting Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
 
-            if(empty($updatedValue->resourceId) || $updatedValue->resourceId !== $string){
-                $updatedValue->resourceId = $string;
+            if ($updatedValue == null) {            // fallback to previous behaviour: string is resource id
+                $updatedValue = $value;
+
+                if(empty($updatedValue->resourceId) || $updatedValue->resourceId !== $string){
+                    $updatedValue->resourceId = $string;
+                }
             }
         }
+
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
         $this->saveExternalData($contentObjectAttribute, $updatedValue, $provider);
 
