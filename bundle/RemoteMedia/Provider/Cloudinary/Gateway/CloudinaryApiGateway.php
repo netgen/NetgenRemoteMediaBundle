@@ -223,21 +223,15 @@ class CloudinaryApiGateway extends Gateway
      */
     public function get($id, $type)
     {
-        $options = [
-            'resource_type' => $type,
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
-        ];
-
-        $response = $this->cloudinaryApi->resources_by_ids(
-            [$id],
-            $options
+        $options = array(
+            'type' => 'upload'
         );
 
-        $response = $response->getIterator()->current();
-
-        return !empty($response) ? $response[0] : [];
+        try {
+            return $this->cloudinaryUploader->explicit($id, $options);
+        } catch (Cloudinary\Error $e) {
+            return [];
+        }
     }
 
     /**
