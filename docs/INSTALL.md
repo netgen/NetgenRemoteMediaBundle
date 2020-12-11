@@ -8,9 +8,6 @@
 * this package works best with NetgenAdminUI.
 
 ## Installation steps
-
-* Run the following from your website root folder:
-	`$ composer require netgen/remote-media-bundle:^2.0`
   
 * Configure the bundle:
     * in `config.yml` add basic configuration:
@@ -21,18 +18,11 @@
         account_key: [your_key]
         account_secret: [your_secret]
     ```
+
+* Run the following from your website root folder:
+    `$ composer require netgen/remote-media-bundle:^2.0`
     
-* Configure legacy settings:
-    * activate legacy extension
-    
-    * add the following to `ezoe.ini.append.php` (create one if it does not exist)
-    ```
-    [EditorSettings]
-    Plugins[]=ngremotemedia
-    
-    [EditorLayout]
-    Buttons[]=ngremotemedia
-    ```
+* Activate legacy extension
     
 * Activate the bundle:
     ```
@@ -47,11 +37,11 @@
     ```
     
 * Update the database with a custom table:
-	* `$ mysql -u<user> -p<password> -h<host> <db_name> < vendor/netgen/remote-media-bundle/Netgen/Bundle/RemoteMediaBundle/Resources/sql/mysql/schema.sql`
+	* `$ mysql -u<user> -p<password> -h<host> <db_name> < vendor/netgen/remote-media-bundle/bundle/Resources/sql/schema.sql`
     * **OR** run `php app/console doctrine:schema:update --force` (or run with `--dump-sql` to get the sql needed for creating the table)
 
 * Clear the caches
     * run the following command:
     ```
-    $ php app/console cache:clear
+    $ php bin/console cache:clear
     ```
