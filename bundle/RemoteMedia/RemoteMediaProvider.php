@@ -71,16 +71,6 @@ abstract class RemoteMediaProvider
     abstract public function countResources(): int;
 
     /**
-     * Counts available resources in specified folder from the remote storage.
-     * If folders are not supported, should return zero.
-     *
-     * @param $folder
-     *
-     * @return int
-     */
-    abstract public function countResourcesInFolder($folder);
-
-    /**
      * Searches for the remote resource containing term in the query.
      */
     abstract public function searchResources(Query $query): Result;
