@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use Exception;
 use eZ\Publish\API\Repository\Repository;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -54,8 +57,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
                 'l',
                 InputOption::VALUE_OPTIONAL,
                 ''
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -71,7 +73,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         $repository = $this->getContainer()->get('ezpublish.api.repository');
         $contentService = $repository->getContentService();
         $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
-        $imagePath = $rootDir.'/'.$imagePath;
+        $imagePath = $rootDir . '/' . $imagePath;
 
         $repository->beginTransaction();
 
@@ -96,7 +98,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         $contentUpdateStruct->setField($fieldIdentifier, $imageInput);
         try {
             $content = $repository->sudo(
-                function (Repository $repository) use ($contentInfo, $contentUpdateStruct) {
+                static function (Repository $repository) use ($contentInfo, $contentUpdateStruct) {
                     $contentDraft = $repository->getContentService()->createContentDraft($contentInfo);
                     $contentDraft = $repository->getContentService()->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
 
@@ -105,14 +107,14 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
             );
 
             $repository->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             $repository->rollback();
-            $output->writeln('<error>'.$e->getMessage().'<error>');
-            dump($e->getTraceAsString());
+            $output->writeln('<error>' . $exception->getMessage() . '<error>');
+            dump($exception->getTraceAsString());
 
             return;
         }
 
-        $output->writeln("<info>Uploaded image {$imagePath} to {$fieldIdentifier} to content with id {$contentId}</info>");
+        $output->writeln(sprintf('<info>Uploaded image %s to %s to content with id %s</info>', $imagePath, $fieldIdentifier, $contentId));
     }
 }

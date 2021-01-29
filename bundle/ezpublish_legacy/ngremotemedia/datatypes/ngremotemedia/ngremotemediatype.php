@@ -2,6 +2,8 @@
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
 
 class NgRemoteMediaType extends eZDataType
 {
@@ -60,42 +62,20 @@ class NgRemoteMediaType extends eZDataType
     public function fetchObjectAttributeHTTPInput( $http, $base, $contentObjectAttribute )
     {
         $attributeId = $contentObjectAttribute->attribute('id');
-        $data = array(
-            'id' =>  $http->variable($base . '_media_id_' . $attributeId),
-            'alttext' => $http->variable($base . '_alttext_' . $attributeId, ''),
-            'tags' => $http->variable($base.'_tags_'.$attributeId, array())
-        );
+
+        $file = eZHTTPFile::fetch( $base.'_new_file_'.$attributeId );
+
+        $input = AdminInputValue::fromEzHttp($http, $base, $attributeId);
 
         $container = ezpKernel::instance()->getServiceContainer();
-        $provider = $container->get( 'netgen_remote_media.provider' );
+        /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper $updateHelper */
+        $updateHelper = $container->get( 'netgen_remote_media.admin.field_update.helper' );
+        $provider = $container->get('netgen_remote_media.provider');
 
-        $value = $contentObjectAttribute->Content();
+        /** @var Value $oldValue */
+        $oldValue = $this->buildAttributeContent($contentObjectAttribute);
 
-        $updatedValue = new Value();
-        if ($data['mediaRemove'] !== 1 && $data['id'] !== 'removed') {
-            $updatedValue = $value;
-        }
-
-        if ($updatedValue->metaData['alt_text'] != $data['alttext']) {
-            $provider->updateResourceContext(
-                $updatedValue->resourceId,
-                $value->metaData['resource_type'],
-                [
-                    'alt' => $data['alttext']
-                ]
-            );
-            $updatedValue->metaData['alt_text'] = $data['alttext'];
-        }
-
-        if (!empty($data['tags']) && $data['tags'] !== $updatedValue->metaData['tags']) {
-            $provider->updateTags($updatedValue->resourceId, $data['tags']);
-            $updatedValue->metaData['tags'] = $data['tags'];
-        }
-
-        if (!empty($dataToChange)) {
-            $provider->updateResourceContext($updatedValue->resourceId, $value->metaData['resource_type'], $dataToChange);
-
-        }
+        $updatedValue = $updateHelper->updateValue($oldValue, $input);
 
         $contentObjectAttribute->setAttribute(self::FIELD_VALUE, json_encode($updatedValue));
         $this->saveExternalData($contentObjectAttribute, $updatedValue, $provider);
@@ -266,6 +246,11 @@ class NgRemoteMediaType extends eZDataType
      * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value
      */
     public function objectAttributeContent($attribute)
+    {
+        return $this->buildAttributeContent($attribute);
+    }
+
+    private function buildAttributeContent($attribute)
     {
         $attributeValue = json_decode($attribute->attribute(self::FIELD_VALUE), true);
         $attributeValue = $attributeValue ?: array();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Exception;
 
 use Exception;
@@ -14,6 +16,6 @@ class TransformationHandlerFailedException extends Exception
      */
     public function __construct($handlerClass)
     {
-        parent::__construct("Transformation handler '$handlerClass' identifier failed.");
+        parent::__construct(sprintf('Transformation handler \'%s\' identifier failed.', $handlerClass));
     }
 }

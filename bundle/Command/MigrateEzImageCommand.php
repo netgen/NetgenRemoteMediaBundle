@@ -1,9 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use Countable;
+use InvalidArgumentException;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeIdentifier;
+use Exception;
 use eZ\Publish\API\Repository\Repository;
-use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Query;
@@ -66,8 +73,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
                 'continue-on-error',
                 'c',
                 InputOption::VALUE_NONE
-            )
-        ;
+            );
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
@@ -83,7 +89,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $this->translationHelper = $this->getContainer()->get('ezpublish.translation_helper');
         $this->questionHelper = $this->getHelper('question');
         $this->rootLocationId = $this->getContainer()->get('ezpublish.config.resolver')->getParameter('content.tree_root.location_id');
-        $this->webPath = $this->getContainer()->getParameter('kernel.root_dir').'/../web';
+        $this->webPath = $this->getContainer()->getParameter('kernel.root_dir') . '/../web';
     }
 
     protected function listFields()
@@ -99,7 +105,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             foreach ($contentTypesResult as $contentType) {
                 $fields = $contentType->getFieldDefinitions();
                 foreach ($fields as $field) {
-                    if ('ezimage' === $field->fieldTypeIdentifier || 'ngremotemedia' === $field->fieldTypeIdentifier) {
+                    if ($field->fieldTypeIdentifier === 'ezimage' || $field->fieldTypeIdentifier === 'ngremotemedia') {
                         $contentTypes[$field->id] = [
                             $contentType->getName($contentType->mainLanguageCode),
                             $contentType->identifier,
@@ -140,7 +146,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $field = $contentType->getFieldDefinition($fieldIdentifier);
 
         if (!$field) {
-            throw new \InvalidArgumentException('Could not find the field with the selected identifier.');
+            throw new InvalidArgumentException('Could not find the field with the selected identifier.');
         }
 
         return $fieldIdentifier;
@@ -151,7 +157,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $question = new Question('Overwrite existing data on ngremotemedia field if exists? (y/n): ', 'n');
         $overwrite = $this->questionHelper->ask($this->input, $this->output, $question);
 
-        return 'y' === $overwrite;
+        return $overwrite === 'y';
     }
 
     protected function getContinue()
@@ -159,7 +165,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $question = new Question('Continue? (y/n): ', 'y');
         $continue = $this->questionHelper->ask($this->input, $this->output, $question);
 
-        return 'y' === $continue;
+        return $continue === 'y';
     }
 
     protected function searchLocations(ContentType $contentType, $offset = 0, $limit = 100)
@@ -167,10 +173,10 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $rootLocation = $this->locationService->loadLocation($this->rootLocationId);
 
         $query = new LocationQuery();
-        $query->filter = new Query\Criterion\LogicalAnd(
+        $query->filter = new LogicalAnd(
             [
-                new Query\Criterion\Subtree($rootLocation->pathString),
-                new Query\Criterion\ContentTypeIdentifier($contentType->identifier),
+                new Subtree($rootLocation->pathString),
+                new ContentTypeIdentifier($contentType->identifier),
             ]
         );
         $query->limit = $limit;
@@ -205,7 +211,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $uploadFile = UploadFile::fromEzImageValue($ezImageValue, $this->webPath);
 
         if ($dryRun) {
-            $this->output->writeln('<info>Would migrate image: '.$uploadFile->uri().'</info>');
+            $this->output->writeln('<info>Would migrate image: ' . $uploadFile->uri() . '</info>');
 
             return true;
         }
@@ -215,12 +221,12 @@ class MigrateEzImageCommand extends ContainerAwareCommand
 
         try {
             $contentDraft = $repository->sudo(
-                function (Repository $repository) use ($content) {
+                static function (Repository $repository) use ($content) {
                     return $repository->getContentService()->createContentDraft($content->contentInfo);
                 }
             );
             $repository->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $repository->rollback();
 
             throw $e;
@@ -234,14 +240,14 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $repository->beginTransaction();
         try {
             $repository->sudo(
-                function (Repository $repository) use ($contentDraft, $contentUpdateStruct) {
+                static function (Repository $repository) use ($contentDraft, $contentUpdateStruct) {
                     $contentDraft = $repository->getContentService()->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
 
                     return $repository->getContentService()->publishVersion($contentDraft->versionInfo);
                 }
             );
             $repository->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $repository->rollback();
 
             throw $e;
@@ -271,7 +277,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         do {
             $result = $this->searchLocations($contentType, $offset, $limit);
 
-            if (0 === $offset) {
+            if ($offset === 0) {
                 $this->output->writeln("<info>Found {$result->totalCount} objects for siteaccess '{$siteaccess->name}'...</info>");
 
                 $continue = $this->getContinue();
@@ -285,7 +291,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
                 try {
                     /** @var Location $location */
                     $location = $searchHit->valueObject;
-                    $this->output->writeln('Migrating: '.$location->getContentInfo()->id.' - "'.$location->getContentInfo()->name.'"');
+                    $this->output->writeln('Migrating: ' . $location->getContentInfo()->id . ' - "' . $location->getContentInfo()->name . '"');
 
                     $migrateResult = $this->migrateField(
                         $location,
@@ -303,9 +309,9 @@ class MigrateEzImageCommand extends ContainerAwareCommand
                         $this->output->writeln('<error>No change</error>');
                         $this->output->writeln('-----------------------------');
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     if ($continueOnError) {
-                        $this->output->writeln("<error>ContentId: {$searchHit->valueObject->contentInfo->id}: ".$e->getMessage().'</error>');
+                        $this->output->writeln("<error>ContentId: {$searchHit->valueObject->contentInfo->id}: " . $e->getMessage() . '</error>');
                     } else {
                         throw $e;
                     }
@@ -313,7 +319,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             }
 
             $offset += $limit;
-        } while (count($result->searchHits) > 0);
+        } while ((is_array($result->searchHits) || $result->searchHits instanceof Countable ? \count($result->searchHits) : 0) > 0);
 
         $this->output->writeln("<info>Updated {$updated} objects.</info>");
     }

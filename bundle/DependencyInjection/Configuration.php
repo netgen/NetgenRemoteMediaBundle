@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\Configuration as SiteAccessConfiguration;
@@ -49,8 +51,7 @@ class Configuration extends SiteAccessConfiguration
                 ->booleanNode('remove_unused')
                     ->defaultValue(false)
                 ->end()
-            ->end()
-        ;
+            ->end();
     }
 
     protected function addImageConfiguration(NodeBuilder $nodeBuilder)
@@ -98,13 +99,13 @@ class Configuration extends SiteAccessConfiguration
                                     ->useAttributeAsKey('options')
                                     ->beforeNormalization()
                                         ->ifTrue(
-                                            function ($v) {
-                                                // Check if passed array only contains a "params" key (BC with <=5.3).
-                                                return is_array($v) && 1 === count($v) && isset($v['params']);
+                                            static function ($v) {
+                                                // Check if passed array only contains a "params" key
+                                                return \is_array($v) && \count($v) === 1 && isset($v['params']);
                                             }
                                         )
                                         ->then(
-                                            function ($v) {
+                                            static function ($v) {
                                                 // If we have the "params" key, just use the value.
                                                 return $v['params'];
                                             }

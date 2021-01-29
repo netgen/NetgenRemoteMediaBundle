@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Exception;
 
 use Exception;
@@ -14,6 +16,6 @@ class TransformationHandlerNotFoundException extends Exception
      */
     public function __construct($provider, $handlerIdentifier)
     {
-        parent::__construct("[NgRemoteMedia] Transformation handler with '$handlerIdentifier' identifier for '$provider' provider not found.");
+        parent::__construct(sprintf('[NgRemoteMedia] Transformation handler with \'%s\' identifier for \'%s\' provider not found.', $handlerIdentifier, $provider));
     }
 }

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
-use eZ\Publish\Core\FieldType\Value as BaseValue;
+use eZ\Publish\Core\FieldType\Value;
 
-class Variation extends BaseValue
+class Variation extends Value
 {
     public $url = null;
     public $width = null;
@@ -18,6 +20,6 @@ class Variation extends BaseValue
      */
     public function __toString()
     {
-        return json_encode($this);
+        return \json_encode($this);
     }
 }

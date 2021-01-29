@@ -1,38 +1,42 @@
 {def $base='ContentObjectAttribute'}
 
-{if not(is_set($remote_value))}
-    {def $remote_value = $attribute.content}
-{/if}
-{if not(is_set($fieldId))}
-    {def $fieldId = $attribute.id}
-{/if}
-{if not(is_set($version))}
-    {def $version=$attribute.version}
-{/if}
-{if not(is_set($contentObjectId))}
-    {def $contentObjectId = $attribute.contentobject_id}
-{/if}
-{if not(is_set($availableFormats))}
-    {def $availableFormats = ng_image_variations($attribute.object.class_identifier)}
-{/if}
-
-{if not(is_set($ajax))}
-    {run-once}
-    {include uri="design:parts/js_templates_1.tpl"}
-    {/run-once}
-{/if}
-
+{def $remote_value = $attribute.content}
+{def $fieldId = $attribute.id}
+{def $version=$attribute.version}
+{def $contentObjectId = $attribute.contentobject_id}
+{def $availableFormats = ng_image_variations($attribute.object.class_identifier)}
 {if is_set($remote_value.metaData.resource_type)}
     {def $type = $remote_value.metaData.resource_type}
 {else}
     {def $type = 'image'}
 {/if}
 
-{def $user=fetch( 'user', 'current_user' )}
-
 {def $croppableVariations = ng_image_variations($attribute.object.class_identifier, true)}
 
-<div class="ngremotemedia-type" data-available-variations={json_encode(scaling_format($croppableVariations))} data-user-id="{$user.contentobject_id}">
+{symfony_include(
+    '@NetgenRemoteMedia/ezadminui/js_templates.html.twig',
+    hash(
+        'field_value', $remote_value,
+        'type', $type,
+        'paths', hash(
+            'browse', "/ngremotemedia/browse"|ezurl('no', 'relative'),
+            'folders', "/ngremotemedia/folders"|ezurl('no', 'relative')
+        ),
+        'available_variations', json_encode(scaling_format($croppableVariations)),
+        'fieldId', $fieldId
+    )
+)}
+
+{def $user=fetch( 'user', 'current_user' )}
+
+<div class="ngremotemedia-type" data-user-id="{$user.contentobject_id}" data-id="{$fieldId}">
+
     {include uri="design:parts/ngremotemedia/preview.tpl"}
+
     {include uri="design:parts/ngremotemedia/interactions.tpl"}
+
+    <input type="hidden" name="{$base}_image_variations_{$fieldId}" v-model="stringifiedVariations" class="media-id"/>
+    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations" data-user-id="{$user.contentobject_id}"></crop-modal>
+    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" ></upload-modal>
 </div>

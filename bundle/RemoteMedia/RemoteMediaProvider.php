@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Psr\Log\LoggerInterface;
 
@@ -24,10 +29,7 @@ abstract class RemoteMediaProvider
         $this->logger = $logger;
     }
 
-    /**
-     * @return bool
-     */
-    abstract public function supportsContentBrowser();
+    abstract public function supportsContentBrowser(): bool;
 
     /**
      * @return bool
@@ -37,118 +39,71 @@ abstract class RemoteMediaProvider
     /**
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
-     * @param UploadFile $uploadFile
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
      * @param array $options
-     *
-     * @return Value
      */
-    abstract public function upload(UploadFile $uploadFile, $options = []);
+    abstract public function upload(UploadFile $uploadFile, ?array $options = []): Value;
 
     /**
      * Gets the remote media Variation.
      * If the remote media does not support variations, this method should return the Variation
      * with the url set to original resource.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     * @param string $contentTypeIdentifier
      * @param string|array $format
      * @param bool $secure
-     *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
      */
-    abstract public function buildVariation(Value $value, $contentTypeIdentifier, $format, $secure = true);
-
-    /**
-     * Lists all available resources from the remote storage.
-     *
-     * @param int $limit
-     * @param int $offset
-     * @param string $resource_type
-     *
-     * @return array
-     */
-    abstract public function listResources($limit = 10, $offset = 0, $resource_type = 'image');
+    abstract public function buildVariation(Value $value, string $contentTypeIdentifier, $format, ?bool $secure = true): Variation;
 
     /**
      * Lists all available folders.
      * If folders are not supported, should return empty array.
-     *
-     * @return array
      */
-    abstract public function listFolders();
+    abstract public function listFolders(): array;
+
+    /**
+     * @param $folder
+     */
+    abstract public function countResourcesInFolder(string $folder): int;
 
     /**
      * Counts available resources from the remote storage.
-     *
-     * @return int
      */
-    abstract public function countResources();
-
-    /**
-     * Counts available resources in specified folder from the remote storage.
-     * If folders are not supported, should return zero.
-     *
-     * @param $folder
-     *
-     * @return int
-     */
-    abstract public function countResourcesInFolder($folder);
+    abstract public function countResources(): int;
 
     /**
      * Searches for the remote resource containing term in the query.
-     *
-     * @param string $query
-     * @param int $limit
-     * @param int $offset
-     * @param string $resourceType
-     *
-     * @return array
      */
-    abstract public function searchResources($query, $limit = 10, $offset = 0, $resourceType = 'image');
-
-    /**
-     * Searches for the remote resource tagged with a provided tag.
-     *
-     * @param string $tag
-     * @param string $resourceType
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return array
-     */
-    abstract public function searchResourcesByTag($tag, $limit = 10, $offset = 0, $resourceType = 'image');
+    abstract public function searchResources(Query $query): Result;
 
     /**
      * Returns the remote resource with provided id and type.
      *
      * @param mixed $resourceId
      * @param string $resourceType
-     *
-     * @return Value
      */
-    abstract public function getRemoteResource($resourceId, $resourceType);
+    abstract public function getRemoteResource(string $resourceId, ?string $resourceType = 'image'): Value;
 
     /**
      * Adds tag to remote resource.
      *
-     * @param string $resourceId
-     * @param string $tag
-     *
      * @return mixed
      */
-    abstract public function addTagToResource($resourceId, $tag);
+    abstract public function addTagToResource(string $resourceId, string $tag);
 
     /**
      * Removes tag from remote resource.
      *
-     * @param string $resourceId
-     * @param string $tag
+     * @return mixed
+     */
+    abstract public function removeTagFromResource(string $resourceId, string $tag);
+
+    /**
+     * @param $resourceId
+     * @param $tags
      *
      * @return mixed
      */
-    abstract public function removeTagFromResource($resourceId, $tag);
-
-    abstract public function updateTags($resourceId, $tags);
+    abstract public function updateTags(string $resourceId, string $tags);
 
     /**
      * Updates the resource context.
@@ -158,64 +113,46 @@ abstract class RemoteMediaProvider
      *      'alt' => 'alt text'
      * ];.
      *
-     * @param mixed $resourceId
-     * @param string $resourceType
-     * @param array $context
-     *
      * @return mixed
      */
-    abstract public function updateResourceContext($resourceId, $resourceType, $context);
+    abstract public function updateResourceContext(string $resourceId, string $resourceType, array $context);
 
     /**
      * Returns thumbnail url for the video with provided id.
      *
-     * @param Value $value
      * @param array $options
-     *
-     * @return string
      */
-    abstract public function getVideoThumbnail(Value $value, $options = []);
+    abstract public function getVideoThumbnail(Value $value, ?array $options = []): string;
 
     /**
      * Generates html5 video tag for the video with provided id.
      *
-     * @param Value $value
-     * @param string $contentTypeIdentifier
-     * @param string $format
      *
-     * @return string
+     * @param string|array $format
      */
-    abstract public function generateVideoTag(Value $value, $contentTypeIdentifier, $format = '');
+    abstract public function generateVideoTag(Value $value, string $contentTypeIdentifier, $format = ''): string;
 
     /**
      * Removes the resource from the remote.
-     *
-     * @param $resourceId
      */
-    abstract public function deleteResource($resourceId);
+    abstract public function deleteResource(string $resourceId);
 
     /**
      * Generates the link to the remote resource.
-     *
-     * @param Value $value
-     *
-     * @return string
      */
-    abstract public function generateDownloadLink(Value $value);
+    abstract public function generateDownloadLink(Value $value): string;
 
     /**
      * Returns unique identifier of the provided.
-     *
-     * @return string
      */
-    abstract public function getIdentifier();
+    abstract public function getIdentifier(): string;
 
     /**
      * Logs the error if the logger is available.
      *
      * @param $message
      */
-    protected function logError($message)
+    protected function logError(string $message)
     {
         if ($this->logger instanceof LoggerInterface) {
             $this->logger->error($message);

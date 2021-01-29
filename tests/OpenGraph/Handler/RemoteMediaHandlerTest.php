@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\OpenGraph\Handler\RemoteMediaHandler;
 
 use eZ\Publish\API\Repository\Values\Content\ContentInfo;

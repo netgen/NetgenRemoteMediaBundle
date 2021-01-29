@@ -1,0 +1,5 @@
+services:
+    netgen_remote_media.templating.converter.ngremotemedia:
+        class: Netgen\Bundle\RemoteMediaBundle\Templating\Converter\RemoteMediaValueConverter
+        tags:
+            - {name: ezpublish_legacy.templating.converter, for: Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value}

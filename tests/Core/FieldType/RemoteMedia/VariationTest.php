@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
@@ -27,7 +29,7 @@ class VariationTest extends TestCase
 
         $variation = new Variation($parameters);
 
-        $this->assertEquals(json_encode($parameters), (string) $variation);
+        $this->assertEquals(\json_encode($parameters), (string) $variation);
     }
 
     public function testConstructionWithoutParameters()
@@ -44,6 +46,6 @@ class VariationTest extends TestCase
 
         $variation = new Variation();
 
-        $this->assertEquals(json_encode($expectedResponseArray), (string) $variation);
+        $this->assertEquals(\json_encode($expectedResponseArray), (string) $variation);
     }
 }

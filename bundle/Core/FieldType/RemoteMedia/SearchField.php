@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
+use eZ\Publish\SPI\Search\FieldType\StringField;
 use eZ\Publish\SPI\FieldType\Indexable;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\SPI\Persistence\Content\Type\FieldDefinition;
@@ -15,9 +18,6 @@ class SearchField implements Indexable
     /**
      * Get index data for field for search backend.
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\Field $field
-     * @param \eZ\Publish\SPI\Persistence\Content\Type\FieldDefinition $fieldDefinition
-     *
      * @return \eZ\Publish\SPI\Search\Field[]
      */
     public function getIndexData(Field $field, FieldDefinition $fieldDefinition)
@@ -26,7 +26,7 @@ class SearchField implements Indexable
             new Search\Field(
                 'value',
                 $field->value->data['url'],
-                new Search\FieldType\StringField()
+                new StringField()
             ),
         ];
     }
@@ -39,7 +39,7 @@ class SearchField implements Indexable
     public function getIndexDefinition()
     {
         return [
-            'value' => new Search\FieldType\StringField(),
+            'value' => new StringField(),
         ];
     }
 

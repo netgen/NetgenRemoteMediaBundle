@@ -1,44 +1,29 @@
-{if $type|eq('image')}
-    {def $format = 'admin_preview'}
-    {def $media = ngremotemedia($remote_value, $attribute.object.class_identifier, $format, true)}
-    {def $thumb_url = $media.url}
-{else}
-    {def $thumb_url = videoThumbnail($remote_value)}
-{/if}
-
-<div class="ngremotemedia-image">
-    {if $remote_value.resourceId}
+<div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
         <div class="image-wrap">
-            {if $remote_value.mediaType|eq('image')}
-                <img src="{$thumb_url}"  />
-            {elseif $remote_value.mediaType|eq('video')}
-                <i class="ngri-video ngri-big"></i>
-            {else}
-                <i class="ngri-book ngri-big"></i>
-            {/if}
+            <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image" />
+            <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
         </div>
 
         <div class="image-meta">
-            <h3 class="title">{$remote_value.resourceId|wash}</h3>
+            {literal} <h3 class="title">{{selectedImage.name}}</h3> {/literal}
 
-            <div class="tagger">
+            <div class="image-meta-data">
                 <div class="ngremotemedia-alttext">
                     <span class="help-block description">{'Alternate text'|i18n('ngremotemedia')}</span>
                     <input type="text"
-                            name="{$base}_alttext_{$fieldId}" value="{$remote_value.metaData.alt_text}" class="media-alttext data">
+                           name="{$base}_alttext_{$fieldId}"
+                           v-model="selectedImage.alternateText"
+                           class="media-alttext data"
+                           {if $remote_value.metaData.alt_text}value="{$remote_value.metaData.alt_text}"{/if}
+                    >
                 </div>
 
-                {def $tags = $remote_value.metaData.tags}
-                <select name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
-                    {foreach $tags as $tag}
-                        <option value="{$tag}" selected="selected">{$tag}</option>
-                    {/foreach}
+                <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
+                <select hidden v-model="selectedImage.tags" name="{$base}_tags_{$fieldId}[]" class="ngremotemedia-newtags" multiple="multiple">
+                    {literal}<option v-for="tag in allTags">{{tag}}</option>{/literal}
                 </select>
 
             </div>
-            {if $remote_value.size|null()|not()}
-                <p>{'Size'|i18n( 'content/edit' )}: {$remote_value.size|si( byte )}</p>
-            {/if}
+            <p>{'Size'|i18n( 'content/edit' )}: {literal}{{formattedSize}}{/literal}</p>
         </div>
-    {/if}
 </div>

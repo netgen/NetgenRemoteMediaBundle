@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
 
+use Countable;
 use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
@@ -20,11 +23,10 @@ class LegacyStorage extends Gateway
     /**
      * Sets the data storage connection to use.
      *
-     *
      * @param \eZ\Publish\Core\Persistence\Database\DatabaseHandler $connection
      *
      * @throws \RuntimeException if $connection is not an instance of
-     *         {@link \eZ\Publish\Core\Persistence\Database\DatabaseHandler}
+     *                           {@link \eZ\Publish\Core\Persistence\Database\DatabaseHandler}
      */
     public function setConnection($connection)
     {
@@ -71,9 +73,10 @@ class LegacyStorage extends Gateway
             );
         $statement = $selectQuery->prepare();
         $statement->execute();
+
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if (count($rows) > 0) {
+        if ((is_array($rows) || $rows instanceof Countable ? \count($rows) : 0) > 0) {
             $updateQuery = $connection->createUpdateQuery();
             $updateQuery
                 ->update('ngremotemedia_field_link')
@@ -212,8 +215,8 @@ class LegacyStorage extends Gateway
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(
-            function ($item) {
+        return \array_map(
+            static function ($item) {
                 return $item['resource_id'];
             },
             $rows
@@ -247,13 +250,9 @@ class LegacyStorage extends Gateway
             );
         $statement = $selectQuery->prepare();
         $statement->execute();
+
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-
-        if (count($rows) > 0) {
-            return true;
-        }
-
-        return false;
+        return (is_array($rows) || $rows instanceof Countable ? \count($rows) : 0) > 0;
     }
 
     /**
@@ -265,7 +264,7 @@ class LegacyStorage extends Gateway
      */
     protected function getConnection()
     {
-        if (null === $this->connection) {
+        if ($this->connection === null) {
             throw new RuntimeException('Missing database connection.');
         }
 

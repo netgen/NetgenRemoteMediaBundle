@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -24,9 +26,7 @@ class Mpad implements HandlerInterface
      * Takes options from the configuration and returns
      * properly configured array of options.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $variationName name of the configured image variation configuration
-     * @param array $config
      *
      * @return array
      */
@@ -36,11 +36,11 @@ class Mpad implements HandlerInterface
             'crop' => 'mpad',
         ];
 
-        if (isset($config[0]) && 0 !== $config[0]) {
+        if (isset($config[0]) && $config[0] !== 0) {
             $options['width'] = $config[0];
         }
 
-        if (isset($config[1]) && 0 !== $config[1]) {
+        if (isset($config[1]) && $config[1] !== 0) {
             $options['height'] = $config[1];
         }
 

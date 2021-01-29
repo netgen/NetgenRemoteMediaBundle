@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\API\Repository\ContentService;
@@ -31,11 +33,6 @@ class RemoteMediaStorage extends GatewayBasedStorage
 
     /**
      * Constructor.
-     *
-     * @param \eZ\Publish\API\Repository\ContentService $contentService
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $provider
-     * @param \eZ\Publish\API\Repository\FieldTypeService $fieldTypeService
-     * @param array $gateways
      */
     public function __construct(
         ContentService $contentService,
@@ -58,10 +55,6 @@ class RemoteMediaStorage extends GatewayBasedStorage
     /**
      * Stores value for $field in an external data source.
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @param \eZ\Publish\SPI\Persistence\Content\Field $field
-     * @param array $context
-     *
      * @return true Indicating internal value data has changed
      */
     public function storeFieldData(VersionInfo $versionInfo, Field $field, array $context)
@@ -81,7 +74,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $this->provider->getIdentifier(),
                 $versionInfo->versionNo
             );
-        } elseif (is_array($data) && !empty($data)) {
+        } elseif (\is_array($data) && !empty($data)) {
             $options['alt_text'] = $data['alt_text'];
             $options['caption'] = $data['caption'];
 
@@ -107,10 +100,6 @@ class RemoteMediaStorage extends GatewayBasedStorage
 
     /**
      * Populates $field value property based on the external data.
-     *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @param \eZ\Publish\SPI\Persistence\Content\Field $field
-     * @param array $context
      */
     public function getFieldData(VersionInfo $versionInfo, Field $field, array $context)
     {
@@ -120,9 +109,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
     /**
      * Deletes field data.
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param array $fieldIds Array of field IDs
-     * @param array $context
      *
      * @return bool
      */
@@ -137,9 +124,9 @@ class RemoteMediaStorage extends GatewayBasedStorage
         if ($this->deleteUnused) {
             $resourceIdsToDelete = [];
             foreach ($fields as $field) {
-                if (in_array($field->id, $fieldIds, true)) {
+                if (\in_array($field->id, $fieldIds, true)) {
                     // load resource_id from table
-                    $resourceIdsToDelete = array_merge(
+                    $resourceIdsToDelete = \array_merge(
                         $resourceIdsToDelete,
                         $gateway->loadFromTable($content->id, $field->id, $versionNo, $this->provider->getIdentifier())
                     );
@@ -159,7 +146,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
         } else {
             // remove from link table entry just for that version
             foreach ($fields as $field) {
-                if (!in_array($field->id, $fieldIds, true)) {
+                if (!\in_array($field->id, $fieldIds, true)) {
                     continue;
                 }
 
@@ -181,10 +168,6 @@ class RemoteMediaStorage extends GatewayBasedStorage
     /**
      * Get index data for external data for search backend.
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @param \eZ\Publish\SPI\Persistence\Content\Field $field
-     * @param array $context
-     *
      * @return \eZ\Publish\SPI\Search\Field[]
      */
     public function getIndexData(VersionInfo $versionInfo, Field $field, array $context)
@@ -199,12 +182,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
      * By default the method falls back to the {@link \eZ\Publish\SPI\FieldType\FieldStorage::storeFieldData()}.
      * External storages implement this method as needed.
      *
-     * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
-     * @param \eZ\Publish\SPI\Persistence\Content\Field $field
-     * @param \eZ\Publish\SPI\Persistence\Content\Field $originalField
-     * @param array $context
-     *
-     * @return null|bool same as {@link \eZ\Publish\SPI\FieldType\FieldStorage::storeFieldData()}
+     * @return bool|null same as {@link \eZ\Publish\SPI\FieldType\FieldStorage::storeFieldData()}
      */
     public function copyLegacyField(VersionInfo $versionInfo, Field $field, Field $originalField, array $context)
     {

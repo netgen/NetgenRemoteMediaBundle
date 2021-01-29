@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
+
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 
 /**
  * @internal
@@ -29,26 +34,8 @@ abstract class Gateway
 
     /**
      * Perform search.
-     *
-     * @param string $query
-     * @param array $options
-     * @param int $limit
-     * @param int $offset
-     *
-     * @return array
      */
-    abstract public function search($query, $options = [], $limit = 10, $offset = 0);
-
-    /**
-     * List all available resources.
-     *
-     * @param $type
-     * @param $limit
-     * @param $offset
-     *
-     * @return array
-     */
-    abstract public function listResources($type, $limit, $offset);
+    abstract public function search(Query $query): Result;
 
     /**
      * Lists all available folders.

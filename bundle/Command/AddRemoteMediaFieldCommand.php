@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use Exception;
 use eZ\Publish\API\Repository\Repository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,8 +44,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
                 InputOption::VALUE_OPTIONAL,
                 'Position of the field on the content type',
                 0
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -57,7 +59,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $contentTypeService = $repository->getContentTypeService();
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
         $contentTypeNames = $contentType->getNames();
-        $languageCodes = array_keys($contentTypeNames);
+        $languageCodes = \array_keys($contentTypeNames);
         $names = [];
         foreach ($languageCodes as $languageCode) {
             $names[$languageCode] = $fieldName;
@@ -66,7 +68,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $repository->beginTransaction();
 
         $contentTypeDraft = $repository->sudo(
-            function (Repository $repository) use ($contentType) {
+            static function (Repository $repository) use ($contentType) {
                 return $repository->getContentTypeService()->createContentTypeDraft($contentType);
             }
         );
@@ -77,7 +79,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
 
         try {
             $repository->sudo(
-                function (Repository $repository) use ($contentTypeDraft, $fieldDefCreate) {
+                static function (Repository $repository) use ($contentTypeDraft, $fieldDefCreate) {
                     $repository->getContentTypeService()->addFieldDefinition($contentTypeDraft, $fieldDefCreate);
 
                     return $repository->getContentTypeService()->publishContentTypeDraft($contentTypeDraft);
@@ -85,15 +87,15 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
             );
 
             $repository->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             $repository->rollback();
-            $output->writeln('<error>'.$e->getMessage().'<error>');
-            dump($e->getTraceAsString());
+            $output->writeln('<error>' . $exception->getMessage() . '<error>');
+            dump($exception->getTraceAsString());
 
             return;
         }
 
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
-        $output->writeln("<info>Added new field {$fieldDefIdentifier} to content type {$contentTypeIdentifier}</info>");
+        $output->writeln(sprintf('<info>Added new field %s to content type %s</info>', $fieldDefIdentifier, $contentTypeIdentifier));
     }
 }

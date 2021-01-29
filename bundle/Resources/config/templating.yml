@@ -6,5 +6,6 @@ services:
             - "@ezpublish.translation_helper"
             - "@ezpublish.api.service.content_type"
             - "@netgen_remote_media.helper"
+            - "@netgen_remote_media.variation.resolver"
         tags:
             - { name: twig.extension }

@@ -1,19 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 
 class Value extends BaseValue
 {
+    /**
+     * @var string
+     */
     const TYPE_IMAGE = 'image';
+    /**
+     * @var string
+     */
     const TYPE_VIDEO = 'video';
+    /**
+     * @var string
+     */
     const TYPE_OTHER = 'other';
 
     public $resourceId = null;
     public $url = null;
     public $secure_url = null;
-    public $size = null;
+    public $size = 0;
 
     public $mediaType = 'image';
 
@@ -34,13 +45,11 @@ class Value extends BaseValue
      */
     public function __toString()
     {
-        return json_encode($this);
+        return \json_encode($this);
     }
 
     /**
      * Creates a value from cloudinary response array.
-     *
-     * @param array $response
      *
      * @return Value
      */
@@ -58,7 +67,7 @@ class Value extends BaseValue
             'type' => !empty($response['type']) ? $response['type'] : '',
             'etag' => !empty($response['etag']) ? $response['etag'] : '',
             'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
-            'alt_text' => !empty($response['context']['custom']['alt']) ? $response['context']['custom']['alt'] : '',
+            'alt_text' => !empty($response['context']['custom']['alt_text']) ? $response['context']['custom']['alt_text'] : '',
             'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
         ];
 
@@ -70,9 +79,9 @@ class Value extends BaseValue
         $value->metaData = $metaData;
         $value->variations = !empty($response['variations']) ? $response['variations'] : [];
 
-        if ('video' === $response['resource_type']) {
+        if ($response['resource_type'] === 'video') {
             $value->mediaType = self::TYPE_VIDEO;
-        } elseif ('image' === $response['resource_type'] && (!isset($response['format']) || !in_array($response['format'], ['pdf', 'doc', 'docx'], true))) {
+        } elseif ($response['resource_type'] === 'image' && (!isset($response['format']) || !\in_array($response['format'], ['pdf', 'doc', 'docx'], true))) {
             $value->mediaType = self::TYPE_IMAGE;
         } else {
             $value->mediaType = self::TYPE_OTHER;

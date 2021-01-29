@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -30,8 +32,6 @@ class Helper
     /**
      * Formats browse list to comply with javascript.
      *
-     * @param array $list
-     *
      * @return array
      */
     public function formatBrowseList(array $list)
@@ -45,6 +45,20 @@ class Helper
 
             $value = Value::createFromCloudinaryResponse($hit);
 
+            $mediaType = $this->determineType($hit);
+
+            if ($mediaType === Value::TYPE_IMAGE) {
+                //$url = $this->provider->buildVariation($value, 'admin', 'admin_preview')->url;
+                $browseUrl = $this->provider->buildVariation($value, 'admin', $thumbOptions)->url;
+            } else if ($mediaType === Value::TYPE_VIDEO) {
+                $url = $this->provider->getVideoThumbnail($value);
+                $browseUrl = $this->provider->getVideoThumbnail($value, $thumbOptions);
+            } else {
+                $url = '';
+                $browseUrl = '';
+                // @todo
+            }
+
             $listFormatted[] = [
                 'resourceId' => $hit['public_id'],
                 'tags' => $hit['tags'],
@@ -54,7 +68,8 @@ class Helper
                 'width' => $hit['width'],
                 'height' => $hit['height'],
                 'filename' => $hit['public_id'],
-                'url' => $this->provider->buildVariation($value, 'admin', $thumbOptions)->url,
+                'browse_url' => $browseUrl,
+                'url' => $value->secure_url,
             ];
         }
 
@@ -70,9 +85,9 @@ class Helper
      */
     private function determineType($hit)
     {
-        if ('video' === $hit['resource_type']) {
+        if ($hit['resource_type'] === 'video') {
             return Value::TYPE_VIDEO;
-        } elseif ('image' === $hit['resource_type'] && (!isset($hit['format']) || !in_array($hit['format'], ['pdf', 'doc', 'docx'], true))) {
+        } elseif ($hit['resource_type'] === 'image' && (!isset($hit['format']) || !\in_array($hit['format'], ['pdf', 'doc', 'docx'], true))) {
             return Value::TYPE_IMAGE;
         }
 

@@ -1,0 +1,3 @@
+netgen_remote_media_ezadmin:
+    resource: "ezadminui/routing.yml"
+    prefix: /ngremotemedia

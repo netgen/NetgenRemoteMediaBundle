@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary;
 
+use Cloudinary\Api\Response;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
@@ -48,6 +53,24 @@ class CloudinaryProviderTest extends TestCase
         );
     }
 
+    private function getSearchResponse()
+    {
+        $response = new \stdClass();
+        $response->body = \json_encode([
+            'total_count' => 200,
+            'next_cursor' => '123',
+            'resources' => [],
+        ]);
+        $response->responseCode = 200;
+        $response->headers = [
+            'X-FeatureRateLimit-Reset' => 'test',
+            'X-FeatureRateLimit-Limit' => 'test',
+            'X-FeatureRateLimit-Remaining' => 'test',
+        ];
+
+        return $response;
+    }
+
     public function testIdentifier()
     {
         $this->assertEquals(
@@ -70,50 +93,12 @@ class CloudinaryProviderTest extends TestCase
         );
     }
 
-    public function testListResources()
-    {
-        $this->gateway->method('listResources')->willReturn([]);
-
-        $this->gateway
-            ->expects($this->once())
-            ->method('listResources')
-            ->with('image', 10, 0)
-        ;
-
-        $this->cloudinaryProvider->listResources();
-    }
-
-    public function testListResourcesWithLimit()
-    {
-        $this->gateway->method('listResources')->willReturn([]);
-
-        $this->gateway
-            ->expects($this->once())
-            ->method('listResources')
-            ->with('image', 20, 0)
-        ;
-
-        $this->cloudinaryProvider->listResources(20);
-    }
-
-    public function testListResourcesWithLimitAndOffset()
-    {
-        $this->gateway->method('listResources')->willReturn([]);
-
-        $this->gateway
-            ->expects($this->once())
-            ->method('listResources')
-            ->with('image', 20, 5)
-        ;
-
-        $this->cloudinaryProvider->listResources(20, 5);
-    }
-
     public function testCountResources()
     {
         $this->gateway
             ->expects($this->once())
-            ->method('countResources');
+            ->method('countResources')
+            ->willReturn(0);
 
         $this->cloudinaryProvider->countResources();
     }
@@ -122,7 +107,8 @@ class CloudinaryProviderTest extends TestCase
     {
         $this->gateway
             ->expects($this->once())
-            ->method('listFolders');
+            ->method('listFolders')
+            ->willReturn([]);
 
         $this->cloudinaryProvider->listFolders();
     }
@@ -131,79 +117,55 @@ class CloudinaryProviderTest extends TestCase
     {
         $this->gateway
             ->expects($this->once())
-            ->method('countResourcesInFolder');
+            ->method('countResourcesInFolder')
+            ->willReturn(0);
 
         $this->cloudinaryProvider->countResourcesInFolder('testFolder');
     }
 
     public function testSearchResources()
     {
+        $query = new Query('query', 'image', 0);
+
         $this->gateway
             ->expects($this->once())
             ->method('search')
-            ->with(
-                'queryTerm',
-                [
-                    'SearchByTags' => false,
-                    'type' => 'upload',
-                    'resource_type' => 'image',
-                ],
-                10,
-                0
+            ->with($query)
+            ->willReturn(
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
-        $this->cloudinaryProvider->searchResources('queryTerm');
+        $this->cloudinaryProvider->searchResources($query);
     }
 
     public function testSearchResourcesWithLimitAndOffset()
     {
+        $query = new Query('query', 'image', 25, null, null, '823b');
+
         $this->gateway
             ->expects($this->once())
             ->method('search')
-            ->with(
-                'queryTerm',
-                [
-                    'SearchByTags' => false,
-                    'type' => 'upload',
-                    'resource_type' => 'image',
-                ],
-                25,
-                50
+            ->with($query)
+            ->willReturn(
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
-        $this->cloudinaryProvider->searchResources('queryTerm', 25, 50);
+        $this->cloudinaryProvider->searchResources($query);
     }
 
     public function testSearchResourcesByTag()
     {
+        $query = new Query('', 'image', 25, null, 'tag');
+
         $this->gateway
             ->expects($this->once())
             ->method('search')
-            ->with(
-                'queryTerm',
-                [
-                    'SearchByTags' => true,
-                    'resource_type' => 'image',
-                ]
+            ->with($query)
+            ->willReturn(
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
-        $this->cloudinaryProvider->searchResourcesBytag('queryTerm');
-    }
-
-    public function testSearchResourcesByTagWithEncoding()
-    {
-        $this->gateway
-            ->expects($this->once())
-            ->method('search')
-            ->with(
-                'test%2Fsomething',
-                [
-                    'SearchByTags' => true,
-                    'resource_type' => 'image',
-                ]
-            );
-
-        $this->cloudinaryProvider->searchResourcesBytag('test/something');
+        $this->cloudinaryProvider->searchResources($query);
     }
 
     public function testGetEmptyResourceId()
@@ -320,8 +282,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('addTag')
-            ->with('testResourceId', 'testTag')
-        ;
+            ->with('testResourceId', 'testTag');
 
         $this->cloudinaryProvider->addTagToResource('testResourceId', 'testTag');
     }
@@ -331,8 +292,7 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('removeTag')
-            ->with('testResourceId', 'testTag')
-        ;
+            ->with('testResourceId', 'testTag');
 
         $this->cloudinaryProvider->removeTagFromResource('testResourceId', 'testTag');
     }
@@ -365,7 +325,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoThumbnail')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -386,7 +347,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoThumbnail')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -403,7 +365,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoTag')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -425,7 +388,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getVideoTag')
-            ->with('testResourceId', $options + $variationConfig);
+            ->with('testResourceId', $options + $variationConfig)
+            ->willReturn('');
 
         $value = new Value();
         $value->resourceId = 'testResourceId';
@@ -451,7 +415,8 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects($this->once())
             ->method('getDownloadLink')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', $options)
+            ->willReturn('');
 
         $this->cloudinaryProvider->generateDownloadLink($value);
     }
