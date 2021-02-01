@@ -1,15 +1,17 @@
 import Vue from 'vue';
 import './scss/ngremotemedia.scss';
 import 'cropperjs/dist/cropper.css';
+import Interactions from './components/Interactions';
 import MediaModal from './components/MediaModal';
 import UploadModal from './components/UploadModal';
 import CropModal from './components/CropModal';
+import EditorInsertModal from './components/EditorInsertModal';
 import { initDirective } from './utility/directives';
 import vSelect from 'vue-select';
-import { formatByteSize } from './utility/utility';
 import './utility/polyfills';
 import { truthy } from './utility/predicates';
 import { objectFilter } from './utility/functional';
+import {formatByteSize} from "./utility/utility";
 
 Vue.config.productionTip = false;
 
@@ -29,6 +31,7 @@ const handleDOMContentLoaded = function() {
         cropModalOpen: false,
         uploadModalOpen: false,
         uploadModalLoading: false,
+        editorInsertModalOpen: false,
         selectedImage: {
           id: '',
           name: '',
@@ -46,30 +49,22 @@ const handleDOMContentLoaded = function() {
         config: {
           paths: {},
           availableVariations: {}
-        },
-        allTags: []
+        }
       },
       computed: {
-        nonImagePreviewClass() {
-          return this.selectedImage.type === 'video' ? 'ng-video' : 'ng-book';
-        },
-        formattedSize() {
-          return formatByteSize(this.selectedImage.size);
-        },
         stringifiedVariations() {
           return JSON.stringify(
             objectFilter(truthy)(this.selectedImage.variations)
           );
         },
-        isCroppable(){
-          return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.config.availableVariations).length > 0;
-        }
       },
       components: {
+        'interactions': Interactions,
         'media-modal': MediaModal,
         'v-select': vSelect,
         'crop-modal': CropModal,
         'upload-modal': UploadModal,
+        'editor-insert-modal': EditorInsertModal
       },
       methods: {
         prepareDomForModal() {
@@ -84,19 +79,8 @@ const handleDOMContentLoaded = function() {
             query.removeAttribute("style");
           }
         },
-        async fetchFolders() {
-          const response = await fetch(this.config.paths.folders);
-          const folders = await response.json();
-          this.folders = folders;
-        },
-        async handleBrowseMediaClicked() {
-          this.mediaModalOpen = true;
-          this.prepareDomForModal();
-          this.fetchFolders();
-        },
-        handleCropClicked() {
-          this.cropModalOpen = true;
-          this.prepareDomForModal();
+        handleEditorInsertClicked() {
+          this.editorInsertModalOpen = true;
         },
         handleMediaModalClose() {
           this.mediaModalOpen = false;
@@ -109,8 +93,8 @@ const handleDOMContentLoaded = function() {
         handleUploadModalClose() {
           this.uploadModalOpen = false;
         },
-        handleTagsInput(value) {
-          this.allTags = [...new Set([...this.allTags, ...value])];
+        handleEditorInsertModalClose() {
+          this.editorInsertModalOpen = false;
         },
         handleMediaSelected(item) {
           this.selectedImage = {
@@ -129,67 +113,6 @@ const handleDOMContentLoaded = function() {
 
           this.mediaModalOpen = false;
         },
-        handleRemoveMediaClicked() {
-          this.selectedImage = {
-            id: '',
-            name: '',
-            type: 'image',
-            mediaType: 'image',
-            url: '',
-            alternateText: '',
-            tags: [],
-            size: 0,
-            variations: {},
-            height: 0,
-            width: 0
-          };
-          this.$refs.fileInput.value = null;
-        },
-        handleFileInputChange(e) {
-          this.uploadModalOpen = true;
-          this.uploadModalLoading = true;
-
-          this.fetchFolders();
-
-          const file = e.target.files.item(0);
-
-          if (file) {
-            this.selectedImage = {
-              id: file.name,
-              name: file.name,
-              type: this.getFileType(file),
-              mediaType: this.getFileMediaType(file),
-              url: '',
-              alternateText: '',
-              tags: [],
-              size: file.size,
-              variations: {},
-              height: 0,
-              width: 0
-            };
-
-            if (this.selectedImage.type === "image"){
-              const reader = new FileReader();
-              reader.addEventListener(
-                'load',
-                function() {
-                  this.$refs.image.onload = function() {
-                    this.selectedImage.width = this.$refs.image.naturalWidth,
-                    this.selectedImage.height = this.$refs.image.naturalHeight;
-                    this.uploadModalLoading = false;
-                  }.bind(this);
-
-                  this.selectedImage.url = reader.result;
-                }.bind(this),
-                false
-              );
-
-              reader.readAsDataURL(file);
-            } else {
-              this.uploadModalLoading = false;
-            }
-          }
-        },
         handleVariationCropChange(newValues) {
           this.selectedImage = {
             ...this.selectedImage,
@@ -207,28 +130,10 @@ const handleDOMContentLoaded = function() {
           };
           this.uploadModalOpen = false;
         },
-        getFileType(file){
-          const type = file.type.split("/")[0];
-
-          if (type !== "video"){
-            return "image";
-          }
-
-          return type;
-        },
-        getFileMediaType(file){
-          const type = file.type.split("/")[0];
-
-          if (type !== "video" && type !== "image"){
-            return "other";
-          }
-
-          return type;
+        handleEditorInsertModalSave(){
+          this.editorInsertModalOpen = false;
         }
       },
-      mounted() {
-        this.allTags = [...this.selectedImage.tags];
-      }
     });
   });
 };

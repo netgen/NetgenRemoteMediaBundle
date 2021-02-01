@@ -1,0 +1,9 @@
+ngrm:
+    vue:
+        interactions:
+            scale: 'Skalér'
+            remove_media: 'Fjern media'
+            manage_media: 'Manage media'
+        preview:
+            alternate_text: 'Alternativ tekst'
+            size: 'Size'

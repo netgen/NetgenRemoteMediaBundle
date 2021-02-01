@@ -11,6 +11,14 @@ ngrm:
             browse: 'Browse media'
             upload: 'Upload'
         vue:
+            interactions:
+                scale: 'Scale'
+                remove_media: 'Remove media'
+                manage_media: 'Manage media'
+                quick_upload: 'Quick upload'
+            preview:
+                alternate_text: 'Alternate text'
+                size: 'Size'
             browse:
                 title: 'Select media'
                 facets:

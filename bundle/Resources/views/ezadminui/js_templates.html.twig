@@ -2,6 +2,8 @@
 
 {% set paths = paths|default([]) %}
 {% set available_variations = available_variations|default([]|json_encode) %}
+{% set field_value = field_value|default(null) %}
+{% set fieldId = fieldId|default(null) %}
 
 <script type="text/javascript">
     NgRemoteMediaTranslations = {
@@ -41,27 +43,33 @@
         'Image is to small for this version': 'Image is to small for this version',
         'close': 'Close',
         'next': 'Next 25 &gt;',
-        'prev': '&lt; Previous 25'
+        'prev': '&lt; Previous 25',
+        'interactions_scale': "{{ "ngrm.edit.vue.interactions.scale"|trans }}",
+        'interactions_remove_media': "{{ "ngrm.edit.vue.interactions.remove_media"|trans }}",
+        'interactions_manage_media': "{{ "ngrm.edit.vue.interactions.manage_media"|trans }}",
+        'interactions_quick_upload': "{{ "ngrm.edit.vue.interactions.quick_upload"|trans }}",
+        'preview_alternate_text': "{{ "ngrm.edit.vue.preview.alternate_text"|trans }}",
+        'preview_size': "{{ "ngrm.edit.vue.preview.size"|trans }}",
     };
 
     RemoteMediaSelectedImage_{{ fieldId }} = {
-        url : "{{ field_value.secure_url }}",
-        type: "{{ field_value.metaData.resource_type|default('image') }}",
-        {% if field_value.mediaType == 'image' %}
+        url : "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
+        type: "{% if field_value %}{{ field_value.metaData.resource_type|default('image') }}{% else %}image{% endif %}",
+        {% if not field_value or field_value.mediaType == 'image' %}
             mediaType: "image",
         {% elseif field_value.mediaType == 'video' %}
             mediaType: "video",
         {% else %}
             mediaType: "other",
         {% endif %}
-        name: "{{ field_value.resourceId }}",
-        alternateText: "{{ field_value.metaData.alt_text }}",
-        tags: [{% for tag in field_value.metaData.tags %}"{{ tag }}",{% endfor %}],
-        size: {{ field_value.size|default(0) }},
-        id: "{{ field_value.resourceId }}",
-        variations: {{ field_value.variations|json_encode|raw }},
-        width: {{ field_value.metaData.width|default(0) }},
-        height: {{ field_value.metaData.height|default(0) }}
+        name: "{% if field_value %}{{ field_value.resourceId }}{% endif %}",
+        alternateText: "{% if field_value %}{{ field_value.metaData.alt_text }}{% endif %}",
+        tags: [{% if field_value %}{% for tag in field_value.metaData.tags %}"{{ tag }}",{% endfor %}{% endif %}],
+        size: {% if field_value %}{{ field_value.size|default(0) }}{% else %}0{% endif %},
+        id: "{% if field_value %}{{ field_value.resourceId }}{% endif %}",
+        variations: {% if field_value %}{{ field_value.variations|json_encode|raw }}{% else %}{}{% endif %},
+        width: {% if field_value %}{{ field_value.metaData.width|default(0) }}{% else %}0{% endif %},
+        height: {% if field_value %}{{ field_value.metaData.height|default(0) }}{% else %}0{% endif %}
     };
 
     RemoteMediaConfig = {
