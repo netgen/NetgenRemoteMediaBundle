@@ -75,9 +75,9 @@ final class AdminInputValue
 
         $mediaType = $hash['media_type'] ?? 'image';
 
-        $file = $hash['new_file'];
-        if ($file instanceof UploadedFile) {
-            $file = UploadFile::fromUploadedFile($file);
+        $file = null;
+        if ($hash['new_file'] instanceof UploadedFile) {
+            $file = UploadFile::fromUploadedFile($hash['new_file']);
         }
 
         return new AdminInputValue(

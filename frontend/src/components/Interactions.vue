@@ -1,11 +1,11 @@
 <template>
   <div>
     <preview
-      :field-id="fieldId"
-      :base="base"
-      :selected-image="selectedImage"
-      :alt-text="alt_text"
-      ref="preview"
+        :field-id="fieldId"
+        :base="base"
+        :selected-image="selectedImage"
+        :alt-text="alt_text"
+        ref="preview"
     ></preview>
 
     <div :id="'ngremotemedia-buttons-'+fieldId" class="ngremotemedia-buttons"
@@ -15,43 +15,128 @@
 
       <input type="hidden" :name="base+'_media_id_'+fieldId" v-model="selectedImage.id" class="media-id" />
 
-      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_scale" >
-      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_remove_media" />
+      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="translations.interactions_scale" >
+      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="translations.interactions_remove_media" />
 
-      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_manage_media" />
+      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="translations.interactions_manage_media" />
 
       <div class="ngremotemedia-local-file-container">
         <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">
           <Label for="new_file">
-            {{ this.$root.$data.NgRemoteMediaTranslations.interactions_quick_upload }}
+            {{ translations.interactions_quick_upload }}
           </Label>
           <input hidden id="new_file" :name="base+'_new_file_'+fieldId" type="file" @change="handleFileInputChange" ref="fileInput">
         </button>
       </div>
     </div>
+
+    <input type="hidden" :name="base+'_image_variations_'+fieldId" v-model="stringifiedVariations" class="media-id"/>
+    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations" :data-user-id="userId"></crop-modal>
+    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" ></upload-modal>
   </div>
 </template>
 
 <script>
 
 import Preview from "./Preview";
-import vSelect from "vue-select";
+import MediaModal from "./MediaModal";
+import CropModal from "./CropModal";
+import UploadModal from "./UploadModal";
+import {objectFilter} from "../utility/functional";
+import {truthy} from "../utility/predicates";
 
 export default {
   name: "Interactions",
-  props: ["contentObjectId", "version", "fieldId", "base", "selectedImage"],
+  props: ["contentObjectId", "version", "fieldId", "base", "config", "translations", "selectedImage"],
   components: {
-    "preview": Preview
+    "preview": Preview,
+    'media-modal': MediaModal,
+    'crop-modal': CropModal,
+    'upload-modal': UploadModal,
   },
   computed: {
     isCroppable() {
-      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.$root.$data.config.availableVariations).length > 0;
-    }
+      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.config.availableVariations).length > 0;
+    },
+    stringifiedVariations() {
+      return JSON.stringify(
+          objectFilter(truthy)(this.selectedImage.variations)
+      );
+    },
+  },
+  data() {
+    return {
+      mediaModalOpen: false,
+      cropModalOpen: false,
+      uploadModalOpen: false,
+      uploadModalLoading: false,
+      folders: [],
+    };
   },
   methods: {
+    prepareDomForModal() {
+      const query = document.querySelector('.ez-page-builder-wrapper')
+      if (query) {
+        query.style.transform = "none";
+      }
+    },
+    resetDomAfterModal() {
+      const query = document.querySelector('.ez-page-builder-wrapper')
+      if (query) {
+        query.removeAttribute("style");
+      }
+    },
+    handleMediaModalClose() {
+      this.mediaModalOpen = false;
+      this.resetDomAfterModal();
+    },
+    handleCropModalClose() {
+      this.cropModalOpen = false;
+      this.resetDomAfterModal();
+    },
+    handleUploadModalClose() {
+      this.uploadModalOpen = false;
+    },
+    handleEditorInsertModalClose() {
+      this.editorInsertModalOpen = false;
+    },
+    handleMediaSelected(item) {
+      this.selectedImage = {
+        id: item.resourceId,
+        name: item.filename,
+        type: item.type,
+        url: item.url,
+        alternateText: '',
+        tags: item.tags,
+        size: item.filesize,
+        variations: {},
+        height: item.height,
+        width: item.width
+      };
+
+      this.mediaModalOpen = false;
+    },
+    handleVariationCropChange(newValues) {
+      this.selectedImage = {
+        ...this.selectedImage,
+        variations: {
+          ...this.selectedImage.variations,
+          ...newValues
+        }
+      };
+    },
+    handleUploadModalSave(name){
+      this.selectedImage = {
+        ...this.selectedImage,
+        name,
+        id: name
+      };
+      this.uploadModalOpen = false;
+    },
     handleCropClicked() {
-      this.$root.$data.cropModalOpen = true;
-      this.$root.$options.methods.prepareDomForModal();
+      this.cropModalOpen = true;
+      this.prepareDomForModal();
     },
     handleRemoveMediaClicked() {
       this.selectedImage = {
@@ -69,13 +154,13 @@ export default {
       this.$refs.fileInput.value = null;
     },
     async fetchFolders() {
-      const response = await fetch(this.$root.$data.config.paths.folders);
+      const response = await fetch(this.config.paths.folders);
       const folders = await response.json();
-      this.$root.$data.folders = folders;
+      this.folders = folders;
     },
     async handleBrowseMediaClicked() {
-      this.$root.$data.mediaModalOpen = true;
-      this.$root.$options.methods.prepareDomForModal();
+      this.mediaModalOpen = true;
+      this.prepareDomForModal();
       this.fetchFolders();
     },
     getFileType(file){
@@ -88,8 +173,8 @@ export default {
       return type;
     },
     handleFileInputChange(e) {
-      this.$root.$data.uploadModalOpen = true;
-      this.$root.$data.uploadModalLoading = true;
+      this.uploadModalOpen = true;
+      this.uploadModalLoading = true;
 
       this.fetchFolders();
 
@@ -112,25 +197,25 @@ export default {
         if (this.selectedImage.type === "image"){
           const reader = new FileReader();
           reader.addEventListener(
-              'load',
-              function() {
-                this.$refs.preview.$refs.image.onload = function() {
-                  this.selectedImage.width = this.$refs.preview.$refs.image.naturalWidth,
-                      this.selectedImage.height = this.$refs.preview.$refs.image.naturalHeight;
-                  this.$root.$data.uploadModalLoading = false;
-                }.bind(this);
+            'load',
+            function() {
+              this.$refs.preview.$refs.image.onload = function() {
+                this.selectedImage.width = this.$refs.preview.$refs.image.naturalWidth,
+                    this.selectedImage.height = this.$refs.preview.$refs.image.naturalHeight;
+                this.uploadModalLoading = false;
+              }.bind(this);
 
-                this.selectedImage.url = reader.result;
-              }.bind(this),
-              false
+              this.selectedImage.url = reader.result;
+            }.bind(this),
+            false
           );
 
           reader.readAsDataURL(file);
         } else {
-          this.$root.$data.uploadModalLoading = false;
+          this.uploadModalLoading = false;
         }
       }
-    },
+    }
   }
 };
 </script>

@@ -30,10 +30,13 @@
 {def $user=fetch( 'user', 'current_user' )}
 
 <div class="ngremotemedia-type" data-user-id="{$user.contentobject_id}" data-id="{$fieldId}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
-    <interactions content-object-id="{$contentObjectId}" version="{$version}" field-id="{$fieldId}" base="{$base}" :selected-image="selectedImage"></interactions>
-
-    <input type="hidden" name="{$base}_image_variations_{$fieldId}" v-model="stringifiedVariations" class="media-id"/>
-    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations" data-user-id="{$user.contentobject_id}"></crop-modal>
-    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-    <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" ></upload-modal>
+    <interactions
+        content-object-id="{$contentObjectId}"
+        version="{$version}"
+        field-id="{$fieldId}"
+        base="{$base}"
+        :config="config"
+        :translations="NgRemoteMediaTranslations"
+        :selected-image="selectedImage"
+    ></interactions></div>
 </div>
