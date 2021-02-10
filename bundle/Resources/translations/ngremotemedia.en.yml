@@ -33,3 +33,10 @@ ngrm:
                 empty_folder_hint: 'Upload media from your local storage'
                 select: 'Select'
                 load_more: 'Load more'
+            editor_insert:
+                title: 'Insert remote media'
+                variations:
+                    original_image: 'Original image'
+                button:
+                    insert: 'Insert media'
+                    cancel: 'Cancel'
