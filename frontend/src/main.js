@@ -51,7 +51,7 @@ const handleDOMContentLoaded = function() {
         handleEditorInsertModalClose() {
             this.editorInsertModalOpen = false;
         },
-        handleEditorInsertModalSave(){;
+        handleEditorInsertModalSave(){
           this.editorInsertModalLoading = false;
           this.editorInsertModalOpen = false;
         }
