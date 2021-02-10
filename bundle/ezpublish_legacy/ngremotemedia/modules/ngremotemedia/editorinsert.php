@@ -40,10 +40,10 @@ $adminInputValue = AdminInputValue::fromHash($hash);
 
 $updatedValue = $updateFieldHelper->updateValue($oldValue, $adminInputValue);
 
-$variation = $http->postVariable('variation', []);
-$contentTypeIdentifier = $http->postVariable('content_type_identifier', 'embedded');
+$variation = $http->postVariable('variation');
+$contentTypeIdentifier = $http->postVariable('content_type_identifier');
 
-if ($variation) {
+if ($variation && $contentTypeIdentifier) {
     $variation = $remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $variation);
 }
 
