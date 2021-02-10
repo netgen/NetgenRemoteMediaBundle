@@ -7,3 +7,8 @@ netgen_remote_media_ezadmin_browse:
     path: /browse
     defaults:
         _controller: netgen_remote_media.controllers.ezadminui.browse
+
+netgen_remote_media_ezadmin_editorinsert:
+    path: /editorinsert
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.editorinsert
