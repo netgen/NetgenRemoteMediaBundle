@@ -7,3 +7,24 @@ ngrm:
         preview:
             alternate_text: 'Alternativ tekst'
             size: 'Size'
+        browse:
+            title: 'Select media'
+            facets:
+                image_and_documents: 'Image and documents'
+                video: 'Video'
+                select_folder: 'Select folder'
+                all_folders: 'All folders'
+                search: 'Search (by name, tag, or both)'
+                search_by_name: 'Search by name'
+                search_by_tag: 'Search by tag'
+            empty_folder: 'Folder is empty'
+            empty_folder_hint: 'Upload media from your local storage'
+            select: 'Select'
+            load_more: 'Load more'
+        editor_insert:
+            title: 'Insert remote media'
+            variations:
+                original_image: 'Original image'
+            button:
+                insert: 'Insert media'
+                cancel: 'Cancel'
