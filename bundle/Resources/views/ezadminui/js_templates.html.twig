@@ -2,6 +2,7 @@
 
 {% set paths = paths|default([]) %}
 {% set available_variations = available_variations|default([]|json_encode) %}
+{% set available_editor_variations = available_editor_variations|default([]|json_encode) %}
 {% set field_value = field_value|default(null) %}
 {% set fieldId = fieldId|default(null) %}
 
@@ -78,6 +79,7 @@
 
     RemoteMediaConfig = {
         paths: {{ paths|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }},
-        availableVariations: {{ available_variations|raw }}
+        availableVariations: {{ available_variations|raw }},
+        availableEditorVariations: {{ available_editor_variations|raw }}
     }
 </script>

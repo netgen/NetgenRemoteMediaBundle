@@ -12,6 +12,7 @@
 {/if}
 
 {def $croppableVariations = ng_image_variations($attribute.object.class_identifier, true)}
+{def $editorVariations = ng_image_variations($attribute.object.class_identifier)}
 
 {symfony_include(
     '@NetgenRemoteMedia/ezadminui/js_templates.html.twig',
@@ -23,6 +24,7 @@
             'folders', "/ngremotemedia/folders"|ezurl('no', 'relative')
         ),
         'available_variations', json_encode(scaling_format($croppableVariations)),
+        'available_editor_variations', json_encode(list_format($editorVariations)),
         'fieldId', $fieldId
     )
 )}
