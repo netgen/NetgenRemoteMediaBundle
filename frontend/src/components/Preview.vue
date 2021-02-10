@@ -12,10 +12,9 @@
         <div class="ngremotemedia-alttext">
           <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_alternate_text}}</span>
           <input type="text"
-                 :name="base+'_alttext_'+fieldId"
-                 v-model="selectedImage.alternateText"
-                 class="media-alttext data"
-                 v-bind:value="altText"
+               :name="base+'_alttext_'+fieldId"
+               v-model="selectedImage.alternateText"
+               class="media-alttext data"
           >
         </div>
 

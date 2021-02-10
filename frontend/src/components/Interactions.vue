@@ -4,7 +4,6 @@
         :field-id="fieldId"
         :base="base"
         :selected-image="selectedImage"
-        :alt-text="alt_text"
         ref="preview"
     ></preview>
 
@@ -107,7 +106,7 @@ export default {
         name: item.filename,
         type: item.type,
         url: item.url,
-        alternateText: '',
+        alternateText: item.alt_text,
         tags: item.tags,
         size: item.filesize,
         variations: {},
