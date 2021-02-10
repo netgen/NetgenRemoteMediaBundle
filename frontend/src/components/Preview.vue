@@ -36,7 +36,9 @@ export default {
   name: "Preview",
   props: ["fieldId", "base", "selectedImage", "altText"],
   data() {
-    allTags: []
+    return {
+      allTags: []
+    };
   },
   components: {
     'v-select': vSelect,
