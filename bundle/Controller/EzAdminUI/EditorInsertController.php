@@ -38,7 +38,7 @@ final class EditorInsertController
 
     public function __invoke(Request $request): Response
     {
-        $oldValue = new Value();
+        $oldValue = $this->remoteMediaProvider->getRemoteResource($request->request->get('resource_id'));
         $adminInputValue = AdminInputValue::fromHash($request->request->all());
 
         $updatedValue = $this->updateFieldHelper->updateValue($oldValue, $adminInputValue);
