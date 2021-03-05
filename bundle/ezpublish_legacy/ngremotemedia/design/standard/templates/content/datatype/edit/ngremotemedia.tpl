@@ -40,5 +40,5 @@
         :config="config"
         :translations="NgRemoteMediaTranslations"
         :selected-image="selectedImage"
-    ></interactions></div>
+    ></interactions>
 </div>
