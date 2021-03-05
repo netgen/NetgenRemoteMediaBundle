@@ -1,6 +1,6 @@
 <template>
   <modal :title="this.$root.$data.NgRemoteMediaTranslations.editor_insert_title" class="editor-insert-modal" @close="$emit('close')">
-    <div v-if="!loading" class="editor-insert-modal-body">
+    <div v-if="!editorInsertModalLoading" class="editor-insert-modal-body">
       <interactions
         :content-object-id="contentObjectId"
         :version="contentVersion"
@@ -24,7 +24,7 @@
     <i v-else class="ng-icon ng-spinner" />
     <div class="action-strip">
       <button type="button" class="btn" @click="$emit('close')">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_cancel_button}}</button>
-      <button type="button" class="btn btn-blue" @click="$emit('media-inserted', item)">
+      <button type="button" class="btn btn-blue" @click="this.handleEditorInsertModalSave">
         <span>{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_insert_button}}</span>
       </button>
     </div>
@@ -38,16 +38,61 @@ import vSelect from "vue-select";
 
 export default {
   name: "EditorInsertModal",
-  props: ["loading", "base", "fieldId", "contentObjectId", "contentVersion", "base", "contentTypeIdentifier", "config", "translations", "selectedImage"],
+  props: ["loading", "base", "fieldId", "contentObjectId", "contentVersion", "base", "contentTypeIdentifier", "config", "translations", "selectedImage", "editorInsertAjaxUrl"],
   components: {
     'modal': Modal,
     'interactions': Interactions,
     "v-select": vSelect
   },
+  data() {
+    return {
+      editorInsertModalLoading: false,
+    };
+  },
   methods: {
     handleVariationChange(value) {
       $('input[name="'+this.base+'_selected_variation_'+this.fieldId+'"]').val(value);
     },
+    handleEditorInsertModalSave(){
+      this.editorInsertModalLoading = true;
+
+      var data = new FormData();
+      data.append('resource_id', $('body').find('input[name="'+this.base+'_media_id_'+this.fieldId+'"]').val());
+      data.append('alt_text', $('body').find('input[name="'+this.base+'_alttext_'+this.fieldId+'"]').val());
+      data.append('new_file', $('body').find('input[name="'+this.base+'_new_file_'+this.fieldId+'"]')[0].files[0]);
+      data.append('image_variations', $('body').find('input[name="'+this.base+'_image_variations_'+this.fieldId+'"]').val());
+      data.append('content_type_identifier', $('body').find('input[name="'+this.base+'_content_type_identifier_'+this.fieldId+'"]').val());
+      data.append('variation', $('body').find('input[name="'+this.base+'_selected_variation_'+this.fieldId+'"]').val());
+
+      var tagsArray = $('body').find('select[name="'+this.base+'_tags_'+this.fieldId+'[]"]').val();
+
+      if (!$.isArray(tagsArray)) {
+        var tag = tagsArray;
+        var tagsArray = [];
+
+        if (tag) {
+          tagsArray.push(tag);
+        }
+      }
+
+      $.each(tagsArray, function (key, tag) {
+        data.append('tags[]', tag);
+      });
+
+      var $this = this;
+      $.ajax({
+        type: 'post',
+        url: this.editorInsertAjaxUrl,
+        processData: false,
+        contentType: false,
+        data: data,
+        success: function(data) {
+          $this.$emit('media-inserted', data);
+          $this.$emit('close');
+          this.editorInsertModalLoading = false;
+        }
+      });
+    }
   }
 };
 </script>
@@ -79,6 +124,17 @@ export default {
 
   .icon-floppy {
     margin-right: 5px;
+  }
+}
+.ng-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  &:before {
+    display: inline-block;
+    animation: spinning 1500ms linear infinite;
   }
 }
 </style>

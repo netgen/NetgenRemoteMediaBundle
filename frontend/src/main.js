@@ -50,10 +50,6 @@ const handleDOMContentLoaded = function() {
         },
         handleEditorInsertModalClose() {
             this.editorInsertModalOpen = false;
-        },
-        handleEditorInsertModalSave(){
-          this.editorInsertModalLoading = false;
-          this.editorInsertModalOpen = false;
         }
       },
     });

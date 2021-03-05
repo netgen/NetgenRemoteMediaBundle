@@ -58,6 +58,11 @@ export default {
   },
   mounted() {
     this.allTags = [...this.selectedImage.tags];
+  },
+  watch: {
+    selectedImage: function() {
+      this.allTags = [...this.selectedImage.tags];
+    }
   }
 }
 </script>
