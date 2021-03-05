@@ -2,7 +2,6 @@
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
 $http = eZHTTPTool::instance();
 
