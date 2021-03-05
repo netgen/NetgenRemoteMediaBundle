@@ -10,8 +10,6 @@ $container = ezpKernel::instance()->getServiceContainer();
 $updateFieldHelper = $container->get('netgen_remote_media.admin.field_update.helper');
 $remoteMediaProvider = $container->get('netgen_remote_media.provider');
 
-$oldValue = new Value();
-
 $hash = [
     'resource_id' => $http->postVariable('resource_id', ''),
     'alt_text' => $http->postVariable('alt_text', ''),
@@ -38,6 +36,7 @@ if (isset($_FILES['new_file'])) {
 
 $adminInputValue = AdminInputValue::fromHash($hash);
 
+$oldValue = $remoteMediaProvider->getRemoteResource($hash['resource_id']);
 $updatedValue = $updateFieldHelper->updateValue($oldValue, $adminInputValue);
 
 $variation = $http->postVariable('variation');

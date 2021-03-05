@@ -98,6 +98,13 @@ abstract class RemoteMediaProvider
     abstract public function removeTagFromResource(string $resourceId, string $tag);
 
     /**
+     * Removes all tags from remote resource.
+     *
+     * @return mixed
+     */
+    abstract public function removeAllTagsFromResource(string $resourceId);
+
+    /**
      * @param $resourceId
      * @param $tags
      *

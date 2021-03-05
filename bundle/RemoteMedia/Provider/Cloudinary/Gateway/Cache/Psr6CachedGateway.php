@@ -300,6 +300,23 @@ class Psr6CachedGateway extends Gateway
     }
 
     /**
+     * Removes all tags from the remote resource.
+     *
+     * @param $id
+     *
+     * @return array
+     */
+    public function removeAllTags($id)
+    {
+        $value = $this->gateway->removeAllTags($id);
+
+        $this->cache->invalidateTags($this->getItemCacheTags($id));
+
+        return $value;
+    }
+
+
+    /**
      * Updates the remote resource.
      *
      * @param $id

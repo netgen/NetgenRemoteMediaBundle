@@ -229,6 +229,18 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
+     * Removes all tags from the remote resource.
+     *
+     * @param $id
+     *
+     * @return array
+     */
+    public function removeAllTags($id)
+    {
+        return $this->cloudinaryUploader->remove_all_tags([$id]);
+    }
+
+    /**
      * Updates the remote resource.
      *
      * @param $id
