@@ -2,6 +2,8 @@
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
+use \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use \Cloudinary\Api\NotFound;
 
 $http = eZHTTPTool::instance();
 
@@ -21,6 +23,8 @@ if (!is_array($hash['tags'])) {
     $hash['tags'] = [];
 }
 
+$oldValue = new Value();
+
 if (isset($_FILES['new_file'])) {
     $file = $_FILES['new_file'];
 
@@ -35,7 +39,12 @@ if (isset($_FILES['new_file'])) {
 
 $adminInputValue = AdminInputValue::fromHash($hash);
 
-$oldValue = $remoteMediaProvider->getRemoteResource($hash['resource_id']);
+if (!isset($_FILES['new_file'])) {
+    try {
+        $oldValue = $remoteMediaProvider->getRemoteResource($hash['resource_id']);
+    } catch (NotFound $e) {}
+}
+
 $updatedValue = $updateFieldHelper->updateValue($oldValue, $adminInputValue);
 
 $variation = $http->postVariable('variation');

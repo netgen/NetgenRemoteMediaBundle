@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI;
 
+use Cloudinary\Api\NotFound;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -38,9 +39,15 @@ final class EditorInsertController
 
     public function __invoke(Request $request): Response
     {
-        $oldValue = $this->remoteMediaProvider->getRemoteResource($request->request->get('resource_id'));
-        $adminInputValue = AdminInputValue::fromHash($request->request->all());
+        $oldValue = new Value();
 
+        if ($request->request->get('new_file') === null) {
+            try {
+                $oldValue = $this->remoteMediaProvider->getRemoteResource($request->request->get('resource_id'));
+            } catch (NotFound $e) {}
+        }
+
+        $adminInputValue = AdminInputValue::fromHash($request->request->all());
         $updatedValue = $this->updateFieldHelper->updateValue($oldValue, $adminInputValue);
 
         $variation = $request->request->get('variation');
