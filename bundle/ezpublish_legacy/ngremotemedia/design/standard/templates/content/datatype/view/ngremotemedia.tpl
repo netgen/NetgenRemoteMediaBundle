@@ -24,10 +24,15 @@
              {if $title}title="{$title}"{/if}
         />
     {elseif $value.mediaType|eq('video')}
-        {* TODO: show video thumbnai *}
-        <i class="ngri-video ngri-big"></i>
+        <i class="fa fa-video-camera" aria-hidden="true"></i>
+        {$value.resourceId}
+
+        {def $thumbnail = videoThumbnail($value)}
+        <img src="{$thumbnail}"/>
     {else}
-        {* TODO: maybe show download link here? *}
-        <i class="ngri-book ngri-big"></i>
+        <i class="fa fa-book" aria-hidden="true"></i>
+        <a href="{$value.secure_url}" target="_blank" rel="noopener noreferrer">
+            {$value.resourceId}
+        </a>
     {/if}
 {/if}
