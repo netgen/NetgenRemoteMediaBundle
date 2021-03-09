@@ -53,7 +53,7 @@ final class AdminInputValue
         $alttext = $http->variable($base . '_alttext_' . $attributeId, '');
         $tags = $http->variable($base . '_tags_' . $attributeId, []);
         $variations = $http->variable($base . '_image_variations_' . $attributeId, '{}');
-        $mediaType = $http->variable($base . '_media_type_' . $attributeId, 'image'); // @todo: add this field to legacy templates!!!
+        $mediaType = $http->variable($base . '_media_type_' . $attributeId, 'image');
         $variations = \json_decode($variations, true);
 
         $file = eZHTTPFile::fetch($base . '_new_file_' . $attributeId);
