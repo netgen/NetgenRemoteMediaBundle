@@ -11,7 +11,7 @@
             <input type="hidden"
                    name="{$base}_media_type_{$fieldId}"
                    v-model="selectedImage.type"
-                   {if $remote_value.metaData.resource_type}value="{$remote_value.metaData.resource_type}"{/if}
+                   value="{if and(is_set($remote_value.metaData.resource_type), gt($remote_value.metaData.resource_type|count_chars(),0))}{$remote_value.metaData.resource_type}{else}image{/if}"
             >
 
             <div class="ngremotemedia-alttext">

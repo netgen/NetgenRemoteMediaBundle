@@ -46,7 +46,7 @@
 
     RemoteMediaSelectedImage_{{ fieldId }} = {
         url : "{{ field_value.secure_url }}",
-        type: "{{ field_value.metaData.resource_type }}",
+        type: "{{ field_value.metaData.resource_type|default('image') }}",
         {% if field_value.mediaType == 'image' %}
             mediaType: "image",
         {% elseif field_value.mediaType == 'video' %}
