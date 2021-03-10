@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     isCroppable() {
-      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.config.availableVariations).length > 0;
+      return !!this.selectedImage.id && this.selectedImage.mediaType === "image" && Object.keys(this.config.availableVariations).length > 0;
     },
     stringifiedVariations() {
       return JSON.stringify(
@@ -105,6 +105,7 @@ export default {
         id: item.resourceId,
         name: item.filename,
         type: item.type,
+        mediaType: item.mediaType,
         url: item.url,
         alternateText: item.alt_text,
         tags: item.tags,
@@ -142,6 +143,7 @@ export default {
         id: '',
         name: '',
         type: 'image',
+        mediaType: 'image',
         url: '',
         alternateText: '',
         tags: [],
@@ -165,6 +167,15 @@ export default {
     getFileType(file){
       const type = file.type.split("/")[0];
 
+      if (type !== "video"){
+        return "image";
+      }
+
+      return type;
+    },
+    getFileMediaType(file){
+      const type = file.type.split("/")[0];
+
       if (type !== "video" && type !== "image"){
         return "other";
       }
@@ -184,6 +195,7 @@ export default {
           id: file.name,
           name: file.name,
           type: this.getFileType(file),
+          mediaType: this.getFileMediaType(file),
           url: '',
           alternateText: '',
           tags: [],
@@ -193,7 +205,7 @@ export default {
           width: 0
         };
 
-        if (this.selectedImage.type === "image"){
+        if (this.selectedImage.mediaTye === "image"){
           const reader = new FileReader();
           reader.addEventListener(
             'load',
