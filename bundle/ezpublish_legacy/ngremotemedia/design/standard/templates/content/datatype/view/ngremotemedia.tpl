@@ -27,6 +27,8 @@
         <i class="fa fa-video-camera" aria-hidden="true"></i>
         {$value.resourceId}
 
+        <br/>
+
         {def $thumbnail = videoThumbnail($value)}
         <img src="{$thumbnail}"/>
     {else}

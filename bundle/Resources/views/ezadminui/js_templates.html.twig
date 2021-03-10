@@ -46,12 +46,13 @@
 
     RemoteMediaSelectedImage_{{ fieldId }} = {
         url : "{{ field_value.secure_url }}",
+        type: "{{ field_value.metaData.resource_type }}",
         {% if field_value.mediaType == 'image' %}
-            type : "image",
+            mediaType: "image",
         {% elseif field_value.mediaType == 'video' %}
-            type : "video",
+            mediaType: "video",
         {% else %}
-            type : "other",
+            mediaType: "other",
         {% endif %}
         name: "{{ field_value.resourceId }}",
         alternateText: "{{ field_value.metaData.alt_text }}",
