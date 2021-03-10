@@ -6,17 +6,19 @@
         <span><strong>Folder is empty</strong>Upload media from your local storage.</span>
       </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
-        <div v-if="item.type==='image' || item.type==='video'" class="media-container">
+        <div v-if="item.mediaType==='image' || item.mediaType==='video'" class="media-container">
           <img :src="item.browse_url" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description">{{item.width}} x {{item.height}}</div>
         </div>
         <div v-else class="media-container">
           <span class="video-placeholder">
-            <span class="icon-play"></span>
+            <span class="icon-doc">
+                <i class="fa fa-lg fa-file"></i>
+            </span>
           </span>
           <Label class="filename">{{item.filename}}</Label>
-          <div class="size-description">{{item.width}} x {{item.height}}</div>
+          <div class="size-description format">{{item.format}}</div>
         </div>
         <button type="button" @click="$emit('media-selected', item)" class="btn btn-blue select-btn">Select</button>
       </div>
@@ -84,6 +86,14 @@ export default {
           color: $white;
         }
 
+        .icon-doc {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: $white;
+        }
+
         &:before {
           position: absolute;
           content: '';
@@ -115,6 +125,10 @@ export default {
         line-height: 14px;
         text-align: center;
         color: $dusty-gray;
+      }
+
+      .size-description.format {
+        text-transform: uppercase;
       }
 
       &.selected {

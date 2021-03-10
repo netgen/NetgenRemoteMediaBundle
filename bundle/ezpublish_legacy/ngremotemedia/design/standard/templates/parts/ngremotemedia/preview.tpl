@@ -1,7 +1,7 @@
 <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
     <div class="image-wrap">
-        <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image" />
-        <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
+        <img v-if="selectedImage.mediaType==='image'" :src="selectedImage.url" ref="image" />
+        <i v-else="selectedImage.mediaType!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
     </div>
 
     <div class="image-meta">
@@ -11,7 +11,7 @@
             <input type="hidden"
                    name="{$base}_media_type_{$fieldId}"
                    v-model="selectedImage.type"
-                   {if $remote_value.metaData.type}value="{$remote_value.metaData.type}"{/if}
+                   {if $remote_value.metaData.resource_type}value="{$remote_value.metaData.resource_type}"{/if}
             >
 
             <div class="ngremotemedia-alttext">

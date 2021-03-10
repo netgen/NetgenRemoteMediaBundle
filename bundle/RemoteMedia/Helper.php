@@ -68,6 +68,7 @@ class Helper
                 'width' => $hit['width'],
                 'height' => $hit['height'],
                 'filename' => $hit['public_id'],
+                'format' => $hit['format'],
                 'browse_url' => $browseUrl,
                 'url' => $value->secure_url,
             ];

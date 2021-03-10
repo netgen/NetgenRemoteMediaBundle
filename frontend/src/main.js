@@ -33,6 +33,7 @@ const handleDOMContentLoaded = function() {
           id: '',
           name: '',
           type: 'image',
+          mediaType: 'image',
           url: '',
           browse_url: '',
           alternateText: '',
@@ -116,6 +117,7 @@ const handleDOMContentLoaded = function() {
             id: item.resourceId,
             name: item.filename,
             type: item.type,
+            mediaType: item.mediaType,
             url: item.url,
             alternateText: '',
             tags: item.tags,
@@ -132,6 +134,7 @@ const handleDOMContentLoaded = function() {
             id: '',
             name: '',
             type: 'image',
+            mediaType: 'image',
             url: '',
             alternateText: '',
             tags: [],
@@ -155,6 +158,7 @@ const handleDOMContentLoaded = function() {
               id: file.name,
               name: file.name,
               type: this.getFileType(file),
+              mediaType: this.getFileMediaType(file),
               url: '',
               alternateText: '',
               tags: [],
@@ -204,6 +208,15 @@ const handleDOMContentLoaded = function() {
           this.uploadModalOpen = false;
         },
         getFileType(file){
+          const type = file.type.split("/")[0];
+
+          if (type !== "video"){
+            return "image";
+          }
+
+          return type;
+        },
+        getFileMediaType(file){
           const type = file.type.split("/")[0];
 
           if (type !== "video" && type !== "image"){
