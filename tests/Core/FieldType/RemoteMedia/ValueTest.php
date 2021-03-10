@@ -45,12 +45,20 @@ class ValueTest extends TestCase
         'mediaType' => 'image',
         'variations' => [],
         'metaData' => [
-            'format' => '',
-            'alt_text' => '',
-            'caption' => '',
+            'version' => '',
             'width' => '',
             'height' => '',
+            'resource_type' => 'image',
+            'created' => '',
+            'format' => '',
+            'created' => '',
             'tags' => [],
+            'signature' => '',
+            'type' => '',
+            'etag' => '',
+            'overwritten' => '',
+            'alt_text' => '',
+            'caption' => '',
         ],
     ];
 
