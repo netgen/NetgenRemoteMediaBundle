@@ -177,6 +177,16 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Removes all tags from remote resource.
+     *
+     * @return mixed
+     */
+    public function removeAllTagsFromResource(string $resourceId)
+    {
+        return $this->gateway->removeAllTags($resourceId);
+    }
+
+    /**
      * @param $resourceId
      * @param $tags
      *

@@ -17,6 +17,7 @@ class NgRemoteMediaOperator
             'videoThumbnail',
             'ng_image_variations',
             'scaling_format',
+            'list_format',
         );
     }
 
@@ -71,6 +72,12 @@ class NgRemoteMediaOperator
                 )
             ),
             'scaling_format' => array(
+                'formats' => array(
+                    'type' => 'array',
+                    'required' => true
+                )
+            ),
+            'list_format' => array(
                 'formats' => array(
                     'type' => 'array',
                     'required' => true
@@ -132,6 +139,8 @@ class NgRemoteMediaOperator
             $operatorValue = $this->getImageVariations($namedParameters['class_identifier'], $onlyCroppable);
         } elseif ($operatorName === 'scaling_format') {
             $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
+        } elseif ($operatorName === 'list_format') {
+            $operatorValue = $this->formatAliasForList($namedParameters['formats']);
         }
     }
 
@@ -154,6 +163,11 @@ class NgRemoteMediaOperator
         }
 
         return $availableVariations;
+    }
+
+    function formatAliasForList($variations)
+    {
+        return array_keys($variations);
     }
 
     function getImageVariations($class_identifier, $onlyCroppable = false)

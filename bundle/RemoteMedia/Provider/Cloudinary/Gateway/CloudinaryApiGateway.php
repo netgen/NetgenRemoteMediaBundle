@@ -191,12 +191,8 @@ class CloudinaryApiGateway extends Gateway
      */
     public function get($id, $type)
     {
-        $options = array(
-            'type' => 'upload'
-        );
-
         try {
-            return $this->cloudinaryUploader->explicit($id, $options);
+            return (array) $this->cloudinaryApi->resource($id, ['resource_type' => $type]);
         } catch (Cloudinary\Error $e) {
             return [];
         }
@@ -226,6 +222,18 @@ class CloudinaryApiGateway extends Gateway
     public function removeTag($id, $tag)
     {
         return $this->cloudinaryUploader->remove_tag($tag, [$id]);
+    }
+
+    /**
+     * Removes all tags from the remote resource.
+     *
+     * @param $id
+     *
+     * @return array
+     */
+    public function removeAllTags($id)
+    {
+        return $this->cloudinaryUploader->remove_all_tags([$id]);
     }
 
     /**

@@ -126,10 +126,10 @@ export default {
         line-height: 14px;
         text-align: center;
         color: $dusty-gray;
-      }
 
-      .size-description.format {
-        text-transform: uppercase;
+        &.format {
+          text-transform: uppercase;
+        }
       }
 
       &.selected {

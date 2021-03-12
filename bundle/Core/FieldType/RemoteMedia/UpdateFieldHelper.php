@@ -39,12 +39,13 @@ final class UpdateFieldHelper
             }
 
             $updatedValue = $this->remoteMediaProvider->upload($adminInputValue->getNewFile(), $options);
+
+            $oldValue = new Value(); // reset the context and variations
         }
 
-        $oldValue = new Value(); // reset the context and variations
-
         $this->updateContext($updatedValue, $oldValue, $adminInputValue);
-        $this->updateVariations($updatedValue, $oldValue, $adminInputValue);
+
+        $updatedValue->variations = $adminInputValue->getVariations();
 
         return $updatedValue;
     }
@@ -65,10 +66,17 @@ final class UpdateFieldHelper
         }
 
         if ($oldValue->metaData['tags'] !== $input->getTags()) {
-            $this->remoteMediaProvider->updateTags(
-                $updatedValue->resourceId,
-                implode(',', $input->getTags())
-            );
+            if (count($input->getTags()) === 0) {
+                $this->remoteMediaProvider->removeAllTagsFromResource($updatedValue->resourceId);
+            }
+
+            if (count($input->getTags()) > 0) {
+                $this->remoteMediaProvider->updateTags(
+                    $updatedValue->resourceId,
+                    count($input->getTags()) > 0 ? implode(',', $input->getTags()) : null
+                );
+            }
+
             $updatedValue->metaData['tags'] = $input->getTags();
         }
 
@@ -79,10 +87,5 @@ final class UpdateFieldHelper
                 $dataToChange
             );
         }
-    }
-
-    private function updateVariations(Value $updatedValue, Value $oldValue, AdminInputValue $input)
-    {
-        $updatedValue->variations = $input->getVariations() + $oldValue->variations;
     }
 }

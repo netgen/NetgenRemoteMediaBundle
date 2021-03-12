@@ -54,3 +54,9 @@ services:
             - "@@NetgenRemoteMedia/ezadminui/stylesheets.html.twig"
         tags:
             - { name: ezplatform.admin_ui.component, group: 'stylesheet-head' }
+
+    netgen_remote_media.next_cursor_resolver:
+        class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\NextCursorResolver
+        arguments:
+            - "@ezpublish.cache_pool"
+            - "%netgen_remote_media.cloudinary.cache_ttl%"

@@ -9,3 +9,9 @@ services:
         arguments:
             - '@netgen_remote_media.provider'
             - '@netgen_remote_media.helper'
+
+    netgen_remote_media.controllers.ezadminui.editorinsert:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\EditorInsertController
+        arguments:
+            - '@netgen_remote_media.admin.field_update.helper'
+            - '@netgen_remote_media.provider'

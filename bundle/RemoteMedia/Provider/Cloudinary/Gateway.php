@@ -91,6 +91,15 @@ abstract class Gateway
     abstract public function removeTag($id, $tag);
 
     /**
+     * Removes all tags from the remote resource.
+     *
+     * @param $id
+     *
+     * @return array
+     */
+    abstract public function removeAllTags($id);
+
+    /**
      * Updates the remote resource.
      *
      * @param $id
