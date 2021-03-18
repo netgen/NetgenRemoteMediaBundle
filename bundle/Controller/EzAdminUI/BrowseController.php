@@ -32,8 +32,9 @@ final class BrowseController
         $userQuery = $request->get('q', '');
         $tag = $request->get('tag', '');
 
-        $type = $request->get('mediatype', 'image');
+        $type = $request->get('mediatype', 'all');
         $folder = $request->get('folder', 'all');
+        $type = $type !== 'all' ? $type : null;
         $folder = $folder !== 'all' ? $folder : null;
 
         $nextCursor = $request->get('next_cursor', null);

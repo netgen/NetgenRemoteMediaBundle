@@ -111,18 +111,25 @@ class CloudinaryApiGateway extends Gateway
      */
     public function search(Query $query): Result
     {
-        $expression = sprintf('resource_type:%s', $query->getResourceType());
+        $expressions = [];
+
+        if ($query->getResourceType()) {
+            $expressions[] = sprintf('resource_type:%s', $query->getResourceType());
+        }
+
         if ($query->getQuery() !== '') {
-            $expression = sprintf('%s* AND ', $query->getQuery()) . $expression;
+            $expressions[] = sprintf('%s*', $query->getQuery());
         }
 
         if ($query->getTag()) {
-            $expression .= sprintf(' AND tags:%s', $query->getTag());
+            $expressions[] = sprintf('tags:%s', $query->getTag());
         }
 
         if ($query->getFolder()) {
-            $expression .= sprintf(' AND folder:%s/*', $query->getFolder());
+            $expressions[] = sprintf('folder:%s/*', $query->getFolder());
         }
+
+        $expression = implode(' AND ', $expressions);
 
         $search = $this->cloudinarySearch
             ->expression($expression)

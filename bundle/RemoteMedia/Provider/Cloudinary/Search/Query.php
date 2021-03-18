@@ -32,7 +32,7 @@ final class Query
      */
     public function __construct(
         string $query,
-        string $resourceType,
+        ?string $resourceType,
         int $limit,
         ?string $folder = null,
         ?string $tag = null,
@@ -53,7 +53,7 @@ final class Query
         return $this->query;
     }
 
-    public function getResourceType(): string
+    public function getResourceType(): ?string
     {
         return $this->resourceType;
     }
