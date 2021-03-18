@@ -157,6 +157,14 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Lists all available tags.
+     */
+    public function listTags(): array
+    {
+        return $this->gateway->listTags();
+    }
+
+    /**
      * Adds tag to remote resource.
      *
      * @return mixed

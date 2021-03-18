@@ -84,6 +84,11 @@ abstract class RemoteMediaProvider
     abstract public function getRemoteResource(string $resourceId, ?string $resourceType = 'image'): Value;
 
     /**
+     * Lists all available tags.
+     */
+    abstract public function listTags(): array;
+
+    /**
      * Adds tag to remote resource.
      *
      * @return mixed

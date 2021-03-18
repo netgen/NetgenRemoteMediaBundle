@@ -206,6 +206,30 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
+     * Lists all available tags.
+     *
+     * @return array
+     */
+    public function listTags()
+    {
+        $options = [
+            'max_results' => 500,
+        ];
+
+        $tags = [];
+        do {
+            $result = $this->cloudinaryApi->tags($options);
+            $tags = array_merge($tags, $result['tags']);
+
+            if (array_key_exists('next_cursor', $result)) {
+                $options['next_cursor'] = $result['next_cursor'];
+            }
+        } while (array_key_exists('next_cursor', $result));
+
+        return $tags;
+    }
+
+    /**
      * Adds new tag to the remote resource.
      *
      * @param $id
