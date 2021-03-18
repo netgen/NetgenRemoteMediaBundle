@@ -1,14 +1,18 @@
 <template>
   <div class="mediaFacets">
-    <ul class="tabs">
-      <li :class="{active: isType(TYPE_IMAGE)}">
-        <span @click="handleTypeChange(TYPE_IMAGE)">{{ this.$root.$data.NgRemoteMediaTranslations.browse_image_and_documents }}</span>
-      </li>
-      <li :class="{active: isType(TYPE_VIDEO)}">
-        <span @click="handleTypeChange(TYPE_VIDEO)">{{ this.$root.$data.NgRemoteMediaTranslations.browse_video }}</span>
-      </li>
-    </ul>
     <div class="body">
+      <div class="form-field">
+        <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_media_type }}</label>
+        <v-select
+            :options="mediaTypes"
+            label="name"
+            v-model="selectedMediaType"
+            @input="handleTypeChange"
+            :reduce="option => option.id"
+            :placeholder="this.$root.$data.NgRemoteMediaTranslations.browse_all_media_types"
+        />
+      </div>
+
       <div class="form-field">
         <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_folder }}</label>
         <v-select
@@ -31,7 +35,7 @@
             :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_name"
             v-model="query"
             @keyup="handleQueryChange"
-            @keydown.enter.prevent="null" 
+            @keydown.enter.prevent="null"
             />
         </div>
           <div class="search">
@@ -42,7 +46,7 @@
                   :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_tag"
                   v-model="tag"
                   @keyup="handleTagChange"
-                  @keydown.enter.prevent="null" 
+                  @keydown.enter.prevent="null"
               />
           </div>
       </div>
@@ -52,8 +56,10 @@
 
 <script>
 import {
+  TYPE_ALL,
   TYPE_IMAGE,
   TYPE_VIDEO,
+  TYPE_RAW,
   SEARCH_NAME,
   SEARCH_TAG,
   FOLDER_ALL
@@ -63,16 +69,19 @@ import vSelect from "vue-select";
 
 export default {
   name: "MediaFacets",
-  props: ["folders", "facets"],
+  props: ["folders", "facets", "mediaTypes"],
   data() {
     return {
+      TYPE_ALL,
       TYPE_IMAGE,
       TYPE_VIDEO,
+      TYPE_RAW,
       SEARCH_NAME,
       SEARCH_TAG,
       FOLDER_ALL,
       selectedFolder: this.facets.folder,
-      query: this.facets.query,
+      selectedMediaType: this.facets.mediaType,
+      query: this.facets.query
     };
   },
   methods: {
@@ -81,9 +90,6 @@ export default {
     },
     handleTypeChange(mediaType) {
       this.$emit("change", { mediaType });
-    },
-    isType(type) {
-      return this.facets.mediaType === type;
     },
     handleFolderChange(value) {
       this.$emit("change", { folder: this.selectedFolder });
@@ -110,40 +116,14 @@ export default {
   flex-shrink: 0;
   box-shadow: inset -1px 0 0 0 $mercury;
 
-  .tabs {
-    list-style: none;
-    display: flex;
-    align-items: center;
-    padding: 0 15px;
-    margin: 0;
-
-    li {
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 16px;
-      text-align: center;
-      text-transform: uppercase;
-      flex-grow: 1;
-      color: $dusty-gray;
-      cursor: pointer;
-      min-width: 120px;
-
-      span {
-        display: inline-block;
-        padding: 17px 20px;
-      }
-
-      &.active {
-        color: $netgen-primary;
-        box-shadow: inset 0 -4px 0 0 $netgen-primary;
-      }
-    }
-  }
-
   .body {
     box-shadow: inset 0 -1px 0 0 $mercury, inset 0 1px 0 0 $mercury, inset -1px 0 0 0 $mercury;
     background: $white;
     padding: 30px 15px;
+
+    .form-field + .form-field {
+      margin-top: 15px;
+    }
 
     .form-field label,
     .search-wrapper .search-label {

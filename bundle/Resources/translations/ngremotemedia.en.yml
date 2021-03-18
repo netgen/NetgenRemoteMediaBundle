@@ -23,7 +23,10 @@ ngrm:
                 title: 'Select media'
                 facets:
                     image_and_documents: 'Image and documents'
-                    video: 'Video'
+                    video_and_audio: 'Video and audio'
+                    raw: 'RAW'
+                    select_media_type: 'Select media type'
+                    all_media_types: 'All media types'
                     select_folder: 'Select folder'
                     all_folders: 'All folders'
                     search: 'Search (by name, tag, or both)'
