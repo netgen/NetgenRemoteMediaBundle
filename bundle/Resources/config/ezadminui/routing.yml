@@ -1,7 +1,7 @@
-netgen_remote_media_ezadmin_folders:
-    path: /folders
+netgen_remote_media_ezadmin_facets:
+    path: /facets
     defaults:
-        _controller: netgen_remote_media.controllers.ezadminui.folders.list
+        _controller: netgen_remote_media.controllers.ezadminui.facets.list
 
 netgen_remote_media_ezadmin_browse:
     path: /browse
