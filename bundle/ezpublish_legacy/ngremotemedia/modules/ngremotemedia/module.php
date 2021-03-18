@@ -10,9 +10,9 @@ $ViewList['browse'] = array(
     'script' => 'browse.php',
     'functions' => 'browse',
 );
-$ViewList['folders'] = array(
-    'script' => 'folders.php',
-    'functions' => 'folders',
+$ViewList['facets'] = array(
+    'script' => 'facets.php',
+    'functions' => 'facets',
 );
 $ViewList['editorinsert'] = array(
     'script' => 'editorinsert.php',
@@ -20,5 +20,5 @@ $ViewList['editorinsert'] = array(
 );
 
 $FunctionList['browse'] = array();
-$FunctionList['folders'] = array();
+$FunctionList['facets'] = array();
 $FunctionList['editorinsert'] = array();
