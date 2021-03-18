@@ -27,7 +27,7 @@
 
     <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.image_variations" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations" :data-user-id="userId"></crop-modal>
-    <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <media-modal :folders="folders" :tags="tags" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
     <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" ></upload-modal>
   </div>
 </template>
@@ -67,6 +67,7 @@ export default {
       uploadModalOpen: false,
       uploadModalLoading: false,
       folders: [],
+      tags: []
     };
   },
   methods: {
@@ -150,15 +151,16 @@ export default {
       };
       this.$refs.fileInput.value = null;
     },
-    async fetchFolders() {
-      const response = await fetch(this.config.paths.folders);
-      const folders = await response.json();
-      this.folders = folders;
+    async fetchFacets() {
+      const response = await fetch(this.config.paths.facets);
+      const data = await response.json();
+      this.folders = data.folders;
+      this.tags = data.tags;
     },
     async handleBrowseMediaClicked() {
       this.mediaModalOpen = true;
       this.prepareDomForModal();
-      this.fetchFolders();
+      this.fetchFacets();
     },
     getFileType(file){
       const type = file.type.split("/")[0];
@@ -182,7 +184,7 @@ export default {
       this.uploadModalOpen = true;
       this.uploadModalLoading = true;
 
-      this.fetchFolders();
+      this.fetchFacets();
 
       const file = e.target.files.item(0);
 

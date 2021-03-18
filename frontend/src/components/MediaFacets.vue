@@ -2,7 +2,7 @@
   <div class="mediaFacets">
     <div class="body">
       <div class="form-field">
-        <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_media_type }}</label>
+        <label for="mediaType">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_media_type }}</label>
         <v-select
             :options="mediaTypes"
             label="name"
@@ -25,6 +25,18 @@
         />
       </div>
 
+      <div class="form-field">
+        <label for="tag">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_tag }}</label>
+        <v-select
+            :options="tags"
+            label="name"
+            v-model="tag"
+            @input="handleTagChange"
+            :reduce="option => option.id"
+            :placeholder="this.$root.$data.NgRemoteMediaTranslations.browse_all_tags"
+        />
+      </div>
+
       <div class="search-wrapper">
         <span class="search-label">{{ this.$root.$data.NgRemoteMediaTranslations.search }}</span>
         <div class="search">
@@ -32,23 +44,12 @@
             </ul>
             <input
             type="text"
-            :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_name"
+            :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_placeholder"
             v-model="query"
             @keyup="handleQueryChange"
             @keydown.enter.prevent="null"
             />
         </div>
-          <div class="search">
-              <ul class="searchType">
-              </ul>
-              <input
-                  type="text"
-                  :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_by_tag"
-                  v-model="tag"
-                  @keyup="handleTagChange"
-                  @keydown.enter.prevent="null"
-              />
-          </div>
       </div>
     </div>
   </div>
@@ -61,15 +62,16 @@ import {
   TYPE_VIDEO,
   TYPE_RAW,
   SEARCH_NAME,
-  SEARCH_TAG,
-  FOLDER_ALL
+  FOLDER_ALL,
+  TAG_ALL,
 } from "../constants/facets";
+
 
 import vSelect from "vue-select";
 
 export default {
   name: "MediaFacets",
-  props: ["folders", "facets", "mediaTypes"],
+  props: ["folders", "tags", "facets", "mediaTypes"],
   data() {
     return {
       TYPE_ALL,
@@ -77,8 +79,8 @@ export default {
       TYPE_VIDEO,
       TYPE_RAW,
       SEARCH_NAME,
-      SEARCH_TAG,
       FOLDER_ALL,
+      TAG_ALL,
       selectedFolder: this.facets.folder,
       selectedMediaType: this.facets.mediaType,
       query: this.facets.query
