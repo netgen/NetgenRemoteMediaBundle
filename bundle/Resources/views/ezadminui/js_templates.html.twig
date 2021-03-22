@@ -84,7 +84,7 @@
         availableEditorVariations: {{ available_editor_variations|raw }}
     };
 
-    RemoteMediaInputFields = {
+    RemoteMediaInputFields_{{ field_id }} = {
         {% for name, full_name in input_fields %}
             '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
         {% endfor %}
