@@ -7,24 +7,26 @@
     {% set croppableVariations = ngrm_available_variations(app.request.attributes.get('contentType').identifier, true)  %}
     {% set availableVariations = croppableVariations|scaling_format|json_encode %}
 
+    {% set input_fields = {} %}
+    {% for child in form %}
+        {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
+    {% endfor %}
+
     {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' with {
         'paths': {
             'browse': path('netgen_remote_media_ezadmin_browse'),
             'folders': path('netgen_remote_media_ezadmin_folders')
         },
         'available_variations': availableVariations,
-        'fieldId': field.id
+        'fieldId': field.id,
+        'input_fields': input_fields
     } %}
 
-    <div class="ngremotemedia-type" data-id="{{ field.id }}">
-        {% include '@NetgenRemoteMedia/ezadminui/field/edit/preview.html.twig' %}
-        {% include '@NetgenRemoteMedia/ezadminui/field/edit/interactions.html.twig' %}
-
-        {{ form_row(form.media_type, { 'attr': {'v-model': 'selectedImage.type'} }) }}
-
-        {{ form_row(form.image_variations, { 'attr': {'class' : 'media-id', 'v-model': 'stringifiedVariations'} }) }}
-        <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations"></crop-modal>
-        <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-        <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name"></upload-modal>
+    <div class="ngremotemedia-type" data-id="{{ field.id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
+        <interactions
+            field-id="{{ field.id }}"
+            :config="config"
+            :selected-image="selectedImage"
+        ></interactions>
     </div>
 {% endblock %}
