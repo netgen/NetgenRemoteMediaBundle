@@ -19,7 +19,6 @@
     'new_file', concat($base, '_new_file_', $fieldId),
     'resource_id', concat($base, '_media_id_', $fieldId),
     'tags', concat($base, '_tags_', $fieldId, '[]')
-
 )}
 
 {symfony_include(
