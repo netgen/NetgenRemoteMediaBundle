@@ -19,6 +19,7 @@ const handleDOMContentLoaded = function() {
         NgRemoteMediaTranslations,
         RemoteMediaSelectedImage : window[`RemoteMediaSelectedImage_${el.dataset.id}`],
         RemoteMediaConfig,
+        RemoteMediaInputFields,
         editorInsertModalOpen: false,
         editorInsertModalLoading: false,
         selectedImage: {
