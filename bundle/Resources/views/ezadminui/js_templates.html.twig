@@ -4,7 +4,8 @@
 {% set available_variations = available_variations|default([]|json_encode) %}
 {% set available_editor_variations = available_editor_variations|default([]|json_encode) %}
 {% set field_value = field_value|default(null) %}
-{% set fieldId = fieldId|default(null) %}
+{% set field_id = fieldId|default(null) %}
+{% set input_fields = input_fields|default({}) %}
 
 <script type="text/javascript">
     NgRemoteMediaTranslations = {
@@ -57,7 +58,7 @@
         'editor_insert_cancel_button': "{{ "ngrm.edit.vue.editor_insert.button.cancel"|trans }}",
     };
 
-    RemoteMediaSelectedImage_{{ fieldId }} = {
+    RemoteMediaSelectedImage_{{ field_id }} = {
         url : "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
         type: "{% if field_value %}{{ field_value.metaData.resource_type|default('image') }}{% else %}image{% endif %}",
         {% if not field_value or field_value.mediaType == 'image' %}
@@ -81,5 +82,11 @@
         paths: {{ paths|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }},
         availableVariations: {{ available_variations|raw }},
         availableEditorVariations: {{ available_editor_variations|raw }}
-    }
+    };
+
+    RemoteMediaInputFields = {
+        {% for name, full_name in input_fields %}
+            '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
 </script>

@@ -2,34 +2,30 @@
   <div>
     <preview
         :field-id="fieldId"
-        :base="base"
         :selected-image="selectedImage"
         ref="preview"
     ></preview>
 
-    <div :id="'ngremotemedia-buttons-'+fieldId" class="ngremotemedia-buttons"
-         :data-id="fieldId"
-         :data-contentobject-id="contentObjectId"
-         :data-version="version">
+    <div :id="'ngremotemedia-buttons-'+fieldId" class="ngremotemedia-buttons" :data-id="fieldId">
 
-      <input type="hidden" :name="base+'_media_id_'+fieldId" v-model="selectedImage.id" class="media-id" />
+      <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.resource_id" v-model="selectedImage.id" class="media-id" />
 
-      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="translations.interactions_scale" >
-      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="translations.interactions_remove_media" />
+      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_scale" >
+      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_remove_media" />
 
-      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="translations.interactions_manage_media" />
+      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_manage_media" />
 
       <div class="ngremotemedia-local-file-container">
         <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">
           <Label for="new_file">
-            {{ translations.interactions_quick_upload }}
+            {{ this.$root.$data.NgRemoteMediaTranslations.interactions_quick_upload }}
           </Label>
-          <input hidden id="new_file" :name="base+'_new_file_'+fieldId" type="file" @change="handleFileInputChange" ref="fileInput">
+          <input hidden id="new_file" :name="this.$root.$data.RemoteMediaInputFields.new_file" type="file" @change="handleFileInputChange" ref="fileInput">
         </button>
       </div>
     </div>
 
-    <input type="hidden" :name="base+'_image_variations_'+fieldId" v-model="stringifiedVariations" class="media-id"/>
+    <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.image_variations" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations" :data-user-id="userId"></crop-modal>
     <media-modal :folders="folders" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
     <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" ></upload-modal>
@@ -47,7 +43,7 @@ import {truthy} from "../utility/predicates";
 
 export default {
   name: "Interactions",
-  props: ["contentObjectId", "version", "fieldId", "base", "config", "translations", "selectedImage"],
+  props: ["fieldId", "config", "selectedImage"],
   components: {
     "preview": Preview,
     'media-modal': MediaModal,
@@ -205,7 +201,7 @@ export default {
           width: 0
         };
 
-        if (this.selectedImage.mediaTye === "image"){
+        if (this.selectedImage.mediaType === "image"){
           const reader = new FileReader();
           reader.addEventListener(
             'load',

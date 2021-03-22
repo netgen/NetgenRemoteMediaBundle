@@ -7,7 +7,7 @@
 
     <div class="image-meta">
       <input type="hidden"
-         :name="base+'_media_type_'+fieldId"
+         :name="this.$root.$data.RemoteMediaInputFields.media_type"
          v-model="selectedImage.type"
       >
       <h3 class="title">{{selectedImage.name}}</h3>
@@ -16,14 +16,14 @@
         <div class="ngremotemedia-alttext">
           <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_alternate_text}}</span>
           <input type="text"
-               :name="base+'_alttext_'+fieldId"
+               :name="this.$root.$data.RemoteMediaInputFields.alt_text"
                v-model="selectedImage.alternateText"
                class="media-alttext data"
           >
         </div>
 
         <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
-        <select hidden v-model="selectedImage.tags" :name="base+'_tags_'+fieldId+'[]'" class="ngremotemedia-newtags" multiple="multiple">
+        <select hidden v-model="selectedImage.tags" :name="this.$root.$data.RemoteMediaInputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
           <option v-for="tag in allTags">{{tag}}</option>
         </select>
       </div>
@@ -38,7 +38,7 @@ import vSelect from "vue-select";
 
 export default {
   name: "Preview",
-  props: ["fieldId", "base", "selectedImage"],
+  props: ["fieldId", "selectedImage"],
   data() {
     return {
       allTags: []
