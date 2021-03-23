@@ -1,6 +1,6 @@
 services:
-    netgen_remote_media.controllers.ezadminui.folders.list:
-        class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Folders\ListController
+    netgen_remote_media.controllers.ezadminui.facets.list:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Facets\ListController
         arguments:
             - '@netgen_remote_media.provider'
 

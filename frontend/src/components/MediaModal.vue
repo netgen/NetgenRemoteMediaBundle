@@ -1,6 +1,6 @@
 <template>
   <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :folders="folders" :facets="facets" @change="handleFacetsChange" />
+    <media-facets :folders="folders" :tags="tags" :media-types="mediaTypes" :facets="facets" @change="handleFacetsChange" />
     <media-galery
         :media="media"
         :canLoadMore="canLoadMore"
@@ -15,7 +15,7 @@
 <script>
 import MediaFacets from "./MediaFacets";
 import MediaGalery from "./MediaGalery";
-import { FOLDER_ALL, SEARCH_NAME, TYPE_IMAGE } from "../constants/facets";
+import {FOLDER_ALL, TAG_ALL, SEARCH_NAME, TYPE_ALL, TYPE_IMAGE, TYPE_VIDEO, TYPE_RAW} from "../constants/facets";
 import { encodeQueryData } from "../utility/utility";
 import debounce from "debounce";
 import Modal from "./Modal";
@@ -24,7 +24,7 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["folders", "selectedMediaId", "paths"],
+  props: ["folders", "tags", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGalery,
@@ -39,10 +39,24 @@ export default {
       facets: {
         folder: "",
         searchType: SEARCH_NAME,
-        mediaType: TYPE_IMAGE,
+        mediaType: "",
         query: "",
         tag: ""
-      }
+      },
+      mediaTypes: [
+        {
+          name: this.$root.$data.NgRemoteMediaTranslations.browse_image_and_documents,
+          id: TYPE_IMAGE
+        },
+        {
+          name: this.$root.$data.NgRemoteMediaTranslations.browse_video_and_audio,
+          id: TYPE_VIDEO
+        },
+        {
+          name: this.$root.$data.NgRemoteMediaTranslations.browse_raw,
+          id: TYPE_RAW
+        }
+      ]
     };
   },
   methods: {
@@ -58,11 +72,11 @@ export default {
         limit: NUMBER_OF_ITEMS,
         offset: patch ? this.media.length : 0,
         q: this.facets.query,
-        mediatype: this.facets.mediaType,
+        mediatype: this.facets.mediaType || TYPE_ALL,
         folder: this.facets.folder || FOLDER_ALL,
         search_type: this.facets.searchType,
         next_cursor: patch ? this.nextCursor : null,
-        tag: this.facets.tag
+        tag: this.facets.tag || TAG_ALL
       };
 
       const url = `${this.paths.browse}?${encodeQueryData(query)}`;

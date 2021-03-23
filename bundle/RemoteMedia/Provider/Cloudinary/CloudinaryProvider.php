@@ -157,6 +157,14 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Lists all available tags.
+     */
+    public function listTags(): array
+    {
+        return $this->gateway->listTags();
+    }
+
+    /**
      * Adds tag to remote resource.
      *
      * @return mixed
@@ -228,6 +236,12 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function getVideoThumbnail(Value $value, $options = []): string
     {
+        // Cloudinary lib will return an invalid link if resource is audio
+        $audioFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'];
+        if (array_key_exists('format', $value->metaData) && in_array($value->metaData['format'], $audioFormats)) {
+            return '';
+        }
+
         if (!empty($options)) {
             $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
             $options['resource_type'] = 'video';

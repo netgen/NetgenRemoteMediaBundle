@@ -71,6 +71,13 @@ abstract class Gateway
     abstract public function get($id, $type);
 
     /**
+     * Lists all available tags.
+     *
+     * @return array
+     */
+    abstract public function listTags();
+
+    /**
      * Adds new tag to the remote resource.
      *
      * @param $id

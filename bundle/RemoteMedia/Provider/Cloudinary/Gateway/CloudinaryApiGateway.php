@@ -111,18 +111,25 @@ class CloudinaryApiGateway extends Gateway
      */
     public function search(Query $query): Result
     {
-        $expression = sprintf('resource_type:%s', $query->getResourceType());
+        $expressions = [];
+
+        if ($query->getResourceType()) {
+            $expressions[] = sprintf('resource_type:%s', $query->getResourceType());
+        }
+
         if ($query->getQuery() !== '') {
-            $expression = sprintf('%s* AND ', $query->getQuery()) . $expression;
+            $expressions[] = sprintf('%s*', $query->getQuery());
         }
 
         if ($query->getTag()) {
-            $expression .= sprintf(' AND tags:%s', $query->getTag());
+            $expressions[] = sprintf('tags:%s', $query->getTag());
         }
 
         if ($query->getFolder()) {
-            $expression .= sprintf(' AND folder:%s/*', $query->getFolder());
+            $expressions[] = sprintf('folder:%s/*', $query->getFolder());
         }
+
+        $expression = implode(' AND ', $expressions);
 
         $search = $this->cloudinarySearch
             ->expression($expression)
@@ -196,6 +203,30 @@ class CloudinaryApiGateway extends Gateway
         } catch (Cloudinary\Error $e) {
             return [];
         }
+    }
+
+    /**
+     * Lists all available tags.
+     *
+     * @return array
+     */
+    public function listTags()
+    {
+        $options = [
+            'max_results' => 500,
+        ];
+
+        $tags = [];
+        do {
+            $result = $this->cloudinaryApi->tags($options);
+            $tags = array_merge($tags, $result['tags']);
+
+            if (array_key_exists('next_cursor', $result)) {
+                $options['next_cursor'] = $result['next_cursor'];
+            }
+        } while (array_key_exists('next_cursor', $result));
+
+        return $tags;
     }
 
     /**
