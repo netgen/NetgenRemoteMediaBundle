@@ -13,8 +13,8 @@
         <div>
             <xsl:attribute name="class">remote-image-inline <xsl:value-of select="@custom:cssclass"/></xsl:attribute>
             <img>
-                <xsl:attribute name="src"><xsl:value-of select="@custom:image_url"/></xsl:attribute>
-                <xsl:attribute name="alt"><xsl:value-of select="@custom:alttext"/></xsl:attribute>
+                <xsl:attribute name="src"><xsl:value-of select="@custom:src"/></xsl:attribute>
+                <xsl:attribute name="alt"><xsl:value-of select="@custom:alt"/></xsl:attribute>
             </img><div class="img-caption"><xsl:value-of select="@custom:caption" /></div>
         </div>
     </xsl:template>
