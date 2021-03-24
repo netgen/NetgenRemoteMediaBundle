@@ -10,12 +10,12 @@ IsInline[ngremotemedia]=image
 
 [ngremotemedia]
 CustomAttributes[]
-CustomAttributes[]=alttext
 CustomAttributes[]=caption
 CustomAttributes[]=cssclass
 CustomAttributes[]=coords
-CustomAttributes[]=image_url
 CustomAttributes[]=resourceId
 CustomAttributes[]=version
+CustomAttributes[]=resourceType
+CustomAttributes[]=variation
 
 */
