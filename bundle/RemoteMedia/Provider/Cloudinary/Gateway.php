@@ -38,6 +38,13 @@ abstract class Gateway
     abstract public function search(Query $query): Result;
 
     /**
+     * Get results count for search query.
+     *
+     * @return int
+     */
+    abstract public function searchCount(Query $query);
+
+    /**
      * Lists all available folders.
      *
      * @return array

@@ -111,25 +111,7 @@ class CloudinaryApiGateway extends Gateway
      */
     public function search(Query $query): Result
     {
-        $expressions = [];
-
-        if ($query->getResourceType()) {
-            $expressions[] = sprintf('resource_type:%s', $query->getResourceType());
-        }
-
-        if ($query->getQuery() !== '') {
-            $expressions[] = sprintf('%s*', $query->getQuery());
-        }
-
-        if ($query->getTag()) {
-            $expressions[] = sprintf('tags:%s', $query->getTag());
-        }
-
-        if ($query->getFolder()) {
-            $expressions[] = sprintf('folder:%s/*', $query->getFolder());
-        }
-
-        $expression = implode(' AND ', $expressions);
+        $expression = $this->buildSearchExpression($query);
 
         $search = $this->cloudinarySearch
             ->expression($expression)
@@ -144,6 +126,24 @@ class CloudinaryApiGateway extends Gateway
         $response = $search->execute();
 
         return Result::fromResponse($response);
+    }
+
+    /**
+     * Get results count for search query.
+     *
+     * @return int
+     */
+    public function searchCount(Query $query)
+    {
+        $expression = $this->buildSearchExpression($query);
+
+        $search = $this->cloudinarySearch
+            ->expression($expression)
+            ->max_results(0);
+
+        $response = $search->execute();
+
+        return Result::fromResponse($response)->getTotalCount();
     }
 
     /**
@@ -326,5 +326,28 @@ class CloudinaryApiGateway extends Gateway
     {
         $options = ['invalidate' => true];
         $this->cloudinaryUploader->destroy($id, $options);
+    }
+
+    private function buildSearchExpression(Query $query)
+    {
+        $expressions = [];
+
+        if ($query->getResourceType()) {
+            $expressions[] = sprintf('resource_type:%s', $query->getResourceType());
+        }
+
+        if ($query->getQuery() !== '') {
+            $expressions[] = sprintf('%s*', $query->getQuery());
+        }
+
+        if ($query->getTag()) {
+            $expressions[] = sprintf('tags:%s', $query->getTag());
+        }
+
+        if ($query->getFolder()) {
+            $expressions[] = sprintf('folder:%s/*', $query->getFolder());
+        }
+
+        return implode(' AND ', $expressions);
     }
 }

@@ -26,6 +26,10 @@ class Psr6CachedGateway extends Gateway
     /**
      * @var string
      */
+    const SEARCH_COUNT = 'search_count';
+    /**
+     * @var string
+     */
     const LIST = 'resource_list';
     /**
      * @var string
@@ -177,6 +181,33 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->set($result);
         $cacheItem->expiresAfter($this->ttl);
         $cacheItem->tag($this->getCacheTags(self::SEARCH));
+        $this->cache->save($cacheItem);
+
+        return $result;
+    }
+
+    /**
+     * Get results count for search query.
+     *
+     * @return int
+     */
+    public function searchCount(Query $query)
+    {
+        $searchCacheKey = $this->washKey(
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH_COUNT, (string) $query])
+        );
+
+        $cacheItem = $this->cache->getItem($searchCacheKey);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
+
+        $result = $this->gateway->searchCount($query);
+
+        $cacheItem->set($result);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag($this->getCacheTags(self::SEARCH_COUNT));
         $this->cache->save($cacheItem);
 
         return $result;

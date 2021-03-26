@@ -137,6 +137,15 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Searches for the remote resource containing term in the query
+     * and returns total results count.
+     */
+    public function searchResourcesCount(Query $query): int
+    {
+        return $this->gateway->searchCount($query);
+    }
+
+    /**
      * Returns the remote resource with provided id and type.
      *
      * @param string $resourceType

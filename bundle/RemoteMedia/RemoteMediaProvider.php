@@ -76,6 +76,12 @@ abstract class RemoteMediaProvider
     abstract public function searchResources(Query $query): Result;
 
     /**
+     * Searches for the remote resource containing term in the query
+     * and returns total results count.
+     */
+    abstract public function searchResourcesCount(Query $query): int;
+
+    /**
      * Returns the remote resource with provided id and type.
      *
      * @param mixed $resourceId
