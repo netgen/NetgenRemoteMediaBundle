@@ -21,7 +21,8 @@
           v-model="selectedFolder"
           @input="handleFolderChange"
           :reduce="option => option.id"
-          :placeholder="this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
+          :placeholder="facetsLoading ? 'Loading folders...' : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
+          :disabled="facetsLoading"
         />
       </div>
 
@@ -33,7 +34,8 @@
             v-model="tag"
             @input="handleTagChange"
             :reduce="option => option.id"
-            :placeholder="this.$root.$data.NgRemoteMediaTranslations.browse_all_tags"
+            :placeholder="facetsLoading ? 'Loading tags...' : this.$root.$data.NgRemoteMediaTranslations.browse_all_tags"
+            :disabled="facetsLoading"
         />
       </div>
 
@@ -71,7 +73,7 @@ import vSelect from "vue-select";
 
 export default {
   name: "MediaFacets",
-  props: ["folders", "tags", "facets", "mediaTypes"],
+  props: ["folders", "tags", "facets", "facetsLoading", "mediaTypes"],
   data() {
     return {
       TYPE_ALL,
@@ -187,6 +189,17 @@ export default {
           flex-grow: 1;
         }
       }
+    }
+  }
+  .ng-spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    &:before {
+      display: inline-block;
+      animation: spinning 1500ms linear infinite;
     }
   }
 }

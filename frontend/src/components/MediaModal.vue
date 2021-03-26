@@ -1,6 +1,6 @@
 <template>
   <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :folders="folders" :tags="tags" :media-types="mediaTypes" :facets="facets" @change="handleFacetsChange" />
+    <media-facets :folders="folders" :tags="tags" :media-types="mediaTypes" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
     <media-galery
         :media="media"
         :canLoadMore="canLoadMore"
@@ -24,7 +24,7 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["folders", "tags", "selectedMediaId", "paths"],
+  props: ["folders", "tags", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGalery,

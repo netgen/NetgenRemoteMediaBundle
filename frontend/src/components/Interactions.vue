@@ -27,7 +27,7 @@
 
     <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.image_variations" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="config.availableVariations" :data-user-id="userId"></crop-modal>
-    <media-modal :folders="folders" :tags="tags" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <media-modal :folders="folders" :tags="tags" :facets-loading="facetsLoading" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
     <upload-modal :folders="folders" v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :loading="uploadModalLoading" :name="selectedImage.name" ></upload-modal>
   </div>
 </template>
@@ -67,7 +67,8 @@ export default {
       uploadModalOpen: false,
       uploadModalLoading: false,
       folders: [],
-      tags: []
+      tags: [],
+      facetsLoading: true
     };
   },
   methods: {
@@ -156,6 +157,7 @@ export default {
       const data = await response.json();
       this.folders = data.folders;
       this.tags = data.tags;
+      this.facetsLoading = false;
     },
     async handleBrowseMediaClicked() {
       this.mediaModalOpen = true;
