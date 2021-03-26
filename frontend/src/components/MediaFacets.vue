@@ -21,7 +21,7 @@
           v-model="selectedFolder"
           @input="handleFolderChange"
           :reduce="option => option.id"
-          :placeholder="facetsLoading ? 'Loading folders...' : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
+          :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_folders : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
           :disabled="facetsLoading"
         />
       </div>
@@ -34,7 +34,7 @@
             v-model="tag"
             @input="handleTagChange"
             :reduce="option => option.id"
-            :placeholder="facetsLoading ? 'Loading tags...' : this.$root.$data.NgRemoteMediaTranslations.browse_all_tags"
+            :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_tags : this.$root.$data.NgRemoteMediaTranslations.browse_all_tags"
             :disabled="facetsLoading"
         />
       </div>

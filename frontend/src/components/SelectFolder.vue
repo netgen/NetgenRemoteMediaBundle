@@ -21,9 +21,9 @@
       <template v-slot:option="option">
         <div v-if="option.new">
           {{option.name}}
-          <button type="button">Create new</button>
+          <button type="button">{{ this.$root.$data.NgRemoteMediaTranslations.upload_new_folder }}</button>
         </div>
-        <div v-else-if="option.added">{{option.name}} (new)</div>
+        <div v-else-if="option.added">{{option.name}} ({{ this.$root.$data.NgRemoteMediaTranslations.upload_new }})</div>
         <div v-else>{{option.name}}</div>
       </template>
     </v-select>

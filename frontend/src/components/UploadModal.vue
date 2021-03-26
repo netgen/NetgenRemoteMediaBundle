@@ -1,13 +1,13 @@
 <template>
   <modal title="Upload image" @close="$emit('close')">
     <div v-if="!loading">
-      <label for="folder">Select Folder</label>
+      <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.upload_select_folder }}</label>
       <select-folder :folders="folders" @change="handleFolderChange"></select-folder>
       <input
         type="text"
         v-model="newName"
       />
-      <button :disabled="newName === ''" type="button" @click="handleSaveClick">Save</button>
+      <button :disabled="newName === ''" type="button" @click="handleSaveClick">{{ this.$root.$data.NgRemoteMediaTranslations.upload_save }}</button>
     </div>
     <i v-else class="ng-icon ng-spinner" />
   </modal>

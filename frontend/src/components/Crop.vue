@@ -5,16 +5,16 @@
       <div class="buttons" ref="buttons" :style="applyButtonStyle">
         <button type="button" class="btn btn-blue" @click="handleReset">
           <span class="icon-ccw"></span>
-          <span>Reset</span>
+          <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_reset }}</span>
         </button>
         <button type="button" class="btn btn-blue" @click="handleApply">
           <span class="icon-ok"></span>
-          <span>Apply</span>
+          <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_apply }}</span>
         </button>
       </div>
     </div>
     <div>
-      <h4>Preview</h4>
+      <h4>{{ this.$root.$data.NgRemoteMediaTranslations.crop_preview }}</h4>
       <div class="preview" ref="preview"></div>
     </div>
   </div>

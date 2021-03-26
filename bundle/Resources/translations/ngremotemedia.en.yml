@@ -28,8 +28,10 @@ ngrm:
                     select_media_type: 'Select media type'
                     all_media_types: 'All media types'
                     select_folder: 'Select folder'
+                    loading_folders: 'Loading folders...'
                     all_folders: 'All folders'
                     select_tag: 'Select tag'
+                    loading_tags: 'Loading tags...'
                     all_tags: 'All tags'
                     search: 'Search (by name, tag, folder, alternate text etc.)'
                     search_placeholder: 'Enter your search term'
@@ -37,6 +39,26 @@ ngrm:
                 empty_folder_hint: 'Upload media from your local storage'
                 select: 'Select'
                 load_more: 'Load more'
+            crop:
+                reset: 'Reset'
+                apply: 'Apply'
+                cancel: 'Cancel'
+                add: 'Add'
+                preview: 'Preview'
+                save_sizes: 'Save sizes'
+                add_size: 'Add crop size'
+                added_for_confirmation: 'Added for confirmation.'
+                media_too_small: 'Media is too small.'
+            media_gallery:
+                empty_folder: 'Folder is empty'
+                upload_media: 'Upload media from your local storage.'
+                select: 'Select'
+                load_more: 'Load more'
+            upload:
+                select_folder: 'Select folder'
+                save: 'Save'
+                new_folder: 'Create new'
+                new: 'new'
             editor_insert:
                 title: 'Insert remote media'
                 variations:
