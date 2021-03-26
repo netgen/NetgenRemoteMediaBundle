@@ -36,7 +36,7 @@ $list = $results->getResults();
 
 $result = [
     'hits' => $helper->formatBrowseList($list),
-    'load_more' => $results->getTotalCount() > $limit,
+    'load_more' => $results->getNextCursor() !== null,
     'next_cursor' => $results->getNextCursor(),
 ];
 
