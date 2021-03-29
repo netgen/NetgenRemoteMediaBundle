@@ -52,6 +52,13 @@ abstract class Gateway
     abstract public function listFolders();
 
     /**
+     * Lists all available folders inside a given parent folder.
+     *
+     * @return array
+     */
+    abstract public function listSubFolders(string $parentFolder);
+
+    /**
      * Returns the overall resources usage on the cloudinary account.
      *
      * @return int

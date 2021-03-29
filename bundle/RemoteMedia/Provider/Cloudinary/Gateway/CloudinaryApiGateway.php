@@ -157,6 +157,16 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
+     * Lists all available folders inside a given parent folder.
+     *
+     * @return array
+     */
+    public function listSubFolders(string $parentFolder)
+    {
+        return $this->cloudinaryApi->subfolders($parentFolder)->getArrayCopy()['folders'];
+    }
+
+    /**
      * Returns the overall resources usage on the cloudinary account.
      *
      * @return int

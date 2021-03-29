@@ -61,6 +61,12 @@ abstract class RemoteMediaProvider
     abstract public function listFolders(): array;
 
     /**
+     * Lists all available folders inside a given parent folder.
+     * If folders are not supported, should return empty array.
+     */
+    abstract public function listSubFolders(string $parentFolder): array;
+
+    /**
      * @param $folder
      */
     abstract public function countResourcesInFolder(string $folder): int;

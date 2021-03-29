@@ -121,6 +121,15 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Lists all available folders inside a given parent folder.
+     * If folders are not supported, should return empty array.
+     */
+    public function listSubFolders(string $parentFolder): array
+    {
+        return $this->gateway->listSubFolders($parentFolder);
+    }
+
+    /**
      * @param $folder
      */
     public function countResourcesInFolder(string $folder): int
