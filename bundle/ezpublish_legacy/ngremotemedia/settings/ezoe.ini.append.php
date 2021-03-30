@@ -1,0 +1,4 @@
+<?php /*
+
+[EditorSettings]
+Plugins[]=ngremotemedia
