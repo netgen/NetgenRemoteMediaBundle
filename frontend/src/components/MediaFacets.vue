@@ -15,12 +15,12 @@
 
       <div class="form-field">
         <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_folder }}</label>
-        <v-select
+        <treeselect
+          :multiple="false"
           :options="folders"
-          label="name"
-          v-model="selectedFolder"
+          :load-options="loadSubFolders"
+          close-on-select="true"
           @input="handleFolderChange"
-          :reduce="option => option.id"
           :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_folders : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
           :disabled="facetsLoading"
         />
@@ -68,8 +68,10 @@ import {
   TAG_ALL,
 } from "../constants/facets";
 
-
 import vSelect from "vue-select";
+import Treeselect from '@riophae/vue-treeselect';
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import {encodeQueryData} from "@/utility/utility";
 
 export default {
   name: "MediaFacets",
@@ -96,6 +98,7 @@ export default {
       this.$emit("change", { mediaType });
     },
     handleFolderChange(value) {
+      this.selectedFolder = value;
       this.$emit("change", { folder: this.selectedFolder });
     },
     handleQueryChange() {
@@ -103,10 +106,21 @@ export default {
     },
     handleTagChange() {
       this.$emit("change", { tag: this.tag });
+    },
+    async loadSubFolders(data) {
+      const node = data.parentNode;
+      const query = {
+        folder: node.id,
+      };
+
+      const response = await fetch(this.$root.$data.config.paths.subfolders+'?'+encodeQueryData(query));
+      node.children = await response.json();
+      data.callback();
     }
   },
   components: {
-    "v-select": vSelect
+    "v-select": vSelect,
+    "treeselect": Treeselect
   }
 };
 </script>
