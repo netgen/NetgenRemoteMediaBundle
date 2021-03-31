@@ -15,7 +15,8 @@
     {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' with {
         'paths': {
             'browse': path('netgen_remote_media_ezadmin_browse'),
-            'facets': path('netgen_remote_media_ezadmin_facets')
+            'facets': path('netgen_remote_media_ezadmin_facets'),
+            'subfolders': path('netgen_remote_media_ezadmin_sub_folders')
         },
         'available_variations': availableVariations,
         'fieldId': field.id,
