@@ -2,9 +2,7 @@
     tinymce.PluginManager.add('ngremotemedia', function(editor) {
         // Add a button that opens a modal
         editor.addButton('ngremotemedia', {
-            text: false,
-            icon: 'fa fa-adjust',
-            tooltip: 'Netgen remote media',
+            title: 'Insert remote media',
             onclick: function() {
                 var fieldId = $(editor.targetElm).data('fieldid');
                 window['remoteMedia'+fieldId].handleEditorInsertClicked();
