@@ -115,6 +115,27 @@
       border: 1px solid $mercury;
       padding: 3px 5px 6px;
     }
+
+    input::placeholder {
+      color: #333333;
+      font-style: italic;
+    }
+  }
+
+  // Overriding vue-treeselect styles
+  .vue-treeselect {
+    font-size: 14px;
+    line-height: 16px;
+
+    .vue-treeselect__control {
+      border-radius: 0;
+      border: 1px solid $mercury;
+    }
+
+    .vue-treeselect__placeholder {
+      color: #333333;
+      font-style: italic;
+    }
   }
 
   // Placeholder colors
