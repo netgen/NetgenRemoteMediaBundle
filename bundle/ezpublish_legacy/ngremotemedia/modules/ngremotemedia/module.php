@@ -14,6 +14,10 @@ $ViewList['facets'] = array(
     'script' => 'facets.php',
     'functions' => 'facets',
 );
+$ViewList['subfolders'] = array(
+    'script' => 'subfolders.php',
+    'functions' => 'subfolders',
+);
 $ViewList['editorinsert'] = array(
     'script' => 'editorinsert.php',
     'functions' => 'editorinsert',
@@ -21,4 +25,5 @@ $ViewList['editorinsert'] = array(
 
 $FunctionList['browse'] = array();
 $FunctionList['facets'] = array();
+$FunctionList['subfolders'] = array();
 $FunctionList['editorinsert'] = array();
