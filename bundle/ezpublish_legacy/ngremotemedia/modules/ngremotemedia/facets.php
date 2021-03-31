@@ -10,9 +10,11 @@ $tags = $provider->listTags();
 
 $formattedFolders = [];
 foreach($folders as $folder) {
-    $folder['id'] = $folder['name'];
-    unset($folder['path']);
-    $formattedFolders[] = $folder;
+    $formattedFolders[] = [
+        'id' => $folder['path'],
+        'label' => $folder['name'],
+        'children' => null,
+    ];
 }
 
 $formattedTags = [];
