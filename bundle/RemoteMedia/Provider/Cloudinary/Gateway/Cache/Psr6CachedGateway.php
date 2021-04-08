@@ -262,6 +262,14 @@ class Psr6CachedGateway extends Gateway
     }
 
     /**
+     * Creates new folder in Cloudinary.
+     */
+    public function createFolder(string $path)
+    {
+        $this->gateway->createFolder($path);
+    }
+
+    /**
      * Returns the overall resources usage on the cloudinary account.
      *
      * @return int

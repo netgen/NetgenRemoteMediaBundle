@@ -167,6 +167,14 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
+     * Creates new folder in Cloudinary.
+     */
+    public function createFolder(string $path)
+    {
+        $this->cloudinaryApi->create_folder($path);
+    }
+
+    /**
      * Returns the overall resources usage on the cloudinary account.
      *
      * @return int

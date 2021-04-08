@@ -67,6 +67,11 @@ abstract class RemoteMediaProvider
     abstract public function listSubFolders(string $parentFolder): array;
 
     /**
+     * Creates new folder in Cloudinary.
+     */
+    abstract public function createFolder(string $path): void;
+
+    /**
      * @param $folder
      */
     abstract public function countResourcesInFolder(string $folder): int;

@@ -130,6 +130,14 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Creates new folder in Cloudinary.
+     */
+    public function createFolder(string $path): void
+    {
+        $this->gateway->createFolder($path);
+    }
+
+    /**
      * @param $folder
      */
     public function countResourcesInFolder(string $folder): int
