@@ -8,7 +8,7 @@
       ></interactions>
 
       <v-select
-        :options="this.config.availableEditorVariations"
+        :options="config.availableEditorVariations"
         :label="Variation"
         @input="handleVariationChange"
         :placeholder="this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_original_image"
@@ -39,11 +39,6 @@ export default {
     'modal': Modal,
     'interactions': Interactions,
     "v-select": vSelect
-  },
-  data() {
-    return {
-      editorInsertModalLoading: false,
-    };
   },
   methods: {
     handleVariationChange(value) {
