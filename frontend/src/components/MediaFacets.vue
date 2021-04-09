@@ -42,15 +42,14 @@
       <div class="search-wrapper">
         <span class="search-label">{{ this.$root.$data.NgRemoteMediaTranslations.search }}</span>
         <div class="search">
-            <ul class="searchType">
-            </ul>
-            <input
+          <ul class="searchType"></ul>
+          <input
             type="text"
             :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_placeholder"
             v-model="query"
             @keyup="handleQueryChange"
             @keydown.enter.prevent="null"
-            />
+          />
         </div>
       </div>
     </div>
