@@ -135,12 +135,12 @@ export default {
 
 .folderGalery {
   position: relative;
-  overflow-y: auto;
   flex-grow: 1;
+  height: calc(100% - 50px);
+  overflow-y: auto;
 
   .items {
     padding: 15px;
-    height: calc(100% - 50px);
 
     &.loading {
       opacity: 0.5;
