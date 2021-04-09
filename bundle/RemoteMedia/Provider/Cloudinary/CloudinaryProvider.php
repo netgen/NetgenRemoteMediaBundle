@@ -351,7 +351,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     protected function prepareUploadOptions(UploadFile $uploadFile, $options = []): array
     {
-        $clean = \preg_replace("#[^\\p{L}|\\p{N}]+#u", '_', $uploadFile->originalFilename());
+        $clean = \preg_replace("#[^\\p{L}|\\p{N}]+#u", '_', $options['filename'] ?? $uploadFile->originalFilename());
         $cleanFileName = \preg_replace("#[\\p{Z}]{2,}#u", '_', $clean);
         $fileName = \rtrim($cleanFileName, '_');
 
