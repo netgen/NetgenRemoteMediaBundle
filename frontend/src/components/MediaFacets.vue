@@ -113,7 +113,7 @@ export default {
         folder: node.id,
       };
 
-      const response = await fetch(this.$root.$data.config.paths.subfolders+'?'+encodeQueryData(query));
+      const response = await fetch(this.$root.$data.config.paths.load_folders+'?'+encodeQueryData(query));
       node.children = await response.json();
       data.callback();
     }

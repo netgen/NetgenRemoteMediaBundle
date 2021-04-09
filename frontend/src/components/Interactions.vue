@@ -153,7 +153,7 @@ export default {
       this.$refs.fileInput.value = null;
     },
     async fetchFacets() {
-      const response = await fetch(this.config.paths.facets);
+      const response = await fetch(this.config.paths.load_facets);
       const data = await response.json();
       this.folders = data.folders;
       this.tags = data.tags;
