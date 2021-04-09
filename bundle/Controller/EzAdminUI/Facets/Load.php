@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ListController
+final class Load
 {
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider

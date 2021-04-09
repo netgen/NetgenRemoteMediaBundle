@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\SubFolders;
+namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Folder;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class ListController
+final class Load
 {
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
@@ -25,7 +25,7 @@ final class ListController
     {
         $folder = $request->query->get('folder');
 
-        $folders = $folder === null
+        $folders = ($folder === null || $folder === 'null')
             ? $this->remoteMediaProvider->listFolders()
             : $this->remoteMediaProvider->listSubFolders($folder);
 
