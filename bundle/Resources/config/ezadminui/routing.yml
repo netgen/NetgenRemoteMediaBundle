@@ -8,6 +8,11 @@ netgen_remote_media_ezadmin_folder_load:
   defaults:
     _controller: netgen_remote_media.controllers.ezadminui.folder.load
 
+netgen_remote_media_ezadmin_folder_create:
+  path: /folder/create
+  defaults:
+    _controller: netgen_remote_media.controllers.ezadminui.folder.create
+
 netgen_remote_media_ezadmin_browse:
     path: /browse
     defaults:

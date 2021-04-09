@@ -9,6 +9,11 @@ services:
         arguments:
             - '@netgen_remote_media.provider'
 
+    netgen_remote_media.controllers.ezadminui.folder.create:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Folder\Create
+        arguments:
+            - '@netgen_remote_media.provider'
+
     netgen_remote_media.controllers.ezadminui.browse:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\BrowseController
         arguments:
