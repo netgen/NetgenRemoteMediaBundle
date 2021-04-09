@@ -116,7 +116,7 @@ export default {
 
       await axios.post(this.$root.$data.config.paths.create_folder, data);
       this.folders.push({
-        'id': parentPath + '/' + this.newFolder,
+        'id': parentPath !== null ? parentPath + '/' + this.newFolder : this.newFolder,
         'label': this.newFolder
       });
       this.newFolder = null;
