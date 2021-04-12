@@ -102,7 +102,7 @@
     margin-top: 20px;
 
     .ngremotemedia-local-file-container {
-      margin-top: 20px;
+      margin: 20px 0 20px 0;
     }
   }
 
@@ -137,6 +137,7 @@
   .v-select {
     font-size: 14px;
     line-height: 16px;
+    background-color: $white;
 
     .vs__dropdown-toggle {
       border-radius: 0;
