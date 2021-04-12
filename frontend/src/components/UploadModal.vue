@@ -1,15 +1,15 @@
 <template>
   <modal title="Upload image" @close="$emit('close')">
-    <div v-if="!loading">
-      <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.upload_select_folder }}</label>
-      <select-folder :folders="folders" @change="handleFolderChange"></select-folder>
-      <input
-        type="text"
-        v-model="newName"
-      />
-      <button :disabled="newName === ''" type="button" @click="handleSaveClick">{{ this.$root.$data.NgRemoteMediaTranslations.upload_save }}</button>
+    <div>
+      <select-folder :selected-folder="selectedFolder" @change="handleFolderChange"></select-folder>
+
+      <div class="input-file-name-wrapper">
+        <input type="text" v-model="newName"/>
+        <button type="button" class="btn btn-blue" :disabled="newName === ''" @click="handleSaveClick">
+          {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_save }}
+        </button>
+      </div>
     </div>
-    <i v-else class="ng-icon ng-spinner" />
   </modal>
 </template>
 
@@ -19,7 +19,7 @@ import Modal from "./Modal";
 
 export default {
   name: "UploadModal",
-  props: ["folders", "loading", "name"],
+  props: ["name"],
   data() {
     return {
       selectedFolder: "",
@@ -47,4 +47,26 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+@import "../scss/variables";
+
+.input-file-name-wrapper {
+  padding: 8px 15px;
+  background-color: $white;
+  box-shadow: inset 1px 0 0 0 $mercury, 0 -1px 0 0 $mercury;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  input {
+    width: 40%;
+    border: 1px solid $mercury;
+    padding: 5px 10px;
+    flex-grow: 1;
+  }
+
+  button {
+    float: right;
+  }
+}
 </style>

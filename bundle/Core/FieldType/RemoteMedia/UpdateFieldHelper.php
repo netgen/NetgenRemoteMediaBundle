@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use function pathinfo;
 
 final class UpdateFieldHelper
 {
@@ -33,8 +34,9 @@ final class UpdateFieldHelper
             $options = [];
             if ($adminInputValue->getResourceId()) {
                 $exploded = explode('/', $adminInputValue->getResourceId());
-                if (count($exploded) > 1) {
-                    $options['folder'] = $exploded[0];
+                $options['filename'] = pathinfo(array_pop($exploded), PATHINFO_FILENAME);
+                if (count($exploded) > 0) {
+                    $options['folder'] = implode('/', $exploded);
                 }
             }
 

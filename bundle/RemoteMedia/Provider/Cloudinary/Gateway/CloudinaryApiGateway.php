@@ -157,6 +157,24 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
+     * Lists all available folders inside a given parent folder.
+     *
+     * @return array
+     */
+    public function listSubFolders(string $parentFolder)
+    {
+        return $this->cloudinaryApi->subfolders($parentFolder)->getArrayCopy()['folders'];
+    }
+
+    /**
+     * Creates new folder in Cloudinary.
+     */
+    public function createFolder(string $path)
+    {
+        $this->cloudinaryApi->create_folder($path);
+    }
+
+    /**
      * Returns the overall resources usage on the cloudinary account.
      *
      * @return int

@@ -6,30 +6,32 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Facets;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Symfony\Component\HttpFoundation\Response;
 
-final class ListController
+final class Load
 {
-    /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider */
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
+     */
     private $remoteMediaProvider;
 
-    /**
-     * ListController constructor.
-     */
     public function __construct(RemoteMediaProvider $remoteMediaProvider)
     {
         $this->remoteMediaProvider = $remoteMediaProvider;
     }
 
-    public function __invoke()
+    public function __invoke(): Response
     {
         $folders = $this->remoteMediaProvider->listFolders();
         $tags = $this->remoteMediaProvider->listTags();
 
         $formattedFolders = [];
-        foreach ($folders as $folder) {
-            $folder['id'] = $folder['name'];
-            unset($folder['path']);
-            $formattedFolders[] = $folder;
+        foreach($folders as $folder) {
+            $formattedFolders[] = [
+                'id' => $folder['path'],
+                'label' => $folder['name'],
+                'children' => null,
+            ];
         }
 
         $formattedTags = [];

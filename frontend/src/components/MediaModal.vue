@@ -5,6 +5,7 @@
         :media="media"
         :canLoadMore="canLoadMore"
         :selectedMediaId="selectedMediaId"
+        :loading="loading"
         @loadMore="handleLoadMore"
         @media-selected="item => $emit('media-selected', item)"
     />

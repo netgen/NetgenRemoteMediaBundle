@@ -238,6 +238,38 @@ class Psr6CachedGateway extends Gateway
     }
 
     /**
+     * Lists all available folders inside a given parent folder.
+     *
+     * @return array
+     */
+    public function listSubFolders(string $parentFolder)
+    {
+        $listFolderCacheKey = $this->washKey(
+            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST, $parentFolder])
+        );
+        $cacheItem = $this->cache->getItem($listFolderCacheKey);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
+
+        $list = $this->gateway->listSubFolders($parentFolder);
+        $cacheItem->set($list);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
+
+        return $list;
+    }
+
+    /**
+     * Creates new folder in Cloudinary.
+     */
+    public function createFolder(string $path)
+    {
+        $this->gateway->createFolder($path);
+    }
+
+    /**
      * Returns the overall resources usage on the cloudinary account.
      *
      * @return int

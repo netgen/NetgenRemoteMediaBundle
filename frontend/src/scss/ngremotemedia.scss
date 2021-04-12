@@ -70,11 +70,39 @@
 
   .image-meta {
     overflow: visible;
+
+    h3 {
+      font-weight: bold;
+    }
+
+    p {
+      color: #737373;
+    }
+
+    input.media-alttext {
+      width: 100%;
+      border-radius: 0;
+      border: 1px solid #e4e4e4;
+      padding: 7px 10px 7px 10px;
+      margin-bottom: 10px;
+    }
+
+    .image-meta-data {
+      margin-top: 20px;
+    }
   }
 
   .image-wrap{
     img {
       max-width: 100%;
+    }
+  }
+
+  .ngremotemedia-buttons {
+    margin-top: 20px;
+
+    .ngremotemedia-local-file-container {
+      margin: 20px 0 20px 0;
     }
   }
 
@@ -109,11 +137,33 @@
   .v-select {
     font-size: 14px;
     line-height: 16px;
+    background-color: $white;
 
     .vs__dropdown-toggle {
       border-radius: 0;
       border: 1px solid $mercury;
       padding: 3px 5px 6px;
+    }
+
+    input::placeholder {
+      color: #333333;
+      font-style: italic;
+    }
+  }
+
+  // Overriding vue-treeselect styles
+  .vue-treeselect {
+    font-size: 14px;
+    line-height: 16px;
+
+    .vue-treeselect__control {
+      border-radius: 0;
+      border: 1px solid $mercury;
+    }
+
+    .vue-treeselect__placeholder {
+      color: #333333;
+      font-style: italic;
     }
   }
 

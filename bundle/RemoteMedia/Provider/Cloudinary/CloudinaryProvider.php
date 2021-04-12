@@ -121,6 +121,23 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Lists all available folders inside a given parent folder.
+     * If folders are not supported, should return empty array.
+     */
+    public function listSubFolders(string $parentFolder): array
+    {
+        return $this->gateway->listSubFolders($parentFolder);
+    }
+
+    /**
+     * Creates new folder in Cloudinary.
+     */
+    public function createFolder(string $path): void
+    {
+        $this->gateway->createFolder($path);
+    }
+
+    /**
      * @param $folder
      */
     public function countResourcesInFolder(string $folder): int
@@ -334,7 +351,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     protected function prepareUploadOptions(UploadFile $uploadFile, $options = []): array
     {
-        $clean = \preg_replace("#[^\\p{L}|\\p{N}]+#u", '_', $uploadFile->originalFilename());
+        $clean = \preg_replace("#[^\\p{L}|\\p{N}]+#u", '_', $options['filename'] ?? $uploadFile->originalFilename());
         $cleanFileName = \preg_replace("#[\\p{Z}]{2,}#u", '_', $clean);
         $fileName = \rtrim($cleanFileName, '_');
 

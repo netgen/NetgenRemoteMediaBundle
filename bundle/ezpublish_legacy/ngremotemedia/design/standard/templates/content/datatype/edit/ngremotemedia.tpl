@@ -28,7 +28,9 @@
         'type', $type,
         'paths', hash(
             'browse', "/ngremotemedia/browse"|ezurl('no', 'relative'),
-            'facets', "/ngremotemedia/facets"|ezurl('no', 'relative')
+            'load_facets', "/ngremotemedia/facets"|ezurl('no', 'relative'),
+            'load_folders', "/ngremotemedia/subfolders"|ezurl('no', 'relative'),
+            'create_folder', "/ngremotemedia/createfolder"|ezurl('no', 'relative')
         ),
         'available_variations', json_encode(scaling_format($croppableVariations)),
         'available_editor_variations', json_encode(list_format($editorVariations)),

@@ -1,6 +1,6 @@
 <template>
   <div class="mediaGalery">
-    <div class="items">
+    <div :class="loading ? 'items loading' : 'items'">
       <div v-if="!media.length" class="folder-empty">
         <span class="icon-folder"></span>
         <span><strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_empty_folder }}</strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_upload_media }}</span>
@@ -43,7 +43,7 @@ import prettyBytes from "pretty-bytes";
 
 export default {
   name: "MediaGalery",
-  props: ["media", "canLoadMore", "onLoadMore", "selectedMediaId"],
+  props: ["media", "canLoadMore", "onLoadMore", "selectedMediaId", "loading"],
   methods: {
     showFilesize(item) {
       return prettyBytes(item.filesize);
@@ -64,6 +64,10 @@ export default {
     padding: 15px;
     overflow-y: auto;
     height: calc(100% - 50px);
+
+    &.loading {
+      opacity: 0.5;
+    }
 
     .media {
       width: 177px;

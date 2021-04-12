@@ -67,7 +67,7 @@ class Helper
                 'filesize' => $hit['bytes'],
                 'width' => $hit['width'],
                 'height' => $hit['height'],
-                'filename' => $hit['public_id'],
+                'filename' => $hit['filename'],
                 'format' => $hit['format'],
                 'browse_url' => $browseUrl,
                 'url' => $value->secure_url,

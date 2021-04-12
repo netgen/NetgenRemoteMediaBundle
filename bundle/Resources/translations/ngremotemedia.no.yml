@@ -13,11 +13,14 @@ ngrm:
         vue:
             interactions:
                 scale: 'Skalér'
+                no_media_selected: 'No media selected'
                 remove_media: 'Fjern media'
+                select_media: 'Select media'
                 manage_media: 'Manage media'
                 quick_upload: 'Quick upload'
             preview:
                 alternate_text: 'Alternativ tekst'
+                tags: 'Tags'
                 size: 'Size'
             browse:
                 title: 'Select media'
@@ -55,14 +58,19 @@ ngrm:
                 select: 'Select'
                 load_more: 'Load more'
             upload:
-                select_folder: 'Select folder'
-                save: 'Save'
-                new_folder: 'Create new'
-                new: 'new'
+                breadcrumbs_info: 'You are here:'
+                root_folder: '(root)'
+                info_text: 'Double click on a folder to open it'
+                button:
+                    select: 'Select'
+                    create: 'Create'
+                    save: 'Save'
+                placeholder:
+                    new_folder: 'New folder name'
             editor_insert:
                 title: 'Insert remote media'
                 variations:
-                   original_image: 'Original image'
+                    original_image: 'Original image'
                 button:
                     insert: 'Insert media'
                     cancel: 'Cancel'
