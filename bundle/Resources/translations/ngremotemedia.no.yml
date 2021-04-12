@@ -18,6 +18,7 @@ ngrm:
                 quick_upload: 'Quick upload'
             preview:
                 alternate_text: 'Alternativ tekst'
+                tags: 'Tags'
                 size: 'Size'
             browse:
                 title: 'Select media'
