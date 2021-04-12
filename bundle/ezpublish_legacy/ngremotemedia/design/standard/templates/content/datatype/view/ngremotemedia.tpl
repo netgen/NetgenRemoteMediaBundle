@@ -37,4 +37,6 @@
             {$value.resourceId}
         </a>
     {/if}
+{else}
+    <i>No media selected</i>
 {/if}
