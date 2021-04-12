@@ -13,7 +13,7 @@
       <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_scale" >
       <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_remove_media" />
 
-      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_manage_media" />
+      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.$root.$data.NgRemoteMediaTranslations.interactions_manage_media : this.$root.$data.NgRemoteMediaTranslations.interactions_select_media" />
 
       <div class="ngremotemedia-local-file-container">
         <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">

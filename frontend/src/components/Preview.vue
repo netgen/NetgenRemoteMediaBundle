@@ -1,5 +1,5 @@
 <template>
-  <div class="ngremotemedia-image">
+  <div v-if="selectedImage.id" class="ngremotemedia-image">
     <div class="image-wrap">
       <img v-if="selectedImage.mediaType==='image'" :src="selectedImage.url" ref="image" />
       <i v-else="selectedImage.mediaType!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
@@ -33,6 +33,10 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div v-else>
+    <i>{{this.$root.$data.NgRemoteMediaTranslations.interactions_no_media_selected}}</i>
   </div>
 </template>
 

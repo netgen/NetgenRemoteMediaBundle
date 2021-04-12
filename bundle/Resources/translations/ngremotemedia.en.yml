@@ -13,7 +13,9 @@ ngrm:
         vue:
             interactions:
                 scale: 'Scale'
+                no_media_selected: 'No media selected'
                 remove_media: 'Remove media'
+                select_media: 'Select media'
                 manage_media: 'Manage media'
                 quick_upload: 'Quick upload'
             preview:
