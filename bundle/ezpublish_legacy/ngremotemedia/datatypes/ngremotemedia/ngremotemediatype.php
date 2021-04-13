@@ -2,8 +2,8 @@
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
+use Cloudinary\Api\NotFound as ResourceNotFound;
 
 class NgRemoteMediaType extends eZDataType
 {
@@ -260,12 +260,36 @@ class NgRemoteMediaType extends eZDataType
             // meta data might have been changed, so update database value with remote meta data
             $container = ezpKernel::instance()->getServiceContainer();
             $provider = $container->get('netgen_remote_media.provider');
-            $remoteValue = $provider->getRemoteResource($value->resourceId, $value->metaData['resource_type']);
 
-            $value->metaData = $remoteValue->metaData;
+            try {
+                $remoteValue = $provider->getRemoteResource($value->resourceId, $this->resolveResourceType($value));
+
+                $value->metaData = $remoteValue->metaData;
+            } catch (ResourceNotFound $exception) {
+                $value = new Value();
+            }
         }
 
         return $value;
+    }
+
+    /**
+     * Implemented for backwards compatibility if the resource type
+     * in metaData array doesn't exist.
+     *
+     * @return string
+     */
+    private function resolveResourceType(Value $value)
+    {
+        if (array_key_exists('resource_type', $value->metaData) && $value->metaData['resource_type'] !== null) {
+            return $value->metaData['resource_type'];
+        }
+
+        if ($value->mediaType === 'image' || $value->mediaType === 'video') {
+            return $value->mediaType;
+        }
+
+        return 'raw';
     }
 
     function toString($contentObjectAttribute)

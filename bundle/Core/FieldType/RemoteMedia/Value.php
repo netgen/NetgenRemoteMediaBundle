@@ -36,7 +36,6 @@ class Value extends BaseValue
         'resource_type' => 'image',
         'created' => '',
         'format' => '',
-        'created' => '',
         'tags' => [],
         'signature' => '',
         'type' => '',
