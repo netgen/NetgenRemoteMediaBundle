@@ -363,7 +363,7 @@ class CloudinaryApiGateway extends Gateway
         }
 
         if ($query->getFolder()) {
-            $expressions[] = sprintf('folder:%s/*', $query->getFolder());
+            $expressions[] = sprintf('folder:"%s/*"', $query->getFolder());
         }
 
         return implode(' AND ', $expressions);
