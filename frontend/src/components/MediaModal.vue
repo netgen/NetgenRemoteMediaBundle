@@ -1,6 +1,6 @@
 <template>
   <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :folders="folders" :tags="tags" :media-types="mediaTypes" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
+    <media-facets :tags="tags" :media-types="mediaTypes" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
     <media-galery
         :media="media"
         :canLoadMore="canLoadMore"
@@ -25,7 +25,7 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["folders", "tags", "facetsLoading", "selectedMediaId", "paths"],
+  props: ["tags", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGalery,
@@ -69,12 +69,17 @@ export default {
       this.abortController && this.abortController.abort();
       this.abortController = new AbortController();
 
+      let folder = this.facets.folder;
+      if (typeof folder === 'undefined') {
+        folder = FOLDER_ALL;
+      }
+
       const query = {
         limit: NUMBER_OF_ITEMS,
         offset: patch ? this.media.length : 0,
         q: this.facets.query,
         mediatype: this.facets.mediaType || TYPE_ALL,
-        folder: this.facets.folder || FOLDER_ALL,
+        folder: folder,
         search_type: this.facets.searchType,
         next_cursor: patch ? this.nextCursor : null,
         tag: this.facets.tag || TAG_ALL

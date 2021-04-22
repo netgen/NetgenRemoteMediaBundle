@@ -74,7 +74,7 @@ import {encodeQueryData} from "@/utility/utility";
 
 export default {
   name: "MediaFacets",
-  props: ["folders", "tags", "facets", "facetsLoading", "mediaTypes"],
+  props: ["tags", "facets", "facetsLoading", "mediaTypes"],
   data() {
     return {
       TYPE_ALL,
@@ -84,6 +84,11 @@ export default {
       SEARCH_NAME,
       FOLDER_ALL,
       TAG_ALL,
+      folders: [{
+        id: '',
+        label: '(root)',
+        children: null
+      }],
       selectedFolder: this.facets.folder,
       selectedMediaType: this.facets.mediaType,
       query: this.facets.query
