@@ -37,6 +37,15 @@ final class BrowseController
         $folder = $folder !== 'all' ? $folder : null;
         $tag = $tag !== 'all' ? $tag : null;
 
+        switch ($folder) {
+            case '(all)':
+                $folder = null;
+                break;
+            case '(root)':
+                $folder = '';
+                break;
+        }
+
         $nextCursor = $request->get('next_cursor', null);
         if ($nextCursor === 'null') {
             $nextCursor = null;

@@ -14,8 +14,16 @@ $tag = $http->getVariable('tag', 'all');
 $type = $http->getVariable('mediatype', 'all');
 $folder = $http->getVariable('folder', 'all');
 $type = $type !== 'all' ? $type : null;
-$folder = $folder !== 'all' ? $folder : null;
 $tag = $tag !== 'all' ? $tag : null;
+
+switch ($folder) {
+    case '(all)':
+        $folder = null;
+        break;
+    case '(root)':
+        $folder = '';
+        break;
+}
 
 $nextCursor = $http->getVariable('next_cursor', null);
 if ($nextCursor === 'null') {

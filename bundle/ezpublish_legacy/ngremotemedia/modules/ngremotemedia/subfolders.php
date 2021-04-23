@@ -7,6 +7,10 @@ $provider = $container->get('netgen_remote_media.provider');
 
 $folder = $http->getVariable('folder');
 
+if ($folder === '(root)') {
+    $folder = null;
+}
+
 $folders = $folder === null
     ? $provider->listFolders()
     : $provider->listSubFolders($folder);

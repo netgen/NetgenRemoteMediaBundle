@@ -25,7 +25,11 @@ final class Load
     {
         $folder = $request->query->get('folder');
 
-        $folders = ($folder === null || $folder === 'null')
+        if ($folder === '(root)') {
+            $folder = null;
+        }
+
+        $folders = $folder === null
             ? $this->remoteMediaProvider->listFolders()
             : $this->remoteMediaProvider->listSubFolders($folder);
 
