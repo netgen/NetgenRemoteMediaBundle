@@ -96,8 +96,10 @@ final class Query
     {
         $vars = \get_object_vars($this);
         $sort = \http_build_query($vars['sortBy'], '', ',');
+        $folder = $vars['folder'] === '' ? '(root)' : $vars['folder'];
         unset($vars['sortBy']);
+        unset($vars['folder']);
 
-        return \implode('|', $vars) . $sort;
+        return \implode('|', $vars) . $folder . '|' . $sort;
     }
 }
