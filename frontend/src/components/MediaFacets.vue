@@ -64,6 +64,7 @@ import {
   TYPE_RAW,
   SEARCH_NAME,
   FOLDER_ALL,
+  FOLDER_ROOT,
   TAG_ALL,
 } from "../constants/facets";
 
@@ -83,10 +84,11 @@ export default {
       TYPE_RAW,
       SEARCH_NAME,
       FOLDER_ALL,
+      FOLDER_ROOT,
       TAG_ALL,
       folders: [{
-        id: '',
-        label: '(root)',
+        id: FOLDER_ROOT,
+        label: FOLDER_ROOT,
         children: null
       }],
       selectedFolder: this.facets.folder,

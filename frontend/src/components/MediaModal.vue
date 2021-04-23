@@ -16,7 +16,7 @@
 <script>
 import MediaFacets from "./MediaFacets";
 import MediaGalery from "./MediaGalery";
-import {FOLDER_ALL, TAG_ALL, SEARCH_NAME, TYPE_ALL, TYPE_IMAGE, TYPE_VIDEO, TYPE_RAW} from "../constants/facets";
+import {FOLDER_ALL, FOLDER_ROOT, TAG_ALL, SEARCH_NAME, TYPE_ALL, TYPE_IMAGE, TYPE_VIDEO, TYPE_RAW} from "../constants/facets";
 import { encodeQueryData } from "../utility/utility";
 import debounce from "debounce";
 import Modal from "./Modal";
@@ -38,7 +38,7 @@ export default {
       nextCursor: null,
       loading: true,
       facets: {
-        folder: "",
+        folder: FOLDER_ALL,
         searchType: SEARCH_NAME,
         mediaType: "",
         query: "",
@@ -69,17 +69,12 @@ export default {
       this.abortController && this.abortController.abort();
       this.abortController = new AbortController();
 
-      let folder = this.facets.folder;
-      if (typeof folder === 'undefined') {
-        folder = FOLDER_ALL;
-      }
-
       const query = {
         limit: NUMBER_OF_ITEMS,
         offset: patch ? this.media.length : 0,
         q: this.facets.query,
         mediatype: this.facets.mediaType || TYPE_ALL,
-        folder: folder,
+        folder: this.facets.folder || FOLDER_ALL,
         search_type: this.facets.searchType,
         next_cursor: patch ? this.nextCursor : null,
         tag: this.facets.tag || TAG_ALL
