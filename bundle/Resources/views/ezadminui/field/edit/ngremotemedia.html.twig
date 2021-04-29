@@ -2,8 +2,6 @@
     {% set field = form.parent.vars.value.field %}
     {% set field_value = form.parent.vars.value.value %}
 
-    {% set type = field_value.metaData.resource_type|default('image') %}
-
     {% set croppableVariations = ngrm_available_variations(app.request.attributes.get('contentType').identifier, true)  %}
     {% set availableVariations = croppableVariations|scaling_format|json_encode %}
 

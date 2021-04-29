@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search;
 
+use function implode;
+
 final class Query
 {
     /** @var string */
@@ -18,6 +20,9 @@ final class Query
     /** @var string|null */
     private $tag;
 
+    /** @var string[] */
+    private $resourceIds;
+
     /** @var int */
     private $limit;
 
@@ -27,9 +32,6 @@ final class Query
     /** @var array */
     private $sortBy = ['created_at' => 'desc'];
 
-    /**
-     * Query constructor.
-     */
     public function __construct(
         string $query,
         ?string $resourceType,
@@ -37,7 +39,8 @@ final class Query
         ?string $folder = null,
         ?string $tag = null,
         ?string $nextCursor = null,
-        array $sortBy = ['created_at' => 'desc']
+        array $sortBy = ['created_at' => 'desc'],
+        array $resourceIds = []
     ) {
         $this->query = $query;
         $this->resourceType = $resourceType;
@@ -46,6 +49,25 @@ final class Query
         $this->limit = $limit;
         $this->nextCursor = $nextCursor;
         $this->sortBy = $sortBy;
+        $this->resourceIds = $resourceIds;
+    }
+
+    public static function createResourceIdsSearchQuery(
+        array $resourceIds,
+        int $limit = 500,
+        ?string $nextCursor = null,
+        array $sortBy = ['created_at' => 'desc']
+    ) {
+        return new self(
+            '',
+            null,
+            $limit,
+            null,
+            null,
+            $nextCursor,
+            $sortBy,
+            $resourceIds
+        );
     }
 
     public function getQuery(): string
@@ -74,6 +96,14 @@ final class Query
         return $this->tag;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getResourceIds(): array
+    {
+        return $this->resourceIds;
+    }
+
     public function getLimit(): int
     {
         return $this->limit;
@@ -87,6 +117,11 @@ final class Query
         return $this->nextCursor;
     }
 
+    public function setNextCursor(?string $nextCursor): void
+    {
+        $this->nextCursor = $nextCursor;
+    }
+
     public function getSortBy(): array
     {
         return $this->sortBy;
@@ -97,9 +132,12 @@ final class Query
         $vars = \get_object_vars($this);
         $sort = \http_build_query($vars['sortBy'], '', ',');
         $folder = $vars['folder'] === '' ? '(root)' : $vars['folder'];
+        $resourceIds = implode(',', $this->resourceIds);
+
         unset($vars['sortBy']);
         unset($vars['folder']);
+        unset($vars['resourceIds']);
 
-        return \implode('|', $vars) . $folder . '|' . $sort;
+        return implode('|', $vars) . $folder . '|' . $sort . '|' . $resourceIds;
     }
 }

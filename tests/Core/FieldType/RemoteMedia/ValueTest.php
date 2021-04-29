@@ -12,6 +12,8 @@ class ValueTest extends TestCase
 {
     const EXAMPLE_PARAMETERS = [
         'resourceId' => 'c87hg9xfxrd4itiim3t0',
+        'resourceType' => 'image',
+        'type' => 'upload',
         'url' => 'http://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
         'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
         'size' => '120253',
@@ -25,11 +27,9 @@ class ValueTest extends TestCase
             'width' => '864',
             'height' => '576',
             'format' => 'jpg',
-            'resource_type' => 'image',
             'created' => '2013-06-23T13:59:18Z',
             'tags' => ['tag1'],
             'signature' => 'f8645b000be7d717599affc89a068157e4748276',
-            'type' => 'upload',
             'etag' => 'test_tag',
             'overwritten' => 'true',
             'alt_text' => 'alt text',
@@ -39,6 +39,8 @@ class ValueTest extends TestCase
 
     const EMPTY_PARAMETERS = [
         'resourceId' => null,
+        'resourceType' => null,
+        'type' => null,
         'url' => null,
         'secure_url' => null,
         'size' => 0,
@@ -48,13 +50,10 @@ class ValueTest extends TestCase
             'version' => '',
             'width' => '',
             'height' => '',
-            'resource_type' => 'image',
             'created' => '',
             'format' => '',
-            'created' => '',
             'tags' => [],
             'signature' => '',
-            'type' => '',
             'etag' => '',
             'overwritten' => '',
             'alt_text' => '',
@@ -125,7 +124,8 @@ class ValueTest extends TestCase
 
         $exampleParameters = self::EXAMPLE_PARAMETERS;
         $exampleParameters['mediaType'] = 'video';
-        $exampleParameters['metaData']['resource_type'] = 'video';
+        $exampleParameters['resourceType'] = 'video';
+        $exampleParameters['type'] = 'upload';
 
         $this->assertEquals(\json_encode($exampleParameters), (string) $value);
     }
@@ -139,7 +139,8 @@ class ValueTest extends TestCase
 
         $exampleParameters = self::EXAMPLE_PARAMETERS;
         $exampleParameters['mediaType'] = 'other';
-        $exampleParameters['metaData']['resource_type'] = 'pdf';
+        $exampleParameters['resourceType'] = 'pdf';
+        $exampleParameters['type'] = 'upload';
 
         $this->assertEquals(\json_encode($exampleParameters), (string) $value);
     }

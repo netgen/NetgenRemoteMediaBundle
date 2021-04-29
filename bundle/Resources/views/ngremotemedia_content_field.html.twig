@@ -16,7 +16,6 @@
 {% block ngremotemedia_field %}
     {% set format = parameters.format|default('') %}
     {% set dimensions = parameters.dimensions|default(false) %}
-    {% set resourceType = field.value.metaData.resource_type|default('image') %}
 
     {% set videoConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_VIDEO') %}
     {% set imageConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_IMAGE') %}
