@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary;
 
+use Cloudinary\Api\NotFound;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
@@ -173,7 +174,11 @@ class CloudinaryProvider extends RemoteMediaProvider
             return new Value();
         }
 
-        $response = $this->gateway->get($resourceId, $resourceType);
+        try {
+            $response = $this->gateway->get($resourceId, $resourceType);
+        } catch (NotFound $e) {
+            return new Value();
+        }
 
         if (empty($response)) {
             return new Value();
