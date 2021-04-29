@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityManagerInterface;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
@@ -26,7 +25,7 @@ use function json_decode;
 
 class RefreshEzFieldsCommand extends Command
 {
-    private const CHUNK_SIZE = 200;
+    private const DEFAULT_CHUNK_SIZE = 200;
 
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -93,6 +92,12 @@ class RefreshEzFieldsCommand extends Command
                 'cids',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
                 'List of content IDs to process (default: all)'
+            )->addOption(
+                'chunk-size',
+                'cs',
+                InputOption::VALUE_OPTIONAL,
+                'The size of the chunk of attributes to fetch (and size of chunk of resource to get from remote media in one API request)',
+                self::DEFAULT_CHUNK_SIZE
             );
     }
 
@@ -106,6 +111,7 @@ class RefreshEzFieldsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $limit = (int) $input->getOption('chunk-size');
         $offset = 0;
         $count = 1;
         $attributesCount = $this->getAttributesCount();
@@ -117,7 +123,7 @@ class RefreshEzFieldsCommand extends Command
         }
 
         do {
-            $attributes = $this->loadAttributes(self::CHUNK_SIZE, $offset);
+            $attributes = $this->loadAttributes($limit, $offset);
             $this->fillRemoteResources($attributes);
 
             foreach ($attributes as $attribute) {
@@ -136,7 +142,7 @@ class RefreshEzFieldsCommand extends Command
                 $count++;
             }
 
-            $offset += self::CHUNK_SIZE;
+            $offset += $limit;
         } while (count($attributes) > 0);
     }
 
