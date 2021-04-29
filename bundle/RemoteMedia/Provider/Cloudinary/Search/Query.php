@@ -117,6 +117,11 @@ final class Query
         return $this->nextCursor;
     }
 
+    public function setNextCursor(?string $nextCursor): void
+    {
+        $this->nextCursor = $nextCursor;
+    }
+
     public function getSortBy(): array
     {
         return $this->sortBy;
