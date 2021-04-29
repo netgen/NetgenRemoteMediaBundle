@@ -60,3 +60,11 @@ services:
         arguments:
             - "@ezpublish.cache_pool"
             - "%netgen_remote_media.cloudinary.cache_ttl%"
+
+    netgen_remote_media.command.refresh_ez_fields:
+        class: Netgen\Bundle\RemoteMediaBundle\Command\RefreshEzFieldsCommand
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@netgen_remote_media.provider"
+        tags:
+            - { name: console.command }
