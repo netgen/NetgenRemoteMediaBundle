@@ -3,11 +3,6 @@
 {def $remote_value = $attribute.content}
 {def $fieldId = $attribute.id}
 {def $availableFormats = ng_image_variations($attribute.object.class_identifier)}
-{if is_set($remote_value.metaData.resource_type)}
-    {def $type = $remote_value.metaData.resource_type}
-{else}
-    {def $type = 'image'}
-{/if}
 
 {def $croppableVariations = ng_image_variations($attribute.object.class_identifier, true)}
 {def $editorVariations = ng_image_variations($attribute.object.class_identifier)}
@@ -25,7 +20,7 @@
     '@NetgenRemoteMedia/ezadminui/js_templates.html.twig',
     hash(
         'field_value', $remote_value,
-        'type', $type,
+        'type', $remote_value.resourceType,
         'paths', hash(
             'browse', "/ngremotemedia/browse"|ezurl('no', 'relative'),
             'load_facets', "/ngremotemedia/facets"|ezurl('no', 'relative'),

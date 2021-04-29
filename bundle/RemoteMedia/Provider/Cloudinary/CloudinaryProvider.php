@@ -320,7 +320,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $options = [
             'type' => $value->metaData['type'],
-            'resource_type' => $value->metaData['resource_type'],
+            'resource_type' => $value->resourceType,
             'flags' => 'attachment',
         ];
 

@@ -408,7 +408,8 @@ class CloudinaryProviderTest extends TestCase
         $value = new Value(
             [
                 'resourceId' => 'testResourceId',
-                'metaData' => ['type' => 'upload', 'resource_type' => 'image'],
+                'resourceType' => 'image',
+                'type' => 'upload',
             ]
         );
 

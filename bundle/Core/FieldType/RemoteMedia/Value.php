@@ -12,16 +12,21 @@ class Value extends BaseValue
      * @var string
      */
     const TYPE_IMAGE = 'image';
+
     /**
      * @var string
      */
     const TYPE_VIDEO = 'video';
+
     /**
      * @var string
      */
     const TYPE_OTHER = 'other';
 
     public $resourceId = null;
+    public $resourceType = null;
+    public $type = null;
+
     public $url = null;
     public $secure_url = null;
     public $size = 0;
@@ -33,13 +38,10 @@ class Value extends BaseValue
         'version' => '',
         'width' => '',
         'height' => '',
-        'resource_type' => 'image',
         'created' => '',
         'format' => '',
-        'created' => '',
         'tags' => [],
         'signature' => '',
-        'type' => '',
         'etag' => '',
         'overwritten' => '',
         'alt_text' => '',
@@ -74,11 +76,9 @@ class Value extends BaseValue
             'width' => !empty($response['width']) ? $response['width'] : '',
             'height' => !empty($response['height']) ? $response['height'] : '',
             'format' => !empty($response['format']) ? $response['format'] : '',
-            'resource_type' => !empty($response['resource_type']) ? $response['resource_type'] : '',
             'created' => !empty($response['created_at']) ? $response['created_at'] : '',
             'tags' => !empty($response['tags']) ? $response['tags'] : [],
             'signature' => !empty($response['signature']) ? $response['signature'] : '',
-            'type' => !empty($response['type']) ? $response['type'] : '',
             'etag' => !empty($response['etag']) ? $response['etag'] : '',
             'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
             'alt_text' => $altText,
@@ -87,6 +87,8 @@ class Value extends BaseValue
 
         $value = new self();
         $value->resourceId = $response['public_id'];
+        $value->resourceType = !empty($response['resource_type']) ? $response['resource_type'] : 'image';
+        $value->type = !empty($response['type']) ? $response['type'] : 'upload';
         $value->url = $response['url'];
         $value->secure_url = $response['secure_url'];
         $value->size = $response['bytes'];
