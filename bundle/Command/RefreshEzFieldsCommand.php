@@ -152,6 +152,7 @@ class RefreshEzFieldsCommand extends Command
 
         if ($decodedData === null || $decodedData === '') {
             $this->updateAttribute($attribute, new Value());
+            $this->updateExternalData($attribute, new Value());
             $this->output->writeln(' -> <info>SUCCESS</info> the field was missing any data - it has been filled with empty value.');
 
             return;
@@ -161,6 +162,7 @@ class RefreshEzFieldsCommand extends Command
 
         if ($localValue->resourceId === null) {
             $this->updateAttribute($attribute, new Value());
+            $this->updateExternalData($attribute, new Value());
             $this->output->writeln(' -> <info>SUCCESS</info> the field is empty - it has been filled with empty value.');
 
             return;
@@ -174,6 +176,7 @@ class RefreshEzFieldsCommand extends Command
 
             if ($this->force === true) {
                 $this->updateAttribute($attribute, new Value());
+                $this->updateExternalData($attribute, new Value());
                 $this->output->writeln(' -> <info>FORCED SUCCESS</info> the field has been set to empty.');
 
                 return;
@@ -186,6 +189,7 @@ class RefreshEzFieldsCommand extends Command
 
         if ($resourceType !== null && array_key_exists($resourceType, $resources)) {
             $this->updateAttribute($attribute, $resources[$resourceType]);
+            $this->updateExternalData($attribute, $resources[$resourceType]);
             $this->output->writeln(sprintf(' -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and field has been updated', $resourceType, $localValue->resourceId));
 
             return;
@@ -193,6 +197,7 @@ class RefreshEzFieldsCommand extends Command
 
         if ($resourceType === null && count($resources) === 1) {
             $this->updateAttribute($attribute, array_pop($resources));
+            $this->updateExternalData($attribute, array_pop($resources));
             $this->output->writeln(sprintf(' -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and field has been updated', $resourceType, $localValue->resourceId));
 
             return;
@@ -207,6 +212,7 @@ class RefreshEzFieldsCommand extends Command
         if ($this->force === true) {
             $resource = array_pop($resources);
             $this->updateAttribute($attribute, $resource);
+            $this->updateExternalData($attribute, $resource);
             $this->output->writeln(sprintf(' -> <info>FORCED SUCCESS</info> field has been updated with the first found resource of type \'%s\' with resourceId \'%s\'', $resource->resourceType, $resource->resourceId));
 
             return;
@@ -335,5 +341,64 @@ class RefreshEzFieldsCommand extends Command
         $query->execute();
 
         return (int) $query->fetch()['count'];
+    }
+
+    private function updateExternalData($attribute, Value $value): void
+    {
+        if ($this->dryRun === true) {
+            return;
+        }
+
+        $contentId = $attribute['contentobject_id'];
+        $fieldId = $attribute['id'];
+        $version = $attribute['version'];
+        $provider = $this->provider->getIdentifier();
+
+        if ($value->resourceId === null) {
+            $sql = "DELETE FROM ngremotemedia_field_link
+                WHERE field_id = :fieldId AND version = :version";
+
+            $query = $this->entityManager->getConnection()->prepare($sql);
+            $query->bindValue('fieldId', $fieldId);
+            $query->bindValue('version', $version);
+            $query->execute();
+
+            return;
+        }
+
+        $sql = "SELECT COUNT(*) as count FROM ngremotemedia_field_link
+                WHERE field_id = :fieldId AND version = :version";
+
+        $query = $this->entityManager->getConnection()->prepare($sql);
+        $query->bindValue('fieldId', $fieldId);
+        $query->bindValue('version', $version);
+        $query->execute();
+
+        if ($query->fetch()['count'] > 0) {
+            $sql = "UPDATE ngremotemedia_field_link
+                SET resource_id = :resourceId, provider = :provider, contentobject_id = :contentId
+                WHERE field_id = :fieldId AND version = :version";
+
+            $query = $this->entityManager->getConnection()->prepare($sql);
+            $query->bindValue('resourceId', $value->resourceId);
+            $query->bindValue('provider', $provider);
+            $query->bindValue('contentId', $contentId);
+            $query->bindValue('fieldId', $fieldId);
+            $query->bindValue('version', $version);
+            $query->execute();
+
+            return;
+        }
+
+        $sql = "INSERT INTO ngremotemedia_field_link (field_id, version, resource_id, provider, contentobject_id)
+                VALUES (:fieldId, :version, :resourceId, :provider, :contentId)";
+
+        $query = $this->entityManager->getConnection()->prepare($sql);
+        $query->bindValue('contentId', $contentId);
+        $query->bindValue('fieldId', $fieldId);
+        $query->bindValue('version', $version);
+        $query->bindValue('resourceId', $value->resourceId);
+        $query->bindValue('provider', $provider);
+        $query->execute();
     }
 }
