@@ -100,38 +100,42 @@ abstract class Gateway
      * Adds new tag to the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $tag
      *
      * @return array
      */
-    abstract public function addTag($id, $tag);
+    abstract public function addTag($id, $type, $tag);
 
     /**
      * Removes the tag from the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $tag
      *
      * @return array
      */
-    abstract public function removeTag($id, $tag);
+    abstract public function removeTag($id, $type, $tag);
 
     /**
      * Removes all tags from the remote resource.
      *
      * @param $id
+     * @param $type
      *
      * @return array
      */
-    abstract public function removeAllTags($id);
+    abstract public function removeAllTags($id, $type);
 
     /**
      * Updates the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $options
      */
-    abstract public function update($id, $options);
+    abstract public function update($id, $type, $options);
 
     /**
      * Returns the url for the thumbnail of video with the provided id.
@@ -157,16 +161,18 @@ abstract class Gateway
      * Generates download link for the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $options
      *
      * @return string
      */
-    abstract public function getDownloadLink($id, $options);
+    abstract public function getDownloadLink($id, $type, $options);
 
     /**
      * Deletes the resource from the cloudinary.
      *
      * @param $id
+     * @param $type
      */
-    abstract public function delete($id);
+    abstract public function delete($id, $type);
 }

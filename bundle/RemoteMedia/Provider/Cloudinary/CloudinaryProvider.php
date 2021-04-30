@@ -168,7 +168,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @param string $resourceType
      */
-    public function getRemoteResource(string $resourceId, ?string $resourceType = 'image'): Value
+    public function getRemoteResource(string $resourceId, string $resourceType = 'image'): Value
     {
         if (empty($resourceId)) {
             return new Value();
@@ -200,9 +200,9 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return mixed
      */
-    public function addTagToResource(string $resourceId, string $tag)
+    public function addTagToResource(string $resourceId, string $tag, string $resourceType = 'image')
     {
-        return $this->gateway->addTag($resourceId, $tag);
+        return $this->gateway->addTag($resourceId, $resourceType, $tag);
     }
 
     /**
@@ -210,9 +210,9 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return mixed
      */
-    public function removeTagFromResource(string $resourceId, string $tag)
+    public function removeTagFromResource(string $resourceId, string $tag, string $resourceType = 'image')
     {
-        return $this->gateway->removeTag($resourceId, $tag);
+        return $this->gateway->removeTag($resourceId, $resourceType, $tag);
     }
 
     /**
@@ -220,24 +220,25 @@ class CloudinaryProvider extends RemoteMediaProvider
      *
      * @return mixed
      */
-    public function removeAllTagsFromResource(string $resourceId)
+    public function removeAllTagsFromResource(string $resourceId, string $resourceType = 'image')
     {
-        return $this->gateway->removeAllTags($resourceId);
+        return $this->gateway->removeAllTags($resourceId, $resourceType);
     }
 
     /**
      * @param $resourceId
+     * @param string $resourceType
      * @param $tags
      *
      * @return mixed
      */
-    public function updateTags(string $resourceId, string $tags)
+    public function updateTags(string $resourceId, string $tags, string $resourceType = 'image')
     {
         $options = [
             'tags' => $tags,
         ];
 
-        $this->gateway->update($resourceId, $options);
+        $this->gateway->update($resourceId, $resourceType, $options);
     }
 
     /**
@@ -254,10 +255,9 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $options = [
             'context' => $context,
-            'resource_type' => $resourceType,
         ];
 
-        $this->gateway->update($resourceId, $options);
+        $this->gateway->update($resourceId, $resourceType, $options);
     }
 
     /**
@@ -329,15 +329,15 @@ class CloudinaryProvider extends RemoteMediaProvider
             'flags' => 'attachment',
         ];
 
-        return $this->gateway->getDownloadLink($value->resourceId, $options);
+        return $this->gateway->getDownloadLink($value->resourceId, $value->resourceType, $options);
     }
 
     /**
      * Removes the resource from the remote.
      */
-    public function deleteResource(string $resourceId)
+    public function deleteResource(string $resourceId, string $resourceType = 'image')
     {
-        $this->gateway->delete($resourceId);
+        $this->gateway->delete($resourceId, $resourceType);
     }
 
     /**
