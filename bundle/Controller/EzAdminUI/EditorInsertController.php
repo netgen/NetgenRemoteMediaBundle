@@ -54,7 +54,7 @@ final class EditorInsertController
         $contentTypeIdentifier = $request->request->get('content_type_identifier');
 
         if ($variation && $contentTypeIdentifier) {
-            $variation = $remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $variation);
+            $variation = $this->remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $variation);
         }
 
         return new JsonResponse([
