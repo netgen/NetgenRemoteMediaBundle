@@ -251,48 +251,54 @@ class CloudinaryApiGateway extends Gateway
      * Adds new tag to the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $tag
      *
      * @return array
      */
-    public function addTag($id, $tag)
+    public function addTag($id, $type, $tag)
     {
-        return $this->cloudinaryUploader->add_tag($tag, [$id]);
+        return $this->cloudinaryUploader->add_tag($tag, [$id], ['resource_type' => $type]);
     }
 
     /**
      * Removes the tag from the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $tag
      *
      * @return array
      */
-    public function removeTag($id, $tag)
+    public function removeTag($id, $type, $tag)
     {
-        return $this->cloudinaryUploader->remove_tag($tag, [$id]);
+        return $this->cloudinaryUploader->remove_tag($tag, [$id], ['resource_type' => $type]);
     }
 
     /**
      * Removes all tags from the remote resource.
      *
      * @param $id
+     * @param $type
      *
      * @return array
      */
-    public function removeAllTags($id)
+    public function removeAllTags($id, $type)
     {
-        return $this->cloudinaryUploader->remove_all_tags([$id]);
+        return $this->cloudinaryUploader->remove_all_tags([$id], ['resource_type' => $type]);
     }
 
     /**
      * Updates the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $options
      */
-    public function update($id, $options)
+    public function update($id, $type, $options)
     {
+        $options['resource_type'] = $type;
+
         $this->cloudinaryApi->update($id, $options);
     }
 
@@ -326,12 +332,15 @@ class CloudinaryApiGateway extends Gateway
      * Generates download link for the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $options
      *
      * @return string
      */
-    public function getDownloadLink($id, $options)
+    public function getDownloadLink($id, $type, $options)
     {
+        $options['resource_type'] = $type;
+
         return $this->cloudinary->cloudinary_url($id, $options);
     }
 
@@ -339,10 +348,13 @@ class CloudinaryApiGateway extends Gateway
      * Deletes the resource from the cloudinary.
      *
      * @param $id
+     * @param $type
      */
-    public function delete($id)
+    public function delete($id, $type)
     {
         $options = ['invalidate' => true];
+        $options = ['resource_type' => $type];
+
         $this->cloudinaryUploader->destroy($id, $options);
     }
 

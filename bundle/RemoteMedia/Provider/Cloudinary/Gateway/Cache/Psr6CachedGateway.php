@@ -360,13 +360,14 @@ class Psr6CachedGateway extends Gateway
      * Adds new tag to the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $tag
      *
      * @return array
      */
-    public function addTag($id, $tag)
+    public function addTag($id, $type, $tag)
     {
-        $value = $this->gateway->addTag($id, $tag);
+        $value = $this->gateway->addTag($id, $type, $tag);
 
         $this->cache->invalidateTags($this->getItemCacheTags($id));
 
@@ -377,13 +378,14 @@ class Psr6CachedGateway extends Gateway
      * Removes the tag from the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $tag
      *
      * @return array
      */
-    public function removeTag($id, $tag)
+    public function removeTag($id, $type, $tag)
     {
-        $value = $this->gateway->removeTag($id, $tag);
+        $value = $this->gateway->removeTag($id, $type, $tag);
 
         $this->cache->invalidateTags($this->getItemCacheTags($id));
 
@@ -394,12 +396,13 @@ class Psr6CachedGateway extends Gateway
      * Removes all tags from the remote resource.
      *
      * @param $id
+     * @param $type
      *
      * @return array
      */
-    public function removeAllTags($id)
+    public function removeAllTags($id, $type)
     {
-        $value = $this->gateway->removeAllTags($id);
+        $value = $this->gateway->removeAllTags($id, $type);
 
         $this->cache->invalidateTags($this->getItemCacheTags($id));
 
@@ -411,11 +414,12 @@ class Psr6CachedGateway extends Gateway
      * Updates the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $options
      */
-    public function update($id, $options)
+    public function update($id, $type, $options)
     {
-        $value = $this->gateway->update($id, $options);
+        $value = $this->gateway->update($id, $type, $options);
 
         $this->cache->invalidateTags($this->getItemCacheTags($id));
 
@@ -452,23 +456,25 @@ class Psr6CachedGateway extends Gateway
      * Generates download link for the remote resource.
      *
      * @param $id
+     * @param $type
      * @param $options
      *
      * @return string
      */
-    public function getDownloadLink($id, $options)
+    public function getDownloadLink($id, $type, $options)
     {
-        return $this->gateway->getDownloadLink($id, $options);
+        return $this->gateway->getDownloadLink($id, $type, $options);
     }
 
     /**
      * Deletes the resource from the cloudinary.
      *
      * @param $id
+     * @param $type
      */
-    public function delete($id)
+    public function delete($id, $type)
     {
-        $result = $this->gateway->delete($id);
+        $result = $this->gateway->delete($id, $type);
 
         $tags = \array_unique(\array_merge(
             $this->getCacheTags(self::SEARCH),

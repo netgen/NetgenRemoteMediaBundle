@@ -69,13 +69,14 @@ final class UpdateFieldHelper
 
         if ($oldValue->metaData['tags'] !== $input->getTags()) {
             if (count($input->getTags()) === 0) {
-                $this->remoteMediaProvider->removeAllTagsFromResource($updatedValue->resourceId);
+                $this->remoteMediaProvider->removeAllTagsFromResource($updatedValue->resourceId, $updatedValue->resourceType);
             }
 
             if (count($input->getTags()) > 0) {
                 $this->remoteMediaProvider->updateTags(
                     $updatedValue->resourceId,
-                    count($input->getTags()) > 0 ? implode(',', $input->getTags()) : null
+                    count($input->getTags()) > 0 ? implode(',', $input->getTags()) : null,
+                    $updatedValue->resourceType
                 );
             }
 
@@ -85,7 +86,7 @@ final class UpdateFieldHelper
         if (!empty($dataToChange)) {
             $this->remoteMediaProvider->updateResourceContext(
                 $updatedValue->resourceId,
-                $updatedValue->mediaType,
+                $updatedValue->resourceType,
                 $dataToChange
             );
         }

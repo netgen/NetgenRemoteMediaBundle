@@ -98,7 +98,7 @@ abstract class RemoteMediaProvider
      * @param mixed $resourceId
      * @param string $resourceType
      */
-    abstract public function getRemoteResource(string $resourceId, ?string $resourceType = 'image'): Value;
+    abstract public function getRemoteResource(string $resourceId, string $resourceType = 'image'): Value;
 
     /**
      * Lists all available tags.
@@ -110,29 +110,30 @@ abstract class RemoteMediaProvider
      *
      * @return mixed
      */
-    abstract public function addTagToResource(string $resourceId, string $tag);
+    abstract public function addTagToResource(string $resourceId, string $tag, string $resourceType = 'image');
 
     /**
      * Removes tag from remote resource.
      *
      * @return mixed
      */
-    abstract public function removeTagFromResource(string $resourceId, string $tag);
+    abstract public function removeTagFromResource(string $resourceId, string $tag, string $resourceType = 'image');
 
     /**
      * Removes all tags from remote resource.
      *
      * @return mixed
      */
-    abstract public function removeAllTagsFromResource(string $resourceId);
+    abstract public function removeAllTagsFromResource(string $resourceId, string $resourceType = 'image');
 
     /**
      * @param $resourceId
+     * @param $resourceType
      * @param $tags
      *
      * @return mixed
      */
-    abstract public function updateTags(string $resourceId, string $tags);
+    abstract public function updateTags(string $resourceId, string $tags, string $resourceType = 'image');
 
     /**
      * Updates the resource context.
@@ -164,7 +165,7 @@ abstract class RemoteMediaProvider
     /**
      * Removes the resource from the remote.
      */
-    abstract public function deleteResource(string $resourceId);
+    abstract public function deleteResource(string $resourceId, string $resourceType = 'image');
 
     /**
      * Generates the link to the remote resource.
