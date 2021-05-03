@@ -65,10 +65,6 @@ class LegacyStorage extends Gateway
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('version'),
                     $selectQuery->bindValue($version, null, PDO::PARAM_INT)
-                ),
-                $selectQuery->expr->eq(
-                    $connection->quoteColumn('provider'),
-                    $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
                 )
             );
         $statement = $selectQuery->prepare();

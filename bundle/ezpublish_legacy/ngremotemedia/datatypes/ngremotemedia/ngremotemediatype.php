@@ -85,8 +85,7 @@ class NgRemoteMediaType extends eZDataType
         $db = eZDB::instance();
         $result = $db->arrayQuery(
             "SELECT COUNT(*) as count FROM ngremotemedia_field_link WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
-                " AND version = " . (int)$contentObjectAttribute->attribute('version') .
-                " AND provider = '". $provider->getIdentifier() ."'"
+                " AND version = " . (int)$contentObjectAttribute->attribute('version')
         );
         $count = $result[0]['count'];
 
@@ -94,7 +93,7 @@ class NgRemoteMediaType extends eZDataType
         if (empty($id)) {
             $db->query(
                 "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
-                " AND version = " . (int)$contentObjectAttribute->attribute('version') . " AND provider = '". $provider->getIdentifier() ."'"
+                " AND version = " . (int)$contentObjectAttribute->attribute('version')
             );
 
             return;
@@ -102,7 +101,7 @@ class NgRemoteMediaType extends eZDataType
 
         if ($count > 0) {
             $db->query(
-                "UPDATE ngremotemedia_field_link SET resource_id = '" . $id .
+                "UPDATE ngremotemedia_field_link SET resource_id = '" . $id . ", provider = '" . $provider->getIdentifier() .
                 "' WHERE field_id = " . (int)$contentObjectAttribute->attribute('id') .
                 " AND version = " . (int)$contentObjectAttribute->attribute('version')
             );
@@ -124,15 +123,12 @@ class NgRemoteMediaType extends eZDataType
         $db = eZDB::instance();
 
         if (!empty($version)) {
-            $result = $db->query(
-                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
-                " AND version = " . $version .
-                " AND provider = '" . $provider->getIdentifier() . "'"
+            $db->query(
+                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') . " AND version = " . $version
             );
         } else {
-            $result = $db->query(
-                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id') .
-                " AND provider = '" . $provider->getIdentifier() . "'"
+            $db->query(
+                "DELETE FROM ngremotemedia_field_link WHERE field_id = " . (int)$objectAttribute->attribute('id')
             );
         }
     }
@@ -182,13 +178,11 @@ class NgRemoteMediaType extends eZDataType
         if (!empty($version)) {
             $results = $db->arrayQuery(
                 "SELECT DISTINCT resource_id FROM ngremotemedia_field_link WHERE contentobject_id = " . (int)$objectAttribute->attribute('contentobject_id') .
-                " AND version = " . (int)$objectAttribute->attribute('version') .
-                " AND provider = '" . $provider->getIdentifier() . "'"
+                " AND version = " . (int)$objectAttribute->attribute('version')
             );
         } else {
             $results = $db->arrayQuery(
-                "SELECT DISTINCT resource_id FROM ngremotemedia_field_link WHERE contentobject_id = " . (int)$objectAttribute->attribute('contentobject_id') .
-                " AND provider = '" . $provider->getIdentifier() . "'"
+                "SELECT DISTINCT resource_id FROM ngremotemedia_field_link WHERE contentobject_id = " . (int)$objectAttribute->attribute('contentobject_id')
             );
         }
 
