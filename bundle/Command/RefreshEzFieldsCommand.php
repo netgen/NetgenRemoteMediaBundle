@@ -196,8 +196,9 @@ class RefreshEzFieldsCommand extends Command
         }
 
         if ($resourceType === null && count($resources) === 1) {
-            $this->updateAttribute($attribute, array_pop($resources));
-            $this->updateExternalData($attribute, array_pop($resources));
+            $resource = array_pop($resources);
+            $this->updateAttribute($attribute, $resource);
+            $this->updateExternalData($attribute, $resource);
             $this->output->writeln(sprintf(' -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and field has been updated', $resourceType, $localValue->resourceId));
 
             return;
