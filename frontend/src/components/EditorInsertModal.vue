@@ -33,7 +33,7 @@ import vSelect from "vue-select";
 
 export default {
   name: "EditorInsertModal",
-  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage"],
+  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage", "selectedEditorVariation"],
   components: {
     'modal': Modal,
     'interactions': Interactions,
