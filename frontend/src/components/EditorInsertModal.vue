@@ -5,6 +5,7 @@
         :field-id="fieldId"
         :config="config"
         :selected-image="selectedImage"
+        @selectedImageChanged="handleSelectedImageChanged"
       ></interactions>
 
       <v-select
@@ -83,6 +84,8 @@ export default {
           this.editorInsertModalLoading = false;
         }
       });
+    handleSelectedImageChanged(selectedImage) {
+      this.selectedImage = selectedImage;
     }
   }
 };
