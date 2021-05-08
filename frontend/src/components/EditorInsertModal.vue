@@ -1,6 +1,6 @@
 <template>
   <modal :title="this.$root.$data.NgRemoteMediaTranslations.editor_insert_title" class="editor-insert-modal" @close="$emit('close')">
-    <div v-if="!editorInsertModalLoading" class="editor-insert-modal-body">
+    <div :class="loading ? 'editor-insert-modal-body loading' : 'editor-insert-modal-body'">
       <interactions
         :field-id="fieldId"
         :config="config"
@@ -16,8 +16,8 @@
 
       <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.content_type_identifier" :value="contentTypeIdentifier"/>
       <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.selected_variation"/>
-     </div>
-    <i v-else class="ng-icon ng-spinner" />
+      <i v-if="loading" class="ng-icon ng-spinner" />
+    </div>
     <div class="action-strip">
       <button type="button" class="btn" @click="$emit('close')">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_cancel_button}}</button>
       <button type="button" class="btn btn-blue" @click="this.handleEditorInsertModalSave">
@@ -45,7 +45,7 @@ export default {
       $('input[name="'+this.$root.$data.RemoteMediaInputFields.selected_variation+'"]').val(value);
     },
     handleEditorInsertModalSave(){
-      this.editorInsertModalLoading = true;
+      this.loading = true;
 
       var data = new FormData();
       data.append('resource_id', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.resource_id+'"]').val());
