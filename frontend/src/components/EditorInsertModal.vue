@@ -15,8 +15,6 @@
         :placeholder="this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_original_image"
       />
 
-      <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.content_type_identifier" :value="contentTypeIdentifier"/>
-      <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.selected_variation"/>
       <i v-if="loading" class="ng-icon ng-spinner" />
     </div>
     <div class="action-strip">
