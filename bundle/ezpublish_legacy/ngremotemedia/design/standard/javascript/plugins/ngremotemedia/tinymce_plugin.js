@@ -6,7 +6,7 @@ tinymce.PluginManager.add('ngremotemedia', function(editor) {
         tooltip: 'Netgen remote media',
         onclick: function() {
             var fieldId = $(editor.targetElm).data('fieldid');
-            window['remoteMedia'+fieldId].handleEditorInsertClicked();
+            window['remoteMedia'+fieldId].openEditorInsertModal();
         }
     });
 
@@ -17,7 +17,7 @@ tinymce.PluginManager.add('ngremotemedia', function(editor) {
         context: 'insert',
         onclick: function() {
             var fieldId = $(editor.targetElm).data('fieldid');
-            window['remoteMedia'+fieldId].handleEditorInsertClicked();
+            window['remoteMedia'+fieldId].openEditorInsertModal();
         }
     });
 
