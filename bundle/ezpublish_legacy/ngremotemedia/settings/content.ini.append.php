@@ -18,4 +18,7 @@ CustomAttributes[]=version
 CustomAttributes[]=resourceType
 CustomAttributes[]=variation
 
+[EditSettings]
+AdditionalTemplates[]=js_config.tpl
+
 */

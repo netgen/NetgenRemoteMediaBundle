@@ -2,25 +2,18 @@
     {% set field = form.parent.vars.value.field %}
     {% set field_value = form.parent.vars.value.value %}
 
-    {% set croppableVariations = ngrm_available_variations(app.request.attributes.get('contentType').identifier, true)  %}
-    {% set availableVariations = croppableVariations|scaling_format|json_encode %}
-
     {% set input_fields = {} %}
     {% for child in form %}
         {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
     {% endfor %}
 
     {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' with {
-        'paths': {
-            'browse': path('netgen_remote_media_ezadmin_browse'),
-            'load_facets': path('netgen_remote_media_ezadmin_facets_load'),
-            'load_folders': path('netgen_remote_media_ezadmin_folder_load'),
-            'create_folder': path('netgen_remote_media_ezadmin_folder_create')
-        },
-        'available_variations': availableVariations,
-        'fieldId': field.id,
-        'input_fields': input_fields
+        'field_id': field.id,
+        'field_value': field.value,
+        'input_fields': input_fields,
     } %}
+
+    {% include '@NetgenRemoteMedia/ezadminui/js_config.html.twig' with {'content_type': null} %}
 
     <div class="ngremotemedia-type" data-id="{{ field.id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
         <interactions
