@@ -219,6 +219,11 @@ export default {
         }
       }
     }
+  },
+  watch: {
+    selectedImage: function() {
+      this.$emit("selectedImageChanged", this.selectedImage);
+    }
   }
 };
 </script>
