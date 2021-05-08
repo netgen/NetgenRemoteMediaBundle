@@ -42,9 +42,6 @@ export default {
     "v-select": vSelect
   },
   methods: {
-    handleVariationChange(value) {
-      $('input[name="'+this.$root.$data.RemoteMediaInputFields.selected_variation+'"]').val(value);
-    },
     handleEditorInsertModalSave(){
       this.loading = true;
 
@@ -53,8 +50,8 @@ export default {
       data.append('alt_text', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.alt_text+'"]').val());
       data.append('new_file', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.new_file+'"]')[0].files[0]);
       data.append('image_variations', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.image_variations+'"]').val());
-      data.append('content_type_identifier', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.content_type_identifier+'"]').val());
-      data.append('variation', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.selected_variation+'"]').val());
+      data.append('content_type_identifier', this.contentTypeIdentifier);
+      data.append('variation', this.selectedEditorVariation);
 
       var tagsArray = $('body').find('select[name="'+this.$root.$data.RemoteMediaInputFields.tags+'"]').val();
 
