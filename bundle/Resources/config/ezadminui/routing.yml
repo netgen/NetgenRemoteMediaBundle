@@ -18,6 +18,11 @@ netgen_remote_media_ezadmin_browse:
     defaults:
         _controller: netgen_remote_media.controllers.ezadminui.browse
 
+netgen_remote_media_ezadmin_editor_fetch:
+    path: /editor/fetch
+    defaults:
+        _controller: netgen_remote_media.controllers.ezadminui.editor.fetch
+
 netgen_remote_media_ezadmin_editor_insert:
     path: /editor/insert
     defaults:
