@@ -15,7 +15,6 @@ module.exports = {
   configureWebpack: {
     entry: {
       app: './src/main.js',
-      editor_plugin: './src/editor_plugin.js',
     }
   }
 };

@@ -7,12 +7,6 @@ const mappings = [
       '../bundle/Resources/public/js/remotemedia.js',
       '../bundle/ezpublish_legacy/ngremotemedia/design/standard/javascript/remotemedia.js'
     ]
-  },
-  {
-    source: 'dist/editor_plugin.js',
-    targets: [
-      '../bundle/ezpublish_legacy/ngremotemedia/design/standard/javascript/plugins/ngremotemedia/editor_plugin.js'
-    ]
   }
 ];
 
