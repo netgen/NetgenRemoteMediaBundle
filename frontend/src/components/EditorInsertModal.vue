@@ -8,12 +8,35 @@
         @selectedImageChanged="handleSelectedImageChanged"
       ></interactions>
 
-      <v-select
-        :options="config.availableEditorVariations"
-        :label="Variation"
-        @input="handleVariationChange"
-        :placeholder="this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_original_image"
-      />
+      <div class="form-field">
+        <label :for="'selected_variation_'+fieldId">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_label}}</label>
+        <v-select
+          :id="'selected_variation_'+fieldId"
+          :options="config.availableEditorVariations"
+          v-model="selectedEditorVariation"
+          :placeholder="this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_original_image"
+        />
+      </div>
+
+      <div class="form-field">
+        <label :for="'caption_'+fieldId">Caption</label>
+        <input type="text"
+           :id="'caption_'+fieldId"
+           name="Caption"
+           v-model="caption"
+           class="media-alttext data"
+        >
+      </div>
+
+      <div class="form-field">
+        <label :for="'css_class_'+fieldId">CSS class</label>
+        <input type="text"
+           :id="'css_class_'+fieldId"
+           name="Caption"
+           v-model="cssClass"
+           class="media-alttext data"
+        >
+      </div>
 
       <i v-if="loading" class="ng-icon ng-spinner" />
     </div>
@@ -33,7 +56,7 @@ import vSelect from "vue-select";
 
 export default {
   name: "EditorInsertModal",
-  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage", "selectedEditorVariation"],
+  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage", "selectedEditorVariation", "caption", "cssClass"],
   components: {
     'modal': Modal,
     'interactions': Interactions,
@@ -97,6 +120,32 @@ export default {
   padding: 20px;
   margin-bottom: 50px;
   overflow-y: auto;
+
+  &.loading {
+    opacity: 0.5;
+  }
+
+  .form-field + .form-field {
+    margin-top: 15px;
+  }
+
+  .form-field {
+    label {
+      font-size: 14px;
+      font-weight: normal;
+      color: $boulder;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid $mercury;
+      padding: 7px 10px;
+      flex-grow: 1;
+    }
+  }
 }
 
 .action-strip {
