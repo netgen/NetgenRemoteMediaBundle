@@ -13,6 +13,7 @@ class NgRemoteMediaOperator
     {
         return array(
             'ngremotemedia',
+            'ng_remote_resource',
             'ng_remote_croppable',
             'videoThumbnail',
             'ng_image_variations',
@@ -63,6 +64,16 @@ class NgRemoteMediaOperator
                     'type' => 'boolean',
                     'required' => false,
                     'default' => true
+                )
+            ),
+            'ng_remote_resource' => array(
+                'resource_type' => array(
+                    'type' => 'string',
+                    'required' => true
+                ),
+                'resource_id' => array(
+                    'type' => 'string',
+                    'required' => false
                 )
             ),
             'ng_remote_croppable' => array(
@@ -124,6 +135,8 @@ class NgRemoteMediaOperator
                 $namedParameters['format'],
                 $namedParameters['secure']
             );
+        } elseif ($operatorName === 'ng_remote_resource') {
+            $operatorValue = $this->getRemoteResource($namedParameters['resource_type'], $namedParameters['resource_id']);
         } elseif ($operatorName === 'ng_remote_croppable') {
             $operatorValue = $this->isCroppable($namedParameters['class_identifier']);
         } elseif ($operatorName === 'videoThumbnail') {
@@ -180,6 +193,14 @@ class NgRemoteMediaOperator
         } else {
             return $variationResolver->getCroppbableVariations($class_identifier);
         }
+    }
+
+    function getRemoteResource($resource_type, $resource_id)
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+        $provider = $container->get('netgen_remote_media.provider');
+
+        return $provider->getRemoteResource($resource_id, $resource_type);
     }
 
     function ngremotemedia($value, $content_type_identifier, $format, $secure = true)
