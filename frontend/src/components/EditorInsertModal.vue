@@ -79,6 +79,9 @@ export default {
           this.editorInsertModalLoading = false;
         }
       });
+
+      $this.$emit('close');
+    },
     handleSelectedImageChanged(selectedImage) {
       this.selectedImage = selectedImage;
     }
