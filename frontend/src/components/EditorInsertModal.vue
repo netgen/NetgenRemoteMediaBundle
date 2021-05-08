@@ -35,7 +35,7 @@ import vSelect from "vue-select";
 
 export default {
   name: "EditorInsertModal",
-  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage", "editorInsertAjaxUrl"],
+  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage"],
   components: {
     'modal': Modal,
     'interactions': Interactions,
@@ -71,7 +71,7 @@ export default {
       var $this = this;
       $.ajax({
         type: 'post',
-        url: this.editorInsertAjaxUrl,
+        url: this.$root.$data.config.paths.editor_insert,
         processData: false,
         contentType: false,
         data: data,
