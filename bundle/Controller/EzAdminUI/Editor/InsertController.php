@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI;
+namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Editor;
 
 use Cloudinary\Api\NotFound;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class EditorInsertController
+final class InsertController
 {
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper
@@ -26,15 +27,15 @@ final class EditorInsertController
     private $remoteMediaProvider;
 
     /**
-     * EditorInsertController constructor
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper $updateFieldHelper
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider $remoteMediaProvider
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
      */
-    public function __construct(UpdateFieldHelper $updateFieldHelper, RemoteMediaProvider $remoteMediaProvider)
+    private $remoteMediaHelper;
+
+    public function __construct(UpdateFieldHelper $updateFieldHelper, RemoteMediaProvider $remoteMediaProvider, Helper $remoteMediaHelper)
     {
         $this->updateFieldHelper = $updateFieldHelper;
         $this->remoteMediaProvider = $remoteMediaProvider;
+        $this->remoteMediaHelper = $remoteMediaHelper;
     }
 
     public function __invoke(Request $request): Response
@@ -42,26 +43,25 @@ final class EditorInsertController
         $oldValue = new Value();
 
         if ($request->request->get('new_file') === null) {
-            try {
-                $oldValue = $this->remoteMediaProvider->getRemoteResource($request->request->get('resource_id'));
-            } catch (NotFound $e) {}
+            $oldValue = $this->remoteMediaProvider->getRemoteResource($request->request->get('resource_id'));
         }
 
         $adminInputValue = AdminInputValue::fromHash($request->request->all());
         $updatedValue = $this->updateFieldHelper->updateValue($oldValue, $adminInputValue);
 
-        $variation = $request->request->get('variation');
+        $selectedVariation = $request->request->get('variation');
         $contentTypeIdentifier = $request->request->get('content_type_identifier');
 
-        if ($variation && $contentTypeIdentifier) {
-            $variation = $this->remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $variation);
+        if ($selectedVariation && $contentTypeIdentifier) {
+            $variation = $this->remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $selectedVariation);
         }
 
-        return new JsonResponse([
-            'resource_id' => $updatedValue->resourceId,
-            'type' => $updatedValue->mediaType,
-            'url' => $variation ? $variation->url : $updatedValue->secure_url,
-            'metadata' => $updatedValue->metaData,
-        ]);
+        $data = $this->remoteMediaHelper->formatBrowseItem($updatedValue);
+        $data['selected_variation'] = $selectedVariation;
+        $data['content_type_identifier'] = $contentTypeIdentifier;
+        $data['variation_url'] = $variation->url ?? null;
+        $data['image_variations'] = $adminInputValue->getVariations();
+
+        return new JsonResponse($data);
     }
 }
