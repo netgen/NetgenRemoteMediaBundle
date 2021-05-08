@@ -97,9 +97,7 @@ export default {
         contentType: false,
         data: data,
         success: function(data) {
-          $this.$emit('media-inserted', data);
-          $this.$emit('close');
-          this.editorInsertModalLoading = false;
+          $this.$root.$data.editorInsertCallback(data, $this.caption, $this.cssClass);
         }
       });
 
