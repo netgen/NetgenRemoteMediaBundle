@@ -7,9 +7,11 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\Core\FieldType\XmlText\Converter;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Symfony\Component\HttpFoundation\RequestStack;
 use DOMDocument;
 use DOMXPath;
-use Symfony\Component\HttpFoundation\RequestStack;
+
+use function json_decode;
 
 class NgRemoteMediaPreConverter implements Converter
 {
@@ -73,7 +75,7 @@ class NgRemoteMediaPreConverter implements Converter
             $variation = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'variation');
 
             $resource = $this->remoteMediaProvider->getRemoteResource($resourceId, $resourceType);
-            $resource->variations = $imageVariations;
+            $resource->variations = json_decode($imageVariations, true);
 
             switch ($resourceType) {
                 case 'video':
