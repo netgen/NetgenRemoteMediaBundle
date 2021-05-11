@@ -22,7 +22,7 @@
                 </xsl:when>
 
                 <xsl:when test="@custom:resourceType='video'">
-                    <xsl:value-of select="@custom:videoTag"/>
+                    <xsl:value-of select="@custom:videoTag" disable-output-escaping="yes"/>
                 </xsl:when>
 
                 <xsl:otherwise>
