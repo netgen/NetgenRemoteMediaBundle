@@ -66,6 +66,7 @@ class NgRemoteMediaPreConverter implements Converter
         foreach ($tags as $tag) {
             $src = null;
             $videoTag = null;
+            $filename = null;
 
             $resourceId = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceId');
             $resourceType = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceType') !== ''
@@ -92,12 +93,14 @@ class NgRemoteMediaPreConverter implements Converter
 
                     break;
                 default:
+                    $filename = $resource->resourceId ?? basename($resource->resourceId);
                     $src = $resource->secure_url;
             }
 
 
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'src', $src);
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'videoTag', $videoTag);
+            $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'filename', $filename);
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'alt', $resource->metaData['alt_text'] ?? null);
         }
     }

@@ -28,7 +28,7 @@
                 <xsl:otherwise>
                     <a>
                         <xsl:attribute name="href"><xsl:value-of select="@custom:src"/></xsl:attribute>
-                        <xsl:value-of select="@custom:src"/>
+                        <xsl:value-of select="@custom:filename"/>
                     </a>
                 </xsl:otherwise>
             </xsl:choose>
