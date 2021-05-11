@@ -46,13 +46,17 @@ final class InsertController
             $oldValue = $this->remoteMediaProvider->getRemoteResource($request->request->get('resource_id'));
         }
 
-        $adminInputValue = AdminInputValue::fromHash($request->request->all());
+        $hash = $request->request->all();
+        $hash['new_file'] = $request->files->get('new_file');
+
+        $adminInputValue = AdminInputValue::fromHash($hash);
         $updatedValue = $this->updateFieldHelper->updateValue($oldValue, $adminInputValue);
 
         $selectedVariation = $request->request->get('variation');
         $contentTypeIdentifier = $request->request->get('content_type_identifier');
 
-        if ($selectedVariation && $contentTypeIdentifier) {
+        $variation = null;
+        if ($selectedVariation && $contentTypeIdentifier && $updatedValue->mediaType === Value::TYPE_IMAGE) {
             $variation = $this->remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $selectedVariation);
         }
 
