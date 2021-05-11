@@ -99,10 +99,9 @@ export default {
         data: data,
         success: function(data) {
           $this.$root.$data.editorInsertCallback(data, $this.caption, $this.cssClass);
+          $this.$emit('close');
         }
       });
-
-      $this.$emit('close');
     },
     handleSelectedImageChanged(selectedImage) {
       this.selectedImage = selectedImage;
