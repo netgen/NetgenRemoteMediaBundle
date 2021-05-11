@@ -62,26 +62,41 @@ class NgRemoteMediaPreConverter implements Converter
 
         /** @var \DOMElement $tag */
         foreach ($tags as $tag) {
+            $src = null;
+            $videoTag = null;
+
             $resourceId = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceId');
-            $imageVariations = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'coords');
-            $variation = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'variation');
             $resourceType = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceType') !== ''
                 ? $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceType')
                 : 'image';
+            $imageVariations = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'coords');
+            $variation = $tag->getAttributeNS(self::CUSTOMTAG_NAMESPACE, 'variation');
 
             $resource = $this->remoteMediaProvider->getRemoteResource($resourceId, $resourceType);
-            $src = $resource->secure_url;
+            $resource->variations = $imageVariations;
 
-            if ($variation !== '' && $contentTypeIdentifier) {
-                $variation = $this->remoteMediaProvider->buildVariation($resource, $contentTypeIdentifier, $variation);
-                $src = $variation->url;
+            switch ($resourceType) {
+                case 'video':
+                    $videoTag = $this->remoteMediaProvider->generateVideoTag($resource, $contentTypeIdentifier, $variation);
+                    $src = $this->remoteMediaProvider->getVideoThumbnail($resource);
+                    break;
+                case 'image':
+                    $src = $resource->secure_url;
+
+                    if ($variation !== '' && $contentTypeIdentifier) {
+                        $variation = $this->remoteMediaProvider->buildVariation($resource, $contentTypeIdentifier, $variation);
+                        $src = $variation->url;
+                    }
+
+                    break;
+                default:
+                    $src = $resource->secure_url;
             }
+
 
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'src', $src);
-
-            if (array_key_exists('alt_text', $resource->metaData)) {
-                $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'alt', $resource->metaData['alt_text']);
-            }
+            $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'videoTag', $videoTag);
+            $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'alt', $resource->metaData['alt_text'] ?? null);
         }
     }
 }

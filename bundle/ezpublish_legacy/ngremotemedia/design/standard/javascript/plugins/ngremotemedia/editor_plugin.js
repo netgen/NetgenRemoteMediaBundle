@@ -1,7 +1,7 @@
 /* eslint-disable prefer-arrow-callback */
 (function (tinymce) {
     function insertMediaCallback(data, caption, cssClass) {
-        let html = '<img type="custom"src="'+data.variation_url+'" data-mce-src="'+data.variation_url+'"' +
+        let html = '<img type="custom"src="'+data.variation_url+'" data-mce-src="'+data.variation_url+'" alt="'+data.alt_text+'"' +
             'customattributes=\'caption|'+caption+'attribute_separationcssclass|'+cssClass+'attribute_separationcoords|'+JSON.stringify(data.image_variations)
             +'attribute_separationresourceId|'+data.resourceId+'attribute_separationversion|attribute_separationresourceType|'
             +data.type+'attribute_separationvariation|'+data.selected_variation+'\'"'+'class="ezoeItemCustomTag ngremotemedia" style="">';
