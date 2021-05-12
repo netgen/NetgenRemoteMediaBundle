@@ -32,7 +32,11 @@
                         let attributeValue = attribute.split('|')[1];
 
                         if (attributeKey === 'coords' || attributeKey === 'image_variations') {
-                            data['image_variations'] = JSON.parse(attributeValue);
+                            try {
+                                data['image_variations'] = JSON.parse(attributeValue);
+                            } catch(e) {
+                                data['image_variations'] = {};
+                            }
 
                             return;
                         }
