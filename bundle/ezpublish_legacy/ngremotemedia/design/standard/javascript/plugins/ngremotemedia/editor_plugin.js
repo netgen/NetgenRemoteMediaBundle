@@ -1,11 +1,22 @@
 /* eslint-disable prefer-arrow-callback */
 (function (tinymce) {
     function insertMediaCallback(data, caption, cssClass) {
-        let html = '<img type="custom" src="/extension/ezoe/design/standard/images/tango/image-x-generic22.png"' +
-            'data-mce-src="/extension/ezoe/design/standard/images/tango/image-x-generic22.png"'
+        var imageUrl = null;
+        if (data.type === 'image') {
+            if (data.variation_url !== null) {
+                imageUrl = data.variation_url;
+            } else if (data.url !== null) {
+                imageUrl = data.url;
+            }
+        } else if (data.type === 'video' && data.thumbnail_url !== null) {
+            imageUrl = data.thumbnail_url;
+        }
+
+        let html = '<img type="custom" src="'+imageUrl !== null ? imageUrl : '/extension/ezoe/design/standard/images/tango/image-x-generic22.png'+'"'
+            + 'data-mce-src="'+imageUrl !== null ? imageUrl : '/extension/ezoe/design/standard/images/tango/image-x-generic22.png'+'"'
             + 'customattributes=\'caption|'+caption+'attribute_separationcssclass|'+cssClass+'attribute_separationcoords|'+JSON.stringify(data.image_variations)
-            +'attribute_separationresourceId|'+data.resourceId+'attribute_separationversion|attribute_separationresourceType|'
-            +data.type+'attribute_separationvariation|'+data.selected_variation+'\'"'+'class="ezoeItemCustomTag ngremotemedia" style="">';
+            + 'attribute_separationresourceId|'+data.resourceId+'attribute_separationresourceType|'+data.type+'attribute_separationimage_url|'+imageUrl
+            + 'attribute_separationvariation|'+data.selected_variation+'\'"'+'class="ezoeItemCustomTag ngremotemedia" style="">';
 
         tinymce.execCommand('mceInsertContent', false, html);
     }
