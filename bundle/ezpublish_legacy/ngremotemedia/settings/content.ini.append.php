@@ -14,9 +14,9 @@ CustomAttributes[]=caption
 CustomAttributes[]=cssclass
 CustomAttributes[]=coords
 CustomAttributes[]=resourceId
-CustomAttributes[]=version
 CustomAttributes[]=resourceType
 CustomAttributes[]=variation
+CustomAttributes[]=image_url
 
 [EditSettings]
 AdditionalTemplates[]=js_config.tpl
