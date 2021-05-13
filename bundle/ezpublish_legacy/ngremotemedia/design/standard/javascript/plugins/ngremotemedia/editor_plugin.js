@@ -12,8 +12,10 @@
             imageUrl = data.thumbnail_url;
         }
 
-        let html = '<img type="custom" src="'+imageUrl !== null ? imageUrl : '/extension/ezoe/design/standard/images/tango/image-x-generic22.png'+'"'
-            + 'data-mce-src="'+imageUrl !== null ? imageUrl : '/extension/ezoe/design/standard/images/tango/image-x-generic22.png'+'"'
+        let previewUrl = imageUrl !== null ? imageUrl : '/extension/ezoe/design/standard/images/tango/image-x-generic22.png';
+
+        let html = '<img type="custom" src="'+previewUrl+'"'
+            + 'data-mce-src="'+previewUrl+'"'
             + 'customattributes=\'caption|'+caption+'attribute_separationcssclass|'+cssClass+'attribute_separationcoords|'+JSON.stringify(data.image_variations)
             + 'attribute_separationresourceId|'+data.resourceId+'attribute_separationresourceType|'+data.type+'attribute_separationimage_url|'+imageUrl
             + 'attribute_separationvariation|'+data.selected_variation+'\'"'+'class="ezoeItemCustomTag ngremotemedia" style="">';
