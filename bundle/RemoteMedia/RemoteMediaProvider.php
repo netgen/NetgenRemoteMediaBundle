@@ -29,6 +29,13 @@ abstract class RemoteMediaProvider
         $this->logger = $logger;
     }
 
+    /**
+     * Returns API rate limits information.
+     *
+     * @return array
+     */
+    abstract public function usage(): array;
+
     abstract public function supportsContentBrowser(): bool;
 
     /**

@@ -40,6 +40,16 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Returns API rate limits information.
+     *
+     * @return array
+     */
+    public function usage(): array
+    {
+        return $this->gateway->usage();
+    }
+
+    /**
      * @return bool
      */
     public function supportsContentBrowser(): bool
