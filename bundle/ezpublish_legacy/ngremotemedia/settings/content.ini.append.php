@@ -7,6 +7,7 @@ AvailableDataTypes[]=ngremotemedia
 [CustomTagSettings]
 AvailableCustomTags[]=ngremotemedia
 IsInline[ngremotemedia]=image
+InlineImageIconPath[ngremotemedia]=images/tango/mail-attachment.png
 
 [ngremotemedia]
 CustomAttributes[]

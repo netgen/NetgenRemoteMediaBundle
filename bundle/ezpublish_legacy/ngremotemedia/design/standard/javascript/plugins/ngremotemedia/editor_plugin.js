@@ -1,18 +1,18 @@
 /* eslint-disable prefer-arrow-callback */
 (function (tinymce) {
     function insertMediaCallback(data, caption, cssClass) {
-        var imageUrl = null;
+        var imageUrl = '';
         if (data.type === 'image') {
             if (data.variation_url !== null) {
                 imageUrl = data.variation_url;
             } else if (data.url !== null) {
                 imageUrl = data.url;
             }
-        } else if (data.type === 'video' && data.thumbnail_url !== null) {
+        } else if (data.type === 'video' && data.thumbnail_url !== null && data.thumbnail_url !== '') {
             imageUrl = data.thumbnail_url;
         }
 
-        let previewUrl = imageUrl !== null ? imageUrl : '/extension/ezoe/design/standard/images/tango/image-x-generic22.png';
+        let previewUrl = imageUrl !== '' ? imageUrl : '/extension/ezoe/design/standard/images/tango/mail-attachment.png';
 
         let html = '<img type="custom" src="'+previewUrl+'"'
             + 'data-mce-src="'+previewUrl+'"'

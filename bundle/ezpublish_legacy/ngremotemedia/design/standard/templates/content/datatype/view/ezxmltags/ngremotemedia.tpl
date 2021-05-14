@@ -23,9 +23,13 @@
             {$preview_image_url = videoThumbnail($resource)}
         {/if}
 
-        <img src="{$preview_image_url}"/>
+        {if and($preview_image_url|is_null|not, not(eq($preview_image_url, '')))}
+            <img src="{$preview_image_url}"/>
+        {else}
+            <span class="fa fa-file-audio-o"></span> <a href="{$resource.secure_url}">{$resourceId}</a>
+        {/if}
     {else}
-        <a href="{$resource.secure_url}">{$resourceId}</a>
+        <span class="fa fa-file"></span> <a href="{$resource.secure_url}">{$resourceId}</a>
     {/if}
 
     {if and(is_set($caption), is_string($caption), not($caption|compare('')))}<div class="img-caption">{$caption|wash()}</div>{/if}
