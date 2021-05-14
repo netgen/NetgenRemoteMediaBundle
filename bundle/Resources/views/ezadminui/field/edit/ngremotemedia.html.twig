@@ -1,25 +1,15 @@
 {% block ezplatform_fieldtype_ngremotemedia_widget %}
     {% set field = form.parent.vars.value.field %}
-    {% set field_value = form.parent.vars.value.value %}
 
     {% set input_fields = {} %}
     {% for child in form %}
         {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
     {% endfor %}
 
-    {% include '@NetgenRemoteMedia/ezadminui/js_templates.html.twig' with {
+    {% include '@NetgenRemoteMedia/ezadminui/parts/edit/ngrm_field.html.twig' with {
+        'content_type_identifier': null,
         'field_id': field.id,
         'field_value': field.value,
         'input_fields': input_fields,
     } %}
-
-    {% include '@NetgenRemoteMedia/ezadminui/js_config.html.twig' with {'content_type': null} %}
-
-    <div class="ngremotemedia-type" data-id="{{ field.id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
-        <interactions
-            field-id="{{ field.id }}"
-            :config="config"
-            :selected-image="selectedImage"
-        ></interactions>
-    </div>
 {% endblock %}

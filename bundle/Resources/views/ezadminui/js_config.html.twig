@@ -4,9 +4,9 @@
     {% set available_variations = [] %}
     {% set available_editor_variations = [] %}
 
-    {% if content_type is defined and content_type %}
-        {% set available_variations = ngrm_available_variations(content_type, true) %}
-        {% set available_editor_variations = ngrm_available_variations(content_type) %}
+    {% if content_type_identifier is defined and content_type_identifier %}
+        {% set available_variations = ngrm_available_variations(content_type_identifier, true) %}
+        {% set available_editor_variations = ngrm_available_variations(content_type_identifier) %}
     {% endif %}
 
     NgRemoteMediaTranslations = {

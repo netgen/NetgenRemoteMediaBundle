@@ -1,8 +1,4 @@
-{% trans_default_domain 'ngremotemedia' %}
-
-{% set field_value = field_value|default(null) %}
-{% set field_id = fieldId|default(null) %}
-{% set input_fields = input_fields|default({}) %}
+{% include '@NetgenRemoteMedia/ezadminui/js_config.html.twig' %}
 
 <script type="text/javascript">
     RemoteMediaSelectedImage_{{ field_id }} = {
@@ -27,7 +23,15 @@
 
     RemoteMediaInputFields_{{ field_id }} = {
         {% for name, full_name in input_fields %}
-            '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
+        '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
         {% endfor %}
     };
 </script>
+
+<div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
+    <interactions
+        field-id="{{ field_id }}"
+        :config="config"
+        :selected-image="selectedImage"
+    ></interactions>
+</div>
