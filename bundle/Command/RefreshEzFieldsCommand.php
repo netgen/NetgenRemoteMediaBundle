@@ -6,7 +6,6 @@ namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityManagerInterface;
-use EzSystems\EzPlatformRichText\eZ\RichText\DOMDocumentFactory;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
@@ -23,7 +22,6 @@ use function count;
 use function sprintf;
 use function array_key_exists;
 use function array_pop;
-use function array_map;
 use function array_unique;
 use function json_encode;
 use function json_decode;
