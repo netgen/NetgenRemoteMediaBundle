@@ -19,6 +19,6 @@ CustomAttributes[]=variation
 CustomAttributes[]=image_url
 
 [EditSettings]
-AdditionalTemplates[]=js_config.tpl
+AdditionalTemplates[]=ezxml_init.tpl
 
 */
