@@ -61,8 +61,10 @@ final class InsertController
         }
 
         $thumbnailUrl = null;
+        $videoTag = null;
         if ($updatedValue->resourceType === 'video') {
             $thumbnailUrl = $this->remoteMediaProvider->getVideoThumbnail($updatedValue);
+            $videoTag = $this->remoteMediaProvider->generateVideoTag($updatedValue, $contentTypeIdentifier, $selectedVariation);
         }
 
         $data = $this->remoteMediaHelper->formatBrowseItem($updatedValue);
@@ -71,6 +73,7 @@ final class InsertController
         $data['variation_url'] = $variation->url ?? null;
         $data['image_variations'] = $adminInputValue->getVariations();
         $data['thumbnail_url'] = $thumbnailUrl;
+        $data['video_tag'] = $videoTag;
 
         return new JsonResponse($data);
     }
