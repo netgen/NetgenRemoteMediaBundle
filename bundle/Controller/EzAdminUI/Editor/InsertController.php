@@ -60,11 +60,17 @@ final class InsertController
             $variation = $this->remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $selectedVariation);
         }
 
+        $thumbnailUrl = null;
+        if ($updatedValue->resourceType === 'video') {
+            $thumbnailUrl = $this->remoteMediaProvider->getVideoThumbnail($updatedValue);
+        }
+
         $data = $this->remoteMediaHelper->formatBrowseItem($updatedValue);
         $data['selected_variation'] = $selectedVariation;
         $data['content_type_identifier'] = $contentTypeIdentifier;
         $data['variation_url'] = $variation->url ?? null;
         $data['image_variations'] = $adminInputValue->getVariations();
+        $data['thumbnail_url'] = $thumbnailUrl;
 
         return new JsonResponse($data);
     }

@@ -18,7 +18,7 @@
                     <img>
                         <xsl:attribute name="src"><xsl:value-of select="@custom:src"/></xsl:attribute>
                         <xsl:attribute name="alt"><xsl:value-of select="@custom:alt"/></xsl:attribute>
-                    </img><div class="img-caption"><xsl:value-of select="@custom:caption" /></div>
+                    </img>
                 </xsl:when>
 
                 <xsl:when test="@custom:resourceType='video'">
@@ -32,6 +32,8 @@
                     </a>
                 </xsl:otherwise>
             </xsl:choose>
+
+            <div class="img-caption"><xsl:value-of select="@custom:caption" /></div>
         </div>
     </xsl:template>
 </xsl:stylesheet>

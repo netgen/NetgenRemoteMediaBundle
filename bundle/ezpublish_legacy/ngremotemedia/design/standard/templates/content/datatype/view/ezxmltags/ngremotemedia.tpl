@@ -27,4 +27,6 @@
     {else}
         <a href="{$resource.secure_url}">{$resourceId}</a>
     {/if}
+
+    {if and(is_set($caption), is_string($caption), not($caption|compare('')))}<div class="img-caption">{$caption|wash()}</div>{/if}
 {/if}
