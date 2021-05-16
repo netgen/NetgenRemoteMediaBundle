@@ -345,7 +345,10 @@ class RefreshEzFieldsCommand extends Command
         foreach ($attributes as $attribute) {
             if ($attribute['data_type_string'] === 'ngremotemedia') {
                 $data = json_decode($attribute['data_text'], true);
-                $resourceIds[] = $data['resourceId'];
+
+                if (is_array($data) && array_key_exists('resourceId', $data) && $data['resourceId'] !== null) {
+                    $resourceIds[] = $data['resourceId'];
+                }
 
                 continue;
             }
