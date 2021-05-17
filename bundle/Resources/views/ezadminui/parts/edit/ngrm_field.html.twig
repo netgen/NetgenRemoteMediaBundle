@@ -1,0 +1,37 @@
+{% include '@NetgenRemoteMedia/ezadminui/js_config.html.twig' %}
+
+<script type="text/javascript">
+    RemoteMediaSelectedImage_{{ field_id }} = {
+        url : "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
+        type: "{% if field_value %}{{ field_value.resourceType|default('image') }}{% else %}image{% endif %}",
+        {% if not field_value or field_value.mediaType == 'image' %}
+            mediaType: "image",
+        {% elseif field_value.mediaType == 'video' %}
+            mediaType: "video",
+        {% else %}
+            mediaType: "other",
+        {% endif %}
+        name: "{% if field_value %}{{ field_value.resourceId }}{% endif %}",
+        alternateText: "{% if field_value %}{{ field_value.metaData.alt_text }}{% endif %}",
+        tags: [{% if field_value %}{% for tag in field_value.metaData.tags %}"{{ tag }}",{% endfor %}{% endif %}],
+        size: {% if field_value %}{{ field_value.size|default(0) }}{% else %}0{% endif %},
+        id: "{% if field_value %}{{ field_value.resourceId }}{% endif %}",
+        variations: {% if field_value %}{{ field_value.variations|json_encode|raw }}{% else %}{}{% endif %},
+        width: {% if field_value %}{{ field_value.metaData.width|default(0) }}{% else %}0{% endif %},
+        height: {% if field_value %}{{ field_value.metaData.height|default(0) }}{% else %}0{% endif %}
+    };
+
+    RemoteMediaInputFields_{{ field_id }} = {
+        {% for name, full_name in input_fields %}
+        '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
+</script>
+
+<div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
+    <interactions
+        field-id="{{ field_id }}"
+        :config="config"
+        :selected-image="selectedImage"
+    ></interactions>
+</div>

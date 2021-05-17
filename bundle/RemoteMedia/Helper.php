@@ -6,6 +6,9 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 
+use function in_array;
+use function basename;
+
 /**
  * Class Helper.
  *
@@ -30,7 +33,50 @@ class Helper
     }
 
     /**
+     * Formats browse item to comply with javascript.
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     *
+     * @return array
+     */
+    public function formatBrowseItem(Value $value)
+    {
+        $thumbOptions = [];
+        $thumbOptions['crop'] = 'fit';
+        $thumbOptions['width'] = 160;
+        $thumbOptions['height'] = 120;
+
+        $mediaType = $this->determineType($value);
+
+        if ($mediaType === Value::TYPE_IMAGE) {
+            $browseUrl = $this->provider->buildVariation($value, 'admin', $thumbOptions)->url;
+        } else if ($mediaType === Value::TYPE_VIDEO) {
+            $browseUrl = $this->provider->getVideoThumbnail($value, $thumbOptions);
+        } else {
+            $browseUrl = '';
+            // @todo
+        }
+
+        return [
+            'resourceId' => $value->resourceId,
+            'tags' => $value->metaData['tags'] ?? [],
+            'type' => $value->resourceType,
+            'mediaType' => $mediaType,
+            'filesize' => $value->size,
+            'width' => $value->metaData['width'] ?? null,
+            'height' => $value->metaData['height'] ?? null,
+            'filename' => basename($value->resourceId),
+            'format' => $value->metaData['format'] ?? null,
+            'browse_url' => $browseUrl,
+            'url' => $value->secure_url,
+            'alt_text' => $value->metaData['alt_text'] ?? null,
+        ];
+    }
+
+    /**
      * Formats browse list to comply with javascript.
+     *
+     * @param array $list
      *
      * @return array
      */
@@ -38,41 +84,9 @@ class Helper
     {
         $listFormatted = [];
         foreach ($list as $hit) {
-            $thumbOptions = [];
-            $thumbOptions['crop'] = 'fit';
-            $thumbOptions['width'] = 160;
-            $thumbOptions['height'] = 120;
-
             $value = Value::createFromCloudinaryResponse($hit);
 
-            $mediaType = $this->determineType($hit);
-
-            if ($mediaType === Value::TYPE_IMAGE) {
-                //$url = $this->provider->buildVariation($value, 'admin', 'admin_preview')->url;
-                $browseUrl = $this->provider->buildVariation($value, 'admin', $thumbOptions)->url;
-            } else if ($mediaType === Value::TYPE_VIDEO) {
-                $url = $this->provider->getVideoThumbnail($value);
-                $browseUrl = $this->provider->getVideoThumbnail($value, $thumbOptions);
-            } else {
-                $url = '';
-                $browseUrl = '';
-                // @todo
-            }
-
-            $listFormatted[] = [
-                'resourceId' => $hit['public_id'],
-                'tags' => $hit['tags'],
-                'type' => $hit['resource_type'],
-                'mediaType' => $this->determineType($hit),
-                'filesize' => $hit['bytes'],
-                'width' => $hit['width'],
-                'height' => $hit['height'],
-                'filename' => $hit['filename'],
-                'format' => $hit['format'],
-                'browse_url' => $browseUrl,
-                'url' => $value->secure_url,
-                'alt_text' => isset($hit['context']['alt_text']) ? $hit['context']['alt_text'] : '',
-            ];
+            $listFormatted[] = $this->formatBrowseItem($value);
         }
 
         return $listFormatted;
@@ -81,15 +95,15 @@ class Helper
     /**
      * Parse out the type, we make a difference between images, videos, and documents (pdf, doc, docx).
      *
-     * @param $hit
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      *
      * @return string
      */
-    private function determineType($hit)
+    private function determineType(Value $value)
     {
-        if ($hit['resource_type'] === 'video') {
+        if ($value->resourceType === 'video') {
             return Value::TYPE_VIDEO;
-        } elseif ($hit['resource_type'] === 'image' && (!isset($hit['format']) || !\in_array($hit['format'], ['pdf', 'doc', 'docx'], true))) {
+        } elseif ($value->resourceType === 'image' && (!isset($value->metaData['format']) || !in_array($value->metaData['format'], ['pdf', 'doc', 'docx'], true))) {
             return Value::TYPE_IMAGE;
         }
 

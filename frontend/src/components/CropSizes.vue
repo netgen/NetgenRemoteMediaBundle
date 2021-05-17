@@ -16,7 +16,7 @@
           <span class="formatted-size">{{formattedSize(name)}}</span>
         </label>
         <div v-if="!isVariationSelectable(name)" class="legend-not-selectable">
-          <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_media_too_small }}</span>
+          <span>{{ _self.$root.$data.NgRemoteMediaTranslations.crop_media_too_small }}</span>
         </div>
       </div>
     </div>

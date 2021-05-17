@@ -11,5 +11,10 @@ module.exports = {
       }
     }
   },
-  filenameHashing: false
+  filenameHashing: false,
+  configureWebpack: {
+    entry: {
+      app: './src/main.js',
+    }
+  }
 };

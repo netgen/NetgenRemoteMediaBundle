@@ -28,7 +28,7 @@ const fakeFiles = [
       '../bundle/Resources/public/css/remotemedia-vendors.css',
       '../bundle/ezpublish_legacy/ngremotemedia/design/standard/stylesheets/remotemedia-vendors.css'
     ]
-  }
+  },
 ];
 
 const copyFile = source => destination => {

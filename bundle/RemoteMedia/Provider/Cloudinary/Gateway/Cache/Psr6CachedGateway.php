@@ -125,6 +125,16 @@ class Psr6CachedGateway extends Gateway
     }
 
     /**
+     * Returns API rate limits information.
+     *
+     * @return mixed
+     */
+    public function usage()
+    {
+        return $this->gateway->usage();
+    }
+
+    /**
      * Uploads file to cloudinary.
      *
      * @param string $fileUri

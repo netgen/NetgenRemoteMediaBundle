@@ -70,6 +70,7 @@ ngrm:
             editor_insert:
                 title: 'Insert remote media'
                 variations:
+                    label: 'Variation to insert'
                     original_image: 'Original image'
                 button:
                     insert: 'Insert media'

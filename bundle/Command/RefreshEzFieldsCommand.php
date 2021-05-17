@@ -9,16 +9,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use DOMDocument;
+use DOMXPath;
+use DOMElement;
 
 use function count;
 use function sprintf;
 use function array_key_exists;
 use function array_pop;
-use function array_map;
 use function array_unique;
 use function json_encode;
 use function json_decode;
@@ -26,6 +29,8 @@ use function json_decode;
 class RefreshEzFieldsCommand extends Command
 {
     private const DEFAULT_CHUNK_SIZE = 200;
+
+    const CUSTOMTAG_NAMESPACE = 'http://ez.no/namespaces/ezpublish3/custom/';
 
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -36,6 +41,11 @@ class RefreshEzFieldsCommand extends Command
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
      */
     private $provider;
+
+    /**
+     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
+     */
+    private $variationResolver;
 
     /**
      * @var \Symfony\Component\Console\Output\OutputInterface
@@ -62,10 +72,21 @@ class RefreshEzFieldsCommand extends Command
      */
     private $remoteResources = [];
 
-    public function __construct(EntityManagerInterface $entityManager, RemoteMediaProvider $provider)
+    /**
+     * @var array
+     */
+    private $availableVariations = [];
+
+    /**
+     * @var array
+     */
+    private $missingVariations = [];
+
+    public function __construct(EntityManagerInterface $entityManager, RemoteMediaProvider $provider, VariationResolver $variationResolver)
     {
         $this->entityManager = $entityManager;
         $this->provider = $provider;
+        $this->variationResolver = $variationResolver;
 
         parent::__construct(null);
     }
@@ -129,8 +150,9 @@ class RefreshEzFieldsCommand extends Command
             foreach ($attributes as $attribute) {
                 $output->writeln(
                     PHP_EOL . sprintf(
-                        'Processing attribute with ID \'%d\' for content with ID \'%d\' and version \'%d\'. [ %d / %d ]',
+                        'Processing attribute with ID \'%d\' of type \'%s\' for content with ID \'%d\' and version \'%d\'. [ %d / %d ]',
                         $attribute['id'],
+                        $attribute['data_type_string'],
                         $attribute['contentobject_id'],
                         $attribute['version'],
                         $count,
@@ -138,20 +160,40 @@ class RefreshEzFieldsCommand extends Command
                     )
                 );
 
-                $this->processAttribute($attribute);
+                switch ($attribute['data_type_string']) {
+                    case 'ngremotemedia':
+                        $this->processNgrmAttribute($attribute);
+                        break;
+                    case 'ezxmltext':
+                        $this->processEzXmlTextAttribute($attribute);
+                        breaK;
+                }
+
                 $count++;
             }
 
             $offset += $limit;
         } while (count($attributes) > 0);
+
+        $this->output->writeln(PHP_EOL . PHP_EOL . 'The script is done. Here are the missing variations that have to be added in content types:');
+
+        foreach ($this->missingVariations as $contentTypeIdentifier => $variations) {
+            $this->output->writeln(PHP_EOL . $contentTypeIdentifier);
+
+            foreach ($variations as $variation) {
+                $this->output->writeln(' - ' . $variation);
+            }
+        }
+
+        return 0;
     }
 
-    private function processAttribute(array $attribute): void
+    private function processNgrmAttribute(array $attribute): void
     {
         $decodedData = json_decode($attribute['data_text'], true);
 
         if ($decodedData === null || $decodedData === '') {
-            $this->updateAttribute($attribute, new Value());
+            $this->updateNgrmAttribute($attribute, new Value());
             $this->updateExternalData($attribute, new Value());
             $this->output->writeln(' -> <info>SUCCESS</info> the field was missing any data - it has been filled with empty value.');
 
@@ -161,7 +203,7 @@ class RefreshEzFieldsCommand extends Command
         $localValue = new Value($decodedData);
 
         if ($localValue->resourceId === null) {
-            $this->updateAttribute($attribute, new Value());
+            $this->updateNgrmAttribute($attribute, new Value());
             $this->updateExternalData($attribute, new Value());
             $this->output->writeln(' -> <info>SUCCESS</info> the field is empty - it has been filled with empty value.');
 
@@ -175,7 +217,7 @@ class RefreshEzFieldsCommand extends Command
             $this->output->writeln(sprintf(' -> remote resource of type \'%s\' with resourceId: \'%s\' hasn\'t been found', $resourceType, $localValue->resourceId));
 
             if ($this->force === true) {
-                $this->updateAttribute($attribute, new Value());
+                $this->updateNgrmAttribute($attribute, new Value());
                 $this->updateExternalData($attribute, new Value());
                 $this->output->writeln(' -> <info>FORCED SUCCESS</info> the field has been set to empty.');
 
@@ -188,7 +230,7 @@ class RefreshEzFieldsCommand extends Command
         }
 
         if ($resourceType !== null && array_key_exists($resourceType, $resources)) {
-            $this->updateAttribute($attribute, $resources[$resourceType]);
+            $this->updateNgrmAttribute($attribute, $resources[$resourceType]);
             $this->updateExternalData($attribute, $resources[$resourceType]);
             $this->output->writeln(sprintf(' -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and field has been updated', $resourceType, $localValue->resourceId));
 
@@ -197,7 +239,7 @@ class RefreshEzFieldsCommand extends Command
 
         if ($resourceType === null && count($resources) === 1) {
             $resource = array_pop($resources);
-            $this->updateAttribute($attribute, $resource);
+            $this->updateNgrmAttribute($attribute, $resource);
             $this->updateExternalData($attribute, $resource);
             $this->output->writeln(sprintf(' -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and field has been updated', $resourceType, $localValue->resourceId));
 
@@ -212,7 +254,7 @@ class RefreshEzFieldsCommand extends Command
 
         if ($this->force === true) {
             $resource = array_pop($resources);
-            $this->updateAttribute($attribute, $resource);
+            $this->updateNgrmAttribute($attribute, $resource);
             $this->updateExternalData($attribute, $resource);
             $this->output->writeln(sprintf(' -> <info>FORCED SUCCESS</info> field has been updated with the first found resource of type \'%s\' with resourceId \'%s\'', $resource->resourceType, $resource->resourceId));
 
@@ -222,13 +264,110 @@ class RefreshEzFieldsCommand extends Command
         $this->output->writeln(' -> <question>SKIPPED</question> field has been skipped. Resolve this manually or use --force to automatically select the first found resource');
     }
 
+    private function processEzXmlTextAttribute(array $attribute): void
+    {
+        $doc = new DOMDocument();
+        $doc->loadXML($attribute['data_text']);
+
+        $xpath = new DOMXPath($doc);
+        $tags = $xpath->query("//custom[@name='ngremotemedia']");
+
+        $this->output->writeln(sprintf(' -> found %d NGRM custom tags in the field', count($tags)));
+
+        /** @var \DOMElement $tag */
+        foreach ($tags as $tag) {
+            $resourceId = $this->extractAttribute($tag, 'resourceId');
+            $resourceType = $this->extractAttribute($tag, 'resourceType');
+
+            if ($resourceId === null) {
+                $tag->parentNode->removeChild($tag);
+
+                continue;
+            }
+
+            $resources = $this->getResourcesByResourceId($resourceId);
+
+            if (count($resources) === 0 || ($resourceType !== null && !array_key_exists($resourceType, $resources))) {
+                $this->output->writeln(sprintf('   -> remote resource of type \'%s\' with resourceId: \'%s\' hasn\'t been found', $resourceType, $resourceId));
+
+                if ($this->force === true) {
+                    $tag->parentNode->removeChild($tag);
+                    $this->output->writeln('   -> <info>FORCED SUCCESS</info> NGRM tag in eZ XML has been removed from the field.');
+
+                    continue;
+                }
+
+                $this->output->writeln('   -> <question>SKIPPED</question> NGRM tag in eZ XML has been skipped (resolve this manually or use --force to remove the tag from the field)');
+
+                continue;
+            }
+
+            if ($resourceType !== null && array_key_exists($resourceType, $resources)) {
+                $resource = $resources[$resourceType];
+                $this->updateEzXmlTextCustomTag($tag, $resource, $attribute['content_type_identifier']);
+                $this->output->writeln(sprintf('   -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and NGRM tag in eZ XML field has been updated', $resource->resourceType, $resource->resourceId));
+
+                continue;
+            }
+
+            if ($resourceType === null && count($resources) === 1) {
+                $resource = array_pop($resources);
+                $this->updateEzXmlTextCustomTag($tag, $resource, $attribute['content_type_identifier']);
+                $this->output->writeln(sprintf('   -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and NGRM tag in eZ XML field has been updated', $resource->resourceType, $resource->resourceId));
+
+                continue;
+            }
+
+            $this->output->writeln('   -> multiple resources with same resourceId have been found:');
+
+            foreach ($resources as $resource) {
+                $this->output->writeln(sprintf('      * [%s] %s', $resource->resourceType, $resource->resourceId));
+            }
+
+            if ($this->force === true) {
+                $resource = array_pop($resources);
+                $this->updateEzXmlTextCustomTag($tag, $resource, $attribute['content_type_identifier']);
+                $this->output->writeln(sprintf('   -> <info>FORCED SUCCESS</info> NGRM tag in eZ XML has been updated with the first found resource of type \'%s\' with resourceId \'%s\'', $resource->resourceType, $resource->resourceId));
+
+                continue;
+            }
+
+            $this->output->writeln('   -> <question>SKIPPED</question> NGRM tag in eZ XML has been skipped. Resolve this manually or use --force to automatically select the first found resource');
+        }
+
+        $this->updateEzXmlTextAttribute($attribute, $doc);
+    }
+
     private function fillRemoteResources(array $attributes): void
     {
-        $resourceIds = array_map(function ($attribute){
-            $data = json_decode($attribute['data_text'], true);
+        $resourceIds = [];
 
-            return $data['resourceId'];
-        }, $attributes);
+        foreach ($attributes as $attribute) {
+            if ($attribute['data_type_string'] === 'ngremotemedia') {
+                $data = json_decode($attribute['data_text'], true);
+
+                if (is_array($data) && array_key_exists('resourceId', $data) && $data['resourceId'] !== null) {
+                    $resourceIds[] = $data['resourceId'];
+                }
+
+                continue;
+            }
+
+            $doc = new DOMDocument();
+            $doc->loadXML($attribute['data_text']);
+
+            $xpath = new DOMXPath($doc);
+            $tags = $xpath->query("//custom[@name='ngremotemedia']");
+
+            /** @var \DOMElement $tag */
+            foreach ($tags as $tag) {
+                $resourceId = $this->extractAttribute($tag, 'resourceId');
+
+                if ($resourceId !== null) {
+                    $resourceIds[] = $resourceId;
+                }
+            }
+        }
 
         $resourceIds = array_unique($resourceIds);
         $this->remoteResources = [];
@@ -281,7 +420,115 @@ class RefreshEzFieldsCommand extends Command
         return null;
     }
 
-    private function updateAttribute(array $attribute, Value $value): void
+    private function extractAttribute(DOMElement $element, string $attributeName)
+    {
+        $value = $element->getAttributeNS(self::CUSTOMTAG_NAMESPACE, $attributeName);
+
+        if ($value === '' || $value === 'undefined') {
+            return null;
+        }
+
+        return $value;
+    }
+
+    private function isJson(string $string): bool
+    {
+        json_decode($string);
+
+        return json_last_error() === JSON_ERROR_NONE;
+    }
+
+    private function convertCoords(string $coords): array
+    {
+        $parts = explode(',', $coords);
+
+        if (count($parts) < 4) {
+            return [];
+        }
+
+        return [
+            'x' => (int) trim($parts[0]),
+            'y' => (int) trim($parts[1]),
+            'w' => (int) trim($parts[2]),
+            'h' => (int) trim($parts[3]),
+        ];
+    }
+
+    private function updateEzXmlTextCustomTag(DOMElement &$tag, Value $value, string $contentTypeIdentifier)
+    {
+        $imageVariations = $this->extractAttribute($tag, 'coords');
+        $variation = $this->extractAttribute($tag, 'variation');
+        $version = $this->extractAttribute($tag, 'version');
+        $caption = $this->extractAttribute($tag, 'caption');
+        $cssClass = $this->extractAttribute($tag, 'cssclass');
+
+        if ($variation === null) {
+            $variation = $version;
+        }
+
+        if ($variation !== null) {
+            if (!array_key_exists($contentTypeIdentifier, $this->availableVariations)) {
+                $this->availableVariations[$contentTypeIdentifier] = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
+            }
+
+            if (!array_key_exists($variation, $this->availableVariations[$contentTypeIdentifier])) {
+                if (!array_key_exists($contentTypeIdentifier, $this->missingVariations)) {
+                    $this->missingVariations[$contentTypeIdentifier] = [];
+                }
+
+                if (!in_array($variation, $this->missingVariations[$contentTypeIdentifier])) {
+                    $this->missingVariations[$contentTypeIdentifier][] = $variation;
+                }
+            }
+        }
+
+        if (!$this->isJson($imageVariations) && $imageVariations !== null && $variation !== null) {
+            $imageVariationsNew = [];
+            $imageVariationsNew[$variation] = $this->convertCoords($imageVariations);
+
+            $imageVariations = json_encode($imageVariationsNew);
+        }
+
+        switch ($value->resourceType) {
+            case 'image':
+                if ($variation !== null && array_key_exists($variation, $this->availableVariations[$contentTypeIdentifier])) {
+                    $value->variations = json_decode($imageVariations, true);
+                    $imageUrl = $this->provider->buildVariation($value, $contentTypeIdentifier, $variation)->url;
+
+                    break;
+                }
+
+                $imageUrl = $value->secure_url;
+
+                break;
+            case 'video':
+                $imageUrl = $this->provider->getVideoThumbnail($value);
+
+                break;
+            default:
+                $imageUrl = '';
+        }
+
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceId');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceType');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'variation');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'coords');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'image_url');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'caption');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'cssclass');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'version');
+        $tag->removeAttributeNS(self::CUSTOMTAG_NAMESPACE, 'alttext');
+
+        $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'caption', $caption ?: '');
+        $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'cssclass', $cssClass ?: '');
+        $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'coords', $this->isJson($imageVariations) ? $imageVariations : '[]');
+        $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceId', $value->resourceId);
+        $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'resourceType', $value->resourceType);
+        $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'variation', $variation ?: '');
+        $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'image_url', $imageUrl);
+    }
+
+    private function updateNgrmAttribute(array $attribute, Value $value): void
     {
         if ($this->dryRun === true) {
             return;
@@ -294,12 +541,37 @@ class RefreshEzFieldsCommand extends Command
             return;
         }
 
+        $attribute['data_text'] = $newDataText;
+
+        $this->updateAttribute($attribute);
+    }
+
+    private function updateEzXmlTextAttribute(array $attribute, DOMDocument $document)
+    {
+        if ($this->dryRun === true) {
+            return;
+        }
+
+        $oldDataText = $attribute['data_text'];
+        $newDataText = $document->saveXML();
+
+        if ($oldDataText === $newDataText) {
+            return;
+        }
+
+        $attribute['data_text'] = $newDataText;
+
+        $this->updateAttribute($attribute);
+    }
+
+    private function updateAttribute(array $attribute): void
+    {
         $sql = "UPDATE ezcontentobject_attribute
                 SET data_text=:data_text
                 WHERE id=:id AND version=:version";
 
         $query = $this->entityManager->getConnection()->prepare($sql);
-        $query->bindValue('data_text', $newDataText);
+        $query->bindValue('data_text', $attribute['data_text']);
         $query->bindValue('id', $attribute['id']);
         $query->bindValue('version', $attribute['version']);
         $query->execute();
@@ -307,19 +579,23 @@ class RefreshEzFieldsCommand extends Command
 
     private function loadAttributes(int $limit, int $offset): array
     {
-        $sql = "SELECT
-                id, version, data_text, contentobject_id
-                FROM ezcontentobject_attribute
-                WHERE data_type_string=:data_type_string";
+        $sql = "SELECT DISTINCT
+                coa.id, coa.version, coa.data_text, coa.data_type_string, coa.contentobject_id, cl.identifier AS content_type_identifier
+                FROM ezcontentobject_attribute coa
+                JOIN ezcontentobject co on coa.contentobject_id = co.id
+                JOIN ezcontentclass cl on co.contentclass_id  = cl.id
+                WHERE (coa.data_type_string=:data_type_string_ngrm
+                OR (coa.data_type_string=:data_type_string_ezxmltext AND coa.data_text LIKE '%custom name=\"ngremotemedia\"%'))";
 
         if (count($this->contentIdsFilter) > 0) {
-            $sql .= " AND contentobject_id IN (".implode(',', $this->contentIdsFilter).")";
+            $sql .= " AND coa.contentobject_id IN (".implode(',', $this->contentIdsFilter).")";
         }
 
         $sql .= " LIMIT :offset,:limit";
 
         $query = $this->entityManager->getConnection()->prepare($sql);
-        $query->bindValue('data_type_string', 'ngremotemedia');
+        $query->bindValue('data_type_string_ngrm', 'ngremotemedia');
+        $query->bindValue('data_type_string_ezxmltext', 'ezxmltext');
         $query->bindValue('limit', $limit, ParameterType::INTEGER);
         $query->bindValue('offset', $offset, ParameterType::INTEGER);
         $query->execute();
@@ -331,14 +607,16 @@ class RefreshEzFieldsCommand extends Command
     {
         $sql = "SELECT COUNT(id) AS count
                 FROM ezcontentobject_attribute
-                WHERE data_type_string=:data_type_string";
+                WHERE (data_type_string=:data_type_string_ngrm
+                OR (data_type_string=:data_type_string_ezxmltext AND data_text LIKE '%custom name=\"ngremotemedia\"%'))";
 
         if (count($this->contentIdsFilter) > 0) {
             $sql .= " AND contentobject_id IN (".implode(',', $this->contentIdsFilter).")";
         }
 
         $query = $this->entityManager->getConnection()->prepare($sql);
-        $query->bindValue('data_type_string', 'ngremotemedia');
+        $query->bindValue('data_type_string_ngrm', 'ngremotemedia');
+        $query->bindValue('data_type_string_ezxmltext', 'ezxmltext');
         $query->execute();
 
         return (int) $query->fetch()['count'];

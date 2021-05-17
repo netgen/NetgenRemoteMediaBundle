@@ -1,23 +1,45 @@
 <template>
   <modal :title="this.$root.$data.NgRemoteMediaTranslations.editor_insert_title" class="editor-insert-modal" @close="$emit('close')">
-    <div v-if="!editorInsertModalLoading" class="editor-insert-modal-body">
+    <div :class="loading ? 'editor-insert-modal-body loading' : 'editor-insert-modal-body'">
       <interactions
         :field-id="fieldId"
         :config="config"
         :selected-image="selectedImage"
+        @selectedImageChanged="handleSelectedImageChanged"
       ></interactions>
 
-      <v-select
-        :options="this.config.availableEditorVariations"
-        :label="Variation"
-        @input="handleVariationChange"
-        :placeholder="this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_original_image"
-      />
+      <div class="form-field">
+        <label :for="'selected_variation_'+fieldId">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_label}}</label>
+        <v-select
+          :id="'selected_variation_'+fieldId"
+          :options="config.availableEditorVariations"
+          v-model="selectedEditorVariation"
+          :placeholder="this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_original_image"
+        />
+      </div>
 
-      <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.content_type_identifier" :value="contentTypeIdentifier"/>
-      <input type="hidden" :name="this.$root.$data.RemoteMediaInputFields.selected_variation"/>
-     </div>
-    <i v-else class="ng-icon ng-spinner" />
+      <div class="form-field">
+        <label :for="'caption_'+fieldId">Caption</label>
+        <input type="text"
+           :id="'caption_'+fieldId"
+           name="Caption"
+           v-model="caption"
+           class="media-alttext data"
+        >
+      </div>
+
+      <div class="form-field">
+        <label :for="'css_class_'+fieldId">CSS class</label>
+        <input type="text"
+           :id="'css_class_'+fieldId"
+           name="Caption"
+           v-model="cssClass"
+           class="media-alttext data"
+        >
+      </div>
+
+      <i v-if="loading" class="ng-icon ng-spinner" />
+    </div>
     <div class="action-strip">
       <button type="button" class="btn" @click="$emit('close')">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_cancel_button}}</button>
       <button type="button" class="btn btn-blue" @click="this.handleEditorInsertModalSave">
@@ -34,31 +56,24 @@ import vSelect from "vue-select";
 
 export default {
   name: "EditorInsertModal",
-  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage", "editorInsertAjaxUrl"],
+  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage", "selectedEditorVariation", "caption", "cssClass"],
   components: {
     'modal': Modal,
     'interactions': Interactions,
     "v-select": vSelect
   },
-  data() {
-    return {
-      editorInsertModalLoading: false,
-    };
-  },
   methods: {
-    handleVariationChange(value) {
-      $('input[name="'+this.$root.$data.RemoteMediaInputFields.selected_variation+'"]').val(value);
-    },
     handleEditorInsertModalSave(){
-      this.editorInsertModalLoading = true;
+      this.loading = true;
 
       var data = new FormData();
       data.append('resource_id', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.resource_id+'"]').val());
+      data.append('media_type', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.media_type+'"]').val());
       data.append('alt_text', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.alt_text+'"]').val());
       data.append('new_file', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.new_file+'"]')[0].files[0]);
       data.append('image_variations', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.image_variations+'"]').val());
-      data.append('content_type_identifier', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.content_type_identifier+'"]').val());
-      data.append('variation', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.selected_variation+'"]').val());
+      data.append('content_type_identifier', this.contentTypeIdentifier);
+      data.append('variation', this.selectedEditorVariation);
 
       var tagsArray = $('body').find('select[name="'+this.$root.$data.RemoteMediaInputFields.tags+'"]').val();
 
@@ -78,16 +93,18 @@ export default {
       var $this = this;
       $.ajax({
         type: 'post',
-        url: this.editorInsertAjaxUrl,
+        url: this.$root.$data.config.paths.editor_insert,
         processData: false,
         contentType: false,
         data: data,
         success: function(data) {
-          $this.$emit('media-inserted', data);
+          $this.$root.$data.editorInsertCallback(data, $this.caption, $this.cssClass);
           $this.$emit('close');
-          this.editorInsertModalLoading = false;
         }
       });
+    },
+    handleSelectedImageChanged(selectedImage) {
+      this.selectedImage = selectedImage;
     }
   }
 };
@@ -101,6 +118,32 @@ export default {
   padding: 20px;
   margin-bottom: 50px;
   overflow-y: auto;
+
+  &.loading {
+    opacity: 0.5;
+  }
+
+  .form-field + .form-field {
+    margin-top: 15px;
+  }
+
+  .form-field {
+    label {
+      font-size: 14px;
+      font-weight: normal;
+      color: $boulder;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid $mercury;
+      padding: 7px 10px;
+      flex-grow: 1;
+    }
+  }
 }
 
 .action-strip {

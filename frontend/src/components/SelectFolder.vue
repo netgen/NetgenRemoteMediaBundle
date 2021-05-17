@@ -7,7 +7,7 @@
           <a v-if="breadcrumbs.length" href="#" @click="loadSubFolders(null)">{{ this.$root.$data.NgRemoteMediaTranslations.upload_root_folder }}</a>
           <span v-else>{{ this.$root.$data.NgRemoteMediaTranslations.upload_root_folder }}</span>
         </span>
-        <span v-for="(folder, index) in breadcrumbs">
+        <span v-for="(folder, index) in breadcrumbs" :key="index">
           /
           <a v-if="index !== breadcrumbs.length - 1" href="#" @click="loadSubFolders(folder.id)">
             {{folder.label}}

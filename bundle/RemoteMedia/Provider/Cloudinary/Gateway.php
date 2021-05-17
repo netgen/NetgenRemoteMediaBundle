@@ -13,6 +13,13 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Resul
 abstract class Gateway
 {
     /**
+     * Returns API rate limits information.
+     *
+     * @return mixed
+     */
+    abstract public function usage();
+
+    /**
      * Uploads file to cloudinary.
      *
      * @param string $fileUri

@@ -79,6 +79,35 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
+     * Returns API rate limits information.
+     *
+     * @return mixed
+     */
+    public function usage()
+    {
+        $usage = $this->cloudinaryApi->usage();
+
+        return [
+            'plan' => $usage['plan'],
+            'rate_limit_allowed' => $usage->rate_limit_allowed,
+            'rate_limit_remaining' => $usage->rate_limit_remaining,
+            'rate_limit_reset_at' => date('d.m.Y H:i:s', $usage->rate_limit_reset_at),
+            'objects' => $usage['objects']['usage'],
+            'resources' => $usage['resources'],
+            'derived_resources' => $usage['derived_resources'],
+            'transformations_usage' => $usage['transformations']['usage'],
+            'transformations_credit_usage' => $usage['transformations']['credits_usage'],
+            'storage_usage' => $this->formatBytes($usage['storage']['usage']),
+            'storage_credit_usage' => $usage['storage']['credits_usage'],
+            'bandwidth_usage' => $this->formatBytes($usage['bandwidth']['usage']),
+            'bandwidth_credit_usage' => $usage['bandwidth']['credits_usage'],
+            'credits_usage' => $usage['credits']['usage'],
+            'credits_limit' => $usage['credits']['limit'],
+            'credits_usage_percent' => $usage['credits']['used_percent'],
+        ];
+    }
+
+    /**
      * Uploads file to cloudinary.
      *
      * @param $fileUri
@@ -388,5 +417,17 @@ class CloudinaryApiGateway extends Gateway
         }
 
         return implode(' AND ', $expressions);
+    }
+
+    private function formatBytes($bytes, $precision = 2) {
+        $units = array('B', 'KB', 'MB', 'GB', 'TB', 'YB');
+
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+
+        $bytes /= pow(1024, $pow);
+
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 }

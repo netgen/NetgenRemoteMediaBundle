@@ -40,6 +40,16 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Returns API rate limits information.
+     *
+     * @return array
+     */
+    public function usage(): array
+    {
+        return $this->gateway->usage();
+    }
+
+    /**
      * @return bool
      */
     public function supportsContentBrowser(): bool
@@ -300,6 +310,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $finalOptions = [
             'fallback_content' => 'Your browser does not support HTML5 video tags',
+            'controls' => true,
         ];
 
         if (empty($format)) {

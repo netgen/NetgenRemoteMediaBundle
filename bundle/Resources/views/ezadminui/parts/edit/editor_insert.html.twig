@@ -1,0 +1,40 @@
+<script type="text/javascript">
+    RemoteMediaSelectedImage_{{ field_id }} = {
+        id: "",
+        name: "",
+        type: "image",
+        mediaType: "image",
+        url: "",
+        browse_url: "",
+        alternateText: "",
+        tags: [],
+        size: "",
+        variations: {},
+        height: 0,
+        width: 0,
+    };
+
+    RemoteMediaInputFields_{{ field_id }} = {
+        'alt_text': 'alt_text_{{ field_id }}',
+        'image_variations': 'image_variations_{{ field_id }}',
+        'media_type': 'media_type_{{ field_id }}',
+        'new_file': 'new_file_{{ field_id }}',
+        'resource_id': 'resource_id_{{ field_id }}',
+        'tags': 'tags_{{ field_id }}[]',
+    };
+</script>
+
+<div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
+    <editor-insert-modal
+        v-if="editorInsertModalOpen"
+        @close="handleEditorInsertModalClose"
+        :loading="editorInsertModalLoading"
+        field-id="{{ field_id }}"
+        content-type-identifier="{{ content_type_identifier }}"
+        :config="config"
+        :selected-image="selectedImage"
+        :selected-editor-variation="selectedEditorVariation"
+        :caption="caption"
+        :css-class="cssClass"
+    ></editor-insert-modal>
+</div>

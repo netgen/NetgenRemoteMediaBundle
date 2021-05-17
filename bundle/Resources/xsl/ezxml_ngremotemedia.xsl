@@ -12,10 +12,28 @@
     <xsl:template match="custom[@name='ngremotemedia']">
         <div>
             <xsl:attribute name="class">remote-image-inline <xsl:value-of select="@custom:cssclass"/></xsl:attribute>
-            <img>
-                <xsl:attribute name="src"><xsl:value-of select="@custom:image_url"/></xsl:attribute>
-                <xsl:attribute name="alt"><xsl:value-of select="@custom:alttext"/></xsl:attribute>
-            </img><div class="img-caption"><xsl:value-of select="@custom:caption" /></div>
+
+            <xsl:choose>
+                <xsl:when test="@custom:resourceType='image'">
+                    <img>
+                        <xsl:attribute name="src"><xsl:value-of select="@custom:src"/></xsl:attribute>
+                        <xsl:attribute name="alt"><xsl:value-of select="@custom:alt"/></xsl:attribute>
+                    </img>
+                </xsl:when>
+
+                <xsl:when test="@custom:resourceType='video'">
+                    <xsl:value-of select="@custom:videoTag" disable-output-escaping="yes"/>
+                </xsl:when>
+
+                <xsl:otherwise>
+                    <a>
+                        <xsl:attribute name="href"><xsl:value-of select="@custom:src"/></xsl:attribute>
+                        <xsl:value-of select="@custom:filename"/>
+                    </a>
+                </xsl:otherwise>
+            </xsl:choose>
+
+            <div class="img-caption"><xsl:value-of select="@custom:caption" /></div>
         </div>
     </xsl:template>
 </xsl:stylesheet>

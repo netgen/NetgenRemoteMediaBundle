@@ -35,6 +35,13 @@
         return $bundles;
     }
     ```
+  
+* Add the following entry to your main `routing.yaml` file:
+
+    ```
+    netgen_remote_media:
+        resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
+    ```
     
 * Update the database with a custom table:
 	* `$ mysql -u<user> -p<password> -h<host> <db_name> < vendor/netgen/remote-media-bundle/bundle/Resources/sql/schema.sql`

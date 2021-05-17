@@ -7,15 +7,19 @@ AvailableDataTypes[]=ngremotemedia
 [CustomTagSettings]
 AvailableCustomTags[]=ngremotemedia
 IsInline[ngremotemedia]=image
+InlineImageIconPath[ngremotemedia]=images/tango/mail-attachment.png
 
 [ngremotemedia]
 CustomAttributes[]
-CustomAttributes[]=alttext
 CustomAttributes[]=caption
 CustomAttributes[]=cssclass
 CustomAttributes[]=coords
-CustomAttributes[]=image_url
 CustomAttributes[]=resourceId
-CustomAttributes[]=version
+CustomAttributes[]=resourceType
+CustomAttributes[]=variation
+CustomAttributes[]=image_url
+
+[EditSettings]
+AdditionalTemplates[]=ezxml_init.tpl
 
 */

@@ -2,7 +2,7 @@
   <div v-if="selectedImage.id" class="ngremotemedia-image">
     <div class="image-wrap">
       <img v-if="selectedImage.mediaType==='image'" :src="selectedImage.url" ref="image" />
-      <i v-else="selectedImage.mediaType!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
+      <i v-else :class="nonImagePreviewClass" class="ng-icon big"></i>
     </div>
 
     <div class="image-meta">
@@ -28,7 +28,7 @@
           <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_tags}}</span>
           <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
           <select hidden v-model="selectedImage.tags" :name="this.$root.$data.RemoteMediaInputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
-            <option v-for="tag in allTags">{{tag}}</option>
+            <option v-for="tag in allTags" :key = "tag">{{tag}}</option>
           </select>
         </div>
       </div>
