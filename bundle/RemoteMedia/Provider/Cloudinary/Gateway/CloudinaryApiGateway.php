@@ -96,14 +96,14 @@ class CloudinaryApiGateway extends Gateway
             'resources' => $usage['resources'],
             'derived_resources' => $usage['derived_resources'],
             'transformations_usage' => $usage['transformations']['usage'],
-            'transformations_credit_usage' => $usage['transformations']['credits_usage'],
+            'transformations_credit_usage' => $usage['transformations']['credits_usage'] ?? null,
             'storage_usage' => $this->formatBytes($usage['storage']['usage']),
-            'storage_credit_usage' => $usage['storage']['credits_usage'],
+            'storage_credit_usage' => $usage['storage']['credits_usage'] ?? null,
             'bandwidth_usage' => $this->formatBytes($usage['bandwidth']['usage']),
-            'bandwidth_credit_usage' => $usage['bandwidth']['credits_usage'],
-            'credits_usage' => $usage['credits']['usage'],
-            'credits_limit' => $usage['credits']['limit'],
-            'credits_usage_percent' => $usage['credits']['used_percent'],
+            'bandwidth_credit_usage' => $usage['bandwidth']['credits_usage'] ?? null,
+            'credits_usage' => $usage['credits']['usage'] ?? null,
+            'credits_limit' => $usage['credits']['limit'] ?? null,
+            'credits_usage_percent' => $usage['credits']['used_percent'] ?? null,
         ];
     }
 
