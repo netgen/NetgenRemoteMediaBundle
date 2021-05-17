@@ -68,6 +68,11 @@ class RefreshEzFieldsCommand extends Command
     private $contentIdsFilter = [];
 
     /**
+     * @var int
+     */
+    private $apiRateLimitThreshold;
+
+    /**
      * @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value[]
      */
     private $remoteResources = [];
@@ -119,6 +124,12 @@ class RefreshEzFieldsCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'The size of the chunk of attributes to fetch (and size of chunk of resource to get from remote media in one API request)',
                 self::DEFAULT_CHUNK_SIZE
+            )->addOption(
+                'rate-limit-threshold',
+                'rtt',
+                InputOption::VALUE_OPTIONAL,
+                'Percentage of remaining API rate limit below which the command will exit to prevent crashing the media on frontend (default 50%).',
+                50
             );
     }
 
@@ -128,6 +139,7 @@ class RefreshEzFieldsCommand extends Command
         $this->force = $input->getOption('force');
         $this->dryRun = $input->getOption('dry-run');
         $this->contentIdsFilter = $input->getOption('content-ids');
+        $this->apiRateLimitThreshold = (int) $input->getOption('rate-limit-threshold');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -135,6 +147,7 @@ class RefreshEzFieldsCommand extends Command
         $limit = (int) $input->getOption('chunk-size');
         $offset = 0;
         $count = 1;
+        $chunkCount = 0;
         $attributesCount = $this->getAttributesCount();
 
         $output->writeln('Found ' . $attributesCount . ' entries. Starting...');
@@ -144,6 +157,12 @@ class RefreshEzFieldsCommand extends Command
         }
 
         do {
+            if ($chunkCount % 100 === 0 && $this->apiRateLimitExceeded()) {
+                $output->writeln("<error>There's less than {$this->apiRateLimitThreshold} % API rate limit left. Exiting...</error>");
+
+                return 0;
+            }
+
             $attributes = $this->loadAttributes($limit, $offset);
             $this->fillRemoteResources($attributes);
 
@@ -173,6 +192,7 @@ class RefreshEzFieldsCommand extends Command
             }
 
             $offset += $limit;
+            $chunkCount++;
         } while (count($attributes) > 0);
 
         $this->output->writeln(PHP_EOL . PHP_EOL . 'The script is done. Here are the missing variations that have to be added in content types:');
@@ -679,5 +699,21 @@ class RefreshEzFieldsCommand extends Command
         $query->bindValue('resourceId', $value->resourceId);
         $query->bindValue('provider', $provider);
         $query->execute();
+    }
+
+    private function apiRateLimitExceeded()
+    {
+        $usage = $this->provider->usage();
+
+        $allowed = $usage['rate_limit_allowed'];
+        $remaining = $usage['rate_limit_remaining'];
+
+        $remainingPercent = $remaining / $allowed * 100;
+
+        if ($remainingPercent < $this->apiRateLimitThreshold) {
+            return true;
+        }
+
+        return false;
     }
 }
