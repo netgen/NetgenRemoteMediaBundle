@@ -4,8 +4,8 @@ namespace Netgen\Bundle\RemoteMediaBundle\Converter\XmlText;
 
 use eZ\Publish\API\Repository\ContentService;
 use eZ\Publish\API\Repository\ContentTypeService;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\Core\FieldType\XmlText\Converter;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\HttpFoundation\RequestStack;
 use DOMDocument;
@@ -56,10 +56,13 @@ class NgRemoteMediaPreConverter implements Converter
 
         $contentId = $this->requestStack->getCurrentRequest()->attributes->get('contentId');
         $contentTypeIdentifier = null;
-        if ($contentId !== '') {
-            $content = $this->contentService->loadContent($contentId);
-            $contentType = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId);
-            $contentTypeIdentifier = $contentType->identifier;
+
+        if ($contentId !== null && $contentId !== '') {
+            try {
+                $content = $this->contentService->loadContent($contentId);
+                $contentType = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId);
+                $contentTypeIdentifier = $contentType->identifier;
+            } catch (NotFoundException $e) {}
         }
 
         /** @var \DOMElement $tag */
