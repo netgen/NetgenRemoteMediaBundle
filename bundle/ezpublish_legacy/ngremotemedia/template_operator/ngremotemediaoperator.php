@@ -2,6 +2,7 @@
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 
 class NgRemoteMediaOperator
 {
@@ -15,10 +16,12 @@ class NgRemoteMediaOperator
             'ngremotemedia',
             'ng_remote_resource',
             'ng_remote_croppable',
+            'ngremotevideo',
             'videoThumbnail',
             'ng_image_variations',
             'scaling_format',
             'list_format',
+            'get_content_type_identifier'
         );
     }
 
@@ -74,6 +77,10 @@ class NgRemoteMediaOperator
                 'resource_id' => array(
                     'type' => 'string',
                     'required' => false
+                ),
+                'image_variations' => array(
+                    'type' => 'string',
+                    'required' => false
                 )
             ),
             'ng_remote_croppable' => array(
@@ -115,6 +122,7 @@ class NgRemoteMediaOperator
                     'default' => ''
                 )
             ),
+            'get_content_type_identifier' => array(),
         );
     }
 
@@ -136,7 +144,7 @@ class NgRemoteMediaOperator
                 $namedParameters['secure']
             );
         } elseif ($operatorName === 'ng_remote_resource') {
-            $operatorValue = $this->getRemoteResource($namedParameters['resource_type'], $namedParameters['resource_id']);
+            $operatorValue = $this->getRemoteResource($namedParameters['resource_type'], $namedParameters['resource_id'], $namedParameters['image_variations']);
         } elseif ($operatorName === 'ng_remote_croppable') {
             $operatorValue = $this->isCroppable($namedParameters['class_identifier']);
         } elseif ($operatorName === 'videoThumbnail') {
@@ -154,6 +162,8 @@ class NgRemoteMediaOperator
             $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
         } elseif ($operatorName === 'list_format') {
             $operatorValue = $this->formatAliasForList($namedParameters['formats']);
+        } elseif ($operatorName === 'get_content_type_identifier') {
+            $operatorValue = $this->getContentTypeIdentifier();
         }
     }
 
@@ -195,12 +205,15 @@ class NgRemoteMediaOperator
         }
     }
 
-    function getRemoteResource($resource_type, $resource_id)
+    function getRemoteResource($resource_type, $resource_id, $image_variations = null)
     {
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get('netgen_remote_media.provider');
 
-        return $provider->getRemoteResource($resource_id, $resource_type);
+        $value = $provider->getRemoteResource($resource_id, $resource_type);
+        $value->variations = json_decode($image_variations, true);
+
+        return $value;
     }
 
     function ngremotemedia($value, $content_type_identifier, $format, $secure = true)
@@ -233,5 +246,26 @@ class NgRemoteMediaOperator
         $provider = $container->get( 'netgen_remote_media.provider' );
 
         return $provider->generateVideoTag($value, $format, $availableFormats);
+    }
+
+    function getContentTypeIdentifier()
+    {
+        $container = ezpKernel::instance()->getServiceContainer();
+        $requestStack = $container->get('request_stack');
+        $contentService = $container->get('ezpublish.api.service.content');
+        $contentTypeService = $container->get('ezpublish.api.service.content_type');
+
+        $contentId = $requestStack->getCurrentRequest()->attributes->get('contentId');
+        $contentTypeIdentifier = null;
+
+        if ($contentId !== null && $contentId !== '') {
+            try {
+                $content = $contentService->loadContent($contentId);
+                $contentType = $contentTypeService->loadContentType($content->contentInfo->contentTypeId);
+                $contentTypeIdentifier = $contentType->identifier;
+            } catch (NotFoundException $e) {}
+        }
+
+        return $contentTypeIdentifier;
     }
 }
