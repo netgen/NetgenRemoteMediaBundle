@@ -29,6 +29,7 @@ services:
             - "@netgen_remote_media.handler_registry"
             - "@netgen_remote_media.variation.resolver"
             - "@netgen_remote_media.provider.cloudinary.gateway.cached"
+            - "$parameters.audio.enable_waveform;netgen_remote_media$"
             - "@?logger"
 
     netgen_remote_media.helper:

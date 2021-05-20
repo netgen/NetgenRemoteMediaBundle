@@ -26,16 +26,21 @@ class CloudinaryProvider extends RemoteMediaProvider
     /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway */
     protected $gateway;
 
+    /** @var bool */
+    protected $enableAudioWaveform;
+
     protected $noExtensionMimeTypes;
 
     public function __construct(
         Registry $registry,
         VariationResolver $variationsResolver,
         Gateway $gateway,
+        bool $enableAudioWaveform,
         LoggerInterface $logger = null,
         array $noExtensionMimeTypes = ['image', 'video']
     ) {
         $this->gateway = $gateway;
+        $this->enableAudioWaveform = $enableAudioWaveform;
         $this->noExtensionMimeTypes = $noExtensionMimeTypes;
 
         parent::__construct($registry, $variationsResolver, $logger);
@@ -316,11 +321,29 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $finalOptions = $finalOptions + $transformationOptions;
 
-        if ($this->isAudio($value)) {
-            $finalOptions['poster']['raw_transformation'] = 'fl_waveform';
+        $enableAudioWaveform = $this->enableAudioWaveform;
+
+        if (is_array($format) && array_key_exists('enable_audio_waveform', $format)) {
+            $enableAudioWaveform = $format['enable_audio_waveform'];
         }
 
-        return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
+        if ($this->isAudio($value)) {
+            if ($enableAudioWaveform) {
+                $finalOptions['poster']['raw_transformation'] = 'fl_waveform';
+            }
+
+            if (!$enableAudioWaveform) {
+                $finalOptions['attributes']['poster'] = null;
+            }
+        }
+
+        $tag = $this->gateway->getVideoTag($value->resourceId, $finalOptions);
+
+        if ($this->isAudio($value) && !$enableAudioWaveform) {
+            $tag = str_replace( ['<video', '</video>'], ['<audio', '</audio>'], $tag);
+        }
+
+        return $tag;
     }
 
     /**
