@@ -103,7 +103,9 @@ export default {
         name: item.filename,
         type: item.type,
         mediaType: item.mediaType,
+        format: item.format,
         url: item.url,
+        previewUrl: item.preview_url,
         alternateText: item.alt_text,
         tags: item.tags,
         size: item.filesize,
@@ -141,7 +143,9 @@ export default {
         name: '',
         type: 'image',
         mediaType: 'image',
+        format: '',
         url: '',
+        previewUrl: '',
         alternateText: '',
         tags: [],
         size: 0,
@@ -180,6 +184,9 @@ export default {
 
       return type;
     },
+    getFileFormat(file){
+      return file.type.split("/")[1];
+    },
     handleFileInputChange(e) {
       this.uploadModalOpen = true;
 
@@ -191,7 +198,9 @@ export default {
           name: file.name,
           type: this.getFileType(file),
           mediaType: this.getFileMediaType(file),
+          format: this.getFileFormat(file),
           url: '',
+          previewUrl: '',
           alternateText: '',
           tags: [],
           size: file.size,
@@ -211,6 +220,7 @@ export default {
               }.bind(this);
 
               this.selectedImage.url = reader.result;
+              this.selectedImage.previewUrl = reader.result;
             }.bind(this),
             false
           );

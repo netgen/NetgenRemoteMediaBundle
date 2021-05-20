@@ -1,7 +1,7 @@
 <template>
   <div v-if="selectedImage.id" class="ngremotemedia-image">
     <div class="image-wrap">
-      <img v-if="selectedImage.mediaType==='image'" :src="selectedImage.url" ref="image" />
+      <img v-if="selectedImage.type!=='raw'" :src="selectedImage.previewUrl" ref="image" />
       <i v-else :class="nonImagePreviewClass" class="ng-icon big"></i>
     </div>
 
@@ -13,6 +13,7 @@
 
       <h3 class="title">{{selectedImage.name}}</h3>
       <p>{{this.$root.$data.NgRemoteMediaTranslations.preview_size}}: {{formattedSize}}</p>
+      <p>{{selectedImage.mediaType}} / {{selectedImage.format}}</p>
 
       <div class="image-meta-data">
         <div class="ngremotemedia-alttext">

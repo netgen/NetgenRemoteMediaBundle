@@ -19,10 +19,15 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
+use function is_array;
+
 class CloudinaryProvider extends RemoteMediaProvider
 {
     /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway */
     protected $gateway;
+
+    /** @var bool */
+    protected $enableAudioWaveform;
 
     protected $noExtensionMimeTypes;
 
@@ -30,10 +35,12 @@ class CloudinaryProvider extends RemoteMediaProvider
         Registry $registry,
         VariationResolver $variationsResolver,
         Gateway $gateway,
+        bool $enableAudioWaveform,
         LoggerInterface $logger = null,
         array $noExtensionMimeTypes = ['image', 'video']
     ) {
         $this->gateway = $gateway;
+        $this->enableAudioWaveform = $enableAudioWaveform;
         $this->noExtensionMimeTypes = $noExtensionMimeTypes;
 
         parent::__construct($registry, $variationsResolver, $logger);
@@ -277,25 +284,15 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function getVideoThumbnail(Value $value, $options = []): string
     {
-        // Cloudinary lib will return an invalid link if resource is audio
-        $audioFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'];
-        if (array_key_exists('format', $value->metaData) && in_array($value->metaData['format'], $audioFormats)) {
-            return '';
+        if (empty($options)) {
+            $options['resource_type'] = 'video';
         }
 
-        if (!empty($options)) {
-            $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
-            $options['resource_type'] = 'video';
-
-            return $this->gateway->getVideoThumbnail($value->resourceId, $options);
+        if ($this->isAudio($value)) {
+            $options['raw_transformation'] = 'fl_waveform';
         }
 
         $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
-
-        $options['crop'] = 'fit';
-        $options['width'] = 320;
-        $options['height'] = 240;
-        $options['resource_type'] = 'video';
 
         return $this->gateway->getVideoThumbnail($value->resourceId, $options);
     }
@@ -308,25 +305,45 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function generateVideoTag(Value $value, $contentTypeIdentifier, $format = ''): string
     {
+        $transformationOptions = $format;
+
+        if (!is_array($transformationOptions)) {
+            $transformationOptions = [];
+            $transformationOptions['transformation'] = $this->processConfiguredVariation($value, $format, $contentTypeIdentifier);
+            $transformationOptions['secure'] = true;
+        }
+
         $finalOptions = [
             'fallback_content' => 'Your browser does not support HTML5 video tags',
             'controls' => true,
+            'poster' => $transformationOptions,
         ];
 
-        if (empty($format)) {
-            return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
+        $finalOptions = $finalOptions + $transformationOptions;
+
+        $enableAudioWaveform = $this->enableAudioWaveform;
+
+        if (is_array($format) && array_key_exists('enable_audio_waveform', $format)) {
+            $enableAudioWaveform = $format['enable_audio_waveform'];
         }
 
-        if (\is_array($format)) {
-            $finalOptions = $format + $finalOptions;
-        } else {
-            $options = $this->processConfiguredVariation($value, $format, $contentTypeIdentifier);
+        if ($this->isAudio($value)) {
+            if ($enableAudioWaveform) {
+                $finalOptions['poster']['raw_transformation'] = 'fl_waveform';
+            }
 
-            $finalOptions['transformation'] = $options;
-            $finalOptions['secure'] = true;
+            if (!$enableAudioWaveform) {
+                $finalOptions['attributes']['poster'] = null;
+            }
         }
 
-        return $this->gateway->getVideoTag($value->resourceId, $finalOptions);
+        $tag = $this->gateway->getVideoTag($value->resourceId, $finalOptions);
+
+        if ($this->isAudio($value) && !$enableAudioWaveform) {
+            $tag = str_replace( ['<video', '</video>'], ['<audio', '</audio>'], $tag);
+        }
+
+        return $tag;
     }
 
     /**
@@ -474,5 +491,12 @@ class CloudinaryProvider extends RemoteMediaProvider
         }
 
         return $publicId;
+    }
+
+    private function isAudio(Value $value): bool
+    {
+        $audioFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'];
+
+        return array_key_exists('format', $value->metaData) && in_array($value->metaData['format'], $audioFormats);
     }
 }

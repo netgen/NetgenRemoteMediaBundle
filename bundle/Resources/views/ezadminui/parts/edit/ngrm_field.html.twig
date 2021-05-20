@@ -2,15 +2,19 @@
 
 <script type="text/javascript">
     RemoteMediaSelectedImage_{{ field_id }} = {
-        url : "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
+        url: "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
         type: "{% if field_value %}{{ field_value.resourceType|default('image') }}{% else %}image{% endif %}",
         {% if not field_value or field_value.mediaType == 'image' %}
             mediaType: "image",
+            previewUrl: {{ field_value.secure_url }},
         {% elseif field_value.mediaType == 'video' %}
             mediaType: "video",
+            previewUrl: {{ netgen_remote_video_thumbnail(field_value) }},
         {% else %}
             mediaType: "other",
+            previewUrl: "",
         {% endif %}
+        format: "{% if field_value and field_value.metadata.format is defined %}{{ field_value.metadata.format }}{% endif %}",
         name: "{% if field_value %}{{ field_value.resourceId }}{% endif %}",
         alternateText: "{% if field_value %}{{ field_value.metaData.alt_text }}{% endif %}",
         tags: [{% if field_value %}{% for tag in field_value.metaData.tags %}"{{ tag }}",{% endfor %}{% endif %}],

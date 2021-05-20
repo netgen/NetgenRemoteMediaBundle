@@ -50,10 +50,13 @@ class Helper
 
         if ($mediaType === Value::TYPE_IMAGE) {
             $browseUrl = $this->provider->buildVariation($value, 'admin', $thumbOptions)->url;
+            $previewUrl = $value->secure_url;
         } else if ($mediaType === Value::TYPE_VIDEO) {
             $browseUrl = $this->provider->getVideoThumbnail($value, $thumbOptions);
+            $previewUrl = $this->provider->getVideoThumbnail($value);
         } else {
             $browseUrl = '';
+            $previewUrl = '';
             // @todo
         }
 
@@ -68,6 +71,7 @@ class Helper
             'filename' => basename($value->resourceId),
             'format' => $value->metaData['format'] ?? null,
             'browse_url' => $browseUrl,
+            'preview_url' => $previewUrl,
             'url' => $value->secure_url,
             'alt_text' => $value->metaData['alt_text'] ?? null,
         ];
