@@ -6,10 +6,10 @@
         type: "{% if field_value %}{{ field_value.resourceType|default('image') }}{% else %}image{% endif %}",
         {% if not field_value or field_value.mediaType == 'image' %}
             mediaType: "image",
-            previewUrl: {{ field_value.secure_url }},
+            previewUrl: "{{ field_value.secure_url }}",
         {% elseif field_value.mediaType == 'video' %}
             mediaType: "video",
-            previewUrl: {{ netgen_remote_video_thumbnail(field_value) }},
+            previewUrl: "{{ netgen_remote_video_thumbnail(field_value) }}"",
         {% else %}
             mediaType: "other",
             previewUrl: "",
@@ -27,7 +27,7 @@
 
     RemoteMediaInputFields_{{ field_id }} = {
         {% for name, full_name in input_fields %}
-        '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
+            '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
         {% endfor %}
     };
 </script>
