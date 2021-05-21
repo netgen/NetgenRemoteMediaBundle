@@ -28,7 +28,7 @@ const handleDOMContentLoaded = function() {
                 cssClass: '',
                 selectedImage: {
                     id: '',
-                    name: 'blable',
+                    name: '',
                     type: 'image',
                     mediaType: 'image',
                     format: '',
