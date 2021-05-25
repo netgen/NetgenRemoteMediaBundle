@@ -53,6 +53,7 @@
 import Modal from "./Modal";
 import Interactions from "./Interactions";
 import vSelect from "vue-select";
+import axios from "axios";
 
 export default {
   name: "EditorInsertModal",
@@ -63,21 +64,21 @@ export default {
     "v-select": vSelect
   },
   methods: {
-    handleEditorInsertModalSave(){
+    async handleEditorInsertModalSave(){
       this.loading = true;
 
       var data = new FormData();
-      data.append('resource_id', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.resource_id+'"]').val());
-      data.append('media_type', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.media_type+'"]').val());
-      data.append('alt_text', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.alt_text+'"]').val());
-      data.append('new_file', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.new_file+'"]')[0].files[0]);
-      data.append('image_variations', $('body').find('input[name="'+this.$root.$data.RemoteMediaInputFields.image_variations+'"]').val());
+      data.append('resource_id', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.resource_id+'"]').value);
+      data.append('media_type', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.media_type+'"]').value);
+      data.append('alt_text', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.alt_text+'"]').value);
+      data.append('new_file', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.new_file+'"]').files[0]);
+      data.append('image_variations', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.image_variations+'"]').value);
       data.append('content_type_identifier', this.contentTypeIdentifier);
       data.append('variation', this.selectedEditorVariation);
 
-      var tagsArray = $('body').find('select[name="'+this.$root.$data.RemoteMediaInputFields.tags+'"]').val();
+      var tagsArray = document.querySelector('select[name="'+this.$root.$data.RemoteMediaInputFields.tags+'"]').value;
 
-      if (!$.isArray(tagsArray)) {
+      if (!Array.isArray(tagsArray)) {
         var tag = tagsArray;
         var tagsArray = [];
 
@@ -86,22 +87,14 @@ export default {
         }
       }
 
-      $.each(tagsArray, function (key, tag) {
+      tagsArray.forEach(tag => {
         data.append('tags[]', tag);
       });
 
-      var $this = this;
-      $.ajax({
-        type: 'post',
-        url: this.$root.$data.config.paths.editor_insert,
-        processData: false,
-        contentType: false,
-        data: data,
-        success: function(data) {
-          $this.$root.$data.editorInsertCallback(data, $this.caption, $this.cssClass);
-          $this.$emit('close');
-        }
-      });
+      const response = await axios.post(this.$root.$data.config.paths.editor_insert, data);
+
+      this.$root.$data.editorInsertCallback(response.data, this.caption, this.cssClass);
+      this.$emit('close');
     },
     handleSelectedImageChanged(selectedImage) {
       this.selectedImage = selectedImage;
