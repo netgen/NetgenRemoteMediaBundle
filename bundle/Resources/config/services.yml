@@ -56,6 +56,14 @@ services:
         tags:
             - { name: ezplatform.admin_ui.component, group: 'stylesheet-head' }
 
+    netgen_remote_media.ezadminui.component.ez_richtext:
+        parent: EzSystems\EzPlatformAdminUi\Component\TwigComponent
+        public: false
+        arguments:
+            $template: '@@NetgenRemoteMedia/ezadminui/parts/edit/ezrichtext.html.twig'
+        tags:
+            - { name: ezplatform.admin_ui.component, group: content-edit-form-before }
+
     netgen_remote_media.next_cursor_resolver:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\NextCursorResolver
         arguments:
