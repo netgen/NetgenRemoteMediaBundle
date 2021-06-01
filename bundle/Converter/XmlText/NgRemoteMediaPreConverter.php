@@ -1,13 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Converter\XmlText;
 
-use eZ\Publish\API\Repository\ContentService;
-use eZ\Publish\API\Repository\ContentTypeService;
-use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\Core\FieldType\XmlText\Converter;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
-use Symfony\Component\HttpFoundation\RequestStack;
 use DOMDocument;
 use DOMXPath;
 
@@ -22,48 +20,15 @@ class NgRemoteMediaPreConverter implements Converter
      */
     private $remoteMediaProvider;
 
-    /**
-     * @var \Symfony\Component\HttpFoundation\RequestStack
-     */
-    private $requestStack;
-
-    /**
-     * @var \eZ\Publish\API\Repository\ContentService
-     */
-    private $contentService;
-
-    /**
-     * @var \eZ\Publish\API\Repository\ContentTypeService
-     */
-    private $contentTypeService;
-
-    public function __construct(
-        RemoteMediaProvider $remoteMediaProvider,
-        RequestStack $requestStack,
-        ContentService $contentService,
-        ContentTypeService $contentTypeService
-    ) {
+    public function __construct(RemoteMediaProvider $remoteMediaProvider)
+    {
         $this->remoteMediaProvider = $remoteMediaProvider;
-        $this->requestStack = $requestStack;
-        $this->contentService = $contentService;
-        $this->contentTypeService = $contentTypeService;
     }
 
     public function convert(DOMDocument $xmlDoc)
     {
         $xpath = new DOMXPath($xmlDoc);
         $tags = $xpath->query("//custom[@name='ngremotemedia']");
-
-        $contentId = $this->requestStack->getCurrentRequest()->attributes->get('contentId');
-        $contentTypeIdentifier = null;
-
-        if ($contentId !== null && $contentId !== '') {
-            try {
-                $content = $this->contentService->loadContent($contentId);
-                $contentType = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId);
-                $contentTypeIdentifier = $contentType->identifier;
-            } catch (NotFoundException $e) {}
-        }
 
         /** @var \DOMElement $tag */
         foreach ($tags as $tag) {
@@ -81,16 +46,16 @@ class NgRemoteMediaPreConverter implements Converter
             $resource = $this->remoteMediaProvider->getRemoteResource($resourceId, $resourceType);
             $resource->variations = json_decode($imageVariations, true);
 
-            switch ($resourceType) {
+            switch ($resource->resourceType) {
                 case 'video':
-                    $videoTag = $this->remoteMediaProvider->generateVideoTag($resource, $contentTypeIdentifier, $variation);
+                    $videoTag = $this->remoteMediaProvider->generateVideoTag($resource, 'embed', $variation);
                     $src = $this->remoteMediaProvider->getVideoThumbnail($resource);
                     break;
                 case 'image':
                     $src = $resource->secure_url;
 
-                    if ($variation !== '' && $contentTypeIdentifier) {
-                        $variation = $this->remoteMediaProvider->buildVariation($resource, $contentTypeIdentifier, $variation);
+                    if ($variation !== '') {
+                        $variation = $this->remoteMediaProvider->buildVariation($resource, 'embed', $variation);
                         $src = $variation->url;
                     }
 

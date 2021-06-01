@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
-use eZ\Publish\API\Repository\Values\Content\Field;
-use Twig_Filter;
 use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Twig_Extension;
 use Twig_SimpleFunction;
+use Twig_Filter;
 
 class NetgenRemoteMediaExtension extends Twig_Extension
 {
@@ -35,32 +33,19 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     protected $contentTypeService;
 
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
-     */
-    protected $helper;
-
-    /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
      */
     protected $variationResolver;
 
-    /**
-     * NetgenRemoteMediaExtension constructor.
-     *
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Helper
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver
-     */
     public function __construct(
         RemoteMediaProvider $provider,
         TranslationHelper $translationHelper,
         ContentTypeService $contentTypeService,
-        Helper $helper,
         VariationResolver $variationResolver
     ) {
         $this->provider = $provider;
         $this->translationHelper = $translationHelper;
         $this->contentTypeService = $contentTypeService;
-        $this->helper = $helper;
         $this->variationResolver = $variationResolver;
     }
 
@@ -97,8 +82,16 @@ class NetgenRemoteMediaExtension extends Twig_Extension
                 [$this, 'getRemoteImageVariation']
             ),
             new Twig_SimpleFunction(
+                'netgen_remote_variation_embed',
+                [$this, 'getRemoteImageVariationEmbed']
+            ),
+            new Twig_SimpleFunction(
                 'netgen_remote_video',
                 [$this, 'getRemoteVideoTag']
+            ),
+            new Twig_SimpleFunction(
+                'netgen_remote_video_embed',
+                [$this, 'getRemoteVideoTagEmbed']
             ),
             new Twig_SimpleFunction(
                 'netgen_remote_video_thumbnail',
@@ -111,6 +104,10 @@ class NetgenRemoteMediaExtension extends Twig_Extension
             new Twig_SimpleFunction(
                 'netgen_remote_media',
                 [$this, 'getRemoteResource']
+            ),
+            new Twig_SimpleFunction(
+                'netgen_remote_media_embed',
+                [$this, 'getRemoteResourceEmbed']
             ),
             new Twig_SimpleFunction(
                 'ngrm_is_croppable',
@@ -162,6 +159,20 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     }
 
     /**
+     * Returns variation by specified format from resource value.
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param string $format
+     * @param bool $secure
+     *
+     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
+     */
+    public function getRemoteImageVariationEmbed(Value $value, $format, $secure = true)
+    {
+        return $this->provider->buildVariation($value, 'embed', $format, $secure);
+    }
+
+    /**
      * Generates html5 video tag for the video with provided id.
      *
      * @param string $fieldIdentifier
@@ -175,6 +186,19 @@ class NetgenRemoteMediaExtension extends Twig_Extension
         $contentTypeIdentifier = $this->contentTypeService->loadContentType($content->contentInfo->contentTypeId)->identifier;
 
         return $this->provider->generateVideoTag($field->value, $contentTypeIdentifier, $format);
+    }
+
+    /**
+     * Generates html5 video tag for the video with provided resource and format.
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
+     * @param string $format
+     *
+     * @return mixed
+     */
+    public function getRemoteVideoTagEmbed(Value $value, $format = '')
+    {
+        return $this->provider->generateVideoTag($value, 'embed', $format);
     }
 
     /**
@@ -209,6 +233,26 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getRemoteResource(Value $value, $format)
     {
         return $this->provider->buildVariation($value, 'custom', $format, true);
+    }
+
+    /**
+     * Gets remote resource with resource ID and resource type (for embed).
+     * If provided, it sets image variations coords.
+     *
+     * @param string $resourceId
+     * @param string $resourceType
+     *
+     * @return Variation
+     */
+    public function getRemoteResourceEmbed(string $resourceId, string $resourceType, ?string $coords = null)
+    {
+        $resource = $this->provider->getRemoteResource($resourceId, $resourceType);
+
+        if ($coords !== null) {
+            $resource->variations = \json_decode($coords, true);
+        }
+
+        return $resource;
     }
 
     /**
