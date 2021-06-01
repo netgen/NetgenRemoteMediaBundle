@@ -1,5 +1,5 @@
 {% set has_richtext = false %}
-{% for field in content.getFields %}
+{% for field in contentType.fieldDefinitions %}
     {% if field.fieldTypeIdentifier == 'ezrichtext' %}
         {% set has_richtext = true %}
     {% endif %}
@@ -10,6 +10,6 @@
 
     {% include '@NetgenRemoteMedia/ezadminui/parts/edit/editor_insert.html.twig' with {
         'content_type_identifier': contentType.identifier,
-        'field_id': 'ezrichtext',
+        'field_id': 'ezrichtext'
     } %}
 {% endif %}

@@ -63,6 +63,7 @@ services:
             $template: '@@NetgenRemoteMedia/ezadminui/parts/edit/ezrichtext.html.twig'
         tags:
             - { name: ezplatform.admin_ui.component, group: content-edit-form-before }
+            - { name: ezplatform.admin_ui.component, group: content-create-form-before }
 
     netgen_remote_media.next_cursor_resolver:
         class: Netgen\Bundle\RemoteMediaBundle\RemoteMedia\NextCursorResolver
