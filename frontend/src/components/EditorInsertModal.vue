@@ -68,26 +68,15 @@ export default {
       this.loading = true;
 
       var data = new FormData();
-      data.append('resource_id', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.resource_id+'"]').value);
-      data.append('media_type', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.media_type+'"]').value);
-      data.append('alt_text', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.alt_text+'"]').value);
+      data.append('resource_id', this.selectedImage.id);
+      data.append('media_type', this.selectedImage.type);
+      data.append('alt_text', this.selectedImage.alternateText);
       data.append('new_file', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.new_file+'"]').files[0]);
-      data.append('image_variations', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.image_variations+'"]').value);
+      data.append('image_variations', JSON.stringify(this.selectedImage.variations));
       data.append('content_type_identifier', this.contentTypeIdentifier);
       data.append('variation', this.selectedEditorVariation);
 
-      var tagsArray = document.querySelector('select[name="'+this.$root.$data.RemoteMediaInputFields.tags+'"]').value;
-
-      if (!Array.isArray(tagsArray)) {
-        var tag = tagsArray;
-        var tagsArray = [];
-
-        if (tag) {
-          tagsArray.push(tag);
-        }
-      }
-
-      tagsArray.forEach(tag => {
+      this.selectedImage.tags.forEach(tag => {
         data.append('tags[]', tag);
       });
 
