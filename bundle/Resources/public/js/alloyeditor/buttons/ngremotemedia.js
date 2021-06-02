@@ -21,9 +21,7 @@ export default class BtnNgRemoteMedia extends EzButton {
         onClick={this.InsertMedia.bind(this)}
         tabIndex={this.props.tabIndex}
         title={title}>
-        <svg className="ez-icon ez-btn-ae__icon">
-          <use xlinkHref="/bundles/ezplatformadminui/img/ez-icons.svg#file-video" />
-        </svg>
+        <img src="/bundles/netgenremotemedia/img/cloud-upload-alt.svg" className="ez-icon ez-btn-ae__icon"/>
       </button>
     );
   }
