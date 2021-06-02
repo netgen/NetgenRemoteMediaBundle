@@ -74,6 +74,9 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
 
         if (\in_array('EzPlatformRichTextBundle', $activatedBundles, true)) {
             $configs['ezadminui/ezrichtext.yml'] = 'ezrichtext';
+
+            $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+            $loader->load('ezadminui/custom_tags.yml');
         }
 
         foreach ($configs as $fileName => $extensionName) {
