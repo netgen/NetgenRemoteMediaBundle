@@ -192,13 +192,6 @@
   }
 }
 
-.o2k7Skin .mceIcon.mce_ngremotemedia {
-    text-align: center;
-    line-height: 20px;
-    font-size: 1.25em;
-}
-
-.o2k7Skin .mceIcon.mce_ngremotemedia:before{
-    color: #3448C5;
-    content: '\f0c2';
+.o2k7Skin .mceIcon.mce_ngremotemedia img {
+    width: 2rem;
 }
