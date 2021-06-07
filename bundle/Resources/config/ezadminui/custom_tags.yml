@@ -1,0 +1,30 @@
+ezpublish:
+    system:
+        default:
+            fieldtypes:
+                ezrichtext:
+                    custom_tags: [ngremotemedia]
+
+ezrichtext:
+    custom_tags:
+        ngremotemedia:
+            template: '@NetgenRemoteMedia/ezadminui/field_type/ezrichtext/custom_tag/ngremotemedia.html.twig'
+            attributes:
+                resourceId:
+                    type: string
+                    required: true
+                resourceType:
+                    type: string
+                    required: true
+                coords:
+                    type: string
+                    required: false
+                variation:
+                    type: string
+                    required: false
+                caption:
+                    type: string
+                    required: false
+                cssclass:
+                    type: string
+                    required: false

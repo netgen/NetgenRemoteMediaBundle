@@ -1,6 +1,4 @@
-{symfony_include('@NetgenRemoteMedia/ezadminui/js_config.html.twig', hash(
-    'content_type_identifier', $object.class_identifier
-))}
+{symfony_include('@NetgenRemoteMedia/ezadminui/js_config.html.twig')}
 
 {foreach $content_attributes_grouped_data_map as $attribute_group => $content_attributes_grouped}
     {foreach $content_attributes_grouped as $attribute_identifier => $attribute}

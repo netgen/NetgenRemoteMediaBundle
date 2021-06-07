@@ -1,0 +1,8 @@
+ezrichtext.custom_tags.ngremotemedia.label: Netgen Remote Media
+ezrichtext.custom_tags.ngremotemedia.description: ''
+ezrichtext.custom_tags.ngremotemedia.attributes.resourceId.label: Ressurs-ID
+ezrichtext.custom_tags.ngremotemedia.attributes.resourceType.label: Ressurstype
+ezrichtext.custom_tags.ngremotemedia.attributes.coords.label: Bildevariasjoner
+ezrichtext.custom_tags.ngremotemedia.attributes.variation.label: Valgt variasjon
+ezrichtext.custom_tags.ngremotemedia.attributes.caption.label: Bildetekst
+ezrichtext.custom_tags.ngremotemedia.attributes.cssclass.label: CSS-klasse

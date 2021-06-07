@@ -352,7 +352,7 @@ class CloudinaryProvider extends RemoteMediaProvider
     public function generateDownloadLink(Value $value): string
     {
         $options = [
-            'type' => $value->metaData['type'],
+            'type' => $value->type,
             'resource_type' => $value->resourceType,
             'flags' => 'attachment',
         ];

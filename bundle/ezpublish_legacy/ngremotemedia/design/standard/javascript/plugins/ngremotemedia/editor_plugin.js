@@ -31,6 +31,7 @@
         // Add a button that opens a modal
         editor.addButton("ngremotemedia", {
             title: "Insert remote media",
+            image: "/bundles/netgenremotemedia/img/cloud-upload-alt.svg",
             onclick() {
                 let attributeType = tinymce.activeEditor.selection.getNode().getAttribute('type');
                 let attributeString = tinymce.activeEditor.selection.getNode().getAttribute('customattributes');
