@@ -86,7 +86,7 @@ class RemoteMediaFieldType extends AbstractType
 
             $form->add('tags', ChoiceType::class, array(
                 'multiple' => true,
-                'choices' => array_key_exists('tags', $data) ? $data['tags'] : [],
+                'choices' => $data['tags'] ?? [],
                 'choice_attr' => static function () {
                     return ['v-for' => 'tag in allTags', ':value' => 'tag'];
                 },

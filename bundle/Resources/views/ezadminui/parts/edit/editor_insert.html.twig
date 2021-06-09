@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RemoteMediaSelectedImage_{{ field_id }} = {
+    NgRemoteMediaSelectedImage_{{ field_id }} = {
         id: "",
         name: "",
         type: "image",
@@ -16,7 +16,7 @@
         width: 0,
     };
 
-    RemoteMediaInputFields_{{ field_id }} = {
+    NgRemoteMediaInputFields_{{ field_id }} = {
         'alt_text': 'alt_text_{{ field_id }}',
         'image_variations': 'image_variations_{{ field_id }}',
         'media_type': 'media_type_{{ field_id }}',
@@ -24,6 +24,12 @@
         'resource_id': 'resource_id_{{ field_id }}',
         'tags': 'tags_{{ field_id }}[]',
     };
+
+    {% set available_variations = ngrm_available_variations('embedded', true) %}
+    {% set available_editor_variations = ngrm_available_variations('embedded') %}
+
+    NgRemoteMediaAvailableVariations_{{ field_id }} = {{ available_variations|scaling_format|json_encode|raw }};
+    NgRemoteMediaAvailableEditorVariations_{{ field_id }} = {{ available_editor_variations|keys|json_encode|raw }};
 </script>
 
 <div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
@@ -32,7 +38,6 @@
         @close="handleEditorInsertModalClose"
         :loading="editorInsertModalLoading"
         field-id="{{ field_id }}"
-        content-type-identifier="{{ content_type_identifier }}"
         :config="config"
         :selected-image="selectedImage"
         :selected-editor-variation="selectedEditorVariation"

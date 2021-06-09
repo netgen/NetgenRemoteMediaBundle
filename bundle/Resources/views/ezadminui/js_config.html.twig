@@ -85,11 +85,8 @@
         };
     }
 
-    if (typeof RemoteMediaConfig === 'undefined') {
-        {% set available_variations = ngrm_available_variations('embed', true) %}
-        {% set available_editor_variations = ngrm_available_variations('embed') %}
-
-        RemoteMediaConfig = {
+    if (typeof NgRemoteMediaConfig === 'undefined') {
+        NgRemoteMediaConfig = {
             'paths': {
                 'browse': '{{ path('netgen_remote_media_ezadmin_browse') }}',
                 'load_facets': '{{ path('netgen_remote_media_ezadmin_facets_load') }}',
@@ -97,9 +94,7 @@
                 'create_folder': '{{ path('netgen_remote_media_ezadmin_folder_create') }}',
                 'editor_fetch': '{{ path('netgen_remote_media_ezadmin_editor_fetch') }}',
                 'editor_insert': '{{ path('netgen_remote_media_ezadmin_editor_insert') }}',
-            },
-            availableVariations: {{ available_variations|scaling_format|json_encode|raw }},
-            availableEditorVariations: {{ available_editor_variations|keys|json_encode|raw }}
+            }
         };
     }
 </script>

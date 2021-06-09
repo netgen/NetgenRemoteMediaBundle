@@ -7,7 +7,7 @@
 
     <div class="image-meta">
       <input type="hidden"
-         :name="this.$root.$data.RemoteMediaInputFields.media_type"
+         :name="this.$root.$data.NgRemoteMediaInputFields.media_type"
          v-model="selectedImage.type"
       >
 
@@ -19,7 +19,7 @@
         <div class="ngremotemedia-alttext">
           <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_alternate_text}}</span>
           <input type="text"
-               :name="this.$root.$data.RemoteMediaInputFields.alt_text"
+               :name="this.$root.$data.NgRemoteMediaInputFields.alt_text"
                v-model="selectedImage.alternateText"
                class="media-alttext data"
           >
@@ -28,7 +28,7 @@
         <div class="ngremotemedia-tags">
           <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_tags}}</span>
           <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
-          <select hidden v-model="selectedImage.tags" :name="this.$root.$data.RemoteMediaInputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
+          <select hidden v-model="selectedImage.tags" :name="this.$root.$data.NgRemoteMediaInputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
             <option v-for="tag in allTags" :key = "tag">{{tag}}</option>
           </select>
         </div>

@@ -48,14 +48,14 @@ class NgRemoteMediaPreConverter implements Converter
 
             switch ($resource->resourceType) {
                 case 'video':
-                    $videoTag = $this->remoteMediaProvider->generateVideoTag($resource, 'embed', $variation);
+                    $videoTag = $this->remoteMediaProvider->generateVideoTag($resource, 'embedded', $variation);
                     $src = $this->remoteMediaProvider->getVideoThumbnail($resource);
                     break;
                 case 'image':
                     $src = $resource->secure_url;
 
                     if ($variation !== '') {
-                        $variation = $this->remoteMediaProvider->buildVariation($resource, 'embed', $variation);
+                        $variation = $this->remoteMediaProvider->buildVariation($resource, 'embedded', $variation);
                         $src = $variation->url;
                     }
 

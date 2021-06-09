@@ -53,23 +53,21 @@ final class InsertController
         $updatedValue = $this->updateFieldHelper->updateValue($oldValue, $adminInputValue);
 
         $selectedVariation = $request->request->get('variation');
-        $contentTypeIdentifier = $request->request->get('content_type_identifier');
 
         $variation = null;
-        if ($selectedVariation && $contentTypeIdentifier && $updatedValue->mediaType === Value::TYPE_IMAGE) {
-            $variation = $this->remoteMediaProvider->buildVariation($updatedValue, $contentTypeIdentifier, $selectedVariation);
+        if ($selectedVariation && $updatedValue->mediaType === Value::TYPE_IMAGE) {
+            $variation = $this->remoteMediaProvider->buildVariation($updatedValue, 'embedded', $selectedVariation);
         }
 
         $thumbnailUrl = null;
         $videoTag = null;
         if ($updatedValue->resourceType === 'video') {
             $thumbnailUrl = $this->remoteMediaProvider->getVideoThumbnail($updatedValue);
-            $videoTag = $this->remoteMediaProvider->generateVideoTag($updatedValue, $contentTypeIdentifier, $selectedVariation);
+            $videoTag = $this->remoteMediaProvider->generateVideoTag($updatedValue, 'embedded', $selectedVariation);
         }
 
         $data = $this->remoteMediaHelper->formatBrowseItem($updatedValue);
         $data['selected_variation'] = $selectedVariation;
-        $data['content_type_identifier'] = $contentTypeIdentifier;
         $data['variation_url'] = $variation->url ?? null;
         $data['image_variations'] = $adminInputValue->getVariations();
         $data['thumbnail_url'] = $thumbnailUrl;

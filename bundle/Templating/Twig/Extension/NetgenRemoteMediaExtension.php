@@ -169,7 +169,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      */
     public function getRemoteImageVariationEmbed(Value $value, $format, $secure = true)
     {
-        return $this->provider->buildVariation($value, 'embed', $format, $secure);
+        return $this->provider->buildVariation($value, 'embedded', $format, $secure);
     }
 
     /**
@@ -198,7 +198,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
      */
     public function getRemoteVideoTagEmbed(Value $value, $format = '')
     {
-        return $this->provider->generateVideoTag($value, 'embed', $format);
+        return $this->provider->generateVideoTag($value, 'embedded', $format);
     }
 
     /**

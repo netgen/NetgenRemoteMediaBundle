@@ -12,7 +12,7 @@
         <label :for="'selected_variation_'+fieldId">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_label}}</label>
         <v-select
           :id="'selected_variation_'+fieldId"
-          :options="config.availableEditorVariations"
+          :options="this.$root.$data.NgRemoteMediaAvailableEditorVariations"
           v-model="selectedEditorVariation"
           :placeholder="this.$root.$data.NgRemoteMediaTranslations.editor_insert_variations_original_image"
         />
@@ -57,7 +57,7 @@ import axios from "axios";
 
 export default {
   name: "EditorInsertModal",
-  props: ["loading", "fieldId", "contentTypeIdentifier", "config", "selectedImage", "selectedEditorVariation", "caption", "cssClass"],
+  props: ["loading", "fieldId", "config", "selectedImage", "selectedEditorVariation", "caption", "cssClass"],
   components: {
     'modal': Modal,
     'interactions': Interactions,
@@ -71,9 +71,8 @@ export default {
       data.append('resource_id', this.selectedImage.id);
       data.append('media_type', this.selectedImage.type);
       data.append('alt_text', this.selectedImage.alternateText);
-      data.append('new_file', document.querySelector('input[name="'+this.$root.$data.RemoteMediaInputFields.new_file+'"]').files[0]);
+      data.append('new_file', document.querySelector('input[name="'+this.$root.$data.NgRemoteMediaInputFields.new_file+'"]').files[0]);
       data.append('image_variations', JSON.stringify(this.selectedImage.variations));
-      data.append('content_type_identifier', this.contentTypeIdentifier);
       data.append('variation', this.selectedEditorVariation);
 
       this.selectedImage.tags.forEach(tag => {

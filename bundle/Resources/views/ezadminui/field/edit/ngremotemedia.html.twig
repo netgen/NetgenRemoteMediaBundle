@@ -6,8 +6,10 @@
         {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
     {% endfor %}
 
+    {% set content_type_identifier = app.request.attributes.get('contentType').identifier|default(null) %}
+
     {% include '@NetgenRemoteMedia/ezadminui/parts/edit/ngrm_field.html.twig' with {
-        'content_type_identifier': null,
+        'content_type_identifier': content_type_identifier,
         'field_id': field.id,
         'field_value': field.value,
         'input_fields': input_fields,

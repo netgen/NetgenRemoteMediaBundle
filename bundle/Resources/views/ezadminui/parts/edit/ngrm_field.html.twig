@@ -1,15 +1,15 @@
 {% include '@NetgenRemoteMedia/ezadminui/js_config.html.twig' %}
 
 <script type="text/javascript">
-    RemoteMediaSelectedImage_{{ field_id }} = {
+    NgRemoteMediaSelectedImage_{{ field_id }} = {
         url: "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
         type: "{% if field_value %}{{ field_value.resourceType|default('image') }}{% else %}image{% endif %}",
         {% if not field_value or field_value.mediaType == 'image' %}
             mediaType: "image",
-            previewUrl: "{{ field_value.secure_url }}",
+            previewUrl: "{% if field_value %}{{ field_value }}{% endif %}",
         {% elseif field_value.mediaType == 'video' %}
             mediaType: "video",
-            previewUrl: "{{ netgen_remote_video_thumbnail(field_value) }}"",
+            previewUrl: "{{ netgen_remote_video_thumbnail(field_value) }}",
         {% else %}
             mediaType: "other",
             previewUrl: "",
@@ -25,11 +25,17 @@
         height: {% if field_value %}{{ field_value.metaData.height|default(0) }}{% else %}0{% endif %}
     };
 
-    RemoteMediaInputFields_{{ field_id }} = {
+    NgRemoteMediaInputFields_{{ field_id }} = {
         {% for name, full_name in input_fields %}
             '{{ name }}': '{{ full_name }}'{% if not loop.last %},{% endif %}
         {% endfor %}
     };
+
+    {% set available_variations = ngrm_available_variations(content_type_identifier, true) %}
+    {% set available_editor_variations = ngrm_available_variations(content_type_identifier) %}
+
+    NgRemoteMediaAvailableVariations_{{ field_id }} = {{ available_variations|scaling_format|json_encode|raw }};
+    NgRemoteMediaAvailableEditorVariations_{{ field_id }} = {{ available_editor_variations|keys|json_encode|raw }};
 </script>
 
 <div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
