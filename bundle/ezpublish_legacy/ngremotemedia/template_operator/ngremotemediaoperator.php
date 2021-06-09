@@ -21,7 +21,6 @@ class NgRemoteMediaOperator
             'ng_image_variations',
             'scaling_format',
             'list_format',
-            'get_content_type_identifier'
         );
     }
 
@@ -122,7 +121,6 @@ class NgRemoteMediaOperator
                     'default' => ''
                 )
             ),
-            'get_content_type_identifier' => array(),
         );
     }
 
@@ -162,8 +160,6 @@ class NgRemoteMediaOperator
             $operatorValue = $this->formatAliasForScaling($namedParameters['formats']);
         } elseif ($operatorName === 'list_format') {
             $operatorValue = $this->formatAliasForList($namedParameters['formats']);
-        } elseif ($operatorName === 'get_content_type_identifier') {
-            $operatorValue = $this->getContentTypeIdentifier();
         }
     }
 
@@ -246,26 +242,5 @@ class NgRemoteMediaOperator
         $provider = $container->get( 'netgen_remote_media.provider' );
 
         return $provider->generateVideoTag($value, $format, $availableFormats);
-    }
-
-    function getContentTypeIdentifier()
-    {
-        $container = ezpKernel::instance()->getServiceContainer();
-        $requestStack = $container->get('request_stack');
-        $contentService = $container->get('ezpublish.api.service.content');
-        $contentTypeService = $container->get('ezpublish.api.service.content_type');
-
-        $contentId = $requestStack->getCurrentRequest()->attributes->get('contentId');
-        $contentTypeIdentifier = null;
-
-        if ($contentId !== null && $contentId !== '') {
-            try {
-                $content = $contentService->loadContent($contentId);
-                $contentType = $contentTypeService->loadContentType($content->contentInfo->contentTypeId);
-                $contentTypeIdentifier = $contentType->identifier;
-            } catch (NotFoundException $e) {}
-        }
-
-        return $contentTypeIdentifier;
     }
 }
