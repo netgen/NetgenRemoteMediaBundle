@@ -19,7 +19,7 @@
       </div>
 
       <div class="form-field">
-        <label :for="'caption_'+fieldId">Caption</label>
+        <label :for="'caption_'+fieldId">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_caption_label}}</label>
         <input type="text"
            :id="'caption_'+fieldId"
            name="Caption"
@@ -29,7 +29,7 @@
       </div>
 
       <div class="form-field">
-        <label :for="'css_class_'+fieldId">CSS class</label>
+        <label :for="'css_class_'+fieldId">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_css_class_label}}</label>
         <input type="text"
            :id="'css_class_'+fieldId"
            name="Caption"

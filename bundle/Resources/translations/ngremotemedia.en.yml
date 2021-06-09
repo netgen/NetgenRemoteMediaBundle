@@ -69,6 +69,10 @@ ngrm:
                     new_folder: 'New folder name'
             editor_insert:
                 title: 'Insert remote media'
+                caption:
+                    label: 'Caption'
+                css_class:
+                    label: 'CSS class'
                 variations:
                     label: 'Variation to insert'
                     original_image: 'Original image'
