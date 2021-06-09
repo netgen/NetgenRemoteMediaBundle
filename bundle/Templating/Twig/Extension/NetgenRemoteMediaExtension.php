@@ -11,11 +11,11 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
-use Twig_Extension;
-use Twig_SimpleFunction;
-use Twig_Filter;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
-class NetgenRemoteMediaExtension extends Twig_Extension
+class NetgenRemoteMediaExtension extends AbstractExtension
 {
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
@@ -62,7 +62,7 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getFilters()
     {
         return [
-            new Twig_Filter(
+            new TwigFilter(
                 'scaling_format',
                 [$this, 'scalingFormat']
             ),
@@ -77,43 +77,43 @@ class NetgenRemoteMediaExtension extends Twig_Extension
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_variation',
                 [$this, 'getRemoteImageVariation']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_variation_embed',
                 [$this, 'getRemoteImageVariationEmbed']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_video',
                 [$this, 'getRemoteVideoTag']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_video_embed',
                 [$this, 'getRemoteVideoTagEmbed']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_video_thumbnail',
                 [$this, 'getVideoThumbnail']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_download',
                 [$this, 'getResourceDownloadLink']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_media',
                 [$this, 'getRemoteResource']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'netgen_remote_media_embed',
                 [$this, 'getRemoteResourceEmbed']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'ngrm_is_croppable',
                 [$this, 'contentTypeIsCroppable']
             ),
-            new Twig_SimpleFunction(
+            new TwigFunction(
                 'ngrm_available_variations',
                 [$this, 'variationsForContent']
             ),

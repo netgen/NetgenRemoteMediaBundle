@@ -13,7 +13,6 @@ use Exception;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
-use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
