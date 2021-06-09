@@ -143,7 +143,7 @@ export default {
     margin-left: 10px;
   }
 
-  .icon-floppy {
+  .ngrm-icon-floppy {
     margin-right: 5px;
   }
 }

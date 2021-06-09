@@ -4,7 +4,7 @@
       <div class="title">
         {{title}}
         <span @click="close" class="close">
-          <span class="icon-cancel"></span>
+          <span class="ngrm-icon-cancel"></span>
         </span>
       </div>
       <div class="body">

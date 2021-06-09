@@ -2,7 +2,7 @@
   <div class="mediaGalery">
     <div :class="loading ? 'items loading' : 'items'">
       <div v-if="!media.length" class="folder-empty">
-        <span class="icon-folder"></span>
+        <span class="ngrm-icon-folder"></span>
         <span><strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_empty_folder }}</strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_upload_media }}</span>
       </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
@@ -170,7 +170,7 @@ export default {
       font-size: 14px;
       line-height: 16px;
 
-      &.icon-folder {
+      &.ngrm-icon-folder {
         color: $dusty-gray;
         font-size: 33px;
       }

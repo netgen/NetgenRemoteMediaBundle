@@ -285,7 +285,7 @@ export default {
       font-size: 14px;
       line-height: 16px;
 
-      &.icon-folder {
+      &.ngrm-icon-folder {
         color: $dusty-gray;
         font-size: 33px;
       }

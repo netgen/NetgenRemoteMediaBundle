@@ -9,38 +9,38 @@
   font-weight: normal;
   font-style: normal;
 }
- 
- [class^="icon-"]:before, [class*=" icon-"]:before {
+
+ [class^="ngrm-icon-"]:before, [class*=" ngrm-icon-"]:before {
   font-family: "fa-ngrm";
   font-style: normal;
   font-weight: normal;
   speak: none;
- 
+
   display: inline-block;
   text-decoration: inherit;
   width: 1em;
   margin-right: .2em;
   text-align: center;
- 
+
   /* For safety - reset parent styles, that can break glyph codes*/
   font-variant: normal;
   text-transform: none;
- 
+
   /* fix buttons height, for twitter bootstrap */
   line-height: 1em;
- 
+
   margin-left: .2em;
 
   /* Font smoothing. That was taken from TWBS */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
- 
-.icon-cancel:before { content: '\e800'; } /* '' */
-.icon-floppy:before { content: '\e801'; } /* '' */
-.icon-ok:before { content: '\e802'; } /* '' */
-.icon-ccw:before { content: '\e803'; } /* '' */
-.icon-folder:before { content: '\e804'; } /* '' */
-.icon-upload:before { content: '\e805'; } /* '' */
-.icon-play:before { content: '\e811'; } /* '' */
-.icon-trash:before { content: '\f1f8'; } /* '' */
+
+.ngrm-icon-cancel:before { content: '\e800'; } /* '' */
+.ngrm-icon-floppy:before { content: '\e801'; } /* '' */
+.ngrm-icon-ok:before { content: '\e802'; } /* '' */
+.ngrm-icon-ccw:before { content: '\e803'; } /* '' */
+.ngrm-icon-folder:before { content: '\e804'; } /* '' */
+.ngrm-icon-upload:before { content: '\e805'; } /* '' */
+.ngrm-icon-play:before { content: '\e811'; } /* '' */
+.ngrm-icon-trash:before { content: '\f1f8'; } /* '' */

@@ -34,7 +34,7 @@
           </div>
           <a v-if="!addingVariations" href="#">
             <span class="circle-orange"></span>
-            <span class="icon-trash" @click="removeItem(name)"></span>
+            <span class="ngrm-icon-trash" @click="removeItem(name)"></span>
           </a>
         </li>
       </ul>
@@ -255,7 +255,7 @@ export default {
           padding: 5px;
         }
 
-        .icon-trash {
+        .ngrm-icon-trash {
           color: $netgen-primary;
           padding: 10px;
         }

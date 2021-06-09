@@ -4,11 +4,11 @@
       <img :src="src" ref="image" />
       <div class="buttons" ref="buttons" :style="applyButtonStyle">
         <button type="button" class="btn btn-blue" @click="handleReset">
-          <span class="icon-ccw"></span>
+          <span class="ngrm-icon-ccw"></span>
           <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_reset }}</span>
         </button>
         <button type="button" class="btn btn-blue" @click="handleApply">
-          <span class="icon-ok"></span>
+          <span class="ngrm-icon-ok"></span>
           <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_apply }}</span>
         </button>
       </div>

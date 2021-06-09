@@ -25,7 +25,7 @@
     <div class="action-strip">
       <button type="button" class="btn" @click="handleCancelClicked">{{ this.$root.$data.NgRemoteMediaTranslations.crop_cancel }}</button>
       <button type="button" class="btn btn-blue" @click="handleSaveClicked">
-        <span class="icon-floppy"></span>
+        <span class="ngrm-icon-floppy"></span>
         <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_save_sizes }}</span>
       </button>
     </div>
@@ -147,7 +147,7 @@ export default {
     margin-left: 10px;
   }
 
-  .icon-floppy {
+  .ngrm-icon-floppy {
     margin-right: 5px;
   }
 }
