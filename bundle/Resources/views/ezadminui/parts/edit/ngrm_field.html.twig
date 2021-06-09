@@ -38,7 +38,7 @@
     NgRemoteMediaAvailableEditorVariations_{{ field_id }} = {{ available_editor_variations|keys|json_encode|raw }};
 </script>
 
-<div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
+<div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="NgRemoteMediaSelectedImage" v-init:config="NgRemoteMediaConfig">
     <interactions
         field-id="{{ field_id }}"
         :config="config"

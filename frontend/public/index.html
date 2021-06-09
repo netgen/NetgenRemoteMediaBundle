@@ -75,7 +75,7 @@
                                             'prev': '&lt; Previous 25'
                                         };
 
-                                        RemoteMediaSelectedImage_23 = {
+                                        NgRemoteMediaSelectedImage_23 = {
                                             url: 'https://res-5.cloudinary.com/marko-ab-i/image/upload/c_limit,h_600,w_600/Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
                                             type: "image",
                                             name: 'Time_to_celebrate_Kverneland_Group_s_140_years_anniversary_png_g5h1cnw6el',
@@ -97,7 +97,7 @@
                                             height: 120
                                         }
 
-                                        RemoteMediaConfig = {
+                                        NgRemoteMediaConfig = {
                                             paths: {"browse":"/ngadminui/ngremotemedia/browse","folders":"/ngadminui/ngremotemedia/folders"},
                                             availableVariations: {"full":[500,300],"mobile":[500,500],"fixed_height":[0,500],"fixed_width":[500,0]}
                                         }
@@ -105,7 +105,7 @@
 
                                     <div class="ngremotemedia-type" data-user-id="14" data-id="23">
 
-                                        <div class="ngremotemedia-image" v-init:selected-image="RemoteMediaSelectedImage" v-init:config="RemoteMediaConfig">
+                                        <div class="ngremotemedia-image" v-init:selected-image="NgRemoteMediaSelectedImage" v-init:config="NgRemoteMediaConfig">
                                             <div class="image-wrap">
                                                 <img v-if="selectedImage.type==='image'" :src="selectedImage.url" ref="image"/>
                                                 <i v-else="selectedImage.type!=='image'" :class="nonImagePreviewClass" class="ng-icon big"></i>
