@@ -195,14 +195,10 @@ class RefreshEzFieldsCommand extends Command
             $chunkCount++;
         } while (count($attributes) > 0);
 
-        $this->output->writeln(PHP_EOL . PHP_EOL . 'The script is done. Here are the missing variations that have to be added in content types:');
+        $this->output->writeln(PHP_EOL . PHP_EOL . 'The script is done. Here are the missing variations that have to be added in the "embedded" group:');
 
-        foreach ($this->missingVariations as $contentTypeIdentifier => $variations) {
-            $this->output->writeln(PHP_EOL . $contentTypeIdentifier);
-
-            foreach ($variations as $variation) {
-                $this->output->writeln(' - ' . $variation);
-            }
+        foreach ($this->missingVariations as $variation) {
+            $this->output->writeln(' - ' . $variation);
         }
 
         return 0;
@@ -324,7 +320,7 @@ class RefreshEzFieldsCommand extends Command
 
             if ($resourceType !== null && array_key_exists($resourceType, $resources)) {
                 $resource = $resources[$resourceType];
-                $this->updateEzXmlTextCustomTag($tag, $resource, $attribute['content_type_identifier']);
+                $this->updateEzXmlTextCustomTag($tag, $resource);
                 $this->output->writeln(sprintf('   -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and NGRM tag in eZ XML field has been updated', $resource->resourceType, $resource->resourceId));
 
                 continue;
@@ -332,7 +328,7 @@ class RefreshEzFieldsCommand extends Command
 
             if ($resourceType === null && count($resources) === 1) {
                 $resource = array_pop($resources);
-                $this->updateEzXmlTextCustomTag($tag, $resource, $attribute['content_type_identifier']);
+                $this->updateEzXmlTextCustomTag($tag, $resource);
                 $this->output->writeln(sprintf('   -> <info>SUCCESS</info> remote resource of type \'%s\' with resourceId \'%s\' has been found and NGRM tag in eZ XML field has been updated', $resource->resourceType, $resource->resourceId));
 
                 continue;
@@ -346,7 +342,7 @@ class RefreshEzFieldsCommand extends Command
 
             if ($this->force === true) {
                 $resource = array_pop($resources);
-                $this->updateEzXmlTextCustomTag($tag, $resource, $attribute['content_type_identifier']);
+                $this->updateEzXmlTextCustomTag($tag, $resource);
                 $this->output->writeln(sprintf('   -> <info>FORCED SUCCESS</info> NGRM tag in eZ XML has been updated with the first found resource of type \'%s\' with resourceId \'%s\'', $resource->resourceType, $resource->resourceId));
 
                 continue;
@@ -474,7 +470,7 @@ class RefreshEzFieldsCommand extends Command
         ];
     }
 
-    private function updateEzXmlTextCustomTag(DOMElement &$tag, Value $value, string $contentTypeIdentifier)
+    private function updateEzXmlTextCustomTag(DOMElement &$tag, Value $value)
     {
         $imageVariations = $this->extractAttribute($tag, 'coords');
         $variation = $this->extractAttribute($tag, 'variation');
@@ -487,17 +483,13 @@ class RefreshEzFieldsCommand extends Command
         }
 
         if ($variation !== null) {
-            if (!array_key_exists($contentTypeIdentifier, $this->availableVariations)) {
-                $this->availableVariations[$contentTypeIdentifier] = $this->variationResolver->getVariationsForContentType($contentTypeIdentifier);
+            if (count($this->availableVariations) === 0) {
+                $this->availableVariations = $this->variationResolver->getEmbedVariations();
             }
 
-            if (!array_key_exists($variation, $this->availableVariations[$contentTypeIdentifier])) {
-                if (!array_key_exists($contentTypeIdentifier, $this->missingVariations)) {
-                    $this->missingVariations[$contentTypeIdentifier] = [];
-                }
-
-                if (!in_array($variation, $this->missingVariations[$contentTypeIdentifier])) {
-                    $this->missingVariations[$contentTypeIdentifier][] = $variation;
+            if (!array_key_exists($variation, $this->availableVariations)) {
+                if (!in_array($variation, $this->missingVariations)) {
+                    $this->missingVariations[] = $variation;
                 }
             }
         }
@@ -511,9 +503,9 @@ class RefreshEzFieldsCommand extends Command
 
         switch ($value->resourceType) {
             case 'image':
-                if ($variation !== null && array_key_exists($variation, $this->availableVariations[$contentTypeIdentifier])) {
+                if ($variation !== null && array_key_exists($variation, $this->availableVariations)) {
                     $value->variations = json_decode($imageVariations, true);
-                    $imageUrl = $this->provider->buildVariation($value, $contentTypeIdentifier, $variation)->url;
+                    $imageUrl = $this->provider->buildVariation($value, 'embedded', $variation)->url;
 
                     break;
                 }
@@ -600,7 +592,7 @@ class RefreshEzFieldsCommand extends Command
     private function loadAttributes(int $limit, int $offset): array
     {
         $sql = "SELECT DISTINCT
-                coa.id, coa.version, coa.data_text, coa.data_type_string, coa.contentobject_id, cl.identifier AS content_type_identifier
+                coa.id, coa.version, coa.data_text, coa.data_type_string, coa.contentobject_id
                 FROM ezcontentobject_attribute coa
                 JOIN ezcontentobject co on coa.contentobject_id = co.id
                 JOIN ezcontentclass cl on co.contentclass_id  = cl.id
