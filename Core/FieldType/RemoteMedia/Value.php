@@ -46,6 +46,12 @@ class Value extends BaseValue
      */
     public static function createFromCloudinaryResponse(array $response)
     {
+        $altText = !empty($response['context']['custom']['alt_text']) ? $response['context']['custom']['alt_text'] : '';
+
+        if ($altText === '') {
+            $altText = !empty($response['context']['alt_text']) ? $response['context']['alt_text'] : '';
+        }
+
         $metaData = array(
             'version' => !empty($response['version']) ? $response['version'] : '',
             'width' => !empty($response['width']) ? $response['width'] : '',
@@ -58,7 +64,7 @@ class Value extends BaseValue
             'type' => !empty($response['type']) ? $response['type'] : '',
             'etag' => !empty($response['etag']) ? $response['etag'] : '',
             'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
-            'alt_text' => !empty($response['context']['custom']['alt']) ? $response['context']['custom']['alt'] : '',
+            'alt_text' => $altText,
             'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
         );
 
