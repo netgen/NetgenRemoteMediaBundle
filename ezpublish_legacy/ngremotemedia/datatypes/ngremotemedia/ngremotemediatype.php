@@ -80,7 +80,7 @@ class NgRemoteMediaType extends eZDataType
                 $updatedValue->resourceId,
                 $value->metaData['resource_type'],
                 [
-                    'alt' => $data['alttext']
+                    'alt_text' => $data['alttext']
                 ]
             );
             $updatedValue->metaData['alt_text'] = $data['alttext'];
