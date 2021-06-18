@@ -10,6 +10,7 @@ use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedExcepti
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Cloudinary\Api\NotFound;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
@@ -321,7 +322,11 @@ class CloudinaryProvider extends RemoteMediaProvider
             return new Value();
         }
 
-        $response = $this->gateway->get($resourceId, $resourceType);
+        try {
+            $response = $this->gateway->get($resourceId, $resourceType);
+        } catch (NotFound $e) {
+            return new Value();
+        }
 
         if (empty($response)) {
             return new Value();
