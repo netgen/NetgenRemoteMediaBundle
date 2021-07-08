@@ -51,6 +51,9 @@ abstract class RemoteMediaProvider
     abstract public function supportsFolders();
 
     /**
+     * @deprecated this method will have a different signature in 2.0
+     * @see \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider::uploadWithExtension
+     *
      * Uploads the local resource to remote storage and builds the Value from the response.
      *
      * @param string $fileUri
@@ -60,6 +63,16 @@ abstract class RemoteMediaProvider
      * @return Value
      */
     abstract public function upload($fileUri, $fileName, $options = array());
+
+    /**
+     * Uploads the local resource to remote storage and builds the Value from the response.
+     *
+     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile $uploadFile
+     * @param array $options
+     *
+     * @return mixed
+     */
+    abstract public function uploadWithExtension(UploadFile $uploadFile, $options = array());
 
     /**
      * Gets the remote media Variation.
