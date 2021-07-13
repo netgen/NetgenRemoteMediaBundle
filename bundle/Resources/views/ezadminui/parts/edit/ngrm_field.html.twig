@@ -6,7 +6,7 @@
         type: "{% if field_value %}{{ field_value.resourceType|default('image') }}{% else %}image{% endif %}",
         {% if not field_value or field_value.mediaType == 'image' %}
             mediaType: "image",
-            previewUrl: "{% if field_value %}{{ field_value }}{% endif %}",
+            previewUrl: "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
         {% elseif field_value.mediaType == 'video' %}
             mediaType: "video",
             previewUrl: "{{ netgen_remote_video_thumbnail(field_value) }}",
