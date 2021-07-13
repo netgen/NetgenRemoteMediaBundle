@@ -454,12 +454,18 @@ class RefreshEzFieldsCommand extends Command
         return json_last_error() === JSON_ERROR_NONE;
     }
 
-    private function convertCoords(string $coords): array
+    private function convertCoords(string $coords): ?array
     {
         $parts = explode(',', $coords);
 
         if (count($parts) < 4) {
-            return [];
+            return null;
+        }
+
+        foreach ($parts as $part) {
+            if (!is_numeric($part)) {
+                return null;
+            }
         }
 
         return [
@@ -496,7 +502,11 @@ class RefreshEzFieldsCommand extends Command
 
         if (!$this->isJson($imageVariations) && $imageVariations !== null && $variation !== null) {
             $imageVariationsNew = [];
-            $imageVariationsNew[$variation] = $this->convertCoords($imageVariations);
+            $coords = $this->convertCoords($imageVariations);
+
+            if ($coords !== null) {
+                $imageVariationsNew[$variation] = $coords;
+            }
 
             $imageVariations = json_encode($imageVariationsNew);
         }
