@@ -6,6 +6,9 @@ namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
 use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\EntityManagerInterface;
+use DOMDocument;
+use DOMElement;
+use DOMXPath;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
@@ -14,23 +17,27 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use DOMDocument;
-use DOMXPath;
-use DOMElement;
-
-use function count;
-use function sprintf;
 use function array_key_exists;
 use function array_pop;
 use function array_unique;
-use function json_encode;
+use function count;
+use function explode;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_numeric;
 use function json_decode;
+use function json_encode;
+use function json_last_error;
+use function sprintf;
+use function trim;
+use const JSON_ERROR_NONE;
+use const PHP_EOL;
 
 class RefreshEzFieldsCommand extends Command
 {
-    private const DEFAULT_CHUNK_SIZE = 200;
-
     const CUSTOMTAG_NAMESPACE = 'http://ez.no/namespaces/ezpublish3/custom/';
+    private const DEFAULT_CHUNK_SIZE = 200;
 
     /**
      * @var \Doctrine\ORM\EntityManagerInterface
@@ -105,31 +112,31 @@ class RefreshEzFieldsCommand extends Command
                 'force',
                 'f',
                 InputOption::VALUE_NONE,
-                'This will use the first found resource and empty fields with non-existing resources'
+                'This will use the first found resource and empty fields with non-existing resources',
             )
             ->addOption(
                 'dry-run',
                 'dr',
                 InputOption::VALUE_NONE,
-                'This will only display the actions that will be performed'
+                'This will only display the actions that will be performed',
             )
             ->addOption(
                 'content-ids',
                 'cids',
                 InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-                'List of content IDs to process (default: all)'
+                'List of content IDs to process (default: all)',
             )->addOption(
                 'chunk-size',
                 'cs',
                 InputOption::VALUE_OPTIONAL,
                 'The size of the chunk of attributes to fetch (and size of chunk of resource to get from remote media in one API request)',
-                self::DEFAULT_CHUNK_SIZE
+                self::DEFAULT_CHUNK_SIZE,
             )->addOption(
                 'rate-limit-threshold',
                 'rtt',
                 InputOption::VALUE_OPTIONAL,
                 'Percentage of remaining API rate limit below which the command will exit to prevent crashing the media on frontend (default 50%).',
-                50
+                50,
             );
     }
 
@@ -175,24 +182,27 @@ class RefreshEzFieldsCommand extends Command
                         $attribute['contentobject_id'],
                         $attribute['version'],
                         $count,
-                        $attributesCount
-                    )
+                        $attributesCount,
+                    ),
                 );
 
                 switch ($attribute['data_type_string']) {
                     case 'ngremotemedia':
                         $this->processNgrmAttribute($attribute);
+
                         break;
+
                     case 'ezxmltext':
                         $this->processEzXmlTextAttribute($attribute);
-                        breaK;
+
+                        break;
                 }
 
-                $count++;
+                ++$count;
             }
 
             $offset += $limit;
-            $chunkCount++;
+            ++$chunkCount;
         } while (count($attributes) > 0);
 
         $this->output->writeln(PHP_EOL . PHP_EOL . 'The script is done. Here are the missing variations that have to be added in the "embedded" group:');
@@ -494,7 +504,7 @@ class RefreshEzFieldsCommand extends Command
             }
 
             if (!array_key_exists($variation, $this->availableVariations)) {
-                if (!in_array($variation, $this->missingVariations)) {
+                if (!in_array($variation, $this->missingVariations, true)) {
                     $this->missingVariations[] = $variation;
                 }
             }
@@ -523,10 +533,12 @@ class RefreshEzFieldsCommand extends Command
                 $imageUrl = $value->secure_url;
 
                 break;
+
             case 'video':
                 $imageUrl = $this->provider->getVideoThumbnail($value);
 
                 break;
+
             default:
                 $imageUrl = '';
         }
@@ -588,9 +600,9 @@ class RefreshEzFieldsCommand extends Command
 
     private function updateAttribute(array $attribute): void
     {
-        $sql = "UPDATE ezcontentobject_attribute
+        $sql = 'UPDATE ezcontentobject_attribute
                 SET data_text=:data_text
-                WHERE id=:id AND version=:version";
+                WHERE id=:id AND version=:version';
 
         $query = $this->entityManager->getConnection()->prepare($sql);
         $query->bindValue('data_text', $attribute['data_text']);
@@ -610,10 +622,10 @@ class RefreshEzFieldsCommand extends Command
                 OR (coa.data_type_string=:data_type_string_ezxmltext AND coa.data_text LIKE '%custom name=\"ngremotemedia\"%'))";
 
         if (count($this->contentIdsFilter) > 0) {
-            $sql .= " AND coa.contentobject_id IN (".implode(',', $this->contentIdsFilter).")";
+            $sql .= ' AND coa.contentobject_id IN (' . implode(',', $this->contentIdsFilter) . ')';
         }
 
-        $sql .= " LIMIT :offset,:limit";
+        $sql .= ' LIMIT :offset,:limit';
 
         $query = $this->entityManager->getConnection()->prepare($sql);
         $query->bindValue('data_type_string_ngrm', 'ngremotemedia');
@@ -633,7 +645,7 @@ class RefreshEzFieldsCommand extends Command
                 OR (data_type_string=:data_type_string_ezxmltext AND data_text LIKE '%custom name=\"ngremotemedia\"%'))";
 
         if (count($this->contentIdsFilter) > 0) {
-            $sql .= " AND contentobject_id IN (".implode(',', $this->contentIdsFilter).")";
+            $sql .= ' AND contentobject_id IN (' . implode(',', $this->contentIdsFilter) . ')';
         }
 
         $query = $this->entityManager->getConnection()->prepare($sql);
@@ -656,8 +668,8 @@ class RefreshEzFieldsCommand extends Command
         $provider = $this->provider->getIdentifier();
 
         if ($value->resourceId === null) {
-            $sql = "DELETE FROM ngremotemedia_field_link
-                WHERE field_id = :fieldId AND version = :version";
+            $sql = 'DELETE FROM ngremotemedia_field_link
+                WHERE field_id = :fieldId AND version = :version';
 
             $query = $this->entityManager->getConnection()->prepare($sql);
             $query->bindValue('fieldId', $fieldId);
@@ -667,8 +679,8 @@ class RefreshEzFieldsCommand extends Command
             return;
         }
 
-        $sql = "SELECT COUNT(*) as count FROM ngremotemedia_field_link
-                WHERE field_id = :fieldId AND version = :version";
+        $sql = 'SELECT COUNT(*) as count FROM ngremotemedia_field_link
+                WHERE field_id = :fieldId AND version = :version';
 
         $query = $this->entityManager->getConnection()->prepare($sql);
         $query->bindValue('fieldId', $fieldId);
@@ -676,9 +688,9 @@ class RefreshEzFieldsCommand extends Command
         $query->execute();
 
         if ($query->fetch()['count'] > 0) {
-            $sql = "UPDATE ngremotemedia_field_link
+            $sql = 'UPDATE ngremotemedia_field_link
                 SET resource_id = :resourceId, provider = :provider, contentobject_id = :contentId
-                WHERE field_id = :fieldId AND version = :version";
+                WHERE field_id = :fieldId AND version = :version';
 
             $query = $this->entityManager->getConnection()->prepare($sql);
             $query->bindValue('resourceId', $value->resourceId);
@@ -691,8 +703,8 @@ class RefreshEzFieldsCommand extends Command
             return;
         }
 
-        $sql = "INSERT INTO ngremotemedia_field_link (field_id, version, resource_id, provider, contentobject_id)
-                VALUES (:fieldId, :version, :resourceId, :provider, :contentId)";
+        $sql = 'INSERT INTO ngremotemedia_field_link (field_id, version, resource_id, provider, contentobject_id)
+                VALUES (:fieldId, :version, :resourceId, :provider, :contentId)';
 
         $query = $this->entityManager->getConnection()->prepare($sql);
         $query->bindValue('contentId', $contentId);

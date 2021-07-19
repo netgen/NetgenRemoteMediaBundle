@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
-use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use RuntimeException;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
+use function http_build_query;
+use function implode;
+use function str_replace;
+use function trim;
 
 class NextCursorResolver
 {
@@ -48,11 +51,6 @@ class NextCursorResolver
     }
 
     /**
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
-     * @param int $offset
-     *
-     * @return string
-     *
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function resolve(Query $query, int $offset): string
@@ -64,14 +62,10 @@ class NextCursorResolver
             return $cacheItem->get();
         }
 
-        throw new RuntimeException("Can't get cursor key for query: ".(string) $query." with offset: $offset");
+        throw new RuntimeException("Can't get cursor key for query: " . (string) $query . " with offset: {$offset}");
     }
 
     /**
-     * @param \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query $query
-     * @param int $offset
-     * @param string $cursor
-     *
      * @throws \Psr\Cache\InvalidArgumentException
      */
     public function save(Query $query, int $offset, string $cursor): void
@@ -93,11 +87,11 @@ class NextCursorResolver
             $query->getLimit(),
             $query->getFolder(),
             $query->getTag(),
-            \http_build_query($query->getSortBy(), '', ',')
+            http_build_query($query->getSortBy(), '', ','),
         ];
 
         return $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::NEXT_CURSOR, implode('|', $queryVars), $offset])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::NEXT_CURSOR, implode('|', $queryVars), $offset]),
         );
     }
 
@@ -105,7 +99,7 @@ class NextCursorResolver
     {
         $forbiddenCharacters = ['{', '}', '(', ')', '/', '\\', '@'];
         foreach ($forbiddenCharacters as $char) {
-            $key = \str_replace($char, '_', \trim($key, $char));
+            $key = str_replace($char, '_', trim($key, $char));
         }
 
         return $key;

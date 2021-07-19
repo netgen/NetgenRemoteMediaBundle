@@ -13,7 +13,7 @@ class LpadTest extends BaseTest
      */
     protected $lpad;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->lpad = new Lpad();
@@ -21,34 +21,34 @@ class LpadTest extends BaseTest
 
     public function testLpadSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'lpad'],
-            $this->lpad->process($this->value, 'small')
+            $this->lpad->process($this->value, 'small'),
         );
     }
 
     public function testLpadWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'lpad',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->lpad->process($this->value, 'small', [100, 200])
+            $this->lpad->process($this->value, 'small', [100, 200]),
         );
     }
 
     public function testLpadWithDimensionsAndColour()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'lpad',
                 'width' => 100,
                 'height' => 200,
                 'background' => 'red',
             ],
-            $this->lpad->process($this->value, 'small', [100, 200, 'red'])
+            $this->lpad->process($this->value, 'small', [100, 200, 'red']),
         );
     }
 }

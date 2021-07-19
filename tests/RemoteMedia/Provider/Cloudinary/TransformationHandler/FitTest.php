@@ -13,7 +13,7 @@ class FitTest extends BaseTest
      */
     protected $fit;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->fit = new Fit();
@@ -21,21 +21,21 @@ class FitTest extends BaseTest
 
     public function testFitSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'fit'],
-            $this->fit->process($this->value, 'small')
+            $this->fit->process($this->value, 'small'),
         );
     }
 
     public function testFitWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'fit',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->fit->process($this->value, 'small', [100, 200])
+            $this->fit->process($this->value, 'small', [100, 200]),
         );
     }
 }

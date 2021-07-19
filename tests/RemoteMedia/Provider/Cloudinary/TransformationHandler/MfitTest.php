@@ -13,7 +13,7 @@ class MfitTest extends BaseTest
      */
     protected $mfit;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->mfit = new Mfit();
@@ -21,21 +21,21 @@ class MfitTest extends BaseTest
 
     public function testMfitSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'mfit'],
-            $this->mfit->process($this->value, 'small')
+            $this->mfit->process($this->value, 'small'),
         );
     }
 
     public function testMfitWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'mfit',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->mfit->process($this->value, 'small', [100, 200])
+            $this->mfit->process($this->value, 'small', [100, 200]),
         );
     }
 }

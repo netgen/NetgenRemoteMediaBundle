@@ -56,7 +56,7 @@ class RemoteMediaStorageTest extends TestCase
      */
     protected $context;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->gateway = $this->createMock(RemoteMediaStorage\Gateway\LegacyStorage::class);
 
@@ -78,7 +78,7 @@ class RemoteMediaStorageTest extends TestCase
 
     public function testSetDeleteUnused()
     {
-        $this->assertNull($this->storage->setDeleteUnused(false));
+        self::assertNull($this->storage->setDeleteUnused(false));
     }
 
     public function testStoreFieldDataWithValue()
@@ -91,22 +91,22 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => $value,
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->remoteMediaProvider->expects($this->once())
+        $this->remoteMediaProvider->expects(self::once())
             ->method('getIdentifier');
 
-        $this->fieldTypeService->expects($this->once())
+        $this->fieldTypeService->expects(self::once())
             ->method('getFieldType')
             ->willReturn(new Type());
 
-        $this->gateway->expects($this->once())
+        $this->gateway->expects(self::once())
             ->method('storeFieldData');
 
-        $this->assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
+        self::assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
     }
 
     public function testStoreFieldDataWithValidArray()
@@ -122,22 +122,22 @@ class RemoteMediaStorageTest extends TestCase
                             'caption' => 'Test caption',
                             'variations' => [],
                         ],
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->remoteMediaProvider->expects($this->once())
+        $this->remoteMediaProvider->expects(self::once())
             ->method('upload')
             ->willReturn(new Value());
 
-        $this->remoteMediaProvider->expects($this->once())
+        $this->remoteMediaProvider->expects(self::once())
             ->method('getIdentifier');
 
-        $this->gateway->expects($this->once())
+        $this->gateway->expects(self::once())
             ->method('storeFieldData');
 
-        $this->assertTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
+        self::assertTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
     }
 
     public function testStoreFieldDataWithEmptyArray()
@@ -148,12 +148,12 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => [],
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
+        self::assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
     }
 
     public function testStoreFieldDataWithInvalidValue()
@@ -164,12 +164,12 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
+        self::assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
     }
 
     public function testGetFieldData()
@@ -180,12 +180,12 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->assertEmpty($this->storage->getFieldData($this->versionInfo, $field, $this->context));
+        self::assertEmpty($this->storage->getFieldData($this->versionInfo, $field, $this->context));
     }
 
     public function testDeleteFieldDataWithDeleteUnused()
@@ -200,9 +200,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $field2 = new ContentField(
@@ -211,9 +211,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $content = new Content(
@@ -222,27 +222,27 @@ class RemoteMediaStorageTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->contentService->expects($this->once())
+        $this->contentService->expects(self::once())
             ->method('loadContent')
             ->willReturn($content);
 
-        $this->gateway->expects($this->once())
+        $this->gateway->expects(self::once())
             ->method('loadFromTable')
             ->willReturn(['some_field']);
 
-        $this->gateway->expects($this->once())
+        $this->gateway->expects(self::once())
             ->method('deleteFieldData');
 
-        $this->gateway->expects($this->once())
+        $this->gateway->expects(self::once())
             ->method('remoteResourceConnected')
             ->willReturn(false);
 
-        $this->remoteMediaProvider->expects($this->once())
+        $this->remoteMediaProvider->expects(self::once())
             ->method('deleteResource');
 
         $this->storage->deleteFieldData($this->versionInfo, $fieldsIds, $this->context);
@@ -260,9 +260,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $field2 = new ContentField(
@@ -271,9 +271,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $content = new Content(
@@ -282,16 +282,16 @@ class RemoteMediaStorageTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->contentService->expects($this->once())
+        $this->contentService->expects(self::once())
             ->method('loadContent')
             ->willReturn($content);
 
-        $this->gateway->expects($this->once())
+        $this->gateway->expects(self::once())
             ->method('deleteFieldData');
 
         $this->storage->deleteFieldData($this->versionInfo, $fieldsIds, $this->context);
@@ -299,7 +299,7 @@ class RemoteMediaStorageTest extends TestCase
 
     public function testHasFieldDataShouldReturnTrue()
     {
-        $this->assertTrue($this->storage->hasFieldData());
+        self::assertTrue($this->storage->hasFieldData());
     }
 
     public function testGetIndexDataShouldReturnFalse()
@@ -312,7 +312,7 @@ class RemoteMediaStorageTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->assertFalse($this->storage->getIndexData($versionInfo, $field, []));
+        self::assertFalse($this->storage->getIndexData($versionInfo, $field, []));
     }
 
     public function testCopyLegacyField()
@@ -325,9 +325,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => $value,
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $originalField = new Field(
@@ -336,15 +336,15 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->fieldTypeService->expects($this->once())
+        $this->fieldTypeService->expects(self::once())
             ->method('getFieldType')
             ->willReturn(new Type());
 
-        $this->assertNotTrue($this->storage->copyLegacyField($this->versionInfo, $field, $originalField, $this->context));
+        self::assertNotTrue($this->storage->copyLegacyField($this->versionInfo, $field, $originalField, $this->context));
     }
 }

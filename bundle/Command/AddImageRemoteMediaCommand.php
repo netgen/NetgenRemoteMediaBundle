@@ -12,6 +12,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function dump;
+use function sprintf;
 
 /**
  * example usage php ezpublish/console netgen:remote:add:data 5230 test_image example.jpg.
@@ -26,37 +28,37 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
             ->addArgument(
                 'content_id',
                 InputArgument::REQUIRED,
-                'Id of the content to edit'
+                'Id of the content to edit',
             )
             ->addArgument(
                 'field_identifier',
                 InputArgument::REQUIRED,
-                'Field identifier to edit'
+                'Field identifier to edit',
             )
             ->addArgument(
                 'image_path',
                 InputArgument::REQUIRED,
-                'Image path, relative to ezpublish folder'
+                'Image path, relative to ezpublish folder',
             )
             ->addOption(
                 'alt_text',
                 'a',
                 InputOption::VALUE_OPTIONAL,
                 'Alternative text for the image',
-                ''
+                '',
             )
             ->addOption(
                 'caption',
                 'c',
                 InputOption::VALUE_OPTIONAL,
                 'Caption for the image',
-                ''
+                '',
             )
             ->addOption(
                 'language',
                 'l',
                 InputOption::VALUE_OPTIONAL,
-                ''
+                '',
             );
     }
 
@@ -96,6 +98,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
         $contentUpdateStruct = $contentService->newContentUpdateStruct();
         $contentUpdateStruct->initialLanguageCode = !empty($language) ? $language : $contentInfo->mainLanguageCode;
         $contentUpdateStruct->setField($fieldIdentifier, $imageInput);
+
         try {
             $content = $repository->sudo(
                 static function (Repository $repository) use ($contentInfo, $contentUpdateStruct) {
@@ -103,7 +106,7 @@ class AddImageRemoteMediaCommand extends ContainerAwareCommand
                     $contentDraft = $repository->getContentService()->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
 
                     return $repository->getContentService()->publishVersion($contentDraft->versionInfo);
-                }
+                },
             );
 
             $repository->commit();

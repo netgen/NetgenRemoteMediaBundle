@@ -11,6 +11,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function array_keys;
+use function dump;
+use function sprintf;
 
 /**
  * Example usage:
@@ -26,24 +29,24 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
             ->addArgument(
                 'content_type_identifier',
                 InputArgument::REQUIRED,
-                'Identifier of the content type to edit'
+                'Identifier of the content type to edit',
             )
             ->addArgument(
                 'field_identifier',
                 InputArgument::REQUIRED,
-                'Field identifier on the content type'
+                'Field identifier on the content type',
             )
             ->addArgument(
                 'field_name',
                 InputArgument::REQUIRED,
-                'Field name'
+                'Field name',
             )
             ->addOption(
                 'field_position',
                 'p',
                 InputOption::VALUE_OPTIONAL,
                 'Position of the field on the content type',
-                0
+                0,
             );
     }
 
@@ -59,7 +62,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $contentTypeService = $repository->getContentTypeService();
         $contentType = $contentTypeService->loadContentTypeByIdentifier($contentTypeIdentifier);
         $contentTypeNames = $contentType->getNames();
-        $languageCodes = \array_keys($contentTypeNames);
+        $languageCodes = array_keys($contentTypeNames);
         $names = [];
         foreach ($languageCodes as $languageCode) {
             $names[$languageCode] = $fieldName;
@@ -68,9 +71,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $repository->beginTransaction();
 
         $contentTypeDraft = $repository->sudo(
-            static function (Repository $repository) use ($contentType) {
-                return $repository->getContentTypeService()->createContentTypeDraft($contentType);
-            }
+            static fn (Repository $repository) => $repository->getContentTypeService()->createContentTypeDraft($contentType),
         );
 
         $fieldDefCreate = $contentTypeService->newFieldDefinitionCreateStruct($fieldDefIdentifier, 'ngremotemedia');
@@ -83,7 +84,7 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
                     $repository->getContentTypeService()->addFieldDefinition($contentTypeDraft, $fieldDefCreate);
 
                     return $repository->getContentTypeService()->publishContentTypeDraft($contentTypeDraft);
-                }
+                },
             );
 
             $repository->commit();

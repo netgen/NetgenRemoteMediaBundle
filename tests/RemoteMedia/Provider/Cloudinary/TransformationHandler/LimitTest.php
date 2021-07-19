@@ -13,7 +13,7 @@ class LimitTest extends BaseTest
      */
     protected $limit;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->limit = new Limit();
@@ -21,21 +21,21 @@ class LimitTest extends BaseTest
 
     public function testLimitSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'limit'],
-            $this->limit->process($this->value, 'small')
+            $this->limit->process($this->value, 'small'),
         );
     }
 
     public function testLimitWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'limit',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->limit->process($this->value, 'small', [100, 200])
+            $this->limit->process($this->value, 'small', [100, 200]),
         );
     }
 }

@@ -13,7 +13,7 @@ class PadTest extends BaseTest
      */
     protected $pad;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->pad = new Pad();
@@ -21,34 +21,34 @@ class PadTest extends BaseTest
 
     public function testPadSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'pad'],
-            $this->pad->process($this->value, 'small')
+            $this->pad->process($this->value, 'small'),
         );
     }
 
     public function testPadWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'pad',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->pad->process($this->value, 'small', [100, 200])
+            $this->pad->process($this->value, 'small', [100, 200]),
         );
     }
 
     public function testPadWithDimensionsAndColour()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'pad',
                 'width' => 100,
                 'height' => 200,
                 'background' => 'red',
             ],
-            $this->pad->process($this->value, 'small', [100, 200, 'red'])
+            $this->pad->process($this->value, 'small', [100, 200, 'red']),
         );
     }
 }

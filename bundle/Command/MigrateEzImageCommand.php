@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
 use Countable;
-use InvalidArgumentException;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeIdentifier;
 use Exception;
 use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeIdentifier;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
+use InvalidArgumentException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
@@ -21,6 +21,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use function count;
+use function is_array;
 
 class MigrateEzImageCommand extends ContainerAwareCommand
 {
@@ -66,12 +68,12 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             ->addOption(
                 'dry-run',
                 'd',
-                InputOption::VALUE_NONE
+                InputOption::VALUE_NONE,
             )
             ->addOption(
                 'continue-on-error',
                 'c',
-                InputOption::VALUE_NONE
+                InputOption::VALUE_NONE,
             );
     }
 
@@ -176,7 +178,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             [
                 new Subtree($rootLocation->pathString),
                 new ContentTypeIdentifier($contentType->identifier),
-            ]
+            ],
         );
         $query->limit = $limit;
         $query->offset = $offset;
@@ -187,7 +189,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
     protected function migrateField(Location $location, $ezimageFieldIdentifier, $remoteMediaFieldIdentifier, $forceUpdate = false, $dryRun = false)
     {
         $content = $this->contentService->loadContentByContentInfo(
-            $location->getContentInfo()
+            $location->getContentInfo(),
         );
 
         if ($this->fieldHelper->isFieldEmpty($content, $ezimageFieldIdentifier)) {
@@ -220,9 +222,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
 
         try {
             $contentDraft = $repository->sudo(
-                static function (Repository $repository) use ($content) {
-                    return $repository->getContentService()->createContentDraft($content->contentInfo);
-                }
+                static fn (Repository $repository) => $repository->getContentService()->createContentDraft($content->contentInfo),
             );
             $repository->commit();
         } catch (Exception $e) {
@@ -237,13 +237,14 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $contentUpdateStruct->setField($remoteMediaFieldIdentifier, $value);
 
         $repository->beginTransaction();
+
         try {
             $repository->sudo(
                 static function (Repository $repository) use ($contentDraft, $contentUpdateStruct) {
                     $contentDraft = $repository->getContentService()->updateContent($contentDraft->versionInfo, $contentUpdateStruct);
 
                     return $repository->getContentService()->publishVersion($contentDraft->versionInfo);
-                }
+                },
             );
             $repository->commit();
         } catch (Exception $e) {
@@ -297,7 +298,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
                         $ezimageFieldIdentifier,
                         $remoteMediaFieldIdentifier,
                         $overwrite,
-                        $dryRun
+                        $dryRun,
                     );
 
                     if ($migrateResult) {
@@ -318,7 +319,7 @@ class MigrateEzImageCommand extends ContainerAwareCommand
             }
 
             $offset += $limit;
-        } while ((is_array($result->searchHits) || $result->searchHits instanceof Countable ? \count($result->searchHits) : 0) > 0);
+        } while ((is_array($result->searchHits) || $result->searchHits instanceof Countable ? count($result->searchHits) : 0) > 0);
 
         $this->output->writeln("<info>Updated {$updated} objects.</info>");
     }

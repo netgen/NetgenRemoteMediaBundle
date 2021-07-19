@@ -50,7 +50,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
      */
     protected $variationResolver;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->provider = $this->createMock(RemoteMediaProvider::class);
         $this->translationHelper = $this->createMock(TranslationHelper::class);
@@ -63,24 +63,24 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             $this->translationHelper,
             $this->contentTypeService,
             $this->helper,
-            $this->variationResolver
+            $this->variationResolver,
         );
     }
 
     public function testName()
     {
-        $this->assertEquals(
+        self::assertEquals(
             'netgen_remote_media',
-            $this->extension->getName()
+            $this->extension->getName(),
         );
     }
 
     public function testGetFunctions()
     {
-        $this->assertNotEmpty($this->extension->getFunctions());
+        self::assertNotEmpty($this->extension->getFunctions());
 
         foreach ($this->extension->getFunctions() as $function) {
-            $this->assertInstanceOf(\Twig_SimpleFunction::class, $function);
+            self::assertInstanceOf(\Twig_SimpleFunction::class, $function);
         }
     }
 
@@ -90,7 +90,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             [
                 'id' => 'some_field',
                 'value' => new Value(),
-            ]
+            ],
         );
 
         $content = new Content(
@@ -99,33 +99,33 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
         $variation = new Variation();
 
-        $this->translationHelper->expects($this->once())
+        $this->translationHelper->expects(self::once())
             ->method('getTranslatedField')
             ->willReturn($field);
 
-        $this->contentTypeService->expects($this->once())
+        $this->contentTypeService->expects(self::once())
             ->method('loadContentType')
             ->willReturn(
-                    new ContentType(
+                new ContentType(
                         [
                             'fieldDefinitions' => [],
-                            'identifier' => 'test_identifier'
-                        ]
-                    )
+                            'identifier' => 'test_identifier',
+                        ],
+                    ),
             );
 
-        $this->provider->expects($this->once())
+        $this->provider->expects(self::once())
             ->method('buildVariation')
             ->willReturn($variation);
 
-        $this->assertEquals($variation, $this->extension->getRemoteImageVariation($content, 'some_field', 'test_format'));
+        self::assertEquals($variation, $this->extension->getRemoteImageVariation($content, 'some_field', 'test_format'));
     }
 
     public function testGetRemoteVideoTag()
@@ -134,7 +134,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             [
                 'id' => 'some_field',
                 'value' => new Value(),
-            ]
+            ],
         );
 
         $content = new Content(
@@ -143,59 +143,59 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ]
+                    ],
                 ),
-            ]
+            ],
         );
 
-        $this->translationHelper->expects($this->once())
+        $this->translationHelper->expects(self::once())
             ->method('getTranslatedField')
             ->willReturn($field);
 
-        $this->contentTypeService->expects($this->once())
+        $this->contentTypeService->expects(self::once())
             ->method('loadContentType')
             ->willReturn(
-                    new ContentType(
+                new ContentType(
                         [
                             'fieldDefinitions' => [],
-                            'identifier' => 'test_identifier'
-                        ]
-                    )
+                            'identifier' => 'test_identifier',
+                        ],
+                    ),
             );
 
-        $this->provider->expects($this->once())
+        $this->provider->expects(self::once())
             ->method('generateVideoTag')
             ->willReturn('test_tag');
 
-        $this->assertEquals('test_tag', $this->extension->getRemoteVideoTag($content, 'some_field', 'some_format'));
+        self::assertEquals('test_tag', $this->extension->getRemoteVideoTag($content, 'some_field', 'some_format'));
     }
 
     public function testGetVideoThumbnail()
     {
-        $this->provider->expects($this->once())
+        $this->provider->expects(self::once())
             ->method('getVideoThumbnail')
             ->willReturn('test_thumbnail');
 
-        $this->assertEquals('test_thumbnail', $this->extension->getVideoThumbnail(new Value(), []));
+        self::assertEquals('test_thumbnail', $this->extension->getVideoThumbnail(new Value(), []));
     }
 
     public function testGetResourceDownloadLink()
     {
-        $this->provider->expects($this->once())
+        $this->provider->expects(self::once())
             ->method('generateDownloadLink')
             ->willReturn('http://cloudinary.com/some/url/download');
 
-        $this->assertEquals('http://cloudinary.com/some/url/download', $this->extension->getResourceDownloadLink(new Value()));
+        self::assertEquals('http://cloudinary.com/some/url/download', $this->extension->getResourceDownloadLink(new Value()));
     }
 
     public function testGetRemoteResource()
     {
         $variation = new Variation();
 
-        $this->provider->expects($this->once())
+        $this->provider->expects(self::once())
             ->method('buildVariation')
             ->willReturn($variation);
 
-        $this->assertEquals($variation, $this->extension->getRemoteResource(new Value(), 'some_format'));
+        self::assertEquals($variation, $this->extension->getRemoteResource(new Value(), 'some_format'));
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search;
 
+use function get_object_vars;
+use function http_build_query;
 use function implode;
 
 final class Query
@@ -52,6 +54,18 @@ final class Query
         $this->resourceIds = $resourceIds;
     }
 
+    public function __toString()
+    {
+        $vars = get_object_vars($this);
+        $sort = http_build_query($vars['sortBy'], '', ',');
+        $folder = $vars['folder'] === '' ? '(root)' : $vars['folder'];
+        $resourceIds = implode(',', $this->resourceIds);
+
+        unset($vars['sortBy'], $vars['folder'], $vars['resourceIds']);
+
+        return implode('|', $vars) . $folder . '|' . $sort . '|' . $resourceIds;
+    }
+
     public static function createResourceIdsSearchQuery(
         array $resourceIds,
         int $limit = 500,
@@ -66,7 +80,7 @@ final class Query
             null,
             $nextCursor,
             $sortBy,
-            $resourceIds
+            $resourceIds,
         );
     }
 
@@ -125,19 +139,5 @@ final class Query
     public function getSortBy(): array
     {
         return $this->sortBy;
-    }
-
-    public function __toString()
-    {
-        $vars = \get_object_vars($this);
-        $sort = \http_build_query($vars['sortBy'], '', ',');
-        $folder = $vars['folder'] === '' ? '(root)' : $vars['folder'];
-        $resourceIds = implode(',', $this->resourceIds);
-
-        unset($vars['sortBy']);
-        unset($vars['folder']);
-        unset($vars['resourceIds']);
-
-        return implode('|', $vars) . $folder . '|' . $sort . '|' . $resourceIds;
     }
 }

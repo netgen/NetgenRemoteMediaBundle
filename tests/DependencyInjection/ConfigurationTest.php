@@ -22,7 +22,7 @@ class ConfigurationTest extends TestCase
                     'account_key' => 'examplekey',
                     'account_secret' => 'examplesecret',
                 ],
-            ]
+            ],
         );
     }
 
@@ -70,7 +70,7 @@ class ConfigurationTest extends TestCase
                         ],
                     ],
                 ],
-            ]
+            ],
         );
     }
 
@@ -84,7 +84,7 @@ class ConfigurationTest extends TestCase
                     'account_key' => 'examplekey',
                     'account_secret' => 'examplesecret',
                 ],
-            ]
+            ],
         );
     }
 
@@ -98,7 +98,7 @@ class ConfigurationTest extends TestCase
                     'account_key' => '',
                     'account_secret' => 'examplesecret',
                 ],
-            ]
+            ],
         );
     }
 
@@ -111,7 +111,7 @@ class ConfigurationTest extends TestCase
                     'account_key' => 'examplekey',
                     'account_secret' => 'examplesecret',
                 ],
-            ]
+            ],
         );
     }
 
@@ -124,7 +124,7 @@ class ConfigurationTest extends TestCase
                     'account_name' => 'examplename',
                     'account_secret' => 'examplesecret',
                 ],
-            ]
+            ],
         );
     }
 

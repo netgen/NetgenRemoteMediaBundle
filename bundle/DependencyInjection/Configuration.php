@@ -8,6 +8,8 @@ use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAw
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use function count;
+use function is_array;
 
 class Configuration extends SiteAccessConfiguration
 {
@@ -81,7 +83,7 @@ class Configuration extends SiteAccessConfiguration
                                 ],
                             ],
                         ],
-                    ]
+                    ],
                 )
                 ->useAttributeAsKey('variation_name')
                 ->normalizeKeys(false)
@@ -101,14 +103,14 @@ class Configuration extends SiteAccessConfiguration
                                         ->ifTrue(
                                             static function ($v) {
                                                 // Check if passed array only contains a "params" key
-                                                return \is_array($v) && \count($v) === 1 && isset($v['params']);
-                                            }
+                                                return is_array($v) && count($v) === 1 && isset($v['params']);
+                                            },
                                         )
                                         ->then(
                                             static function ($v) {
                                                 // If we have the "params" key, just use the value.
                                                 return $v['params'];
-                                            }
+                                            },
                                         )
                                     ->end()
                                     ->prototype('variable')->end()

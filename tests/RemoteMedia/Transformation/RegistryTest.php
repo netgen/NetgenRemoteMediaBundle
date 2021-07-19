@@ -24,7 +24,7 @@ class RegistryTest extends TestCase
 
     protected $otherProviderCropTransformation;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->registry = new Registry();
 
@@ -39,9 +39,9 @@ class RegistryTest extends TestCase
 
     public function testGetHandler()
     {
-        $this->assertEquals(
+        self::assertEquals(
             $this->cropTransformation,
-            $this->registry->getHandler('crop', 'cloudinary')
+            $this->registry->getHandler('crop', 'cloudinary'),
         );
     }
 

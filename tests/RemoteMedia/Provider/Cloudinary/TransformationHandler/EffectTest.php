@@ -14,7 +14,7 @@ class EffectTest extends BaseTest
      */
     protected $effect;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->effect = new Effect();
@@ -22,22 +22,21 @@ class EffectTest extends BaseTest
 
     public function testEffectSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'effect' => 'grayscale',
             ],
-            $this->effect->process($this->value, 'small', ['grayscale'])
+            $this->effect->process($this->value, 'small', ['grayscale']),
         );
     }
 
     public function testEffect()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'effect' => 'saturation:50',
             ],
-
-            $this->effect->process($this->value, 'small', ['saturation', '50'])
+            $this->effect->process($this->value, 'small', ['saturation', '50']),
         );
     }
 

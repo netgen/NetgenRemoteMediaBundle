@@ -11,6 +11,21 @@ use Cloudinary\Uploader;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
+use function array_key_exists;
+use function array_map;
+use function array_merge;
+use function cl_video_tag;
+use function cl_video_thumbnail_path;
+use function cloudinary_url_internal;
+use function count;
+use function date;
+use function floor;
+use function implode;
+use function log;
+use function max;
+use function min;
+use function round;
+use function sprintf;
 
 class CloudinaryApiGateway extends Gateway
 {
@@ -54,7 +69,7 @@ class CloudinaryApiGateway extends Gateway
                 'api_key' => $apiKey,
                 'api_secret' => $apiSecret,
                 'cdn_subdomain' => $useSubdomains,
-            ]
+            ],
         );
 
         $this->cloudinaryUploader = new Uploader();
@@ -409,9 +424,7 @@ class CloudinaryApiGateway extends Gateway
 
         $resourceIds = $query->getResourceIds();
         if (count($resourceIds) > 0) {
-            $resourceIds = array_map(function ($value) {
-                return sprintf('public_id:"%s"', $value);
-            }, $resourceIds);
+            $resourceIds = array_map(static fn ($value) => sprintf('public_id:"%s"', $value), $resourceIds);
 
             $expressions[] = '(' . implode(' OR ', $resourceIds) . ')';
         }
@@ -419,14 +432,15 @@ class CloudinaryApiGateway extends Gateway
         return implode(' AND ', $expressions);
     }
 
-    private function formatBytes($bytes, $precision = 2) {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB', 'YB');
+    private function formatBytes($bytes, $precision = 2)
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'YB'];
 
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
 
-        $bytes /= pow(1024, $pow);
+        $bytes /= 1024 ** $pow;
 
         return round($bytes, $precision) . ' ' . $units[$pow];
     }

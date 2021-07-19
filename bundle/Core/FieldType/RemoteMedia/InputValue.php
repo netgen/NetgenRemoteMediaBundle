@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Value;
+use function json_encode;
 
 class InputValue extends Value
 {
-    public $input_uri = null;
+    public $input_uri;
     public $alt_text = '';
     public $caption = '';
     public $variations = [];
@@ -20,6 +21,6 @@ class InputValue extends Value
      */
     public function __toString()
     {
-        return \json_encode($this);
+        return json_encode($this);
     }
 }

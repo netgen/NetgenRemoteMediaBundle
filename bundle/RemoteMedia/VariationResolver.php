@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
+use function array_merge;
+
 class VariationResolver
 {
     protected $variations = [];
@@ -30,7 +32,7 @@ class VariationResolver
         $defaultVariations = $this->variations['default'] ?? [];
         $contentTypeVariations = $this->variations[$contentTypeIdentifier] ?? [];
 
-        return \array_merge($defaultVariations, $contentTypeVariations);
+        return array_merge($defaultVariations, $contentTypeVariations);
     }
 
     /**

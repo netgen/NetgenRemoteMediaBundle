@@ -10,6 +10,9 @@ use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway;
 use PDO;
 use RuntimeException;
+use function array_map;
+use function count;
+use function is_array;
 
 class LegacyStorage extends Gateway
 {
@@ -60,35 +63,35 @@ class LegacyStorage extends Gateway
             ->where(
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('field_id'),
-                    $selectQuery->bindValue($fieldId, null, PDO::PARAM_INT)
+                    $selectQuery->bindValue($fieldId, null, PDO::PARAM_INT),
                 ),
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('version'),
-                    $selectQuery->bindValue($version, null, PDO::PARAM_INT)
-                )
+                    $selectQuery->bindValue($version, null, PDO::PARAM_INT),
+                ),
             );
         $statement = $selectQuery->prepare();
         $statement->execute();
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        if ((is_array($rows) || $rows instanceof Countable ? \count($rows) : 0) > 0) {
+        if ((is_array($rows) || $rows instanceof Countable ? count($rows) : 0) > 0) {
             $updateQuery = $connection->createUpdateQuery();
             $updateQuery
                 ->update('ngremotemedia_field_link')
                 ->set(
                     $connection->quoteColumn('resource_id'),
-                    $updateQuery->bindValue($resourceId, null, PDO::PARAM_STR)
+                    $updateQuery->bindValue($resourceId, null, PDO::PARAM_STR),
                 )
                 ->where(
                     $updateQuery->expr->eq(
                         $connection->quoteColumn('field_id'),
-                        $updateQuery->bindValue($fieldId, null, PDO::PARAM_INT)
+                        $updateQuery->bindValue($fieldId, null, PDO::PARAM_INT),
                     ),
                     $updateQuery->expr->eq(
                         $connection->quoteColumn('version'),
-                        $updateQuery->bindValue($version, null, PDO::PARAM_INT)
-                    )
+                        $updateQuery->bindValue($version, null, PDO::PARAM_INT),
+                    ),
                 );
             $updateQuery->prepare()->execute();
         } else {
@@ -97,19 +100,19 @@ class LegacyStorage extends Gateway
                 ->insertInto($connection->quoteTable('ngremotemedia_field_link'))
                 ->set(
                     $connection->quoteColumn('contentobject_id'),
-                    $insertQuery->bindValue($contentId, null, PDO::PARAM_INT)
+                    $insertQuery->bindValue($contentId, null, PDO::PARAM_INT),
                 )->set(
                     $connection->quoteColumn('field_id'),
-                    $insertQuery->bindValue($fieldId, null, PDO::PARAM_INT)
+                    $insertQuery->bindValue($fieldId, null, PDO::PARAM_INT),
                 )->set(
                     $connection->quoteColumn('version'),
-                    $insertQuery->bindValue($version, null, PDO::PARAM_INT)
+                    $insertQuery->bindValue($version, null, PDO::PARAM_INT),
                 )->set(
                     $connection->quoteColumn('resource_id'),
-                    $insertQuery->bindValue($resourceId, null, PDO::PARAM_STR)
+                    $insertQuery->bindValue($resourceId, null, PDO::PARAM_STR),
                 )->set(
                     $connection->quoteColumn('provider'),
-                    $insertQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
+                    $insertQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR),
                 );
             $insertQuery->prepare()->execute();
         }
@@ -150,20 +153,20 @@ class LegacyStorage extends Gateway
             ->where(
                 $query->expr->eq(
                     $connection->quoteColumn('field_id'),
-                    $query->bindValue($fieldId, null, PDO::PARAM_INT)
+                    $query->bindValue($fieldId, null, PDO::PARAM_INT),
                 ),
                 $query->expr->eq(
                     $connection->quoteColumn('contentobject_id'),
-                    $query->bindValue($contentId, null, PDO::PARAM_INT)
+                    $query->bindValue($contentId, null, PDO::PARAM_INT),
                 ),
                 $query->expr->eq(
                     $connection->quoteColumn('version'),
-                    $query->bindValue($versionNo, null, PDO::PARAM_INT)
+                    $query->bindValue($versionNo, null, PDO::PARAM_INT),
                 ),
                 $query->expr->eq(
                     $connection->quoteColumn('provider'),
-                    $query->bindValue($providerIdentifier, null, PDO::PARAM_STR)
-                )
+                    $query->bindValue($providerIdentifier, null, PDO::PARAM_STR),
+                ),
             );
 
         $query->prepare()->execute();
@@ -190,20 +193,20 @@ class LegacyStorage extends Gateway
             ->where(
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('field_id'),
-                    $selectQuery->bindValue($fieldId, null, PDO::PARAM_INT)
+                    $selectQuery->bindValue($fieldId, null, PDO::PARAM_INT),
                 ),
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('contentobject_id'),
-                    $selectQuery->bindValue($contentId, null, PDO::PARAM_INT)
+                    $selectQuery->bindValue($contentId, null, PDO::PARAM_INT),
                 ),
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('version'),
-                    $selectQuery->bindValue($versionNo, null, PDO::PARAM_INT)
+                    $selectQuery->bindValue($versionNo, null, PDO::PARAM_INT),
                 ),
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('provider'),
-                    $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
-                )
+                    $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR),
+                ),
             );
 
         $statement = $selectQuery->prepare();
@@ -211,11 +214,9 @@ class LegacyStorage extends Gateway
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-        return \array_map(
-            static function ($item) {
-                return $item['resource_id'];
-            },
-            $rows
+        return array_map(
+            static fn ($item) => $item['resource_id'],
+            $rows,
         );
     }
 
@@ -237,18 +238,19 @@ class LegacyStorage extends Gateway
             ->where(
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('resource_id'),
-                    $selectQuery->bindValue($resourceId, null, PDO::PARAM_STR)
+                    $selectQuery->bindValue($resourceId, null, PDO::PARAM_STR),
                 ),
                 $selectQuery->expr->eq(
                     $connection->quoteColumn('provider'),
-                    $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR)
-                )
+                    $selectQuery->bindValue($providerIdentifier, null, PDO::PARAM_STR),
+                ),
             );
         $statement = $selectQuery->prepare();
         $statement->execute();
 
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-        return (is_array($rows) || $rows instanceof Countable ? \count($rows) : 0) > 0;
+
+        return (is_array($rows) || $rows instanceof Countable ? count($rows) : 0) > 0;
     }
 
     /**

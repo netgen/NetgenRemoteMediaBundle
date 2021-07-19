@@ -25,10 +25,10 @@ class FormMapper implements FieldDefinitionFormMapperInterface, FieldValueFormMa
                             'required' => $data->fieldDefinition->isRequired,
                             'label' => $data->fieldDefinition->getName(),
                             'field' => $data->field,
-                        ]
+                        ],
                     )
                     ->setAutoInitialize(false)
-                    ->getForm()
+                    ->getForm(),
             );
     }
 

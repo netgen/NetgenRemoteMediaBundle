@@ -7,6 +7,9 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 use eZ\Publish\Core\FieldType\Image\Value;
 use eZHTTPFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use function pathinfo;
+use const PATHINFO_EXTENSION;
+use const PATHINFO_FILENAME;
 
 class UploadFile
 {
@@ -32,8 +35,8 @@ class UploadFile
         $uploadFile = new self();
 
         $uploadFile->uri = $uri;
-        $uploadFile->originalFilename = \pathinfo($uri, PATHINFO_FILENAME);
-        $uploadFile->originalExtension = \pathinfo($uri, PATHINFO_EXTENSION);
+        $uploadFile->originalFilename = pathinfo($uri, PATHINFO_FILENAME);
+        $uploadFile->originalExtension = pathinfo($uri, PATHINFO_EXTENSION);
 
         return $uploadFile;
     }
@@ -48,8 +51,8 @@ class UploadFile
         $uploadFile = new self();
 
         $uploadFile->uri = $file->Filename;
-        $uploadFile->originalFilename = \pathinfo($file->OriginalFilename, PATHINFO_FILENAME);
-        $uploadFile->originalExtension = \pathinfo($file->OriginalFilename, PATHINFO_EXTENSION);
+        $uploadFile->originalFilename = pathinfo($file->OriginalFilename, PATHINFO_FILENAME);
+        $uploadFile->originalExtension = pathinfo($file->OriginalFilename, PATHINFO_EXTENSION);
 
         return $uploadFile;
     }
@@ -77,8 +80,8 @@ class UploadFile
         $uploadFile = new self();
 
         $uploadFile->uri = $webRoot . $value->uri;
-        $uploadFile->originalFilename = \pathinfo($value->fileName, PATHINFO_FILENAME);
-        $uploadFile->originalExtension = \pathinfo($value->fileName, PATHINFO_EXTENSION);
+        $uploadFile->originalFilename = pathinfo($value->fileName, PATHINFO_FILENAME);
+        $uploadFile->originalExtension = pathinfo($value->fileName, PATHINFO_EXTENSION);
 
         return $uploadFile;
     }

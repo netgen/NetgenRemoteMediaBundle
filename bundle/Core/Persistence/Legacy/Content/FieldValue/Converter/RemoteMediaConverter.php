@@ -9,6 +9,8 @@ use eZ\Publish\Core\Persistence\Legacy\Content\StorageFieldDefinition;
 use eZ\Publish\Core\Persistence\Legacy\Content\StorageFieldValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
 use eZ\Publish\SPI\Persistence\Content\Type\FieldDefinition;
+use function json_decode;
+use function json_encode;
 
 /**
  * Converter for Remote Media field values in legacy storage.
@@ -25,7 +27,7 @@ class RemoteMediaConverter implements Converter
      */
     public function toStorageValue(FieldValue $value, StorageFieldValue $storageFieldValue)
     {
-        $storageFieldValue->dataText = \json_encode($value->data);
+        $storageFieldValue->dataText = json_encode($value->data);
     }
 
     /**
@@ -33,7 +35,7 @@ class RemoteMediaConverter implements Converter
      */
     public function toFieldValue(StorageFieldValue $value, FieldValue $fieldValue)
     {
-        $fieldValue->data = \json_decode($value->dataText, true);
+        $fieldValue->data = json_decode($value->dataText, true);
     }
 
     /**

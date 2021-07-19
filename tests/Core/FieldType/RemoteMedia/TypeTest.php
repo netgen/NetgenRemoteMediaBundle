@@ -36,7 +36,7 @@ class TypeTest extends TestCase
 
     protected $emptyInputValue;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->type = new Type();
         $this->value = new Value(self::PARAMETERS);
@@ -47,42 +47,42 @@ class TypeTest extends TestCase
 
     public function testInstanceOfFieldType()
     {
-        $this->assertInstanceOf(FieldType::class, $this->type);
+        self::assertInstanceOf(FieldType::class, $this->type);
     }
 
     public function testGetFieldTypeIdentifier()
     {
-        $this->assertEquals('ngremotemedia', $this->type->getFieldTypeIdentifier());
+        self::assertEquals('ngremotemedia', $this->type->getFieldTypeIdentifier());
     }
 
     public function testGetNameWithValue()
     {
-        $this->assertEquals($this->value->resourceId, $this->type->getName($this->value));
+        self::assertEquals($this->value->resourceId, $this->type->getName($this->value));
     }
 
     public function testGetNameWithEmptyValue()
     {
-        $this->assertEquals($this->emptyValue->resourceId, $this->type->getName($this->emptyValue));
+        self::assertEquals($this->emptyValue->resourceId, $this->type->getName($this->emptyValue));
     }
 
     public function testGetEmptyValue()
     {
-        $this->assertEquals($this->emptyValue, $this->type->getEmptyValue());
+        self::assertEquals($this->emptyValue, $this->type->getEmptyValue());
     }
 
     public function testFromHash()
     {
-        $this->assertEquals($this->inputValue, $this->type->fromHash(self::INPUT_PARAMETERS));
+        self::assertEquals($this->inputValue, $this->type->fromHash(self::INPUT_PARAMETERS));
     }
 
     public function testFromHashWithEmptyHash()
     {
-        $this->assertEquals($this->emptyValue, $this->type->fromHash(''));
+        self::assertEquals($this->emptyValue, $this->type->fromHash(''));
     }
 
     public function testToHash()
     {
-        $this->assertEquals((array) $this->value, $this->type->toHash($this->value));
+        self::assertEquals((array) $this->value, $this->type->toHash($this->value));
     }
 
     public function testInputValueToPersistenceValue()
@@ -92,10 +92,10 @@ class TypeTest extends TestCase
                 'data' => null,
                 'externalData' => (array) $this->inputValue,
                 'sortKey' => false,
-            ]
+            ],
         );
 
-        $this->assertEquals($fieldValue, $this->type->toPersistenceValue($this->inputValue));
+        self::assertEquals($fieldValue, $this->type->toPersistenceValue($this->inputValue));
     }
 
     public function testValueToPersistenceValue()
@@ -105,17 +105,17 @@ class TypeTest extends TestCase
                 'data' => $this->value,
                 'externalData' => $this->value,
                 'sortKey' => false,
-            ]
+            ],
         );
 
-        $this->assertEquals($fieldValue, $this->type->toPersistenceValue($this->value));
+        self::assertEquals($fieldValue, $this->type->toPersistenceValue($this->value));
     }
 
     public function testInvalidValueToPersistenceValue()
     {
         $spiValue = new DateValue();
 
-        $this->assertNull($this->type->toPersistenceValue($spiValue));
+        self::assertNull($this->type->toPersistenceValue($spiValue));
     }
 
     public function testValueFromPersistenceValue()
@@ -123,10 +123,10 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => $this->value,
-            ]
+            ],
         );
 
-        $this->assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
+        self::assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testParametersValueFromPersistenceValue()
@@ -134,10 +134,10 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => self::PARAMETERS,
-            ]
+            ],
         );
 
-        $this->assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
+        self::assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testNullValueFromPersistenceValue()
@@ -145,10 +145,10 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => null,
-            ]
+            ],
         );
 
-        $this->assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
+        self::assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testEmptyValueFromPersistenceValue()
@@ -156,42 +156,42 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => $this->emptyValue,
-            ]
+            ],
         );
 
-        $this->assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
+        self::assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testIsEmptyValueWithInputValue()
     {
-        $this->assertNotTrue($this->type->isEmptyValue($this->inputValue));
+        self::assertNotTrue($this->type->isEmptyValue($this->inputValue));
     }
 
     public function testIsEmptyValueWithValue()
     {
-        $this->assertNotTrue($this->type->isEmptyValue($this->value));
+        self::assertNotTrue($this->type->isEmptyValue($this->value));
     }
 
     public function testIsEmptyValueWithEmptyInputValue()
     {
-        $this->assertTrue($this->type->isEmptyValue($this->emptyInputValue));
+        self::assertTrue($this->type->isEmptyValue($this->emptyInputValue));
     }
 
     public function testIsEmptyValueWithEmptyValue()
     {
-        $this->assertTrue($this->type->isEmptyValue($this->emptyValue));
+        self::assertTrue($this->type->isEmptyValue($this->emptyValue));
     }
 
     public function testIsEmptyValueWithValueWithoutResourceId()
     {
         $spiValue = new Value(['url' => 'test']);
 
-        $this->assertTrue($this->type->isEmptyValue($spiValue));
+        self::assertTrue($this->type->isEmptyValue($spiValue));
     }
 
     public function testIsSearchableShouldAlwaysReturnTrue()
     {
-        $this->assertTrue($this->type->isSearchable());
+        self::assertTrue($this->type->isSearchable());
     }
 
     public function testAcceptValueWithSingle()
@@ -200,14 +200,14 @@ class TypeTest extends TestCase
 
         $returnedValue = $this->type->acceptValue('test_uri');
 
-        $this->assertEquals($value, $returnedValue);
+        self::assertEquals($value, $returnedValue);
     }
 
     public function testAcceptValueWithValidArray()
     {
         $returnedValue = $this->type->acceptValue(self::INPUT_PARAMETERS);
 
-        $this->assertEquals($this->inputValue, $returnedValue);
+        self::assertEquals($this->inputValue, $returnedValue);
     }
 
     /**
@@ -217,17 +217,17 @@ class TypeTest extends TestCase
     {
         $returnedValue = $this->type->acceptValue([1]);
 
-        $this->assertEquals(1, $returnedValue);
+        self::assertEquals(1, $returnedValue);
     }
 
     public function testAcceptValueWithInputValueObject()
     {
-        $this->assertEquals($this->inputValue, $this->type->acceptValue($this->inputValue));
+        self::assertEquals($this->inputValue, $this->type->acceptValue($this->inputValue));
     }
 
     public function testAcceptValueWithValueObject()
     {
-        $this->assertEquals($this->value, $this->type->acceptValue($this->value));
+        self::assertEquals($this->value, $this->type->acceptValue($this->value));
     }
 
     /**
@@ -237,7 +237,7 @@ class TypeTest extends TestCase
     {
         $value = new InputValue(['input_uri' => ['test_uri']]);
 
-        $this->assertEquals($value, $this->type->acceptValue($value));
+        self::assertEquals($value, $this->type->acceptValue($value));
     }
 
     /**
@@ -247,7 +247,7 @@ class TypeTest extends TestCase
     {
         $value = new Value(['resourceId' => ['test']]);
 
-        $this->assertEquals($value, $this->type->acceptValue($value));
+        self::assertEquals($value, $this->type->acceptValue($value));
     }
 
     /**
@@ -257,6 +257,6 @@ class TypeTest extends TestCase
     {
         $value = 1;
 
-        $this->assertEquals($value, $this->type->acceptValue($value));
+        self::assertEquals($value, $this->type->acceptValue($value));
     }
 }

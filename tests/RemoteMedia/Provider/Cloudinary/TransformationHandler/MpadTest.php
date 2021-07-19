@@ -13,7 +13,7 @@ class MpadTest extends BaseTest
      */
     protected $mpad;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->mpad = new Mpad();
@@ -21,21 +21,21 @@ class MpadTest extends BaseTest
 
     public function testMpadSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'mpad'],
-            $this->mpad->process($this->value, 'small')
+            $this->mpad->process($this->value, 'small'),
         );
     }
 
     public function testMpadWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'mpad',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->mpad->process($this->value, 'small', [100, 200])
+            $this->mpad->process($this->value, 'small', [100, 200]),
         );
     }
 }

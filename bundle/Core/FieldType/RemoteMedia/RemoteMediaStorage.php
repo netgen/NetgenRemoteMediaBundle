@@ -11,6 +11,9 @@ use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
+use function array_merge;
+use function in_array;
+use function is_array;
 
 class RemoteMediaStorage extends GatewayBasedStorage
 {
@@ -66,15 +69,15 @@ class RemoteMediaStorage extends GatewayBasedStorage
 
         $emptyValue = $this->fieldTypeService->getFieldType('ngremotemedia')->getEmptyValue();
 
-        if ($data instanceof Value && $data != $emptyValue) {
+        if ($data instanceof Value && $data !== $emptyValue) {
             $gateway->storeFieldData(
                 $field->id,
                 $data->resourceId,
                 $versionInfo->contentInfo->id,
                 $this->provider->getIdentifier(),
-                $versionInfo->versionNo
+                $versionInfo->versionNo,
             );
-        } elseif (\is_array($data) && !empty($data)) {
+        } elseif (is_array($data) && !empty($data)) {
             $options['alt_text'] = $data['alt_text'];
             $options['caption'] = $data['caption'];
 
@@ -89,7 +92,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $value->resourceId,
                 $versionInfo->contentInfo->id,
                 $this->provider->getIdentifier(),
-                $versionInfo->versionNo
+                $versionInfo->versionNo,
             );
 
             return true;
@@ -124,11 +127,11 @@ class RemoteMediaStorage extends GatewayBasedStorage
         if ($this->deleteUnused) {
             $resourceIdsToDelete = [];
             foreach ($fields as $field) {
-                if (\in_array($field->id, $fieldIds, true)) {
+                if (in_array($field->id, $fieldIds, true)) {
                     // load resource_id from table
-                    $resourceIdsToDelete = \array_merge(
+                    $resourceIdsToDelete = array_merge(
                         $resourceIdsToDelete,
-                        $gateway->loadFromTable($content->id, $field->id, $versionNo, $this->provider->getIdentifier())
+                        $gateway->loadFromTable($content->id, $field->id, $versionNo, $this->provider->getIdentifier()),
                     );
 
                     // delete for current version
@@ -146,7 +149,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
         } else {
             // remove from link table entry just for that version
             foreach ($fields as $field) {
-                if (!\in_array($field->id, $fieldIds, true)) {
+                if (!in_array($field->id, $fieldIds, true)) {
                     continue;
                 }
 

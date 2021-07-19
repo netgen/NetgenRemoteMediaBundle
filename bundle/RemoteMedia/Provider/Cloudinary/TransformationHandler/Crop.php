@@ -7,6 +7,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Transf
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\HandlerInterface;
+use function array_key_exists;
 
 /**
  * Class Crop.
@@ -29,7 +30,7 @@ class Crop implements HandlerInterface
      */
     public function process(Value $value, $variationName, array $config = [])
     {
-        if (\array_key_exists($variationName, $value->variations)) {
+        if (array_key_exists($variationName, $value->variations)) {
             $coords = $value->variations[$variationName];
 
             $options[] = [

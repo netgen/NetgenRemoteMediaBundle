@@ -14,7 +14,7 @@ class ResizeTest extends BaseTest
      */
     protected $resize;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->resize = new Resize();
@@ -22,12 +22,12 @@ class ResizeTest extends BaseTest
 
     public function testResizeWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->resize->process($this->value, 'small', [100, 200])
+            $this->resize->process($this->value, 'small', [100, 200]),
         );
     }
 

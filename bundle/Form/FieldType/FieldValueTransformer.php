@@ -11,6 +11,8 @@ use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\AdminInputValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\UpdateFieldHelper;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\Form\DataTransformerInterface;
+use function is_array;
+use function json_encode;
 
 class FieldValueTransformer implements DataTransformerInterface
 {
@@ -57,8 +59,8 @@ class FieldValueTransformer implements DataTransformerInterface
             'resource_id' => $value->resourceId,
             'alt_text' => $value->metaData['alt_text'] ?? '',
             'tags' => is_array($value->metaData['tags']) ? $value->metaData['tags'] : [],
-            'image_variations' => \json_encode($value->variations),
-            'type' => $value->mediaType
+            'image_variations' => json_encode($value->variations),
+            'type' => $value->mediaType,
         ];
     }
 
@@ -69,7 +71,6 @@ class FieldValueTransformer implements DataTransformerInterface
      */
     public function reverseTransform($value)
     {
-
         if ($value === null) {
             return $this->fieldType->getEmptyValue();
         }

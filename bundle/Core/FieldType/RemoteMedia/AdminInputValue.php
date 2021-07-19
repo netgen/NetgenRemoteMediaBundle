@@ -8,6 +8,7 @@ use eZHTTPFile;
 use eZHTTPTool;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use function json_decode;
 
 final class AdminInputValue
 {
@@ -54,7 +55,7 @@ final class AdminInputValue
         $tags = $http->variable($base . '_tags_' . $attributeId, []);
         $variations = $http->variable($base . '_image_variations_' . $attributeId, '{}');
         $mediaType = $http->variable($base . '_media_type_' . $attributeId, 'image');
-        $variations = \json_decode($variations, true);
+        $variations = json_decode($variations, true);
 
         $file = eZHTTPFile::fetch($base . '_new_file_' . $attributeId);
 
@@ -71,7 +72,7 @@ final class AdminInputValue
         $altText = empty($hash['alt_text']) ? '' : $hash['alt_text'];
 
         $variations = $hash['image_variations'] ?? '{}';
-        $variations = \json_decode($variations, true);
+        $variations = json_decode($variations, true);
 
         $mediaType = $hash['media_type'] ?? 'image';
 
@@ -86,7 +87,7 @@ final class AdminInputValue
             $tags,
             $altText,
             $variations,
-            $file
+            $file,
         );
     }
 

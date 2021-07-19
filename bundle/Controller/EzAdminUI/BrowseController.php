@@ -40,9 +40,12 @@ final class BrowseController
         switch ($folder) {
             case '(all)':
                 $folder = null;
+
                 break;
+
             case '(root)':
                 $folder = '';
+
                 break;
         }
 
@@ -57,7 +60,7 @@ final class BrowseController
             $limit,
             $folder,
             $tag,
-            $nextCursor
+            $nextCursor,
         );
 
         $results = $this->remoteMediaProvider->searchResources($query);

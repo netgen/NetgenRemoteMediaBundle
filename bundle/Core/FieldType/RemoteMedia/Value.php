@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
+use function in_array;
+use function json_encode;
 
 class Value extends BaseValue
 {
@@ -23,12 +25,12 @@ class Value extends BaseValue
      */
     const TYPE_OTHER = 'other';
 
-    public $resourceId = null;
-    public $resourceType = null;
-    public $type = null;
+    public $resourceId;
+    public $resourceType;
+    public $type;
 
-    public $url = null;
-    public $secure_url = null;
+    public $url;
+    public $secure_url;
     public $size = 0;
 
     public $mediaType = 'image';
@@ -55,7 +57,7 @@ class Value extends BaseValue
      */
     public function __toString()
     {
-        return \json_encode($this);
+        return json_encode($this);
     }
 
     /**
@@ -97,7 +99,7 @@ class Value extends BaseValue
 
         if ($response['resource_type'] === 'video') {
             $value->mediaType = self::TYPE_VIDEO;
-        } elseif ($response['resource_type'] === 'image' && (!isset($response['format']) || !\in_array($response['format'], ['pdf', 'doc', 'docx'], true))) {
+        } elseif ($response['resource_type'] === 'image' && (!isset($response['format']) || !in_array($response['format'], ['pdf', 'doc', 'docx'], true))) {
             $value->mediaType = self::TYPE_IMAGE;
         } else {
             $value->mediaType = self::TYPE_OTHER;

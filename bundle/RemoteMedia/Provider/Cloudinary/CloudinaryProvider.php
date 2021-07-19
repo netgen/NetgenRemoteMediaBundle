@@ -18,8 +18,16 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\UploadFile;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
-
+use function array_key_exists;
+use function base_convert;
+use function count;
+use function explode;
+use function in_array;
 use function is_array;
+use function preg_replace;
+use function rtrim;
+use function str_replace;
+use function uniqid;
 
 class CloudinaryProvider extends RemoteMediaProvider
 {
@@ -36,7 +44,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         VariationResolver $variationsResolver,
         Gateway $gateway,
         bool $enableAudioWaveform,
-        LoggerInterface $logger = null,
+        ?LoggerInterface $logger = null,
         array $noExtensionMimeTypes = ['image', 'video']
     ) {
         $this->gateway = $gateway;
@@ -48,17 +56,12 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Returns API rate limits information.
-     *
-     * @return array
      */
     public function usage(): array
     {
         return $this->gateway->usage();
     }
 
-    /**
-     * @return bool
-     */
     public function supportsContentBrowser(): bool
     {
         return false;
@@ -103,7 +106,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             return $variation;
         }
 
-        if (\is_array($variationName)) {
+        if (is_array($variationName)) {
             /*
              * This means the 'variationName' is actually an array with all the configuration
              * options provided, and we can pass those directly to the cloudinary
@@ -182,8 +185,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * Returns the remote resource with provided id and type.
-     *
-     * @param string $resourceType
      */
     public function getRemoteResource(string $resourceId, string $resourceType = 'image'): Value
     {
@@ -244,7 +245,6 @@ class CloudinaryProvider extends RemoteMediaProvider
 
     /**
      * @param $resourceId
-     * @param string $resourceType
      * @param $tags
      *
      * @return mixed
@@ -340,7 +340,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         $tag = $this->gateway->getVideoTag($value->resourceId, $finalOptions);
 
         if ($this->isAudio($value) && !$enableAudioWaveform) {
-            $tag = str_replace( ['<video', '</video>'], ['<audio', '</audio>'], $tag);
+            $tag = str_replace(['<video', '</video>'], ['<audio', '</audio>'], $tag);
         }
 
         return $tag;
@@ -384,15 +384,15 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     protected function prepareUploadOptions(UploadFile $uploadFile, $options = []): array
     {
-        $clean = \preg_replace("#[^\\p{L}|\\p{N}]+#u", '_', $options['filename'] ?? $uploadFile->originalFilename());
-        $cleanFileName = \preg_replace("#[\\p{Z}]{2,}#u", '_', $clean);
-        $fileName = \rtrim($cleanFileName, '_');
+        $clean = preg_replace('#[^\\p{L}|\\p{N}]+#u', '_', $options['filename'] ?? $uploadFile->originalFilename());
+        $cleanFileName = preg_replace('#[\\p{Z}]{2,}#u', '_', $clean);
+        $fileName = rtrim($cleanFileName, '_');
 
         // check if overwrite is set, if it is, do not append random string
         $overwrite = $options['overwrite'] ?? false;
         $invalidate = $options['invalidate'] ?? $overwrite;
 
-        $publicId = $overwrite ? $fileName : $fileName . '_' . \base_convert(\uniqid(), 16, 36);
+        $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
         $publicId = $this->appendExtension($publicId, $uploadFile);
 
         if (!empty($options['folder'])) {
@@ -436,7 +436,8 @@ class CloudinaryProvider extends RemoteMediaProvider
         foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
             try {
                 $transformationHandler = $this->registry->getHandler(
-                    $transformationIdentifier, $this->getIdentifier()
+                    $transformationIdentifier,
+                    $this->getIdentifier(),
                 );
             } catch (TransformationHandlerNotFoundException $transformationHandlerNotFoundException) {
                 $this->logError($transformationHandlerNotFoundException->getMessage());
@@ -463,8 +464,8 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     private function parseMimeCategory(File $file)
     {
-        $parsedMime = \explode('/', $file->getMimeType());
-        if (\count($parsedMime) !== 2) {
+        $parsedMime = explode('/', $file->getMimeType());
+        if (count($parsedMime) !== 2) {
             throw new MimeCategoryParseException($file->getMimeType());
         }
 
@@ -486,7 +487,7 @@ class CloudinaryProvider extends RemoteMediaProvider
         $mimeCategory = $this->parseMimeCategory($file);
 
         // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
-        if ($extension !== 'pdf' && !\in_array($mimeCategory, $this->noExtensionMimeTypes, true)) {
+        if ($extension !== 'pdf' && !in_array($mimeCategory, $this->noExtensionMimeTypes, true)) {
             $publicId .= '.' . $extension;
         }
 
@@ -497,6 +498,6 @@ class CloudinaryProvider extends RemoteMediaProvider
     {
         $audioFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'];
 
-        return array_key_exists('format', $value->metaData) && in_array($value->metaData['format'], $audioFormats);
+        return array_key_exists('format', $value->metaData) && in_array($value->metaData['format'], $audioFormats, true);
     }
 }

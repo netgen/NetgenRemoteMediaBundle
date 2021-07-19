@@ -14,7 +14,7 @@ class RemoteMediaFieldLinkTest extends TestCase
      */
     protected $entity;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->entity = new RemoteMediaFieldLink();
         parent::setUp();
@@ -29,10 +29,10 @@ class RemoteMediaFieldLinkTest extends TestCase
             ->setResourceId('test')
             ->setProvider('testprovider');
 
-        $this->assertEquals(42, $this->entity->getContentId());
-        $this->assertEquals(24, $this->entity->getFieldId());
-        $this->assertEquals(1, $this->entity->getVersionId());
-        $this->assertEquals('test', $this->entity->getResourceId());
-        $this->assertEquals('testprovider', $this->entity->getProvider());
+        self::assertEquals(42, $this->entity->getContentId());
+        self::assertEquals(24, $this->entity->getFieldId());
+        self::assertEquals(1, $this->entity->getVersionId());
+        self::assertEquals('test', $this->entity->getResourceId());
+        self::assertEquals('testprovider', $this->entity->getProvider());
     }
 }

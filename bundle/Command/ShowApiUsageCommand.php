@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
+use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use function str_replace;
+use function ucfirst;
 
 class ShowApiUsageCommand extends Command
 {

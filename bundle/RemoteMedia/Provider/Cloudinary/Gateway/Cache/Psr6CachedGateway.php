@@ -8,6 +8,12 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
+use function array_merge;
+use function array_unique;
+use function array_walk;
+use function implode;
+use function str_replace;
+use function trim;
 
 class Psr6CachedGateway extends Gateway
 {
@@ -81,50 +87,6 @@ class Psr6CachedGateway extends Gateway
     }
 
     /**
-     * All items will be tagged with this tag, so all cache can be invalidate at once.
-     *
-     * @return string
-     */
-    private function getBaseTag()
-    {
-        $tagBase = [self::PROJECT_KEY, self::PROVIDER_KEY];
-
-        return \implode('-', $tagBase);
-    }
-
-    private function getCacheTags($type)
-    {
-        return [
-            $this->getBaseTag(),
-            self::PROJECT_KEY . '-' . self::PROVIDER_KEY . '-' . $type,
-        ];
-    }
-
-    private function getItemCacheTags($resourceId)
-    {
-        $tags = [
-            $this->getBaseTag(),
-            self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $resourceId,
-        ];
-
-        \array_walk($tags, function (&$tag) {
-            $tag = $this->washKey($tag);
-        });
-
-        return $tags;
-    }
-
-    private function washKey($key)
-    {
-        $forbiddenCharacters = ['{', '}', '(', ')', '/', '\\', '@'];
-        foreach ($forbiddenCharacters as $char) {
-            $key = \str_replace($char, '_', \trim($key, $char));
-        }
-
-        return $key;
-    }
-
-    /**
      * Returns API rate limits information.
      *
      * @return mixed
@@ -146,11 +108,11 @@ class Psr6CachedGateway extends Gateway
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
-        $tags = \array_unique(\array_merge(
+        $tags = array_unique(array_merge(
             $this->getCacheTags(self::SEARCH),
             $this->getCacheTags(self::LIST),
             $this->getCacheTags(self::FOLDER_LIST),
-            $this->getCacheTags(self::FOLDER_COUNT)
+            $this->getCacheTags(self::FOLDER_COUNT),
         ));
 
         $this->cache->invalidateTags($tags);
@@ -177,7 +139,7 @@ class Psr6CachedGateway extends Gateway
     public function search(Query $query): Result
     {
         $searchCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, (string) $query])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, (string) $query]),
         );
 
         $cacheItem = $this->cache->getItem($searchCacheKey);
@@ -204,7 +166,7 @@ class Psr6CachedGateway extends Gateway
     public function searchCount(Query $query)
     {
         $searchCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH_COUNT, (string) $query])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH_COUNT, (string) $query]),
         );
 
         $cacheItem = $this->cache->getItem($searchCacheKey);
@@ -231,7 +193,7 @@ class Psr6CachedGateway extends Gateway
     public function listFolders()
     {
         $listFolderCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST]),
         );
         $cacheItem = $this->cache->getItem($listFolderCacheKey);
 
@@ -255,7 +217,7 @@ class Psr6CachedGateway extends Gateway
     public function listSubFolders(string $parentFolder)
     {
         $listFolderCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST, $parentFolder])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST, $parentFolder]),
         );
         $cacheItem = $this->cache->getItem($listFolderCacheKey);
 
@@ -299,7 +261,7 @@ class Psr6CachedGateway extends Gateway
     public function countResourcesInFolder($folder)
     {
         $countCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder]),
         );
         $cacheItem = $this->cache->getItem($countCacheKey);
 
@@ -326,7 +288,7 @@ class Psr6CachedGateway extends Gateway
     public function get($id, $type)
     {
         $resourceCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type]),
         );
         $cacheItem = $this->cache->getItem($resourceCacheKey);
 
@@ -350,7 +312,7 @@ class Psr6CachedGateway extends Gateway
     public function listTags()
     {
         $listTagCacheKey = $this->washKey(
-            \implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::TAG_LIST])
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::TAG_LIST]),
         );
         $cacheItem = $this->cache->getItem($listTagCacheKey);
 
@@ -419,7 +381,6 @@ class Psr6CachedGateway extends Gateway
         return $value;
     }
 
-
     /**
      * Updates the remote resource.
      *
@@ -486,14 +447,58 @@ class Psr6CachedGateway extends Gateway
     {
         $result = $this->gateway->delete($id, $type);
 
-        $tags = \array_unique(\array_merge(
+        $tags = array_unique(array_merge(
             $this->getCacheTags(self::SEARCH),
             $this->getCacheTags(self::LIST),
-            $this->getCacheTags(self::FOLDER_COUNT)
+            $this->getCacheTags(self::FOLDER_COUNT),
         ));
 
         $this->cache->invalidateTags($tags);
 
         return $result;
+    }
+
+    /**
+     * All items will be tagged with this tag, so all cache can be invalidate at once.
+     *
+     * @return string
+     */
+    private function getBaseTag()
+    {
+        $tagBase = [self::PROJECT_KEY, self::PROVIDER_KEY];
+
+        return implode('-', $tagBase);
+    }
+
+    private function getCacheTags($type)
+    {
+        return [
+            $this->getBaseTag(),
+            self::PROJECT_KEY . '-' . self::PROVIDER_KEY . '-' . $type,
+        ];
+    }
+
+    private function getItemCacheTags($resourceId)
+    {
+        $tags = [
+            $this->getBaseTag(),
+            self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $resourceId,
+        ];
+
+        array_walk($tags, function (&$tag) {
+            $tag = $this->washKey($tag);
+        });
+
+        return $tags;
+    }
+
+    private function washKey($key)
+    {
+        $forbiddenCharacters = ['{', '}', '(', ')', '/', '\\', '@'];
+        foreach ($forbiddenCharacters as $char) {
+            $key = str_replace($char, '_', trim($key, $char));
+        }
+
+        return $key;
     }
 }

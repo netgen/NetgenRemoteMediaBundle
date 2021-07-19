@@ -14,7 +14,7 @@ abstract class BaseTest extends TestCase
      */
     protected $value;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->value = new Value(
             [
@@ -29,7 +29,7 @@ abstract class BaseTest extends TestCase
                         'h' => 200,
                     ],
                 ],
-            ]
+            ],
         );
     }
 }

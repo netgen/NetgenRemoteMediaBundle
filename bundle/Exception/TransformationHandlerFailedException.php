@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Exception;
 
 use Exception;
+use function sprintf;
 
 class TransformationHandlerFailedException extends Exception
 {

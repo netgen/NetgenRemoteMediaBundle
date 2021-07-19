@@ -13,7 +13,7 @@ class FillTest extends BaseTest
      */
     protected $fill;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->fill = new Fill();
@@ -21,21 +21,21 @@ class FillTest extends BaseTest
 
     public function testFillSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'fill'],
-            $this->fill->process($this->value, 'small')
+            $this->fill->process($this->value, 'small'),
         );
     }
 
     public function testFillWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'fill',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->fill->process($this->value, 'small', [100, 200])
+            $this->fill->process($this->value, 'small', [100, 200]),
         );
     }
 }

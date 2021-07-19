@@ -7,6 +7,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
 use PHPUnit\Framework\TestCase;
+use function json_encode;
 
 class ValueTest extends TestCase
 {
@@ -91,28 +92,28 @@ class ValueTest extends TestCase
 
     public function testInstanceOfValue()
     {
-        $this->assertInstanceOf(BaseValue::class, new Value());
+        self::assertInstanceOf(BaseValue::class, new Value());
     }
 
     public function testConstructionWithParameters()
     {
         $value = new Value(self::EXAMPLE_PARAMETERS);
 
-        $this->assertEquals(\json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
+        self::assertEquals(json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
     }
 
     public function testConstructionWithoutParameters()
     {
         $value = new Value();
 
-        $this->assertEquals(\json_encode(self::EMPTY_PARAMETERS), (string) $value);
+        self::assertEquals(json_encode(self::EMPTY_PARAMETERS), (string) $value);
     }
 
     public function testImageConstructionFromCloudinaryResponse()
     {
         $value = Value::createFromCloudinaryResponse(self::EXAMPLE_CLOUDINARY_RESPONSE);
 
-        $this->assertEquals(\json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
+        self::assertEquals(json_encode(self::EXAMPLE_PARAMETERS), (string) $value);
     }
 
     public function testVideoConstructionFromCloudinaryResponse()
@@ -127,7 +128,7 @@ class ValueTest extends TestCase
         $exampleParameters['resourceType'] = 'video';
         $exampleParameters['type'] = 'upload';
 
-        $this->assertEquals(\json_encode($exampleParameters), (string) $value);
+        self::assertEquals(json_encode($exampleParameters), (string) $value);
     }
 
     public function testPdfConstructionFromCloudinaryResponse()
@@ -142,6 +143,6 @@ class ValueTest extends TestCase
         $exampleParameters['resourceType'] = 'pdf';
         $exampleParameters['type'] = 'upload';
 
-        $this->assertEquals(\json_encode($exampleParameters), (string) $value);
+        self::assertEquals(json_encode($exampleParameters), (string) $value);
     }
 }

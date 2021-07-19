@@ -7,12 +7,13 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\InputValue;
 use PHPUnit\Framework\TestCase;
+use function json_encode;
 
 class InputValueTest extends TestCase
 {
     public function testInstanceOfValue()
     {
-        $this->assertInstanceOf(BaseValue::class, new InputValue());
+        self::assertInstanceOf(BaseValue::class, new InputValue());
     }
 
     public function testConstructionWithParameters()
@@ -26,7 +27,7 @@ class InputValueTest extends TestCase
 
         $inputValue = new InputValue($parameters);
 
-        $this->assertEquals(\json_encode($parameters), (string) $inputValue);
+        self::assertEquals(json_encode($parameters), (string) $inputValue);
     }
 
     public function testConstructionWithoutParameters()
@@ -40,6 +41,6 @@ class InputValueTest extends TestCase
 
         $inputValue = new InputValue();
 
-        $this->assertEquals(\json_encode($expectedResponseArray), (string) $inputValue);
+        self::assertEquals(json_encode($expectedResponseArray), (string) $inputValue);
     }
 }

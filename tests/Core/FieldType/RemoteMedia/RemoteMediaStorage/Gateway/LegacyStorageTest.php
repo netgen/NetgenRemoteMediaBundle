@@ -34,7 +34,7 @@ class LegacyStorageTest extends TestCase
      */
     protected $remoteMediaProvider;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->connection = $this->getMockBuilder(ConnectionHandler::class)
             ->disableOriginalConstructor()
@@ -47,7 +47,7 @@ class LegacyStorageTest extends TestCase
 
     public function testInstanceOfGateway()
     {
-        $this->assertInstanceOf(Gateway::class, $this->storage);
+        self::assertInstanceOf(Gateway::class, $this->storage);
     }
 
     public function testConnectionHandling()
@@ -57,7 +57,7 @@ class LegacyStorageTest extends TestCase
         $this->storage->setConnection($handler);
 
         // Avoid detecting risky tests
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     /**
@@ -71,7 +71,7 @@ class LegacyStorageTest extends TestCase
         $this->storage->setConnection($handler);
 
         // Avoid detecting risky tests
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     public function testStoreFieldDataInsertNew()
@@ -99,26 +99,26 @@ class LegacyStorageTest extends TestCase
             ['resource_id' => 'some_resource_id'],
         ];
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('fetchAll')
             ->willReturn([]);
 
-        $selectQuery->expects($this->once())
+        $selectQuery->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $insertQuery->expects($this->once())
+        $insertQuery->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $statement->expects($this->at(2))
+        $statement->expects(self::at(2))
             ->method('execute');
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createSelectQuery')
             ->willReturn($selectQuery);
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createInsertQuery')
             ->willReturn($insertQuery);
 
@@ -151,26 +151,26 @@ class LegacyStorageTest extends TestCase
             ['resource_id' => 'some_resource_id'],
         ];
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('fetchAll')
             ->willReturn($result);
 
-        $selectQuery->expects($this->once())
+        $selectQuery->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $updateQuery->expects($this->once())
+        $updateQuery->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $statement->expects($this->at(2))
+        $statement->expects(self::at(2))
             ->method('execute');
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createSelectQuery')
             ->willReturn($selectQuery);
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createUpdateQuery')
             ->willReturn($updateQuery);
 
@@ -194,14 +194,14 @@ class LegacyStorageTest extends TestCase
             ->setMethods(['execute'])
             ->getMock();
 
-        $query->expects($this->once())
+        $query->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('execute');
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createDeleteQuery')
             ->willReturn($query);
 
@@ -225,22 +225,22 @@ class LegacyStorageTest extends TestCase
             ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createSelectQuery')
             ->willReturn($query);
 
-        $query->expects($this->once())
+        $query->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('execute');
 
         $result = [
             ['resource_id' => 'some_resource_id'],
         ];
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('fetchAll')
             ->willReturn($result);
 
@@ -264,27 +264,27 @@ class LegacyStorageTest extends TestCase
             ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createSelectQuery')
             ->willReturn($query);
 
-        $query->expects($this->once())
+        $query->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('execute');
 
         $result = [
             ['resource_id' => 'some_resource_id'],
         ];
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('fetchAll')
             ->willReturn($result);
 
         $this->storage->setConnection($this->connection);
-        $this->assertTrue($this->storage->remoteResourceConnected('some_resource_id', 'some_provider_identifier'));
+        self::assertTrue($this->storage->remoteResourceConnected('some_resource_id', 'some_provider_identifier'));
     }
 
     public function testRemoteResourceConnectedWithoutResults()
@@ -303,25 +303,25 @@ class LegacyStorageTest extends TestCase
             ->setMethods(['execute', 'fetchAll'])
             ->getMock();
 
-        $this->connection->expects($this->once())
+        $this->connection->expects(self::once())
             ->method('createSelectQuery')
             ->willReturn($query);
 
-        $query->expects($this->once())
+        $query->expects(self::once())
             ->method('prepare')
             ->willReturn($statement);
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('execute');
 
         $result = [];
 
-        $statement->expects($this->once())
+        $statement->expects(self::once())
             ->method('fetchAll')
             ->willReturn($result);
 
         $this->storage->setConnection($this->connection);
-        $this->assertNotTrue($this->storage->remoteResourceConnected('some_resource_id', 'some_provider_identifier'));
+        self::assertNotTrue($this->storage->remoteResourceConnected('some_resource_id', 'some_provider_identifier'));
     }
 
     /**

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Folder;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,7 +34,7 @@ final class Load
             : $this->remoteMediaProvider->listSubFolders($folder);
 
         $formattedFolders = [];
-        foreach($folders as $folder) {
+        foreach ($folders as $folder) {
             $formattedFolders[] = [
                 'id' => $folder['path'],
                 'label' => $folder['name'],

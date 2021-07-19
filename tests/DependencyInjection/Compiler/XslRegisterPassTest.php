@@ -7,6 +7,8 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection\Compiler;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler\XslRegisterPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use function array_merge;
+use function str_replace;
 
 class XslRegisterPassTest extends AbstractCompilerPassTestCase
 {
@@ -28,11 +30,11 @@ class XslRegisterPassTest extends AbstractCompilerPassTestCase
         ];
 
         $expectedInjectedParameter = [
-            'path' => \str_replace('tests/', 'bundle/', __DIR__) . '/../../Resources/xsl/ezxml_ngremotemedia.xsl',
+            'path' => str_replace('tests/', 'bundle/', __DIR__) . '/../../Resources/xsl/ezxml_ngremotemedia.xsl',
             'priority' => 5000,
         ];
 
-        $expectedXslConfig = \array_merge($testXslConfig, [$expectedInjectedParameter]);
+        $expectedXslConfig = array_merge($testXslConfig, [$expectedInjectedParameter]);
 
         $this->setParameter('ezsettings.default.fieldtypes.ezxml.custom_xsl', $testXslConfigDefault);
         $this->setParameter('ezpublish.siteaccess.list', $siteaccessList);
@@ -57,7 +59,7 @@ class XslRegisterPassTest extends AbstractCompilerPassTestCase
         $this->compile();
 
         // Avoid detecting risky tests
-        $this->assertTrue(true);
+        self::assertTrue(true);
     }
 
     protected function registerCompilerPass(ContainerBuilder $container)

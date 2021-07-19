@@ -60,11 +60,9 @@ class RemoteMediaFieldType extends AbstractType
                 [
                     'multiple' => true,
                     'choices' => ['{{tag}}' => true],
-                    'choice_attr' => static function () {
-                        return ['v-for' => 'tag in allTags', ':value' => 'tag'];
-                    },
-                    'label' => 'ngrm.edit.form.field.tags'
-                ]
+                    'choice_attr' => static fn () => ['v-for' => 'tag in allTags', ':value' => 'tag'],
+                    'label' => 'ngrm.edit.form.field.tags',
+                ],
             )
             ->add('image_variations', HiddenType::class)
             ->add('media_type', HiddenType::class)
@@ -74,24 +72,22 @@ class RemoteMediaFieldType extends AbstractType
                     $this->fieldTypeService->getFieldType('ngremotemedia'),
                     $options['field'],
                     $this->remoteMediaProvider,
-                    $this->updateHelper
-                )
+                    $this->updateHelper,
+                ),
             );
 
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, static function (FormEvent $event) {
             $form = $event->getForm();
             $data = $event->getData();
 
             $form->remove('tags');
 
-            $form->add('tags', ChoiceType::class, array(
+            $form->add('tags', ChoiceType::class, [
                 'multiple' => true,
                 'choices' => $data['tags'] ?? [],
-                'choice_attr' => static function () {
-                    return ['v-for' => 'tag in allTags', ':value' => 'tag'];
-                },
-                'label' => 'ngrm.edit.form.field.tags'
-            ));
+                'choice_attr' => static fn () => ['v-for' => 'tag in allTags', ':value' => 'tag'],
+                'label' => 'ngrm.edit.form.field.tags',
+            ]);
         });
     }
 

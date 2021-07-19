@@ -41,7 +41,7 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
                 'testprovider',
                 'testalias',
                 new Reference('custom_handler'),
-            ]
+            ],
         );
     }
 

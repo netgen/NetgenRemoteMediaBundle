@@ -14,7 +14,7 @@ class NamedTransformationTest extends BaseTest
      */
     protected $namedTransformation;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->namedTransformation = new NamedTransformation();
@@ -22,9 +22,9 @@ class NamedTransformationTest extends BaseTest
 
     public function testNamedTransformation()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['transformation' => 'thisIsNamedTransformation'],
-            $this->namedTransformation->process($this->value, 'named', ['thisIsNamedTransformation'])
+            $this->namedTransformation->process($this->value, 'named', ['thisIsNamedTransformation']),
         );
     }
 

@@ -22,7 +22,7 @@ abstract class RemoteMediaProvider
     /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
-    public function __construct(Registry $registry, VariationResolver $variationsResolver, LoggerInterface $logger = null)
+    public function __construct(Registry $registry, VariationResolver $variationsResolver, ?LoggerInterface $logger = null)
     {
         $this->registry = $registry;
         $this->variationResolver = $variationsResolver;
@@ -31,8 +31,6 @@ abstract class RemoteMediaProvider
 
     /**
      * Returns API rate limits information.
-     *
-     * @return array
      */
     abstract public function usage(): array;
 
@@ -103,7 +101,6 @@ abstract class RemoteMediaProvider
      * Returns the remote resource with provided id and type.
      *
      * @param mixed $resourceId
-     * @param string $resourceType
      */
     abstract public function getRemoteResource(string $resourceId, string $resourceType = 'image'): Value;
 
@@ -163,7 +160,6 @@ abstract class RemoteMediaProvider
 
     /**
      * Generates html5 video tag for the video with provided id.
-     *
      *
      * @param string|array $format
      */

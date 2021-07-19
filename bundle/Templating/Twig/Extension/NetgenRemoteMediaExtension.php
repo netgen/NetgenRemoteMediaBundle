@@ -14,6 +14,7 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use function json_decode;
 
 class NetgenRemoteMediaExtension extends AbstractExtension
 {
@@ -64,7 +65,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
         return [
             new TwigFilter(
                 'scaling_format',
-                [$this, 'scalingFormat']
+                [$this, 'scalingFormat'],
             ),
         ];
     }
@@ -79,43 +80,43 @@ class NetgenRemoteMediaExtension extends AbstractExtension
         return [
             new TwigFunction(
                 'netgen_remote_variation',
-                [$this, 'getRemoteImageVariation']
+                [$this, 'getRemoteImageVariation'],
             ),
             new TwigFunction(
                 'netgen_remote_variation_embed',
-                [$this, 'getRemoteImageVariationEmbed']
+                [$this, 'getRemoteImageVariationEmbed'],
             ),
             new TwigFunction(
                 'netgen_remote_video',
-                [$this, 'getRemoteVideoTag']
+                [$this, 'getRemoteVideoTag'],
             ),
             new TwigFunction(
                 'netgen_remote_video_embed',
-                [$this, 'getRemoteVideoTagEmbed']
+                [$this, 'getRemoteVideoTagEmbed'],
             ),
             new TwigFunction(
                 'netgen_remote_video_thumbnail',
-                [$this, 'getVideoThumbnail']
+                [$this, 'getVideoThumbnail'],
             ),
             new TwigFunction(
                 'netgen_remote_download',
-                [$this, 'getResourceDownloadLink']
+                [$this, 'getResourceDownloadLink'],
             ),
             new TwigFunction(
                 'netgen_remote_media',
-                [$this, 'getRemoteResource']
+                [$this, 'getRemoteResource'],
             ),
             new TwigFunction(
                 'netgen_remote_media_embed',
-                [$this, 'getRemoteResourceEmbed']
+                [$this, 'getRemoteResourceEmbed'],
             ),
             new TwigFunction(
                 'ngrm_is_croppable',
-                [$this, 'contentTypeIsCroppable']
+                [$this, 'contentTypeIsCroppable'],
             ),
             new TwigFunction(
                 'ngrm_available_variations',
-                [$this, 'variationsForContent']
+                [$this, 'variationsForContent'],
             ),
         ];
     }
@@ -161,7 +162,6 @@ class NetgenRemoteMediaExtension extends AbstractExtension
     /**
      * Returns variation by specified format from resource value.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $format
      * @param bool $secure
      *
@@ -191,7 +191,6 @@ class NetgenRemoteMediaExtension extends AbstractExtension
     /**
      * Generates html5 video tag for the video with provided resource and format.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
      * @param string $format
      *
      * @return mixed
@@ -239,9 +238,6 @@ class NetgenRemoteMediaExtension extends AbstractExtension
      * Gets remote resource with resource ID and resource type (for embed).
      * If provided, it sets image variations coords.
      *
-     * @param string $resourceId
-     * @param string $resourceType
-     *
      * @return Variation
      */
     public function getRemoteResourceEmbed(string $resourceId, string $resourceType, ?string $coords = null)
@@ -249,7 +245,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
         $resource = $this->provider->getRemoteResource($resourceId, $resourceType);
 
         if ($coords !== null) {
-            $resource->variations = \json_decode($coords, true);
+            $resource->variations = json_decode($coords, true);
         }
 
         return $resource;
@@ -263,7 +259,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
     public function contentTypeIsCroppable(Content $content)
     {
         $contentTypeIdentifier = $this->contentTypeService->loadContentType(
-            $content->contentInfo->contentTypeId
+            $content->contentInfo->contentTypeId,
         )->identifier;
 
         return !empty($this->variationResolver->getCroppbableVariations($contentTypeIdentifier));
@@ -274,6 +270,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
      * If second parameter is true, it will return only variations with crop configuration.
      *
      * @param $onlyCroppable
+     * @param mixed $contentTypeIdentifier
      *
      * @return array
      */
@@ -281,7 +278,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
     {
         if ($contentTypeIdentifier instanceof Content) {
             $contentTypeIdentifier = $this->contentTypeService->loadContentType(
-                $contentTypeIdentifier->contentInfo->contentTypeId
+                $contentTypeIdentifier->contentInfo->contentTypeId,
             )->identifier;
         }
 

@@ -12,7 +12,7 @@ class VariationResolverTest extends TestCase
     /** @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver */
     protected $variationResolver;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->variationResolver = new VariationResolver();
         $this->variationResolver->setVariations($this->getVariationSet());
@@ -20,7 +20,7 @@ class VariationResolverTest extends TestCase
 
     public function testContentTypeVariationsWithOverride()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'small' => [
                     'transformations' => [
@@ -43,13 +43,13 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getVariationsForContentType('article')
+            $this->variationResolver->getVariationsForContentType('article'),
         );
     }
 
     public function testContentTypeVariationsWithOutOverride()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'small' => [
                     'transformations' => [
@@ -67,13 +67,13 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getVariationsForContentType('blog_post')
+            $this->variationResolver->getVariationsForContentType('blog_post'),
         );
     }
 
     public function testCroppableVariations()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'small' => [
                     'transformations' => [
@@ -86,13 +86,13 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getCroppbableVariations('article')
+            $this->variationResolver->getCroppbableVariations('article'),
         );
     }
 
     public function testGetEmbedVariations()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'small' => [
                     'transformations' => [
@@ -110,7 +110,7 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getEmbedVariations()
+            $this->variationResolver->getEmbedVariations(),
         );
     }
 

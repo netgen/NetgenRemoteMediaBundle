@@ -12,7 +12,7 @@ class RemoteMediaValueConverterTest extends TestCase
 {
     protected $converter;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->converter = new RemoteMediaValueConverter();
     }
@@ -21,6 +21,6 @@ class RemoteMediaValueConverterTest extends TestCase
     {
         $object = new Value();
 
-        $this->assertEquals($object, $this->converter->convert($object));
+        self::assertEquals($object, $this->converter->convert($object));
     }
 }

@@ -5,21 +5,20 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-
-use function in_array;
 use function basename;
+use function in_array;
 
 /**
  * Class Helper.
  *
  * @internal
  */
-class Helper
+final class Helper
 {
     /**
      * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider
      */
-    protected $provider;
+    private $provider;
 
     /**
      * Helper constructor.
@@ -35,8 +34,6 @@ class Helper
     /**
      * Formats browse item to comply with javascript.
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     *
      * @return array
      */
     public function formatBrowseItem(Value $value)
@@ -51,7 +48,7 @@ class Helper
         if ($mediaType === Value::TYPE_IMAGE) {
             $browseUrl = $this->provider->buildVariation($value, 'admin', $thumbOptions)->url;
             $previewUrl = $value->secure_url;
-        } else if ($mediaType === Value::TYPE_VIDEO) {
+        } elseif ($mediaType === Value::TYPE_VIDEO) {
             $browseUrl = $this->provider->getVideoThumbnail($value, $thumbOptions);
             $previewUrl = $this->provider->getVideoThumbnail($value);
         } else {
@@ -80,8 +77,6 @@ class Helper
     /**
      * Formats browse list to comply with javascript.
      *
-     * @param array $list
-     *
      * @return array
      */
     public function formatBrowseList(array $list)
@@ -99,15 +94,14 @@ class Helper
     /**
      * Parse out the type, we make a difference between images, videos, and documents (pdf, doc, docx).
      *
-     * @param \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value $value
-     *
      * @return string
      */
     private function determineType(Value $value)
     {
         if ($value->resourceType === 'video') {
             return Value::TYPE_VIDEO;
-        } elseif ($value->resourceType === 'image' && (!isset($value->metaData['format']) || !in_array($value->metaData['format'], ['pdf', 'doc', 'docx'], true))) {
+        }
+        if ($value->resourceType === 'image' && (!isset($value->metaData['format']) || !in_array($value->metaData['format'], ['pdf', 'doc', 'docx'], true))) {
             return Value::TYPE_IMAGE;
         }
 

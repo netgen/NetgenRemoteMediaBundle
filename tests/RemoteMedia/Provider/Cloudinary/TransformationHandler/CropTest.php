@@ -14,7 +14,7 @@ class CropTest extends BaseTest
      */
     protected $crop;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->crop = new Crop();
@@ -22,7 +22,7 @@ class CropTest extends BaseTest
 
     public function testCrop()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 [
                     'x' => 10,
@@ -32,7 +32,7 @@ class CropTest extends BaseTest
                     'crop' => 'crop',
                 ],
             ],
-            $this->crop->process($this->value, 'small')
+            $this->crop->process($this->value, 'small'),
         );
     }
 

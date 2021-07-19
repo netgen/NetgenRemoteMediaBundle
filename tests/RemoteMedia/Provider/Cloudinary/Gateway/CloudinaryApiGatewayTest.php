@@ -12,6 +12,7 @@ use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Gateway\Clou
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query;
 use PHPUnit\Framework\Constraint\LogicalOr;
 use PHPUnit\Framework\TestCase;
+use function json_encode;
 
 class CloudinaryApiGatewayTest extends TestCase
 {
@@ -40,7 +41,7 @@ class CloudinaryApiGatewayTest extends TestCase
      */
     protected $cloudinarySearch;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->cloudinary = $this->createMock(Cloudinary::class);
         $this->cloudinaryUploader = $this->createMock(Uploader::class);
@@ -55,33 +56,6 @@ class CloudinaryApiGatewayTest extends TestCase
         $this->apiGateway = $apiGateway;
     }
 
-    private function setUpSearch()
-    {
-        $constraints = new LogicalOr();
-        $constraints->setConstraints([
-            'expression', 'max_results', 'with_field',
-        ]);
-        $this->cloudinarySearch->expects($this->any())->method($constraints)->willReturnSelf();
-    }
-
-    private function getSearchResponse()
-    {
-        $response = new \stdClass();
-        $response->body = \json_encode([
-            'total_count' => 200,
-            'next_cursor' => '123',
-            'resources' => [],
-        ]);
-        $response->responseCode = 200;
-        $response->headers = [
-            'X-FeatureRateLimit-Reset' => 'test',
-            'X-FeatureRateLimit-Limit' => 'test',
-            'X-FeatureRateLimit-Remaining' => 'test',
-        ];
-
-        return $response;
-    }
-
     public function testGetVariationUrl()
     {
         $source = 'test.jpg';
@@ -93,9 +67,9 @@ class CloudinaryApiGatewayTest extends TestCase
             'secure' => true,
         ];
 
-        $this->assertEquals(
+        self::assertEquals(
             'https://res.cloudinary.com/testcloud/image/upload/test.jpg',
-            $this->apiGateway->getVariationUrl($source, $options)
+            $this->apiGateway->getVariationUrl($source, $options),
         );
     }
 
@@ -104,19 +78,19 @@ class CloudinaryApiGatewayTest extends TestCase
         $query = new Query('', 'image', 25, null, 'tag');
 
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('expression');
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('max_results');
         $this->cloudinarySearch
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('with_field');
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('execute')
             ->willReturn(
-                new Api\Response($this->getSearchResponse())
+                new Api\Response($this->getSearchResponse()),
             ); // @todo: finish this
 
         $this->apiGateway->search($query);
@@ -127,19 +101,19 @@ class CloudinaryApiGatewayTest extends TestCase
         $query = new Query('query', 'image', 25);
 
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('expression');
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('max_results');
         $this->cloudinarySearch
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('with_field');
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('execute')
             ->willReturn(
-                new Api\Response($this->getSearchResponse())
+                new Api\Response($this->getSearchResponse()),
             ); // @todo: finish this
 
         $this->apiGateway->search($query);
@@ -150,22 +124,22 @@ class CloudinaryApiGatewayTest extends TestCase
         $query = new Query('query', 'image', 25, null, null, '823b');
 
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('expression');
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('max_results');
         $this->cloudinarySearch
-            ->expects($this->exactly(2))
+            ->expects(self::exactly(2))
             ->method('with_field');
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('next_cursor');
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('execute')
             ->willReturn(
-                new Api\Response($this->getSearchResponse())
+                new Api\Response($this->getSearchResponse()),
             ); // @todo: finish this
 
         $this->apiGateway->search($query);
@@ -174,14 +148,14 @@ class CloudinaryApiGatewayTest extends TestCase
     public function testListFolders()
     {
         $this->cloudinaryApi->method('root_folders')->willReturn(new \ArrayObject(['folders' => []]));
-        $this->cloudinaryApi->expects($this->once())->method('root_folders');
+        $this->cloudinaryApi->expects(self::once())->method('root_folders');
         $this->apiGateway->listFolders();
     }
 
     public function testCountResources()
     {
         $this->cloudinaryApi->method('usage')->willReturn(new \ArrayObject(['resources' => []]));
-        $this->cloudinaryApi->expects($this->once())->method('usage');
+        $this->cloudinaryApi->expects(self::once())->method('usage');
         $this->apiGateway->countResources();
     }
 
@@ -190,11 +164,11 @@ class CloudinaryApiGatewayTest extends TestCase
         $expression = 'folder:folderName/*';
 
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('expression')
             ->with($expression);
         $this->cloudinarySearch
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('max_results')
             ->with(0);
 
@@ -215,15 +189,15 @@ class CloudinaryApiGatewayTest extends TestCase
             ->willReturn(new \ArrayObject([]));
 
         $this->cloudinaryApi
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('resources_by_ids')
             ->with(['test_id'], $options);
 
         $result = $this->apiGateway->get('test_id', 'image');
 
-        $this->assertEquals(
+        self::assertEquals(
             [],
-            $result
+            $result,
         );
     }
 
@@ -232,10 +206,37 @@ class CloudinaryApiGatewayTest extends TestCase
         $options = [];
 
         $this->cloudinaryApi
-            ->expects($this->once())
+            ->expects(self::once())
             ->method('update')
             ->with('test_id', $options);
 
         $this->apiGateway->update('test_id', $options);
+    }
+
+    private function setUpSearch()
+    {
+        $constraints = new LogicalOr();
+        $constraints->setConstraints([
+            'expression', 'max_results', 'with_field',
+        ]);
+        $this->cloudinarySearch->expects(self::any())->method($constraints)->willReturnSelf();
+    }
+
+    private function getSearchResponse()
+    {
+        $response = new \stdClass();
+        $response->body = json_encode([
+            'total_count' => 200,
+            'next_cursor' => '123',
+            'resources' => [],
+        ]);
+        $response->responseCode = 200;
+        $response->headers = [
+            'X-FeatureRateLimit-Reset' => 'test',
+            'X-FeatureRateLimit-Limit' => 'test',
+            'X-FeatureRateLimit-Remaining' => 'test',
+        ];
+
+        return $response;
     }
 }

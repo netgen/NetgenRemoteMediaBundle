@@ -5,7 +5,12 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
+use function array_pop;
+use function count;
+use function explode;
+use function implode;
 use function pathinfo;
+use const PATHINFO_FILENAME;
 
 final class UpdateFieldHelper
 {
@@ -76,7 +81,7 @@ final class UpdateFieldHelper
                 $this->remoteMediaProvider->updateTags(
                     $updatedValue->resourceId,
                     count($input->getTags()) > 0 ? implode(',', $input->getTags()) : null,
-                    $updatedValue->resourceType
+                    $updatedValue->resourceType,
                 );
             }
 
@@ -87,7 +92,7 @@ final class UpdateFieldHelper
             $this->remoteMediaProvider->updateResourceContext(
                 $updatedValue->resourceId,
                 $updatedValue->resourceType,
-                $dataToChange
+                $dataToChange,
             );
         }
     }

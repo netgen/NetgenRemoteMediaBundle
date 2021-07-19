@@ -14,7 +14,7 @@ class FormatTest extends BaseTest
      */
     protected $format;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->format = new Format();
@@ -22,9 +22,9 @@ class FormatTest extends BaseTest
 
     public function testFormat()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['fetch_format' => 'png'],
-            $this->format->process($this->value, 'png_format', ['png'])
+            $this->format->process($this->value, 'png_format', ['png']),
         );
     }
 

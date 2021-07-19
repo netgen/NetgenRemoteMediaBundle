@@ -7,12 +7,13 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
 use PHPUnit\Framework\TestCase;
+use function json_encode;
 
 class VariationTest extends TestCase
 {
     public function testInstanceOfValue()
     {
-        $this->assertInstanceOf(BaseValue::class, new Variation());
+        self::assertInstanceOf(BaseValue::class, new Variation());
     }
 
     public function testConstructionWithParameters()
@@ -29,7 +30,7 @@ class VariationTest extends TestCase
 
         $variation = new Variation($parameters);
 
-        $this->assertEquals(\json_encode($parameters), (string) $variation);
+        self::assertEquals(json_encode($parameters), (string) $variation);
     }
 
     public function testConstructionWithoutParameters()
@@ -46,6 +47,6 @@ class VariationTest extends TestCase
 
         $variation = new Variation();
 
-        $this->assertEquals(\json_encode($expectedResponseArray), (string) $variation);
+        self::assertEquals(json_encode($expectedResponseArray), (string) $variation);
     }
 }

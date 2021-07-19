@@ -14,7 +14,7 @@ class QualityTest extends BaseTest
      */
     protected $quality;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->quality = new Quality();
@@ -22,19 +22,19 @@ class QualityTest extends BaseTest
 
     public function testQualitySimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['quality' => 80],
-            $this->quality->process($this->value, 'test', [80])
+            $this->quality->process($this->value, 'test', [80]),
         );
     }
 
     public function testQualityWithAutoType()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'quality' => 'auto:best',
             ],
-            $this->quality->process($this->value, 'test', ['auto', 'best'])
+            $this->quality->process($this->value, 'test', ['auto', 'best']),
         );
     }
 

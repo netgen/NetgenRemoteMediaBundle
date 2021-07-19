@@ -37,7 +37,7 @@ class TransformationHandlersCompilerPass implements CompilerPassInterface
                     $transformationHandler[0]['provider'],
                     $transformationHandler[0]['alias'],
                     new Reference($serviceId),
-                ]
+                ],
             );
         }
     }

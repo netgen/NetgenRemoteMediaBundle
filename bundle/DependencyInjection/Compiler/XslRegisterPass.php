@@ -7,6 +7,8 @@ namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler;
 use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\ConfigResolver;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use function array_merge;
+use function sprintf;
 
 class XslRegisterPass implements CompilerPassInterface
 {
@@ -22,9 +24,9 @@ class XslRegisterPass implements CompilerPassInterface
             return;
         }
 
-        $scopes = \array_merge(
+        $scopes = array_merge(
             [ConfigResolver::SCOPE_DEFAULT],
-            $container->getParameter('ezpublish.siteaccess.list')
+            $container->getParameter('ezpublish.siteaccess.list'),
         );
 
         if (empty($scopes)) {

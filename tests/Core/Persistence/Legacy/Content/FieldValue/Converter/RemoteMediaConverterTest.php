@@ -11,6 +11,8 @@ use eZ\Publish\SPI\Persistence\Content\FieldValue;
 use eZ\Publish\SPI\Persistence\Content\Type\FieldDefinition;
 use Netgen\Bundle\RemoteMediaBundle\Core\Persistence\Legacy\Content\FieldValue\Converter\RemoteMediaConverter;
 use PHPUnit\Framework\TestCase;
+use function json_decode;
+use function json_encode;
 
 class RemoteMediaConverterTest extends TestCase
 {
@@ -19,24 +21,24 @@ class RemoteMediaConverterTest extends TestCase
      */
     protected $converter;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->converter = new RemoteMediaConverter();
     }
 
     public function testInstanceOfConverter()
     {
-        $this->assertInstanceOf(Converter::class, $this->converter);
+        self::assertInstanceOf(Converter::class, $this->converter);
     }
 
     public function testGetIndexColumn()
     {
-        $this->assertEquals('data_text', $this->converter->getIndexColumn());
+        self::assertEquals('data_text', $this->converter->getIndexColumn());
     }
 
     public function testCreate()
     {
-        $this->assertEquals($this->converter, RemoteMediaConverter::create());
+        self::assertEquals($this->converter, RemoteMediaConverter::create());
     }
 
     public function testToStorageValue()
@@ -44,13 +46,13 @@ class RemoteMediaConverterTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => 'data',
-            ]
+            ],
         );
 
         $storageFieldValue = new StorageFieldValue();
 
         $this->converter->toStorageValue($fieldValue, $storageFieldValue);
-        $this->assertEquals($storageFieldValue->dataText, \json_encode($fieldValue->data));
+        self::assertEquals($storageFieldValue->dataText, json_encode($fieldValue->data));
     }
 
     public function testToFieldValue()
@@ -58,13 +60,13 @@ class RemoteMediaConverterTest extends TestCase
         $storageFieldValue = new StorageFieldValue(
             [
                 'dataText' => 'data',
-            ]
+            ],
         );
 
         $fieldValue = new FieldValue();
 
         $this->converter->toFieldValue($storageFieldValue, $fieldValue);
-        $this->assertEquals($fieldValue->data, \json_decode($storageFieldValue->dataText, true));
+        self::assertEquals($fieldValue->data, json_decode($storageFieldValue->dataText, true));
     }
 
     public function testToStorageFieldDefinition()
@@ -72,7 +74,7 @@ class RemoteMediaConverterTest extends TestCase
         $fieldDefinition = new FieldDefinition();
         $storageFieldDefinition = new StorageFieldDefinition();
 
-        $this->assertNull($this->converter->toStorageFieldDefinition($fieldDefinition, $storageFieldDefinition));
+        self::assertNull($this->converter->toStorageFieldDefinition($fieldDefinition, $storageFieldDefinition));
     }
 
     public function testToFieldDefinition()
@@ -80,6 +82,6 @@ class RemoteMediaConverterTest extends TestCase
         $storageFieldDefinition = new StorageFieldDefinition();
         $fieldDefinition = new FieldDefinition();
 
-        $this->assertNull($this->converter->toFieldDefinition($storageFieldDefinition, $fieldDefinition));
+        self::assertNull($this->converter->toFieldDefinition($storageFieldDefinition, $fieldDefinition));
     }
 }

@@ -13,7 +13,7 @@ class LfillTest extends BaseTest
      */
     protected $lfill;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->lfill = new Lfill();
@@ -21,21 +21,21 @@ class LfillTest extends BaseTest
 
     public function testLfillSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'lfill'],
-            $this->lfill->process($this->value, 'small')
+            $this->lfill->process($this->value, 'small'),
         );
     }
 
     public function testLfillWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'lfill',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->lfill->process($this->value, 'small', [100, 200])
+            $this->lfill->process($this->value, 'small', [100, 200]),
         );
     }
 }

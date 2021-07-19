@@ -9,6 +9,8 @@ use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
+use function is_array;
+use function is_string;
 
 class Type extends FieldType
 {
@@ -57,7 +59,7 @@ class Type extends FieldType
      */
     public function fromHash($hash)
     {
-        if (!\is_array($hash)) {
+        if (!is_array($hash)) {
             return $this->getEmptyValue();
         }
 
@@ -104,15 +106,16 @@ class Type extends FieldType
                         'variations' => $value->variations,
                     ],
                     'sortKey' => $this->getSortInfo($value),
-                ]
+                ],
             );
-        } elseif ($value instanceof Value) {
+        }
+        if ($value instanceof Value) {
             return new FieldValue(
                 [
                     'data' => $value,
                     'externalData' => $value,
                     'sortKey' => $this->getSortInfo($value),
-                ]
+                ],
             );
         }
     }
@@ -126,7 +129,8 @@ class Type extends FieldType
     {
         if ($fieldValue->data === null) {
             return $this->getEmptyValue();
-        } elseif ($fieldValue->data === $this->getEmptyValue()) {
+        }
+        if ($fieldValue->data === $this->getEmptyValue()) {
             return $this->getEmptyValue();
         }
 
@@ -184,12 +188,14 @@ class Type extends FieldType
     {
         if ($inputValue instanceof InputValue) {
             return $inputValue;
-        } elseif (\is_string($inputValue)) {
+        }
+        if (is_string($inputValue)) {
             $newValue = new InputValue();
             $newValue->input_uri = $inputValue;
 
             return $newValue;
-        } elseif (\is_array($inputValue)) {
+        }
+        if (is_array($inputValue)) {
             return new InputValue($inputValue);
         }
 
@@ -203,9 +209,10 @@ class Type extends FieldType
      */
     protected function checkValueStructure(BaseValue $value)
     {
-        if ($value instanceof Value && !\is_string($value->resourceId)) {
+        if ($value instanceof Value && !is_string($value->resourceId)) {
             throw new InvalidArgumentType('$value', 'string', $value->resourceId);
-        } elseif ($value instanceof InputValue && !\is_string($value->input_uri)) {
+        }
+        if ($value instanceof InputValue && !is_string($value->input_uri)) {
             throw new InvalidArgumentType('$value', 'string', $value->input_uri);
         }
     }

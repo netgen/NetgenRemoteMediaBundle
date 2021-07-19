@@ -13,7 +13,7 @@ class ScaleTest extends BaseTest
      */
     protected $scale;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->scale = new Scale();
@@ -21,21 +21,21 @@ class ScaleTest extends BaseTest
 
     public function testScaleSimple()
     {
-        $this->assertEquals(
+        self::assertEquals(
             ['crop' => 'scale'],
-            $this->scale->process($this->value, 'small')
+            $this->scale->process($this->value, 'small'),
         );
     }
 
     public function testScaleWithDimensions()
     {
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'crop' => 'scale',
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->scale->process($this->value, 'small', [100, 200])
+            $this->scale->process($this->value, 'small', [100, 200]),
         );
     }
 }

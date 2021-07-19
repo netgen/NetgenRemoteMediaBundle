@@ -49,7 +49,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
      */
     protected $logger;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->fieldHelper = $this->getMockBuilder(FieldHelper::class)
             ->disableOriginalConstructor()
@@ -69,9 +69,9 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
         $this->content = new Content(
             [
                 'versionInfo' => new VersionInfo(
-                    ['contentInfo' => new ContentInfo(['contentTypeId' => 2])]
+                    ['contentInfo' => new ContentInfo(['contentTypeId' => 2])],
                 ),
-            ]
+            ],
         );
 
         $this->provider = $this->getMockBuilder(RemoteMediaProvider::class)
@@ -90,22 +90,27 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             ->getMock();
 
         $this->remoteMediaHandler = new RemoteMediaHandler(
-            $this->fieldHelper, $this->translationHelper, $this->provider, $this->contentTypeService, $this->requestStack, $this->logger
+            $this->fieldHelper,
+            $this->translationHelper,
+            $this->provider,
+            $this->contentTypeService,
+            $this->requestStack,
+            $this->logger,
         );
         $this->remoteMediaHandler->setContent($this->content);
 
         $this->field = new Field(
             [
                 'value' => new Value(
-                    ['secure_url' => 'https://res.example.com/some/uri']
+                    ['secure_url' => 'https://res.example.com/some/uri'],
                 ),
-            ]
+            ],
         );
     }
 
     public function testInstanceOfHandlerInterface()
     {
-        $this->assertInstanceOf(HandlerInterface::class, $this->remoteMediaHandler);
+        self::assertInstanceOf(HandlerInterface::class, $this->remoteMediaHandler);
     }
 
     /**
@@ -123,7 +128,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
      */
     public function testGettingTagsWithNonExistentField()
     {
-        $this->translationHelper->expects($this->once())
+        $this->translationHelper->expects(self::once())
             ->method('getTranslatedField')
             ->willReturn(null);
 
@@ -136,7 +141,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
      */
     public function testGettingTagsWithUnsupportedField()
     {
-        $this->translationHelper->expects($this->once())
+        $this->translationHelper->expects(self::once())
             ->method('getTranslatedField')
             ->willReturn(new Field());
 
@@ -145,11 +150,11 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
 
     public function testGettingTagsWithEmptyField()
     {
-        $this->translationHelper->expects($this->once())
+        $this->translationHelper->expects(self::once())
             ->method('getTranslatedField')
             ->willReturn($this->field);
 
-        $this->fieldHelper->expects($this->once())
+        $this->fieldHelper->expects(self::once())
             ->method('isFieldEmpty')
             ->willReturn(true);
 
@@ -158,7 +163,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
 
     public function testGettingTags()
     {
-        $this->contentTypeService->expects($this->once())
+        $this->contentTypeService->expects(self::once())
             ->method('loadContentType')
             ->with(2)
             ->willReturn(
@@ -167,61 +172,61 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
                         'id' => 2,
                         'identifier' => 'test',
                         'fieldDefinitions' => [],
-                    ]
-                )
+                    ],
+                ),
             );
 
-        $this->translationHelper->expects($this->exactly(2))
+        $this->translationHelper->expects(self::exactly(2))
             ->method('getTranslatedField')
             ->willReturn($this->field);
 
-        $this->fieldHelper->expects($this->once())
+        $this->fieldHelper->expects(self::once())
             ->method('isFieldEmpty')
             ->willReturn(false);
 
         $variation = new Variation(['url' => 'https://res.example.com/some/url']);
 
-        $this->provider->expects($this->once())
+        $this->provider->expects(self::once())
             ->method('buildVariation')
             ->willReturn($variation);
 
         $item = $this->remoteMediaHandler->getMetaTags('some_tag', ['some_identifier', 'some_format']);
 
-        $this->assertEquals(
+        self::assertEquals(
             'https://res.example.com/some/url',
-            $item[0]->getTagValue()
+            $item[0]->getTagValue(),
         );
     }
 
     public function testGettingTagsWithoutVariationName()
     {
-        $this->translationHelper->expects($this->exactly(2))
+        $this->translationHelper->expects(self::exactly(2))
             ->method('getTranslatedField')
             ->willReturn($this->field);
 
-        $this->fieldHelper->expects($this->once())
+        $this->fieldHelper->expects(self::once())
             ->method('isFieldEmpty')
             ->willReturn(false);
 
-        $this->provider->expects($this->never())
+        $this->provider->expects(self::never())
             ->method('buildVariation');
 
         /** @var \Netgen\Bundle\OpenGraphBundle\MetaTag\Item[] */
         $item = $this->remoteMediaHandler->getMetaTags('some_tag', ['some_identifier']);
 
-        $this->assertEquals(
+        self::assertEquals(
             'https://res.example.com/some/uri',
-            $item[0]->getTagValue()
+            $item[0]->getTagValue(),
         );
     }
 
     public function testGettingTagsWithMultipleArgumentsInArray()
     {
-        $this->translationHelper->expects($this->exactly(2))
+        $this->translationHelper->expects(self::exactly(2))
             ->method('getTranslatedField')
             ->willReturn($this->field);
 
-        $this->requestStack->expects($this->once())
+        $this->requestStack->expects(self::once())
             ->method('getCurrentRequest')
             ->willReturn(new Request());
 
