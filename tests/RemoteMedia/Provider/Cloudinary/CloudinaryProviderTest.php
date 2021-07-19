@@ -51,6 +51,7 @@ class CloudinaryProviderTest extends TestCase
             $this->registry,
             $this->variationResolver,
             $this->gateway,
+            false
         );
     }
 
@@ -265,9 +266,9 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects(self::once())
             ->method('addTag')
-            ->with('testResourceId', 'testTag');
+            ->with('testResourceId', 'image', 'testTag');
 
-        $this->cloudinaryProvider->addTagToResource('testResourceId', 'testTag');
+        $this->cloudinaryProvider->addTagToResource('testResourceId', 'testTag', 'image');
     }
 
     public function testRemoveTag()
@@ -275,22 +276,21 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects(self::once())
             ->method('removeTag')
-            ->with('testResourceId', 'testTag');
+            ->with('testResourceId', 'image', 'testTag');
 
-        $this->cloudinaryProvider->removeTagFromResource('testResourceId', 'testTag');
+        $this->cloudinaryProvider->removeTagFromResource('testResourceId', 'testTag', 'image');
     }
 
     public function testUpdateResourceContext()
     {
         $options = [
             'context' => ['caption' => 'test_caption'],
-            'resource_type' => 'image',
         ];
 
         $this->gateway
             ->expects(self::once())
             ->method('update')
-            ->with('testResourceId', $options);
+            ->with('testResourceId', 'image', $options);
 
         $this->cloudinaryProvider->updateResourceContext('testResourceId', 'image', ['caption' => 'test_caption']);
     }
@@ -300,9 +300,6 @@ class CloudinaryProviderTest extends TestCase
         $options = [
             'start_offset' => 'auto',
             'resource_type' => 'video',
-            'crop' => 'fit',
-            'width' => 320,
-            'height' => 240,
         ];
 
         $this->gateway
@@ -343,6 +340,8 @@ class CloudinaryProviderTest extends TestCase
     {
         $options = [
             'fallback_content' => 'Your browser does not support HTML5 video tags',
+            'controls' => true,
+            'poster' => [],
         ];
 
         $this->gateway
@@ -354,18 +353,20 @@ class CloudinaryProviderTest extends TestCase
         $value = new Value();
         $value->resourceId = 'testResourceId';
 
-        $this->cloudinaryProvider->generateVideoTag($value, 'test_content_type');
+        $this->cloudinaryProvider->generateVideoTag($value, 'test_content_type', []);
     }
 
     public function testGetVideoTagWithProvidedVariation()
     {
-        $options = [
-            'fallback_content' => 'Your browser does not support HTML5 video tags',
-        ];
-
         $variationConfig = [
             'crop' => 'fit',
             'width' => 200,
+        ];
+
+        $options = [
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+            'controls' => true,
+            'poster' => $variationConfig,
         ];
 
         $this->gateway
@@ -399,10 +400,13 @@ class CloudinaryProviderTest extends TestCase
         $this->gateway
             ->expects(self::once())
             ->method('getDownloadLink')
-            ->with('testResourceId', $options)
-            ->willReturn('');
+            ->with('testResourceId', 'image', $options)
+            ->willReturn('test.com/download-link');
 
-        $this->cloudinaryProvider->generateDownloadLink($value);
+        self::assertEquals(
+            'test.com/download-link',
+            $this->cloudinaryProvider->generateDownloadLink($value)
+        );
     }
 
     public function testDeleteResource()

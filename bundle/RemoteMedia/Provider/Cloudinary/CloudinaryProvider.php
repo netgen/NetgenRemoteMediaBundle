@@ -284,7 +284,7 @@ class CloudinaryProvider extends RemoteMediaProvider
      */
     public function getVideoThumbnail(Value $value, $options = []): string
     {
-        if (empty($options)) {
+        if (count($options) === 0 || !array_key_exists('resource_type', $options)) {
             $options['resource_type'] = 'video';
         }
 

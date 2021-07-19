@@ -81,6 +81,7 @@ class ValueTest extends TestCase
         'context' => [
             'custom' => [
                 'alt' => 'alt text',
+                'alt_text' => 'alt text',
                 'caption' => 'caption text',
             ],
         ],

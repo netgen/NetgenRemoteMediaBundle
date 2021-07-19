@@ -167,31 +167,35 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('expression')
             ->with($expression);
+
         $this->cloudinarySearch
             ->expects(self::once())
             ->method('max_results')
             ->with(0);
 
-        $this->apiGateway->countResourcesInFolder('folderName');
+        $this->cloudinarySearch
+            ->expects(self::once())
+            ->method('execute')
+            ->willReturn(
+                new Api\Response($this->getSearchResponse()),
+            );
+
+        self::assertEquals(
+            200,
+            $this->apiGateway->countResourcesInFolder('folderName'),
+        );
     }
 
     public function testGetNotExistingResource()
     {
         $options = [
             'resource_type' => 'image',
-            'max_results' => 1,
-            'tags' => true,
-            'context' => true,
         ];
 
         $this->cloudinaryApi
-            ->method('resources_by_ids')
-            ->willReturn(new \ArrayObject([]));
-
-        $this->cloudinaryApi
             ->expects(self::once())
-            ->method('resources_by_ids')
-            ->with(['test_id'], $options);
+            ->method('resource')
+            ->with('test_id', $options);
 
         $result = $this->apiGateway->get('test_id', 'image');
 
@@ -203,14 +207,16 @@ class CloudinaryApiGatewayTest extends TestCase
 
     public function testUpdateResource()
     {
-        $options = [];
+        $options = [
+            'resource_type' => 'image',
+        ];
 
         $this->cloudinaryApi
             ->expects(self::once())
             ->method('update')
             ->with('test_id', $options);
 
-        $this->apiGateway->update('test_id', $options);
+        $this->apiGateway->update('test_id', 'image', $options);
     }
 
     private function setUpSearch()
