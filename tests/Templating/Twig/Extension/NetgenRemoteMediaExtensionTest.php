@@ -106,11 +106,11 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             ->method('loadContentType')
             ->willReturn(
                 new ContentType(
-                        [
-                            'fieldDefinitions' => [],
-                            'identifier' => 'test_identifier',
-                        ],
-                    ),
+                    [
+                        'fieldDefinitions' => [],
+                        'identifier' => 'test_identifier',
+                    ],
+                ),
             );
 
         $this->provider->expects(self::once())
@@ -148,11 +148,11 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             ->method('loadContentType')
             ->willReturn(
                 new ContentType(
-                        [
-                            'fieldDefinitions' => [],
-                            'identifier' => 'test_identifier',
-                        ],
-                    ),
+                    [
+                        'fieldDefinitions' => [],
+                        'identifier' => 'test_identifier',
+                    ],
+                ),
             );
 
         $this->provider->expects(self::once())

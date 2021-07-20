@@ -51,7 +51,7 @@ class CloudinaryProviderTest extends TestCase
             $this->registry,
             $this->variationResolver,
             $this->gateway,
-            false
+            false,
         );
     }
 
@@ -405,7 +405,7 @@ class CloudinaryProviderTest extends TestCase
 
         self::assertEquals(
             'test.com/download-link',
-            $this->cloudinaryProvider->generateDownloadLink($value)
+            $this->cloudinaryProvider->generateDownloadLink($value),
         );
     }
 
