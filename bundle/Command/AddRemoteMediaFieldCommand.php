@@ -71,7 +71,9 @@ class AddRemoteMediaFieldCommand extends ContainerAwareCommand
         $repository->beginTransaction();
 
         $contentTypeDraft = $repository->sudo(
-            static fn (Repository $repository) => $repository->getContentTypeService()->createContentTypeDraft($contentType),
+            static function (Repository $repository) use ($contentType) {
+                return $repository->getContentTypeService()->createContentTypeDraft($contentType);
+            },
         );
 
         $fieldDefCreate = $contentTypeService->newFieldDefinitionCreateStruct($fieldDefIdentifier, 'ngremotemedia');

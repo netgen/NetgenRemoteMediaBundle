@@ -60,7 +60,9 @@ class RemoteMediaFieldType extends AbstractType
                 [
                     'multiple' => true,
                     'choices' => ['{{tag}}' => true],
-                    'choice_attr' => static fn () => ['v-for' => 'tag in allTags', ':value' => 'tag'],
+                    'choice_attr' => static function () {
+                        return ['v-for' => 'tag in allTags', ':value' => 'tag'];
+                    },
                     'label' => 'ngrm.edit.form.field.tags',
                 ],
             )
@@ -85,7 +87,9 @@ class RemoteMediaFieldType extends AbstractType
             $form->add('tags', ChoiceType::class, [
                 'multiple' => true,
                 'choices' => $data['tags'] ?? [],
-                'choice_attr' => static fn () => ['v-for' => 'tag in allTags', ':value' => 'tag'],
+                'choice_attr' => static function () {
+                    return ['v-for' => 'tag in allTags', ':value' => 'tag'];
+                },
                 'label' => 'ngrm.edit.form.field.tags',
             ]);
         });

@@ -215,8 +215,10 @@ class LegacyStorage extends Gateway
         $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map(
-            static fn ($item) => $item['resource_id'],
-            $rows,
+            static function ($item) {
+                return $item['resource_id'];
+            },
+            $rows
         );
     }
 

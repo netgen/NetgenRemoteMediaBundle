@@ -51,7 +51,7 @@ return PhpCsFixer\Config::create()
         'nullable_type_declaration_for_default_null_value' => true,
         'static_lambda' => true,
         'ternary_to_null_coalescing' => true,
-        'use_arrow_functions' => true,
+        'use_arrow_functions' => false,
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

@@ -222,7 +222,9 @@ class MigrateEzImageCommand extends ContainerAwareCommand
 
         try {
             $contentDraft = $repository->sudo(
-                static fn (Repository $repository) => $repository->getContentService()->createContentDraft($content->contentInfo),
+                static function (Repository $repository) use ($content) {
+                    return $repository->getContentService()->createContentDraft($content->contentInfo);
+                },
             );
             $repository->commit();
         } catch (Exception $e) {
