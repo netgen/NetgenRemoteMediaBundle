@@ -218,7 +218,7 @@ class LegacyStorage extends Gateway
             static function ($item) {
                 return $item['resource_id'];
             },
-            $rows
+            $rows,
         );
     }
 

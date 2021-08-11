@@ -424,7 +424,7 @@ class CloudinaryApiGateway extends Gateway
 
         $resourceIds = $query->getResourceIds();
         if (count($resourceIds) > 0) {
-            $resourceIds = array_map(function ($value) {
+            $resourceIds = array_map(static function ($value) {
                 return sprintf('public_id:"%s"', $value);
             }, $resourceIds);
 
