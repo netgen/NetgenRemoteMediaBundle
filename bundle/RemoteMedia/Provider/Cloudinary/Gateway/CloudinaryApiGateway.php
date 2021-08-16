@@ -406,8 +406,15 @@ class CloudinaryApiGateway extends Gateway
     {
         $expressions = [];
 
-        if ($query->getResourceType()) {
-            $expressions[] = sprintf('resource_type:%s', $query->getResourceType());
+        $resourceTypes = $query->getResourceType();
+        if (is_string($resourceTypes)) {
+            $resourceTypes = [$resourceTypes];
+        }
+
+        if (count($resourceTypes) > 0) {
+            $resourceTypes = array_map(static fn ($value) => sprintf('resource_type:"%s"', $value), $resourceTypes);
+
+            $expressions[] = '(' . implode(' OR ', $resourceTypes) . ')';
         }
 
         if ($query->getQuery() !== '') {
@@ -424,9 +431,7 @@ class CloudinaryApiGateway extends Gateway
 
         $resourceIds = $query->getResourceIds();
         if (count($resourceIds) > 0) {
-            $resourceIds = array_map(static function ($value) {
-                return sprintf('public_id:"%s"', $value);
-            }, $resourceIds);
+            $resourceIds = array_map(static fn ($value) => sprintf('public_id:"%s"', $value), $resourceIds);
 
             $expressions[] = '(' . implode(' OR ', $resourceIds) . ')';
         }

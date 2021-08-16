@@ -13,7 +13,7 @@ final class Query
     /** @var string */
     private $query;
 
-    /** @var string */
+    /** @var string|string[]|null */
     private $resourceType;
 
     /** @var string|null */
@@ -36,7 +36,7 @@ final class Query
 
     public function __construct(
         string $query,
-        ?string $resourceType,
+        $resourceType,
         int $limit,
         ?string $folder = null,
         ?string $tag = null,
@@ -60,6 +60,10 @@ final class Query
         $sort = http_build_query($vars['sortBy'], '', ',');
         $folder = $vars['folder'] === '' ? '(root)' : $vars['folder'];
         $resourceIds = implode(',', $this->resourceIds);
+
+        if (is_array($vars['resourceType'])) {
+            $vars['resourceType'] = implode(',', $vars['resourceType']);
+        }
 
         unset($vars['sortBy'], $vars['folder'], $vars['resourceIds']);
 
@@ -89,7 +93,10 @@ final class Query
         return $this->query;
     }
 
-    public function getResourceType(): ?string
+    /**
+     * @return string|string[]|null
+     */
+    public function getResourceType()
     {
         return $this->resourceType;
     }

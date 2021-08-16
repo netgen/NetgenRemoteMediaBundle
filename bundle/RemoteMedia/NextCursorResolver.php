@@ -83,7 +83,7 @@ class NextCursorResolver
     {
         $queryVars = [
             $query->getQuery(),
-            $query->getResourceType(),
+            is_array($query->getResourceType()) ? implode(',', $query->getResourceType()) : $query->getResourceType(),
             $query->getLimit(),
             $query->getFolder(),
             $query->getTag(),
