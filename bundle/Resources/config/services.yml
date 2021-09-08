@@ -78,9 +78,3 @@ services:
         tags:
             - { name: console.command }
 
-    netgen_remote_media.ezxml.pre_converter:
-        class: Netgen\Bundle\RemoteMediaBundle\Converter\XmlText\NgRemoteMediaPreConverter
-        arguments:
-            - "@netgen_remote_media.provider"
-        tags:
-            - { name: ezpublish.ezxml.converter }
