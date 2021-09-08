@@ -33,11 +33,7 @@ For development, it is best to use webpack dev server, which can be started with
 $ npm run serve
 ```
 
-Template for dev server is in [frontend/public/index.html](frontend/public/index.html), where it could be changed when needed. If it is changed, don't forget to change admin templates, also:
-[bundle/Resources/views/ezadminui/field/edit/ngremotemedia.html.twig](bundle/Resources/views/ezadminui/field/edit/ngremotemedia.html.twig)
-[bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl](bundle/ezpublish_legacy/ngremotemedia/design/standard/templates/content/datatype/edit/ngremotemedia.tpl)
-
-When using dev server API calls are proxied to some media site, which is configured in [frontend/vue.config.js](frontend/vue.config.js). Because API is not on a public URL, developer needs to login to selected media site instance and copy eZSESSID cookie to proxy configuration file.
+Template for dev server is in [frontend/public/index.html](frontend/public/index.html), where it could be changed when needed.
 
 ## Building the project
 
@@ -55,7 +51,7 @@ Assets are built with:
 $ npm run build
 ```
 
-Bundled JS and CSS files are in [frontend/dist](frontend/dist), but are also copied to two different directories for ngadminui and ez admin v2, respectively.
+Bundled JS and CSS files are in [frontend/dist](frontend/dist).
 
 Files are copied with frontend/copyFiles.js node script which can be started independently with:
 
@@ -65,7 +61,7 @@ $ node copyFiles.js
 
 ## Development build
 
-Assets can also be built in dev mode (non uglified and non minified). This is not normally needed, but is usefull in some legacy eZ applications where assets are handled with assetic and handling fails because uglifyjs cannot process production build.
+Assets can also be built in dev mode (non uglified and non minified). This is not normally needed, but is usefull in some legacy applications where assets are handled with assetic and handling fails because uglifyjs cannot process production build.
 
 You need to be positioned in frontend directory:
 
@@ -79,7 +75,7 @@ Assets are built with:
 $ npm run dev
 ```
 
-Bundled JS file is in [frontend/dist](frontend/dist), but is also copied to two different directories for ngadminui and ez admin v2, respectively.
+Bundled JS file is in [frontend/dist](frontend/dist).
 
 File is copied with frontend/copyFilesDev.js node script which can be started independently with:
 

@@ -1,10 +1,7 @@
 # Usage instructions for Netgen Remote Media Bundle #
 
-## Content type definition ##
-You can add the remote media content field to your content type. There is no additional configuration needed.
-
 ## Managing your media ##
-You can do simple management of your media files while editing the content, directly from the administration interface, both on the legacy administration and Netgen Admin UI. 
+You can do simple management of your media files with the provided Vue.js application.
 
 ### Uploading ###
 With a simple press of a button, you can either browse the existing media (separated into images and videos) or upload the media from your own computer.
@@ -17,7 +14,8 @@ The editors have the ability to crop the images immediately when editing the con
 One example of this would be if one would use the `<picture>` tag with different formats for desktop and mobile. In this case, editors can upload a single image and choose different cropping for each resolution.
 
 ## Image variation definitions ##
-Image variations are defined through the yaml configuration in the similar way as they are defined in eZ Platform. The configuration is siteaccess aware. Furthermore, you can define variations per content type, meaning you can have two variations that are named the same but use different transformations depending on the content type where they are used.
+Image variations are defined through the YAML configuration. The configuration is siteaccess aware. Furthermore, you can group variations, meaning you can have two variations that are named the same but use different transformations depending on the place where they are used (eg. different variations for different types).
+
 Example:
 ```yaml
 netgen_remote_media:
@@ -43,47 +41,5 @@ netgen_remote_media:
                             - { name: crop, params: [1600, 800] }
                             - { name: fill, params: [1600, 800] }
 ```
+
 You can check the list of the available tranformations [here](Resources/docs/Transfromations.md). Further details on what each transformation does is available on [Cloudinary web](http://cloudinary.com/documentation/image_transformations).
-
-## In templates ##
-If you have added the field to your content class, you can now use it with the normal `ez_render_field` function:
-```php
-{{ ez_render_field(
-    content,
-    'remote_image',
-    {
-        'parameters':
-        {
-            'format': 'large'
-        }
-    }
-) }}
-```
-In case you want to manually define which transformations to use from the Twig template, you can do that as well. Instead of the name of the format, pass an array with the manually defined options:
-```php
-{{ ez_render_field(
-    content,
-    'image', {
-        'parameters': {
-            'format': {
-                'width': 240,
-                'height': 240,
-                'fetch_format': 'png'
-            }
-        }
-    }
-) }}
-```
-This example will produce an image which will have a defined dimensions of `240x240` and will be delivered in a `png` format.
-
-The other parameters you can pass to the function are:
-* `alt_text` - overriding the one from the image
-* `title` - override the image caption and use this as title
-* `link_href` - if not empty, wrap the image in `<a>` tag
-
-Note that not all parameters will always be applicable; it depends on the type of the resource you are rendering.
-
-If you just need to get the URL of the image, you can get the `Variation` object by using the Twig function `netgen_remote_variation`:
-```php
-{% set variation = netgen_remote_variation(content, 'image', 'full') %}
-```

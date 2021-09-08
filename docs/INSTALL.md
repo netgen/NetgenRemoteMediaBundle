@@ -1,12 +1,5 @@
 # Installation instructions for Netgen Remote Media Bundle
 
-## Requirements
-
-* eZ Platform
-
-**Suggested**
-* this package works best with NetgenAdminUI.
-
 ## Installation steps
   
 * Configure the bundle:
@@ -20,10 +13,8 @@
     ```
 
 * Run the following from your website root folder:
-    `$ composer require netgen/remote-media-bundle:^2.0`
-    
-* Activate legacy extension
-    
+    `$ composer require netgen/remote-media-bundle:^3.0`
+
 * Activate the bundle:
     ```
     public function registerBundles()
@@ -42,10 +33,6 @@
     netgen_remote_media:
         resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
     ```
-    
-* Update the database with a custom table:
-	* `$ mysql -u<user> -p<password> -h<host> <db_name> < vendor/netgen/remote-media-bundle/bundle/Resources/sql/schema.sql`
-    * **OR** run `php app/console doctrine:schema:update --force` (or run with `--dump-sql` to get the sql needed for creating the table)
 
 * Clear the caches
     * run the following command:
