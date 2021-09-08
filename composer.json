@@ -1,13 +1,12 @@
 {
     "name": "netgen/remote-media-bundle",
-    "description": "Remote media field type implementation",
+    "description": "Remote media core implementation",
     "type": "ezplatform-bundle",
     "keywords": [
-        "ezpublish",
-        "ezplatform",
         "remote media",
         "netgen",
-        "remote-media-bundle"
+        "remote-media-bundle",
+        "cloudinary"
     ],
     "homepage": "https://github.com/netgen/NetgenRemoteMediaBundle",
     "license": "GPL-2.0-only",
@@ -27,15 +26,12 @@
         }
     ],
     "require": {
-        "php": "^7.2",
-        "ezsystems/ezpublish-kernel": "^7.4",
+        "php": "^7.4",
         "doctrine/orm": "^2.4",
         "cloudinary/cloudinary_php": "^1.0"
     },
     "require-dev": {
-        "ezsystems/legacy-bridge": "^2.0",
         "netgen/open-graph-bundle": "^1.0",
-        "netgen/admin-ui-bundle": "^2.0",
         "matthiasnoback/symfony-dependency-injection-test": "^3.0",
         "mikey179/vfsstream": "^1.0",
         "phpunit/phpunit": "^7.0",
@@ -56,10 +52,5 @@
     "scripts": {
         "test": "@php vendor/bin/phpunit --colors=always",
         "fix": "@php vendor/bin/php-cs-fixer fix"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.0.x-dev"
-        }
     }
 }
