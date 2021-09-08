@@ -19,7 +19,6 @@
         <whitelist>
             <directory suffix=".php">bundle</directory>
             <exclude>
-                <directory>bundle/ezpublish_legacy</directory>
                 <directory>bundle/Command</directory>
                 <directory>bundle/Resources</directory>
                 <directory>bundle/vendor</directory>
