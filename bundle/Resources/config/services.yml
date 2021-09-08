@@ -71,15 +71,6 @@ services:
             - "@ezpublish.cache_pool"
             - "%netgen_remote_media.cloudinary.cache_ttl%"
 
-    netgen_remote_media.command.refresh_ez_fields:
-        class: Netgen\Bundle\RemoteMediaBundle\Command\RefreshEzFieldsCommand
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@netgen_remote_media.provider"
-            - "@netgen_remote_media.variation.resolver"
-        tags:
-            - { name: console.command }
-
     netgen_remote_media.command.api_usage:
         class: Netgen\Bundle\RemoteMediaBundle\Command\ShowApiUsageCommand
         arguments:
