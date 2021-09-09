@@ -2,41 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
+namespace Netgen\RemoteMedia\API\Values;
 
-use eZ\Publish\Core\FieldType\Value as BaseValue;
 use function in_array;
 use function json_encode;
 
-class Value extends BaseValue
+final class Resource
 {
-    /**
-     * @var string
-     */
     const TYPE_IMAGE = 'image';
-
-    /**
-     * @var string
-     */
     const TYPE_VIDEO = 'video';
-
-    /**
-     * @var string
-     */
     const TYPE_OTHER = 'other';
 
-    public $resourceId;
-    public $resourceType;
-    public $type;
-
-    public $url;
-    public $secure_url;
-    public $size = 0;
-
+    public string $resourceId;
+    public string $resourceType;
     public $mediaType = 'image';
+    public string $type;
 
-    public $variations = [];
-    public $metaData = [
+    public string $url;
+    public string $secure_url;
+    public int $size = 0;
+
+    public array $variations = [];
+
+    /** @var array<string, mixed> */
+    public array $metaData = [
         'version' => '',
         'width' => '',
         'height' => '',
@@ -50,24 +39,16 @@ class Value extends BaseValue
         'caption' => '',
     ];
 
-    /**
-     * Returns a string representation of the field value.
-     *
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return json_encode($this);
     }
 
-    /**
-     * Creates a value from cloudinary response array.
-     *
-     * @return Value
-     */
-    public static function createFromCloudinaryResponse(array $response)
+    public static function createFromCloudinaryResponse(array $response): self
     {
-        $altText = !empty($response['context']['custom']['alt_text']) ? $response['context']['custom']['alt_text'] : '';
+        $altText = !empty($response['context']['custom']['alt_text'])
+            ? $response['context']['custom']['alt_text']
+            : '';
 
         if ($altText === '') {
             $altText = !empty($response['context']['alt_text']) ? $response['context']['alt_text'] : '';
@@ -87,24 +68,24 @@ class Value extends BaseValue
             'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
         ];
 
-        $value = new self();
-        $value->resourceId = $response['public_id'];
-        $value->resourceType = !empty($response['resource_type']) ? $response['resource_type'] : 'image';
-        $value->type = !empty($response['type']) ? $response['type'] : 'upload';
-        $value->url = $response['url'];
-        $value->secure_url = $response['secure_url'];
-        $value->size = $response['bytes'];
-        $value->metaData = $metaData;
-        $value->variations = !empty($response['variations']) ? $response['variations'] : [];
+        $resource = new self();
+        $resource->resourceId = $response['public_id'];
+        $resource->resourceType = !empty($response['resource_type']) ? $response['resource_type'] : 'image';
+        $resource->type = !empty($response['type']) ? $response['type'] : 'upload';
+        $resource->url = $response['url'];
+        $resource->secure_url = $response['secure_url'];
+        $resource->size = $response['bytes'];
+        $resource->metaData = $metaData;
+        $resource->variations = !empty($response['variations']) ? $response['variations'] : [];
 
         if ($response['resource_type'] === 'video') {
-            $value->mediaType = self::TYPE_VIDEO;
+            $resource->mediaType = self::TYPE_VIDEO;
         } elseif ($response['resource_type'] === 'image' && (!isset($response['format']) || !in_array($response['format'], ['pdf', 'doc', 'docx'], true))) {
-            $value->mediaType = self::TYPE_IMAGE;
+            $resource->mediaType = self::TYPE_IMAGE;
         } else {
-            $value->mediaType = self::TYPE_OTHER;
+            $resource->mediaType = self::TYPE_OTHER;
         }
 
-        return $value;
+        return $resource;
     }
 }
