@@ -40,13 +40,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Netgen\\Bundle\\RemoteMediaBundle\\": "bundle"
+            "Netgen\\RemoteMedia\\": "lib/",
+            "Netgen\\Bundle\\RemoteMediaBundle\\": "bundle/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Netgen\\Bundle\\Tests\\": "tests",
-            "Netgen\\Bundle\\OpenGraphBundle\\Tests\\": "vendor/netgen/open-graph-bundle/tests"
+            "Netgen\\RemoteMedia\\Tests\\": "tests/lib/",
+            "Netgen\\Bundle\\RemoteMediaBundle\\Tests\\": "tests/bundle/"
         }
     },
     "scripts": {
