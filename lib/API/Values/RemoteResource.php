@@ -7,7 +7,7 @@ namespace Netgen\RemoteMedia\API\Values;
 use function in_array;
 use function json_encode;
 
-final class Resource
+final class RemoteResource
 {
     const TYPE_IMAGE = 'image';
     const TYPE_VIDEO = 'video';
@@ -15,7 +15,7 @@ final class Resource
 
     public string $resourceId;
     public string $resourceType;
-    public $mediaType = 'image';
+    public string $mediaType = 'image';
     public string $type;
 
     public string $url;
