@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler;
+namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass;
 
-use LogicException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use LogicException;
 
-class TransformationHandlersCompilerPass implements CompilerPassInterface
+final class TransformationHandlersPass implements CompilerPassInterface
 {
     /**
      * Adds all registered transformation handlers to the registry.
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         if (!$container->hasDefinition('netgen_remote_media.handler_registry')) {
             return;

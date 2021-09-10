@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle;
 
-use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler\TransformationHandlersCompilerPass;
+use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -15,7 +15,7 @@ final class NetgenRemoteMediaBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(
-            new TransformationHandlersCompilerPass(),
+            new TransformationHandlersPass(),
         );
     }
 }
