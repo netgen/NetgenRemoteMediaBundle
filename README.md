@@ -23,6 +23,8 @@ This repository contains an API for remote resource providers and currently an i
 
 [Installation instructions](docs/INSTALL.md)
 
+[Upgrade instructions](docs/UPGRADE.md)
+
 ## Documentation
 
 For usage documentation see [USAGE.md](docs/USAGE.md)
