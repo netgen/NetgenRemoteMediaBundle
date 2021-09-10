@@ -1,5 +1,0 @@
-alloy_editor:
-    extra_plugins: [ngremotemedia]
-    extra_buttons:
-        paragraph: [ngremotemedia]
-        ngremotemedia: [ngremotemedia]

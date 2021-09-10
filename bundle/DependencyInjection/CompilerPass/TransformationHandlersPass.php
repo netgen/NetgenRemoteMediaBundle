@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass;
 
+use LogicException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
-use LogicException;
 
 final class TransformationHandlersPass implements CompilerPassInterface
 {

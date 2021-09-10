@@ -4,32 +4,24 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
-use eZ\Bundle\EzPublishCoreBundle\DependencyInjection\Configuration\SiteAccessAware\Configuration as SiteAccessConfiguration;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use function count;
 use function is_array;
 
-class Configuration extends SiteAccessConfiguration
+final class Configuration implements ConfigurationInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('netgen_remote_media');
-
-        $this->addProviderSection($rootNode);
-
-        $systemNode = $this->generateScopeBaseNode($rootNode);
-        $this->addImageConfiguration($systemNode);
+        $treeBuilder = new TreeBuilder('netgen_remote_media');
+        $this->addProviderSection($treeBuilder->getRootNode());
 
         return $treeBuilder;
     }
 
-    protected function addProviderSection(ArrayNodeDefinition $rootNode)
+    private function addProviderSection(ArrayNodeDefinition $rootNode): void
     {
         $rootNode
             ->children()
@@ -56,7 +48,7 @@ class Configuration extends SiteAccessConfiguration
             ->end();
     }
 
-    protected function addImageConfiguration(NodeBuilder $nodeBuilder)
+    private function addImageConfiguration(NodeBuilder $nodeBuilder): void
     {
         $nodeBuilder
             ->arrayNode('image_variations')

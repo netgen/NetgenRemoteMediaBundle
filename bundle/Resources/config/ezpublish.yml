@@ -1,9 +1,0 @@
-system:
-    admin_group:
-        field_templates:
-            - {template: "@NetgenRemoteMedia/ezadminui/field/view/ngremotemedia.html.twig", priority: 1}
-    default:
-        field_templates:
-            - { template: "NetgenRemoteMediaBundle::ngremotemedia_content_field.html.twig", priority: 0 }
-        fielddefinition_settings_templates:
-            - {template: "NetgenRemoteMediaBundle:ezadminui/field_definition/view:ngremotemedia.html.twig", priority: 0}
