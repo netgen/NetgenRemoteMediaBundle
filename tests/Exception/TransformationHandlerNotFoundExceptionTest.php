@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Exception;
 
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
+use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 class TransformationHandlerNotFoundExceptionTest extends TestCase
 {
     /**
-     * @expectedException \Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException
+     * @expectedException \Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException
      * @expectedExceptionMessage [NgRemoteMedia] Transformation handler with 'some_handler' identifier for 'some_provider' provider not found.
      */
     public function testException()

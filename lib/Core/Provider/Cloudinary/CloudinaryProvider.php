@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
 use Cloudinary\Api\NotFound;
-use Netgen\Bundle\RemoteMediaBundle\Exception\MimeCategoryParseException;
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
+use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
+use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\Variation;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Query;

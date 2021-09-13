@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Transformation;
 
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
+use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 
 final class Registry
 {

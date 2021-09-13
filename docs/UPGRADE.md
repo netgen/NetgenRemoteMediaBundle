@@ -15,3 +15,4 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
 * The main value object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value` which was extending eZ field type value has now been renamed to `Netgen\RemoteMedia\API\Values\RemoteResource` and all methods use or return this new one; methods and properties remained the same; now it's a standalone value object
 * The variation object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation` has been renamed to `Netgen\RemoteMedia\API\Values\Variation` and all methods use or return this new one; methods and properties remained the same
 * All the core classes and interfaces have changed their namespace from `Netgen\Bundle\RemoteMediaBundle\RemoteMedia` to `Netgen\RemoteMedia\Core` so those have to be updated accordingly
+* All the exceptions have changed their namespace from `Netgen\Bundle\RemoteMediaBundle\Exception` to `Netgen\RemoteMedia\Exception`

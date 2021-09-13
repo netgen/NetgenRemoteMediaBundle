@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
+use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 
