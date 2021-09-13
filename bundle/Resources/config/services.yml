@@ -70,11 +70,3 @@ services:
         arguments:
             - "@ezpublish.cache_pool"
             - "%netgen_remote_media.cloudinary.cache_ttl%"
-
-    netgen_remote_media.command.api_usage:
-        class: Netgen\Bundle\RemoteMediaBundle\Command\ShowApiUsageCommand
-        arguments:
-            - "@netgen_remote_media.provider"
-        tags:
-            - { name: console.command }
-
