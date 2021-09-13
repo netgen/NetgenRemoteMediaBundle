@@ -26,13 +26,6 @@
         return $bundles;
     }
     ```
-  
-* Add the following entry to your main `routing.yaml` file:
-
-    ```
-    netgen_remote_media:
-        resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
-    ```
 
 * Clear the caches
     * run the following command:
