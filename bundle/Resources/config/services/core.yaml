@@ -1,0 +1,35 @@
+services:
+    netgen_remote_media.handler_registry:
+        class: Netgen\RemoteMedia\Core\Transformation\Registry
+
+    netgen_remote_media.variation.resolver:
+        class: Netgen\RemoteMedia\Core\VariationResolver
+        lazy: true
+        calls:
+            - [setVariations, ["$image_variations;netgen_remote_media$"]]
+
+    netgen_remote_media.provider.cloudinary.gateway:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway
+        calls:
+            - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%"]]
+            - [setInternalLimit, ["%netgen_remote_media.cloudinary.internal_limit%"]]
+
+    netgen_remote_media.provider.cloudinary:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider
+        arguments:
+            - "@netgen_remote_media.handler_registry"
+            - "@netgen_remote_media.variation.resolver"
+            - "@netgen_remote_media.provider.cloudinary.gateway.cached"
+            - "$parameters.audio.enable_waveform;netgen_remote_media$"
+            - "@?logger"
+
+    netgen_remote_media.helper:
+        class: Netgen\RemoteMedia\Core\Helper
+        arguments:
+            - "@netgen_remote_media.provider"
+
+    netgen_remote_media.next_cursor_resolver:
+        class: Netgen\RemoteMedia\Core\NextCursorResolver
+        arguments:
+            - "@ezpublish.cache_pool"
+            - "%netgen_remote_media.cloudinary.cache_ttl%"
