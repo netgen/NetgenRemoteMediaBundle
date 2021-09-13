@@ -1,8 +1,0 @@
-ezrichtext.custom_tags.ngremotemedia.label: Netgen Remote Media
-ezrichtext.custom_tags.ngremotemedia.description: ''
-ezrichtext.custom_tags.ngremotemedia.attributes.resourceId.label: Resource ID
-ezrichtext.custom_tags.ngremotemedia.attributes.resourceType.label: Resource type
-ezrichtext.custom_tags.ngremotemedia.attributes.coords.label: Image variations
-ezrichtext.custom_tags.ngremotemedia.attributes.variation.label: Selected variation
-ezrichtext.custom_tags.ngremotemedia.attributes.caption.label: Caption
-ezrichtext.custom_tags.ngremotemedia.attributes.cssclass.label: CSS class

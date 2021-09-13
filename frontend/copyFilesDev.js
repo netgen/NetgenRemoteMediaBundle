@@ -4,8 +4,7 @@ const mappings = [
   {
     source: 'dist/app.js',
     targets: [
-      '../bundle/Resources/public/js/remotemedia.js',
-      '../bundle/ezpublish_legacy/ngremotemedia/design/standard/javascript/remotemedia.js'
+      '../bundle/Resources/public/js/remotemedia.js'
     ]
   }
 ];
@@ -13,20 +12,17 @@ const mappings = [
 const fakeFiles = [
   {
     targets: [
-      '../bundle/Resources/public/js/remotemedia-vendors.js',
-      '../bundle/ezpublish_legacy/ngremotemedia/design/standard/javascript/remotemedia-vendors.js'
+      '../bundle/Resources/public/js/remotemedia-vendors.js'
     ]
   },
   {
     targets: [
-      '../bundle/Resources/public/css/remotemedia.css',
-      '../bundle/ezpublish_legacy/ngremotemedia/design/standard/stylesheets/remotemedia.css'
+      '../bundle/Resources/public/css/remotemedia.css'
     ]
   },
   {
     targets: [
-      '../bundle/Resources/public/css/remotemedia-vendors.css',
-      '../bundle/ezpublish_legacy/ngremotemedia/design/standard/stylesheets/remotemedia-vendors.css'
+      '../bundle/Resources/public/css/remotemedia-vendors.css'
     ]
   },
 ];

@@ -9,7 +9,7 @@ import './utility/polyfills';
 Vue.config.productionTip = false;
 
 const handleDOMContentLoaded = function() {
-    document.querySelectorAll('.ngremotemedia-type').forEach((el, i) => {
+    document.querySelectorAll('.ngremotemedia-container').forEach((el, i) => {
         window[`remoteMedia${el.dataset.id}`] = new Vue({
             el,
             directives: {
