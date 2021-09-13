@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Transformation;
 
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerNotFoundException;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Crop;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Fit;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Resize;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry;
+use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize;
+use Netgen\RemoteMedia\Core\Transformation\Registry;
 use PHPUnit\Framework\TestCase;
 
 class RegistryTest extends TestCase
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Transformation\Registry
+     * @var \Netgen\RemoteMedia\Core\Transformation\Registry
      */
     protected $registry;
 

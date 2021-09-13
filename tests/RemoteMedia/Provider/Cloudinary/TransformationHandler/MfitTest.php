@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Mfit;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mfit;
 
 class MfitTest extends BaseTest
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Mfit
+     * @var \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mfit
      */
     protected $mfit;
 

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Crop;
+use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop;
 
 class CropTest extends BaseTest
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Crop
+     * @var \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop
      */
     protected $crop;
 

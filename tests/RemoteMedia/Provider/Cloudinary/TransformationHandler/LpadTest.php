@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Lpad;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad;
 
 class LpadTest extends BaseTest
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Lpad
+     * @var \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad
      */
     protected $lpad;
 

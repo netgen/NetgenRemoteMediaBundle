@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\Bundle\RemoteMediaBundle\Exception\TransformationHandlerFailedException;
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Effect;
+use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect;
 
 class EffectTest extends BaseTest
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Effect
+     * @var \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect
      */
     protected $effect;
 

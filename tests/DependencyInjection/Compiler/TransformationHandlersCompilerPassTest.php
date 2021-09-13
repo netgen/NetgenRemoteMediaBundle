@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection\Compiler;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
-use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Compiler\TransformationHandlersCompilerPass;
+use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -99,6 +99,6 @@ class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCas
 
     protected function registerCompilerPass(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new TransformationHandlersCompilerPass());
+        $container->addCompilerPass(new TransformationHandlersPass());
     }
 }

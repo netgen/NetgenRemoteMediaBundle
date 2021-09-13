@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\RemoteMedia\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Lfill;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lfill;
 
 class LfillTest extends BaseTest
 {
     /**
-     * @var \Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\TransformationHandler\Lfill
+     * @var \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lfill
      */
     protected $lfill;
 

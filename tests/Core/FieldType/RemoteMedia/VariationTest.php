@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\Core\FieldType\Value as BaseValue;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\RemoteMedia\API\Values\Variation;
 use PHPUnit\Framework\TestCase;
 use function json_encode;
 
