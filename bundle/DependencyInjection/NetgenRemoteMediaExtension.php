@@ -59,19 +59,14 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['account_secret'],
         );
 
-        $loader->load('default_parameters.yml');
-        $loader->load('transformation_handlers.yml');
-        $loader->load('services.yml');
-        $loader->load('templating.yml');
-        $loader->load('fieldtypes.yml');
-        $loader->load('storage/cache_psr6.yml');
+        $loader->load('default_parameters.yaml');
         $loader->load('services/**/*.yaml', 'glob');
     }
 
     public function prepend(ContainerBuilder $container): void
     {
         $prependConfigs = [
-            'default_settings.yml' => 'netgen_remote_media',
+            'default_settings.yaml' => 'netgen_remote_media',
         ];
 
         foreach ($prependConfigs as $configFile => $prependConfig) {
