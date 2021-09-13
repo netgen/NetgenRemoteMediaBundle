@@ -8,7 +8,7 @@ use eZ\Publish\API\Repository\ContentTypeService;
 use eZ\Publish\API\Repository\Values\Content\Content;
 use eZ\Publish\Core\Helper\TranslationHelper;
 use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value;
-use Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation;
+use Netgen\RemoteMedia\API\Values\Variation;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\VariationResolver;
 use Twig\Extension\AbstractExtension;
@@ -149,7 +149,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
      * @param string $format
      * @param bool $secure
      *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
+     * @return \Netgen\RemoteMedia\API\Values\Variation
      */
     public function getRemoteImageVariation(Content $content, $fieldIdentifier, $format, $secure = true)
     {
@@ -165,7 +165,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
      * @param string $format
      * @param bool $secure
      *
-     * @return \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation
+     * @return \Netgen\RemoteMedia\API\Values\Variation
      */
     public function getRemoteImageVariationEmbed(Value $value, $format, $secure = true)
     {
