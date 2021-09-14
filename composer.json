@@ -27,16 +27,17 @@
     ],
     "require": {
         "php": "^7.4",
-        "doctrine/orm": "^2.4",
         "cloudinary/cloudinary_php": "^1.0",
-        "symfony/cache": "^5.3"
+        "symfony/cache": "^5.3",
+        "symfony/http-foundation": "^5.3",
+        "symfony/mime": "^5.3"
     },
     "require-dev": {
-        "matthiasnoback/symfony-dependency-injection-test": "^3.0",
+        "matthiasnoback/symfony-dependency-injection-test": "^4.0",
         "mikey179/vfsstream": "^1.0",
-        "phpunit/phpunit": "^7.0",
-        "friendsofphp/php-cs-fixer": "^2.0",
-        "rector/rector": "^0.5.22"
+        "phpunit/phpunit": "^9.0",
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "rector/rector": "^0.11.53"
     },
     "autoload": {
         "psr-4": {
