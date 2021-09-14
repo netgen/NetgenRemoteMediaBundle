@@ -1,10 +1,11 @@
-.idea/
 vendor/
 var/
 composer.phar
 composer.lock
 phpunit.phar
-.php_cs.cache
+.php-version
+.php-cs-fixer.cache
+.phpunit.result.cache
 **/.sass-cache
 npm-debug.log
 node_modules
@@ -12,6 +13,8 @@ node_modules
 build
 .DS_Store
 frontend/dist/
+studio.json
+yarn.lock
 
 # local env files
 .env.local
@@ -23,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Editor directories and files
+.idea/
 .vscode
 *.suo
 *.ntvs*
