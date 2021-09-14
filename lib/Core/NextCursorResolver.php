@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core;
 
+use Netgen\RemoteMedia\API\NextCursorResolverInterface;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Query;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
@@ -13,7 +14,7 @@ use function is_array;
 use function str_replace;
 use function trim;
 
-final class NextCursorResolver
+final class NextCursorResolver implements NextCursorResolverInterface
 {
     public const PROJECT_KEY = 'ngremotemedia';
     public const PROVIDER_KEY = 'cloudinary';
