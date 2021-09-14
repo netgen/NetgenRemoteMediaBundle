@@ -17,16 +17,16 @@ use function trim;
 
 final class Psr6CachedGateway extends Gateway
 {
-    const PROJECT_KEY = 'ngremotemedia';
-    const PROVIDER_KEY = 'cloudinary';
-    const SEARCH = 'search';
-    const SEARCH_COUNT = 'search_count';
-    const LIST = 'resource_list';
-    const FOLDER_LIST = 'folder_list';
-    const TAG_LIST = 'tag_list';
-    const COUNT = 'resources_count';
-    const FOLDER_COUNT = 'folder_count';
-    const RESOURCE_ID = 'resource';
+    public const PROJECT_KEY = 'ngremotemedia';
+    public const PROVIDER_KEY = 'cloudinary';
+    public const SEARCH = 'search';
+    public const SEARCH_COUNT = 'search_count';
+    public const LIST = 'resource_list';
+    public const FOLDER_LIST = 'folder_list';
+    public const TAG_LIST = 'tag_list';
+    public const COUNT = 'resources_count';
+    public const FOLDER_COUNT = 'folder_count';
+    public const RESOURCE_ID = 'resource';
 
     protected Gateway $gateway;
 

@@ -83,7 +83,7 @@ abstract class RemoteMediaProvider
 
     abstract public function getVideoThumbnail(RemoteResource $resource, ?array $options = []): string;
 
-    abstract public function generateVideoTag(RemoteResource $resource, string $variationGroup, string $format = ''): string;
+    abstract public function generateVideoTag(RemoteResource $resource, string $variationGroup, $format = []): string;
 
     abstract public function deleteResource(string $resourceId, string $resourceType = 'image'): void;
 

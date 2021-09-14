@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
 use Cloudinary\Api\NotFound;
-use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
-use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
-use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\Variation;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Query;
@@ -16,6 +13,9 @@ use Netgen\RemoteMedia\Core\RemoteMediaProvider;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Core\UploadFile;
 use Netgen\RemoteMedia\Core\VariationResolver;
+use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
+use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use function array_key_exists;
@@ -89,18 +89,18 @@ final class CloudinaryProvider extends RemoteMediaProvider
         $url = $secure ? $resource->secure_url : $resource->url;
         $variation->url = $url;
 
-        if (empty($variationName)) {
+        if (empty($format)) {
             return $variation;
         }
 
-        if (is_array($variationName)) {
+        if (is_array($format)) {
             /*
              * This means the 'variationName' is actually an array with all the configuration
              * options provided, and we can pass those directly to the cloudinary
              */
-            $options = $variationName;
+            $options = $format;
         } else {
-            $options = $this->processConfiguredVariation($resource, $variationName, $variationGroup);
+            $options = $this->processConfiguredVariation($resource, $format, $variationGroup);
         }
 
         $finalOptions['transformation'] = $options;
@@ -227,7 +227,7 @@ final class CloudinaryProvider extends RemoteMediaProvider
         return $this->gateway->getVideoThumbnail($resource->resourceId, $options);
     }
 
-    public function generateVideoTag(RemoteResource $resource, string $variationGroup, string $format = ''): string
+    public function generateVideoTag(RemoteResource $resource, string $variationGroup, $format = []): string
     {
         $transformationOptions = $format;
 

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
+use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 
 /**
  * Class Quality

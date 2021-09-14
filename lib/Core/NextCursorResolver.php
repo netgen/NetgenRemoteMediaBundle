@@ -15,9 +15,9 @@ use function trim;
 
 final class NextCursorResolver
 {
-    const PROJECT_KEY = 'ngremotemedia';
-    const PROVIDER_KEY = 'cloudinary';
-    const NEXT_CURSOR = 'nextcursor';
+    public const PROJECT_KEY = 'ngremotemedia';
+    public const PROVIDER_KEY = 'cloudinary';
+    public const NEXT_CURSOR = 'nextcursor';
 
     private TagAwareAdapterInterface $cache;
 

@@ -6,20 +6,21 @@ namespace Netgen\RemoteMedia\API\Values;
 
 use function in_array;
 use function json_encode;
+use function property_exists;
 
 final class RemoteResource
 {
-    const TYPE_IMAGE = 'image';
-    const TYPE_VIDEO = 'video';
-    const TYPE_OTHER = 'other';
+    public const TYPE_IMAGE = 'image';
+    public const TYPE_VIDEO = 'video';
+    public const TYPE_OTHER = 'other';
 
-    public string $resourceId;
-    public string $resourceType;
+    public ?string $resourceId = null;
+    public ?string $resourceType = null;
     public string $mediaType = 'image';
-    public string $type;
+    public ?string $type = 'upload';
 
-    public string $url;
-    public string $secure_url;
+    public ?string $url = null;
+    public ?string $secure_url = null;
     public int $size = 0;
 
     public array $variations = [];
@@ -38,6 +39,17 @@ final class RemoteResource
         'alt_text' => '',
         'caption' => '',
     ];
+
+    public function __construct(array $properties = [])
+    {
+        foreach ($properties as $key => $value) {
+            if (!property_exists($this, $key)) {
+                continue;
+            }
+
+            $this->{$key} = $value;
+        }
+    }
 
     public function __toString(): string
     {
