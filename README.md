@@ -52,5 +52,4 @@ $ php-cs-fixer fix
 
 ## Copyright
 
-- Copyright (C) 2016 Keyteq. All rights reserved.
-- Copyright (C) 2016 Netgen. All rights reserved.
+- Copyright (C) 2021 Netgen. All rights reserved.
