@@ -16,9 +16,9 @@ This repository contains field type (and legacy data type) implementation and pr
 - support for images, videos, and documents upload
 - images cropping editor
 
-## Licence and installation instructions
+## License and installation instructions
 
-[Licence](LICENCE)
+[License](LICENSE)
 
 [Installation instructions](docs/INSTALL.md)
 
