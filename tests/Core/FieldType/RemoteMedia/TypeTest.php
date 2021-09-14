@@ -14,9 +14,9 @@ use PHPUnit\Framework\TestCase;
 
 class TypeTest extends TestCase
 {
-    const PARAMETERS = ['resourceId' => 'test'];
+    public const PARAMETERS = ['resourceId' => 'test'];
 
-    const INPUT_PARAMETERS = [
+    public const INPUT_PARAMETERS = [
         'input_uri' => 'test/path/image.jpg',
         'alt_text' => 'Test alt text',
         'caption' => 'Test caption',
@@ -52,37 +52,37 @@ class TypeTest extends TestCase
 
     public function testGetFieldTypeIdentifier()
     {
-        self::assertEquals('ngremotemedia', $this->type->getFieldTypeIdentifier());
+        self::assertSame('ngremotemedia', $this->type->getFieldTypeIdentifier());
     }
 
     public function testGetNameWithValue()
     {
-        self::assertEquals($this->value->resourceId, $this->type->getName($this->value));
+        self::assertSame($this->value->resourceId, $this->type->getName($this->value));
     }
 
     public function testGetNameWithEmptyValue()
     {
-        self::assertEquals($this->emptyValue->resourceId, $this->type->getName($this->emptyValue));
+        self::assertSame($this->emptyValue->resourceId, $this->type->getName($this->emptyValue));
     }
 
     public function testGetEmptyValue()
     {
-        self::assertEquals($this->emptyValue, $this->type->getEmptyValue());
+        self::assertSame($this->emptyValue, $this->type->getEmptyValue());
     }
 
     public function testFromHash()
     {
-        self::assertEquals($this->inputValue, $this->type->fromHash(self::INPUT_PARAMETERS));
+        self::assertSame($this->inputValue, $this->type->fromHash(self::INPUT_PARAMETERS));
     }
 
     public function testFromHashWithEmptyHash()
     {
-        self::assertEquals($this->emptyValue, $this->type->fromHash(''));
+        self::assertSame($this->emptyValue, $this->type->fromHash(''));
     }
 
     public function testToHash()
     {
-        self::assertEquals((array) $this->value, $this->type->toHash($this->value));
+        self::assertSame((array) $this->value, $this->type->toHash($this->value));
     }
 
     public function testInputValueToPersistenceValue()
@@ -95,7 +95,7 @@ class TypeTest extends TestCase
             ],
         );
 
-        self::assertEquals($fieldValue, $this->type->toPersistenceValue($this->inputValue));
+        self::assertSame($fieldValue, $this->type->toPersistenceValue($this->inputValue));
     }
 
     public function testValueToPersistenceValue()
@@ -108,7 +108,7 @@ class TypeTest extends TestCase
             ],
         );
 
-        self::assertEquals($fieldValue, $this->type->toPersistenceValue($this->value));
+        self::assertSame($fieldValue, $this->type->toPersistenceValue($this->value));
     }
 
     public function testInvalidValueToPersistenceValue()
@@ -126,7 +126,7 @@ class TypeTest extends TestCase
             ],
         );
 
-        self::assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
+        self::assertSame($this->value, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testParametersValueFromPersistenceValue()
@@ -137,7 +137,7 @@ class TypeTest extends TestCase
             ],
         );
 
-        self::assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
+        self::assertSame($this->value, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testNullValueFromPersistenceValue()
@@ -148,7 +148,7 @@ class TypeTest extends TestCase
             ],
         );
 
-        self::assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
+        self::assertSame($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testEmptyValueFromPersistenceValue()
@@ -159,7 +159,7 @@ class TypeTest extends TestCase
             ],
         );
 
-        self::assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
+        self::assertSame($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
     }
 
     public function testIsEmptyValueWithInputValue()
@@ -200,14 +200,14 @@ class TypeTest extends TestCase
 
         $returnedValue = $this->type->acceptValue('test_uri');
 
-        self::assertEquals($value, $returnedValue);
+        self::assertSame($value, $returnedValue);
     }
 
     public function testAcceptValueWithValidArray()
     {
         $returnedValue = $this->type->acceptValue(self::INPUT_PARAMETERS);
 
-        self::assertEquals($this->inputValue, $returnedValue);
+        self::assertSame($this->inputValue, $returnedValue);
     }
 
     /**
@@ -217,17 +217,17 @@ class TypeTest extends TestCase
     {
         $returnedValue = $this->type->acceptValue([1]);
 
-        self::assertEquals(1, $returnedValue);
+        self::assertSame(1, $returnedValue);
     }
 
     public function testAcceptValueWithInputValueObject()
     {
-        self::assertEquals($this->inputValue, $this->type->acceptValue($this->inputValue));
+        self::assertSame($this->inputValue, $this->type->acceptValue($this->inputValue));
     }
 
     public function testAcceptValueWithValueObject()
     {
-        self::assertEquals($this->value, $this->type->acceptValue($this->value));
+        self::assertSame($this->value, $this->type->acceptValue($this->value));
     }
 
     /**
@@ -237,7 +237,7 @@ class TypeTest extends TestCase
     {
         $value = new InputValue(['input_uri' => ['test_uri']]);
 
-        self::assertEquals($value, $this->type->acceptValue($value));
+        self::assertSame($value, $this->type->acceptValue($value));
     }
 
     /**
@@ -247,7 +247,7 @@ class TypeTest extends TestCase
     {
         $value = new Value(['resourceId' => ['test']]);
 
-        self::assertEquals($value, $this->type->acceptValue($value));
+        self::assertSame($value, $this->type->acceptValue($value));
     }
 
     /**
@@ -257,6 +257,6 @@ class TypeTest extends TestCase
     {
         $value = 1;
 
-        self::assertEquals($value, $this->type->acceptValue($value));
+        self::assertSame($value, $this->type->acceptValue($value));
     }
 }

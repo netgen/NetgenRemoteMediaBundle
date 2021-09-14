@@ -31,7 +31,24 @@ For usage documentation see [USAGE.md](docs/USAGE.md)
 
 ## Contributing
 
-For frontend development see [FRONTEND.md][docs/frontend.md]
+For frontend development see [FRONTEND.md](docs/frontend.md)
+
+### Unit tests
+
+Run the unit tests by calling `composer test` from the repo root:
+
+```
+$ composer test
+```
+
+### Coding standards
+
+This repo uses PHP CS Fixer and rules defined in `.php-cs-fixer.php` file to enforce coding
+standards. Please check the code for any CS violations before submitting patches:
+
+```
+$ php-cs-fixer fix
+```
 
 ## Copyright
 

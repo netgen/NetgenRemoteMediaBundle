@@ -1,40 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php"
-         backupGlobals="false"
-         backupStaticAttributes="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         colors="true"
-         verbose="true"
-         processIsolation="false"
-         stopOnFailure="false"
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        forceCoversAnnotation="true"
+        beStrictAboutOutputDuringTests="true"
+        beStrictAboutTodoAnnotatedTests="true"
+        beStrictAboutChangesToGlobalState="true"
 >
+    <php>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0" />
+    </php>
+
     <testsuites>
-        <testsuite name="Netgen\RemoteMedia\Tests">
-            <directory>tests</directory>
+        <testsuite name="Netgen\RemoteMedia">
+            <directory>tests/lib</directory>
+        </testsuite>
+        <testsuite name="Netgen\Bundle\RemoteMediaBundle">
+            <directory>tests/bundle</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">lib</directory>
             <directory suffix=".php">bundle</directory>
-            <exclude>
-                <directory>bundle/Command</directory>
-                <directory>bundle/Resources</directory>
-                <directory>bundle/vendor</directory>
-                <directory>bundle/update</directory>
-                <directory>bundle/extension</directory>
-                <file>bundle/Core/FieldType/RemoteMedia/SearchField.php</file>
-                <file>bundle/RemoteMedia/Provider/Cloudinary/Gateway/CachedGateway.php</file>
-                <file>bundle/RemoteMedia/Helper.php</file>
-                <file>bundle/NetgenRemoteMediaBundle.php</file>
-            </exclude>
-        </whitelist>
-    </filter>
-    <logging>
-        <log type="junit" target="build/report.junit.xml"/>
-        <log type="coverage-html" target="build/coverage" />
-        <log type="coverage-text" target="build/coverage.txt"/>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
-    </logging>
+        </include>
+        <exclude>
+            <directory>bundle/Resources</directory>
+            <file>bundle/NetgenRemoteMediaBundle.php</file>
+        </exclude>
+    </coverage>
 </phpunit>

@@ -2,26 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
+namespace Netgen\RemoteMedia\Tests\API\Values;
 
-use eZ\Publish\Core\FieldType\Value as BaseValue;
 use Netgen\RemoteMedia\API\Values\Variation;
 use PHPUnit\Framework\TestCase;
 use function json_encode;
 
-class VariationTest extends TestCase
+final class VariationTest extends TestCase
 {
-    public function testInstanceOfValue()
-    {
-        self::assertInstanceOf(BaseValue::class, new Variation());
-    }
-
-    public function testConstructionWithParameters()
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\Variation::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\Variation::__toString
+     */
+    public function testConstructionWithParameters(): void
     {
         $parameters = [
             'url' => 'test/path/image.jpg',
-            'width' => '150',
-            'height' => '200',
+            'width' => 150,
+            'height' => 200,
             'coords' => [
                 'x' => 20,
                 'y' => 30,
@@ -33,12 +31,16 @@ class VariationTest extends TestCase
         self::assertSame(json_encode($parameters), (string) $variation);
     }
 
-    public function testConstructionWithoutParameters()
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\Variation::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\Variation::__toString
+     */
+    public function testConstructionWithoutParameters(): void
     {
         $expectedResponseArray = [
             'url' => null,
-            'width' => null,
-            'height' => null,
+            'width' => 0,
+            'height' => 0,
             'coords' => [
                 'x' => 0,
                 'y' => 0,

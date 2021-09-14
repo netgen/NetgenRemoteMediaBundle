@@ -33,12 +33,12 @@ class RemoteMediaConverterTest extends TestCase
 
     public function testGetIndexColumn()
     {
-        self::assertEquals('data_text', $this->converter->getIndexColumn());
+        self::assertSame('data_text', $this->converter->getIndexColumn());
     }
 
     public function testCreate()
     {
-        self::assertEquals($this->converter, RemoteMediaConverter::create());
+        self::assertSame($this->converter, RemoteMediaConverter::create());
     }
 
     public function testToStorageValue()
@@ -52,7 +52,7 @@ class RemoteMediaConverterTest extends TestCase
         $storageFieldValue = new StorageFieldValue();
 
         $this->converter->toStorageValue($fieldValue, $storageFieldValue);
-        self::assertEquals($storageFieldValue->dataText, json_encode($fieldValue->data));
+        self::assertSame($storageFieldValue->dataText, json_encode($fieldValue->data));
     }
 
     public function testToFieldValue()
@@ -66,7 +66,7 @@ class RemoteMediaConverterTest extends TestCase
         $fieldValue = new FieldValue();
 
         $this->converter->toFieldValue($storageFieldValue, $fieldValue);
-        self::assertEquals($fieldValue->data, json_decode($storageFieldValue->dataText, true));
+        self::assertSame($fieldValue->data, json_decode($storageFieldValue->dataText, true));
     }
 
     public function testToStorageFieldDefinition()

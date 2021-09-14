@@ -27,7 +27,7 @@ class InputValueTest extends TestCase
 
         $inputValue = new InputValue($parameters);
 
-        self::assertEquals(json_encode($parameters), (string) $inputValue);
+        self::assertSame(json_encode($parameters), (string) $inputValue);
     }
 
     public function testConstructionWithoutParameters()
@@ -41,6 +41,6 @@ class InputValueTest extends TestCase
 
         $inputValue = new InputValue();
 
-        self::assertEquals(json_encode($expectedResponseArray), (string) $inputValue);
+        self::assertSame(json_encode($expectedResponseArray), (string) $inputValue);
     }
 }
