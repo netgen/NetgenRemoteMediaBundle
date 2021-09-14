@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
-use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use function count;
@@ -17,6 +16,7 @@ final class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('netgen_remote_media');
         $this->addProviderSection($treeBuilder->getRootNode());
+        $this->addImageConfiguration($treeBuilder->getRootNode());
 
         return $treeBuilder;
     }
@@ -48,64 +48,66 @@ final class Configuration implements ConfigurationInterface
             ->end();
     }
 
-    private function addImageConfiguration(NodeBuilder $nodeBuilder): void
+    private function addImageConfiguration(ArrayNodeDefinition $rootNode): void
     {
-        $nodeBuilder
-            ->arrayNode('image_variations')
-                ->info('Configuration for your image variations (aka "image aliases")')
-                ->example(
-                    [
-                        'variation_name' => [
-                            'transformations' => [
-                                [
-                                    'name' => 'resize',
-                                    'params' => [400, 350],
+        $rootNode
+            ->children()
+                ->arrayNode('image_variations')
+                    ->info('Configuration for your image variations (aka "image aliases")')
+                    ->example(
+                        [
+                            'variation_name' => [
+                                'transformations' => [
+                                    [
+                                        'name' => 'resize',
+                                        'params' => [400, 350],
+                                    ],
+                                ],
+                            ],
+                            'my_cropped_variation' => [
+                                'transformations' => [
+                                    [
+                                        'name' => 'fill',
+                                        'params' => [300, 200],
+                                    ],
+                                    [
+                                        'name' => 'crop',
+                                        'params' => [300, 300, 0, 0],
+                                    ],
                                 ],
                             ],
                         ],
-                        'my_cropped_variation' => [
-                            'transformations' => [
-                                [
-                                    'name' => 'fill',
-                                    'params' => [300, 200],
-                                ],
-                                [
-                                    'name' => 'crop',
-                                    'params' => [300, 300, 0, 0],
-                                ],
-                            ],
-                        ],
-                    ],
-                )
-                ->useAttributeAsKey('variation_name')
-                ->normalizeKeys(false)
-                ->prototype('array')
-                    ->useAttributeAsKey('content_type_identifier')
+                    )
+                    ->useAttributeAsKey('variation_name')
                     ->normalizeKeys(false)
                     ->prototype('array')
-                        ->children()
-                            ->arrayNode('transformations')
-                                ->info('A list of transformations to apply to the image')
-                                ->useAttributeAsKey('name')
-                                ->normalizeKeys(false)
-                                ->prototype('array')
-                                ->info('Array/Hash of parameters to pass to the filter')
-                                    ->useAttributeAsKey('options')
-                                    ->beforeNormalization()
-                                        ->ifTrue(
-                                            static function ($v) {
-                                                // Check if passed array only contains a "params" key
-                                                return is_array($v) && count($v) === 1 && isset($v['params']);
-                                            },
-                                        )
-                                        ->then(
-                                            static function ($v) {
-                                                // If we have the "params" key, just use the value.
-                                                return $v['params'];
-                                            },
-                                        )
+                        ->useAttributeAsKey('group')
+                        ->normalizeKeys(false)
+                        ->prototype('array')
+                            ->children()
+                                ->arrayNode('transformations')
+                                    ->info('A list of transformations to apply to the image')
+                                    ->useAttributeAsKey('name')
+                                    ->normalizeKeys(false)
+                                    ->prototype('array')
+                                    ->info('Array/Hash of parameters to pass to the filter')
+                                        ->useAttributeAsKey('options')
+                                        ->beforeNormalization()
+                                            ->ifTrue(
+                                                static function ($v) {
+                                                    // Check if passed array only contains a "params" key
+                                                    return is_array($v) && count($v) === 1 && isset($v['params']);
+                                                },
+                                            )
+                                            ->then(
+                                                static function ($v) {
+                                                    // If we have the "params" key, just use the value.
+                                                    return $v['params'];
+                                                },
+                                            )
+                                        ->end()
+                                        ->prototype('variable')->end()
                                     ->end()
-                                    ->prototype('variable')->end()
                                 ->end()
                             ->end()
                         ->end()
