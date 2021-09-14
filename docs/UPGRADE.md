@@ -17,3 +17,6 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
 * All the core classes and interfaces have changed their namespace from `Netgen\Bundle\RemoteMediaBundle\RemoteMedia` to `Netgen\RemoteMedia\Core` so those have to be updated accordingly
 * All the exceptions have changed their namespace from `Netgen\Bundle\RemoteMediaBundle\Exception` to `Netgen\RemoteMedia\Exception`
 * Main `ngremotemedia-type` CSS class has been renamed to `ngremotemedia-container`
+* Configuration for variations is now done organized in `variation groups` instead of `content types` so a few methods have changed their signature:
+    * `Netgen\RemoteMedia\Core\VariationResolver::getVariationsForContentType($contentTypeIdentifier)` became `Netgen\RemoteMedia\Core\VariationResolver::getVariationsForGroup(string $contentTypeIdentifier): array`
+* This core bundle doesn't support siteaccess-aware image variations configuration anymore.
