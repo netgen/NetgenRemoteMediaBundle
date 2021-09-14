@@ -47,7 +47,7 @@ This repo uses PHP CS Fixer and rules defined in `.php-cs-fixer.php` file to enf
 standards. Please check the code for any CS violations before submitting patches:
 
 ```
-$ php-cs-fixer fix
+$ composer fix
 ```
 
 ## Copyright
