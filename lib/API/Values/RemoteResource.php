@@ -58,6 +58,9 @@ final class RemoteResource
         return json_encode($this);
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     */
     public static function createFromParameters(array $parameters): self
     {
         if (!array_key_exists('resourceId', $parameters)) {
@@ -67,6 +70,9 @@ final class RemoteResource
         return new self($parameters);
     }
 
+    /**
+     * @throws \InvalidArgumentException
+     */
     public static function createFromCloudinaryResponse(array $response): self
     {
         if (!array_key_exists('public_id', $response) || $response['public_id'] === null || $response['public_id'] === '') {

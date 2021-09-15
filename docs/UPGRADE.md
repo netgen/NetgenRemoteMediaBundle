@@ -22,3 +22,15 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
 * This core bundle doesn't support siteaccess-aware image variations configuration anymore.
 * `Query` and `Result` objects related to search have been made more generic and changed their namespace from `Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search` to `Netgen\RemoteMedia\API\Search`.
 * `Result` object now returns an array of `RemoteResource` objects instead of associative array directly from Cloudinary. The method has been changed from `getResults()` to `getResources()`.
+* Most methods that were accepting `resourceId` and `resourceType` in the `RemoteMediaProvider` class are now accepting `RemoteResource` object instead. Those methods are:
+    * `deleteResource(RemoteResource $resource)`
+    * `addTagToResource(RemoteResource $resource, string $tag)`
+    * `removeTagFromResource(RemoteResource $resource, string $tag)`
+    * `removeAllTagsFromResource(RemoteResource $resource)`
+    * `updateTags(RemoteResource $resource, array $tags)`
+    * `updateResourceContext(RemoteResource $resource, array $context)`
+ * Method `RemoteMediaProvider::updateTags()` now accepts an array of tags instead of string.
+ * Method `RemoteMediaProvider::getRemoteResource()` doesn't return empty value, instead it throws a `Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException` exception. Empty value is not valid anymore.
+ * `RemoteResource` object's constructor has been set to private; now it's possible to instantiate it through two available static methods and both methods are taking care that resource ID is not empty (as empty value is not valid anymore): they will throw an `InvalidArgumentException` if this parameter is missing:
+    * `public static function createFromParameters(array $parameters): self`
+    * `public static function createFromCloudinaryResponse(array $response): self`
