@@ -98,9 +98,22 @@ final class CloudinaryApiGatewayTest extends TestCase
             ->method('execute')
             ->willReturn($apiResponse);
 
+        $expectedResult = Result::fromResponse($apiResponse);
+        $result = $this->apiGateway->search($query);
+
         self::assertSame(
-            Result::fromResponse($apiResponse),
-            $this->apiGateway->search($query),
+            $expectedResult->getTotalCount(),
+            $result->getTotalCount(),
+        );
+
+        self::assertSame(
+            $expectedResult->getNextCursor(),
+            $result->getNextCursor(),
+        );
+
+        self::assertSame(
+            $expectedResult->getResources(),
+            $result->getResources(),
         );
     }
 
@@ -131,9 +144,22 @@ final class CloudinaryApiGatewayTest extends TestCase
             ->method('execute')
             ->willReturn($apiResponse);
 
+        $expectedResult = Result::fromResponse($apiResponse);
+        $result = $this->apiGateway->search($query);
+
         self::assertSame(
-            Result::fromResponse($apiResponse),
-            $this->apiGateway->search($query),
+            $expectedResult->getTotalCount(),
+            $result->getTotalCount(),
+        );
+
+        self::assertSame(
+            $expectedResult->getNextCursor(),
+            $result->getNextCursor(),
+        );
+
+        self::assertSame(
+            $expectedResult->getResources(),
+            $result->getResources(),
         );
     }
 
@@ -175,9 +201,22 @@ final class CloudinaryApiGatewayTest extends TestCase
             ->method('execute')
             ->willReturn($apiResponse);
 
+        $expectedResult = Result::fromResponse($apiResponse);
+        $result = $this->apiGateway->search($query);
+
         self::assertSame(
-            Result::fromResponse($apiResponse),
-            $this->apiGateway->search($query),
+            $expectedResult->getTotalCount(),
+            $result->getTotalCount(),
+        );
+
+        self::assertSame(
+            $expectedResult->getNextCursor(),
+            $result->getNextCursor(),
+        );
+
+        self::assertSame(
+            $expectedResult->getResources(),
+            $result->getResources(),
         );
     }
 
