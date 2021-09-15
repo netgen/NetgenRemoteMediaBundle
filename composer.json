@@ -30,7 +30,8 @@
         "cloudinary/cloudinary_php": "^1.0",
         "symfony/cache": "^5.3",
         "symfony/http-foundation": "^5.3",
-        "symfony/mime": "^5.3"
+        "symfony/mime": "^5.3",
+        "symfony/framework-bundle": "^5.3"
     },
     "require-dev": {
         "matthiasnoback/symfony-dependency-injection-test": "^4.0",

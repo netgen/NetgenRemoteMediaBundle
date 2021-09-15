@@ -14,6 +14,13 @@ services:
             - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%"]]
             - [setInternalLimit, ["%netgen_remote_media.cloudinary.internal_limit%"]]
 
+    netgen_remote_media.provider.cloudinary.gateway.cached:
+      class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway
+      arguments:
+        - "@netgen_remote_media.provider.cloudinary.gateway"
+        - "@ngrm.cache"
+        - "%netgen_remote_media.cloudinary.cache_ttl%"
+
     netgen_remote_media.provider.cloudinary:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider
         arguments:

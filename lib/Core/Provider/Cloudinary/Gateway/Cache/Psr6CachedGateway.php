@@ -7,7 +7,7 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
-use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use function array_merge;
 use function array_unique;
 use function array_walk;
@@ -30,11 +30,11 @@ final class Psr6CachedGateway extends Gateway
 
     protected Gateway $gateway;
 
-    protected TagAwareAdapterInterface $cache;
+    protected CacheItemPoolInterface $cache;
 
     protected int $ttl;
 
-    public function __construct(Gateway $gateway, TagAwareAdapterInterface $cache, int $ttl = 7200)
+    public function __construct(Gateway $gateway, CacheItemPoolInterface $cache, int $ttl = 7200)
     {
         $this->gateway = $gateway;
         $this->cache = $cache;

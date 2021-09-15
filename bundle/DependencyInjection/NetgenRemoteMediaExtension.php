@@ -67,6 +67,7 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
     {
         $prependConfigs = [
             'default_settings.yaml' => 'netgen_remote_media',
+            'cache.yaml' => 'framework',
         ];
 
         foreach ($prependConfigs as $configFile => $prependConfig) {

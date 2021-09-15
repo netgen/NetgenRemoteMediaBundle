@@ -1,0 +1,5 @@
+cache:
+    default_memcached_provider: 'memcached://localhost'
+    pools:
+        ngrm.cache:
+            adapter: cache.adapter.redis
