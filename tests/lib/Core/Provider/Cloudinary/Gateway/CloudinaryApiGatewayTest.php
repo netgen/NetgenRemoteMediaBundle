@@ -59,7 +59,7 @@ final class CloudinaryApiGatewayTest extends TestCase
             'secure' => true,
         ];
 
-        self::assertEquals(
+        self::assertSame(
             'https://res.cloudinary.com/testcloud/image/upload/test.jpg',
             $this->apiGateway->getVariationUrl($source, $options),
         );
@@ -98,7 +98,7 @@ final class CloudinaryApiGatewayTest extends TestCase
             ->method('execute')
             ->willReturn($apiResponse);
 
-        self::assertEquals(
+        self::assertSame(
             Result::fromResponse($apiResponse),
             $this->apiGateway->search($query),
         );
@@ -131,7 +131,7 @@ final class CloudinaryApiGatewayTest extends TestCase
             ->method('execute')
             ->willReturn($apiResponse);
 
-        self::assertEquals(
+        self::assertSame(
             Result::fromResponse($apiResponse),
             $this->apiGateway->search($query),
         );
@@ -175,7 +175,7 @@ final class CloudinaryApiGatewayTest extends TestCase
             ->method('execute')
             ->willReturn($apiResponse);
 
-        self::assertEquals(
+        self::assertSame(
             Result::fromResponse($apiResponse),
             $this->apiGateway->search($query),
         );
@@ -200,7 +200,7 @@ final class CloudinaryApiGatewayTest extends TestCase
                 ),
             );
 
-        self::assertEquals(
+        self::assertSame(
             $folders,
             $this->apiGateway->listFolders(),
         );
@@ -226,7 +226,7 @@ final class CloudinaryApiGatewayTest extends TestCase
                 ),
             );
 
-        self::assertEquals(
+        self::assertSame(
             $folders,
             $this->apiGateway->listSubFolders('folder_1'),
         );
@@ -242,7 +242,7 @@ final class CloudinaryApiGatewayTest extends TestCase
             ->method('usage')
             ->willReturn(['resources' => 1200]);
 
-        self::assertEquals(
+        self::assertSame(
             1200,
             $this->apiGateway->countResources(),
         );
@@ -272,7 +272,7 @@ final class CloudinaryApiGatewayTest extends TestCase
                 new Api\Response($this->getSearchResponse()),
             );
 
-        self::assertEquals(
+        self::assertSame(
             200,
             $this->apiGateway->countResourcesInFolder('folderName'),
         );
@@ -294,7 +294,7 @@ final class CloudinaryApiGatewayTest extends TestCase
 
         $result = $this->apiGateway->get('test_id', 'image');
 
-        self::assertEquals(
+        self::assertSame(
             [],
             $result,
         );
