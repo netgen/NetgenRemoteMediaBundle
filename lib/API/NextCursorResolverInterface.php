@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API;
 
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Query;
+use Netgen\RemoteMedia\API\Search\Query;
 
 interface NextCursorResolverInterface
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core;
 
 use Netgen\RemoteMedia\Core\NextCursorResolver;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Query;
+use Netgen\RemoteMedia\API\Search\Query;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;

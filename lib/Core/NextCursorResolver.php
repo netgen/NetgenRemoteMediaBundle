@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core;
 
 use Netgen\RemoteMedia\API\NextCursorResolverInterface;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Query;
+use Netgen\RemoteMedia\API\Search\Query;
 use RuntimeException;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use function http_build_query;

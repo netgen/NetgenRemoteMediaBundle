@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Search;
+namespace Netgen\RemoteMedia\API\Search;
 
 use function get_object_vars;
 use function http_build_query;

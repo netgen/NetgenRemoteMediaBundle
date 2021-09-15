@@ -6,8 +6,8 @@ namespace Netgen\RemoteMedia\Core;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\Variation;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Query;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Search\Result;
+use Netgen\RemoteMedia\API\Search\Query;
+use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\Core\Transformation\Registry as TransformationRegistry;
 use Psr\Log\LoggerInterface;
 
