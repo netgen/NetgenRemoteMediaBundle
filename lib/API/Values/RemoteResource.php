@@ -15,7 +15,7 @@ final class RemoteResource
     public const TYPE_OTHER = 'other';
 
     public ?string $resourceId = null;
-    public ?string $resourceType = null;
+    public ?string $resourceType = 'image';
     public string $mediaType = 'image';
     public ?string $type = 'upload';
 
