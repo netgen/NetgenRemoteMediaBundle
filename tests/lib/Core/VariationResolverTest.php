@@ -34,12 +34,12 @@ final class VariationResolverTest extends TestCase
                         'crop' => [400, 400],
                     ],
                 ],
-                'non_croppable_article' => [
+                'non_cropbbable' => [
                     'transformations' => [
                         'resize' => [100, 100],
                     ],
                 ],
-                'non_cropbbable' => [
+                'non_croppable_article' => [
                     'transformations' => [
                         'resize' => [100, 100],
                     ],

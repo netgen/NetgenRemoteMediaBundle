@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache;
 
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use function array_merge;
 use function array_unique;

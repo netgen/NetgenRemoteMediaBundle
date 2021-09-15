@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
 use Cloudinary\Api\NotFound;
-use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\API\Values\Variation;
+use InvalidArgumentException;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\Variation;
 use Netgen\RemoteMedia\Core\RemoteMediaProvider;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Core\UploadFile;
 use Netgen\RemoteMedia\Core\VariationResolver;
 use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use Psr\Log\LoggerInterface;
@@ -22,6 +24,7 @@ use function array_key_exists;
 use function base_convert;
 use function count;
 use function explode;
+use function implode;
 use function in_array;
 use function is_array;
 use function preg_replace;
@@ -68,12 +71,76 @@ final class CloudinaryProvider extends RemoteMediaProvider
         return true;
     }
 
+    public function listFolders(): array
+    {
+        return $this->gateway->listFolders();
+    }
+
+    public function listSubFolders(string $parentFolder): array
+    {
+        return $this->gateway->listSubFolders($parentFolder);
+    }
+
+    public function createFolder(string $path): void
+    {
+        $this->gateway->createFolder($path);
+    }
+
+    public function countResources(): int
+    {
+        return $this->gateway->countResources();
+    }
+
+    public function countResourcesInFolder(string $folder): int
+    {
+        return $this->gateway->countResourcesInFolder($folder);
+    }
+
+    public function listTags(): array
+    {
+        return $this->gateway->listTags();
+    }
+
     public function upload(UploadFile $uploadFile, ?array $options = []): RemoteResource
     {
         $options = $this->prepareUploadOptions($uploadFile, $options);
         $response = $this->gateway->upload($uploadFile->uri(), $options);
 
         return RemoteResource::createFromCloudinaryResponse($response);
+    }
+
+    public function getRemoteResource(string $resourceId, string $resourceType = 'image'): RemoteResource
+    {
+        try {
+            $response = $this->gateway->get($resourceId, $resourceType);
+        } catch (NotFound $e) {
+            throw new RemoteResourceNotFoundException($resourceId, $resourceType);
+        }
+
+        if (empty($response)) {
+            throw new RemoteResourceNotFoundException($resourceId, $resourceType);
+        }
+
+        try {
+            return RemoteResource::createFromCloudinaryResponse($response);
+        } catch (InvalidArgumentException $e) {
+            throw new RemoteResourceNotFoundException($resourceId, $resourceType);
+        }
+    }
+
+    public function searchResources(Query $query): Result
+    {
+        return $this->gateway->search($query);
+    }
+
+    public function searchResourcesCount(Query $query): int
+    {
+        return $this->gateway->searchCount($query);
+    }
+
+    public function deleteResource(RemoteResource $resource): void
+    {
+        $this->gateway->delete($resource->resourceId, $resource->resourceType);
     }
 
     /**
@@ -112,87 +179,28 @@ final class CloudinaryProvider extends RemoteMediaProvider
         return $variation;
     }
 
-    public function countResources(): int
+    public function addTagToResource(RemoteResource $resource, string $tag): void
     {
-        return $this->gateway->countResources();
+        $this->gateway->addTag($resource->resourceId, $resource->resourceType, $tag);
     }
 
-    public function listFolders(): array
+    public function removeTagFromResource(RemoteResource $resource, string $tag): void
     {
-        return $this->gateway->listFolders();
+        $this->gateway->removeTag($resource->resourceId, $resource->resourceType, $tag);
     }
 
-    public function listSubFolders(string $parentFolder): array
+    public function removeAllTagsFromResource(RemoteResource $resource): void
     {
-        return $this->gateway->listSubFolders($parentFolder);
+        $this->gateway->removeAllTags($resource->resourceId, $resource->resourceType);
     }
 
-    public function createFolder(string $path): void
-    {
-        $this->gateway->createFolder($path);
-    }
-
-    public function countResourcesInFolder(string $folder): int
-    {
-        return $this->gateway->countResourcesInFolder($folder);
-    }
-
-    public function searchResources(Query $query): Result
-    {
-        return $this->gateway->search($query);
-    }
-
-    public function searchResourcesCount(Query $query): int
-    {
-        return $this->gateway->searchCount($query);
-    }
-
-    public function getRemoteResource(string $resourceId, string $resourceType = 'image'): RemoteResource
-    {
-        if (empty($resourceId)) {
-            return new RemoteResource();
-        }
-
-        try {
-            $response = $this->gateway->get($resourceId, $resourceType);
-        } catch (NotFound $e) {
-            return new RemoteResource();
-        }
-
-        if (empty($response)) {
-            return new RemoteResource();
-        }
-
-        return RemoteResource::createFromCloudinaryResponse($response);
-    }
-
-    public function listTags(): array
-    {
-        return $this->gateway->listTags();
-    }
-
-    public function addTagToResource(string $resourceId, string $tag, string $resourceType = 'image'): void
-    {
-        $this->gateway->addTag($resourceId, $resourceType, $tag);
-    }
-
-    public function removeTagFromResource(string $resourceId, string $tag, string $resourceType = 'image'): void
-    {
-        $this->gateway->removeTag($resourceId, $resourceType, $tag);
-    }
-
-    public function removeAllTagsFromResource(string $resourceId, string $resourceType = 'image'): void
-    {
-        $this->gateway->removeAllTags($resourceId, $resourceType);
-    }
-
-    public function updateTags(string $resourceId, string $tags, string $resourceType = 'image'): void
+    public function updateTags(RemoteResource $resource, array $tags): void
     {
         $options = [
-            'tags' => $tags,
+            'tags' => implode(',', $tags),
         ];
 
-        $this->gateway->update($resourceId, $resourceType, $options);
+        $this->gateway->update($resource->resourceId, $resource->resourceType, $options);
     }
 
     /**
@@ -203,13 +211,13 @@ final class CloudinaryProvider extends RemoteMediaProvider
      *      'alt' => 'alt text'
      * ];.
      */
-    public function updateResourceContext(string $resourceId, string $resourceType, array $context): void
+    public function updateResourceContext(RemoteResource $resource, array $context): void
     {
         $options = [
             'context' => $context,
         ];
 
-        $this->gateway->update($resourceId, $resourceType, $options);
+        $this->gateway->update($resource->resourceId, $resource->resourceType, $options);
     }
 
     public function getVideoThumbnail(RemoteResource $resource, ?array $options = []): string
@@ -280,11 +288,6 @@ final class CloudinaryProvider extends RemoteMediaProvider
         ];
 
         return $this->gateway->getDownloadLink($resource->resourceId, $resource->resourceType, $options);
-    }
-
-    public function deleteResource(string $resourceId, string $resourceType = 'image'): void
-    {
-        $this->gateway->delete($resourceId, $resourceType);
     }
 
     /**

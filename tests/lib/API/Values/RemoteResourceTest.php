@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\API\Values;
 
+use InvalidArgumentException;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use PHPUnit\Framework\TestCase;
 use function json_encode;
@@ -34,30 +35,6 @@ final class RemoteResourceTest extends TestCase
             'overwritten' => 'true',
             'alt_text' => 'alt text',
             'caption' => 'caption text',
-        ],
-    ];
-
-    public const EMPTY_PARAMETERS = [
-        'resourceId' => null,
-        'resourceType' => null,
-        'mediaType' => 'image',
-        'type' => 'upload',
-        'url' => null,
-        'secure_url' => null,
-        'size' => 0,
-        'variations' => [],
-        'metaData' => [
-            'version' => '',
-            'width' => '',
-            'height' => '',
-            'created' => '',
-            'format' => '',
-            'tags' => [],
-            'signature' => '',
-            'etag' => '',
-            'overwritten' => '',
-            'alt_text' => '',
-            'caption' => '',
         ],
     ];
 
@@ -96,7 +73,7 @@ final class RemoteResourceTest extends TestCase
      */
     public function testConstructionWithParameters(): void
     {
-        $resource = new RemoteResource(self::EXAMPLE_PARAMETERS);
+        $resource = RemoteResource::createFromParameters(self::EXAMPLE_PARAMETERS);
 
         self::assertSame(json_encode(self::EXAMPLE_PARAMETERS), (string) $resource);
     }
@@ -107,9 +84,23 @@ final class RemoteResourceTest extends TestCase
      */
     public function testConstructionWithoutParameters(): void
     {
-        $resource = new RemoteResource();
+        self::expectException(InvalidArgumentException::class);
 
-        self::assertSame(json_encode(self::EMPTY_PARAMETERS), (string) $resource);
+        RemoteResource::createFromParameters([]);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__toString
+     */
+    public function testConstructionWithInvalidParameters(): void
+    {
+        self::expectException(InvalidArgumentException::class);
+
+        RemoteResource::createFromParameters([
+            'id' => 'test_id',
+            'type' => 'image',
+        ]);
     }
 
     /**

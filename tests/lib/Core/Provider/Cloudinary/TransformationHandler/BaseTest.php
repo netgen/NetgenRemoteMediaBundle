@@ -13,7 +13,7 @@ abstract class BaseTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->resource = new RemoteResource(
+        $this->resource = RemoteResource::createFromParameters(
             [
                 'resourceId' => 'testId',
                 'url' => 'http://cloudinary.com/some/url',

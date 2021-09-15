@@ -4,21 +4,24 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
 
+use Cloudinary\Api\NotFound;
 use Cloudinary\Api\Response;
+use Netgen\RemoteMedia\API\Search\Query;
+use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\Variation;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
-use Netgen\RemoteMedia\API\Search\Query;
-use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Core\UploadFile;
 use Netgen\RemoteMedia\Core\VariationResolver;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use function implode;
 use function json_encode;
 
 final class CloudinaryProviderTest extends TestCase
@@ -57,28 +60,34 @@ final class CloudinaryProviderTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::usage
+     */
+    public function testUsage(): void
+    {
+        $data = [
+            'bandwith' => 3245453,
+            'api_limit' => 500,
+            'api_limit_left' => 489,
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('usage')
+            ->willReturn($data);
+
+        self::assertSame(
+            $data,
+            $this->cloudinaryProvider->usage(),
+        );
+    }
+
+    /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsFolders
      */
     public function testSupportsFolders(): void
     {
         self::assertTrue(
             $this->cloudinaryProvider->supportsFolders(),
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::countResources
-     */
-    public function testCountResources(): void
-    {
-        $this->gateway
-            ->expects(self::once())
-            ->method('countResources')
-            ->willReturn(4);
-
-        self::assertSame(
-            4,
-            $this->cloudinaryProvider->countResources(),
         );
     }
 
@@ -127,6 +136,35 @@ final class CloudinaryProviderTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::createFolder
+     */
+    public function testCreateFolder(): void
+    {
+        $this->gateway
+            ->expects(self::once())
+            ->method('createFolder')
+            ->with('parent_folder/sub_folder');
+
+        $this->cloudinaryProvider->createFolder('parent_folder/sub_folder');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::countResources
+     */
+    public function testCountResources(): void
+    {
+        $this->gateway
+            ->expects(self::once())
+            ->method('countResources')
+            ->willReturn(4);
+
+        self::assertSame(
+            4,
+            $this->cloudinaryProvider->countResources(),
+        );
+    }
+
+    /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::countResourcesInFolder
      */
     public function testCountResourcesInFolder(): void
@@ -144,479 +182,25 @@ final class CloudinaryProviderTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchResources
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::listTags
      */
-    public function testSearchResources(): void
+    public function testListTags(): void
     {
-        $query = new Query('query', 'image', 0);
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('search')
-            ->with($query)
-            ->willReturn(
-                Result::fromResponse(new Response($this->getSearchResponse())),
-            );
-
-        $this->cloudinaryProvider->searchResources($query);
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchResources
-     */
-    public function testSearchResourcesWithLimitAndOffset(): void
-    {
-        $query = new Query(
-            'query',
-            'image',
-            25,
-            null,
-            null,
-            '823b',
-        );
-
-        $result = Result::fromResponse(
-            new Response(
-                $this->getSearchResponse(),
-            ),
-        );
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('search')
-            ->with($query)
-            ->willReturn($result);
-
-        self::assertSame(
-            $result,
-            $this->cloudinaryProvider->searchResources($query),
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchResources
-     */
-    public function testSearchResourcesByTag(): void
-    {
-        $query = new Query(
-            '',
-            'image',
-            25,
-            null,
-            'tag',
-        );
-
-        $result = Result::fromResponse(
-            new Response(
-                $this->getSearchResponse(),
-            ),
-        );
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('search')
-            ->with($query)
-            ->willReturn($result);
-
-        self::assertSame(
-            $result,
-            $this->cloudinaryProvider->searchResources($query),
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
-     */
-    public function testGetEmptyResourceId(): void
-    {
-        $this->gateway
-            ->expects(self::never())
-            ->method('get');
-
-        $resource = $this->cloudinaryProvider->getRemoteResource('', 'image');
-
-        self::assertInstanceOf(RemoteResource::class, $resource);
-        self::assertNull(
-            $resource->resourceId,
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
-     */
-    public function testGetRemoteResource(): void
-    {
-        $data = [
-            'public_id' => 'testResourceId',
-            'url' => 'http://some.url/path',
-            'secure_url' => 'https://some.url/path',
-            'bytes' => 1024,
-            'resource_type' => 'image',
+        $tags = [
+            'tag1',
+            'tag2',
+            'tag3',
         ];
 
         $this->gateway
             ->expects(self::once())
-            ->method('get')
-            ->with('testResourceId', 'image')
-            ->willReturn($data);
-
-        $resource = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
-
-        self::assertInstanceOf(RemoteResource::class, $resource);
-        self::assertSame(
-            $data['public_id'],
-            $resource->resourceId,
-        );
-        self::assertSame(
-            $data['url'],
-            $resource->url,
-        );
-        self::assertSame(
-            $data['secure_url'],
-            $resource->secure_url,
-        );
-        self::assertSame(
-            $data['bytes'],
-            $resource->size,
-        );
-        self::assertSame(
-            RemoteResource::TYPE_IMAGE,
-            $resource->mediaType,
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
-     */
-    public function testGetRemoteVideo(): void
-    {
-        $data = [
-            'public_id' => 'testResourceId',
-            'url' => 'http://some.url/path',
-            'secure_url' => 'https://some.url/path',
-            'bytes' => 1024,
-            'resource_type' => 'video',
-        ];
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('get')
-            ->with('testResourceId', 'video')
-            ->willReturn($data);
-
-        $resource = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'video');
-
-        self::assertInstanceOf(RemoteResource::class, $resource);
-        self::assertSame(
-            $data['public_id'],
-            $resource->resourceId,
-        );
-        self::assertSame(
-            $data['url'],
-            $resource->url,
-        );
-        self::assertSame(
-            $data['secure_url'],
-            $resource->secure_url,
-        );
-        self::assertSame(
-            $data['bytes'],
-            $resource->size,
-        );
-        self::assertSame(
-            RemoteResource::TYPE_VIDEO,
-            $resource->mediaType,
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
-     */
-    public function testGetRemoteDocument(): void
-    {
-        $data = [
-            'public_id' => 'testResourceId',
-            'url' => 'http://some.url/path',
-            'secure_url' => 'https://some.url/path',
-            'bytes' => 1024,
-            'resource_type' => 'image',
-            'format' => 'pdf',
-        ];
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('get')
-            ->with('testResourceId', 'image')
-            ->willReturn($data);
-
-        $resource = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
-
-        self::assertInstanceOf(RemoteResource::class, $resource);
-        self::assertSame(
-            $data['public_id'],
-            $resource->resourceId,
-        );
-        self::assertSame(
-            $data['url'],
-            $resource->url,
-        );
-        self::assertSame(
-            $data['secure_url'],
-            $resource->secure_url,
-        );
-        self::assertSame(
-            $data['bytes'],
-            $resource->size,
-        );
-        self::assertSame(
-            RemoteResource::TYPE_OTHER,
-            $resource->mediaType,
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::addTagToResource
-     */
-    public function testAddTag(): void
-    {
-        $this->gateway
-            ->expects(self::once())
-            ->method('addTag')
-            ->with('testResourceId', 'image', 'testTag');
-
-        $this->cloudinaryProvider->addTagToResource(
-            'testResourceId',
-            'testTag',
-            'image',
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::removeTagFromResource
-     */
-    public function testRemoveTag(): void
-    {
-        $this->gateway
-            ->expects(self::once())
-            ->method('removeTag')
-            ->with('testResourceId', 'image', 'testTag');
-
-        $this->cloudinaryProvider->removeTagFromResource(
-            'testResourceId',
-            'testTag',
-            'image',
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::removeAllTagsFromResource
-     */
-    public function testRemoveAllTags(): void
-    {
-        $this->gateway
-            ->expects(self::once())
-            ->method('removeAllTags')
-            ->with('testResourceId', 'image');
-
-        $this->cloudinaryProvider->removeAllTagsFromResource(
-            'testResourceId',
-            'image',
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateResourceContext
-     */
-    public function testUpdateResourceContext(): void
-    {
-        $options = [
-            'context' => [
-                'caption' => 'test_caption',
-            ],
-        ];
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('update')
-            ->with('testResourceId', 'image', $options);
-
-        $this->cloudinaryProvider->updateResourceContext(
-            'testResourceId',
-            'image',
-            [
-                'caption' => 'test_caption',
-            ],
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getVideoThumbnail
-     */
-    public function testGetVideoThumbnail(): void
-    {
-        $options = [
-            'start_offset' => 'auto',
-            'resource_type' => 'video',
-        ];
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('getVideoThumbnail')
-            ->with('testResourceId', $options)
-            ->willReturn('https://cloudinary.com/upload/image/video_thumbnail.jpg');
-
-        $resource = new RemoteResource();
-        $resource->resourceId = 'testResourceId';
+            ->method('listTags')
+            ->willReturn($tags);
 
         self::assertSame(
-            'https://cloudinary.com/upload/image/video_thumbnail.jpg',
-            $this->cloudinaryProvider->getVideoThumbnail($resource),
+            $tags,
+            $this->cloudinaryProvider->listTags(),
         );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getVideoThumbnail
-     */
-    public function testVideoThumbnailWithProvidedOptions(): void
-    {
-        $options = [
-            'start_offset' => 'auto',
-            'resource_type' => 'video',
-            'crop' => 'fill',
-            'width' => 200,
-            'height' => 200,
-        ];
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('getVideoThumbnail')
-            ->with('testResourceId', $options)
-            ->willReturn('https://cloudinary.com/upload/image/video_thumbnail.jpg');
-
-        $resource = new RemoteResource();
-        $resource->resourceId = 'testResourceId';
-
-        self::assertSame(
-            'https://cloudinary.com/upload/image/video_thumbnail.jpg',
-            $this->cloudinaryProvider->getVideoThumbnail(
-                $resource,
-                [
-                    'crop' => 'fill',
-                    'width' => 200,
-                    'height' => 200,
-                ],
-            ),
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoTag
-     */
-    public function testGetVideoTag(): void
-    {
-        $options = [
-            'fallback_content' => 'Your browser does not support HTML5 video tags',
-            'controls' => true,
-            'poster' => [],
-        ];
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('getVideoTag')
-            ->with('testResourceId', $options)
-            ->willReturn('<video src="htttps://cloudinary.com/upload/video.mp4></video>');
-
-        $resource = new RemoteResource();
-        $resource->resourceId = 'testResourceId';
-
-        self::assertSame(
-            '<video src="htttps://cloudinary.com/upload/video.mp4></video>',
-            $this->cloudinaryProvider->generateVideoTag(
-                $resource,
-                'test_group',
-                [],
-            ),
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoTag
-     */
-    public function testGetVideoTagWithProvidedVariation(): void
-    {
-        $variationConfig = [
-            'crop' => 'fit',
-            'width' => 200,
-        ];
-
-        $options = [
-            'fallback_content' => 'Your browser does not support HTML5 video tags',
-            'controls' => true,
-            'poster' => $variationConfig,
-        ];
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('getVideoTag')
-            ->with('testResourceId', $options + $variationConfig)
-            ->willReturn('<video src="htttps://cloudinary.com/upload/video.mp4></video>');
-
-        $resource = new RemoteResource();
-        $resource->resourceId = 'testResourceId';
-
-        self::assertSame(
-            '<video src="htttps://cloudinary.com/upload/video.mp4></video>',
-            $this->cloudinaryProvider->generateVideoTag(
-                $resource,
-                'test_group',
-                $variationConfig,
-            ),
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateDownloadLink
-     */
-    public function testGenerateDownloadLink(): void
-    {
-        $options = [
-            'type' => 'upload',
-            'resource_type' => 'image',
-            'flags' => 'attachment',
-            'secure' => true,
-        ];
-
-        $resource = new RemoteResource(
-            [
-                'resourceId' => 'testResourceId',
-                'resourceType' => 'image',
-                'type' => 'upload',
-            ],
-        );
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('getDownloadLink')
-            ->with('testResourceId', 'image', $options)
-            ->willReturn('https://cloudinary.com/upload/file.zip');
-
-        self::assertSame(
-            'https://cloudinary.com/upload/file.zip',
-            $this->cloudinaryProvider->generateDownloadLink($resource),
-        );
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::deleteResource
-     */
-    public function testDeleteResource(): void
-    {
-        $this->gateway
-            ->expects(self::once())
-            ->method('delete')
-            ->with('testResourceId');
-
-        $this->cloudinaryProvider->deleteResource('testResourceId');
     }
 
     /**
@@ -766,11 +350,317 @@ final class CloudinaryProviderTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
+     */
+    public function testGetEmptyResourceId(): void
+    {
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with('', 'image')
+            ->willThrowException(new NotFound());
+
+        self::expectException(RemoteResourceNotFoundException::class);
+        self::expectExceptionMessage("[NgRemoteMedia] Remote resource with ID '' of 'image' type not found.");
+
+        $this->cloudinaryProvider->getRemoteResource('', 'image');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
+     */
+    public function testGetResourceIdWithEmptyResponse(): void
+    {
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with('test_id', 'image')
+            ->willReturn([]);
+
+        self::expectException(RemoteResourceNotFoundException::class);
+        self::expectExceptionMessage("[NgRemoteMedia] Remote resource with ID 'test_id' of 'image' type not found.");
+
+        $this->cloudinaryProvider->getRemoteResource('test_id', 'image');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
+     */
+    public function testGetResourceIdWithInvalidResponse(): void
+    {
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with('test_id', 'image')
+            ->willReturn(['id' => 'test']);
+
+        self::expectException(RemoteResourceNotFoundException::class);
+        self::expectExceptionMessage("[NgRemoteMedia] Remote resource with ID 'test_id' of 'image' type not found.");
+
+        $this->cloudinaryProvider->getRemoteResource('test_id', 'image');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
+     */
+    public function testGetRemoteResource(): void
+    {
+        $data = [
+            'public_id' => 'testResourceId',
+            'url' => 'http://some.url/path',
+            'secure_url' => 'https://some.url/path',
+            'bytes' => 1024,
+            'resource_type' => 'image',
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with('testResourceId', 'image')
+            ->willReturn($data);
+
+        $resource = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
+
+        self::assertInstanceOf(RemoteResource::class, $resource);
+        self::assertSame(
+            $data['public_id'],
+            $resource->resourceId,
+        );
+        self::assertSame(
+            $data['url'],
+            $resource->url,
+        );
+        self::assertSame(
+            $data['secure_url'],
+            $resource->secure_url,
+        );
+        self::assertSame(
+            $data['bytes'],
+            $resource->size,
+        );
+        self::assertSame(
+            RemoteResource::TYPE_IMAGE,
+            $resource->mediaType,
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
+     */
+    public function testGetRemoteVideo(): void
+    {
+        $data = [
+            'public_id' => 'testResourceId',
+            'url' => 'http://some.url/path',
+            'secure_url' => 'https://some.url/path',
+            'bytes' => 1024,
+            'resource_type' => 'video',
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with('testResourceId', 'video')
+            ->willReturn($data);
+
+        $resource = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'video');
+
+        self::assertInstanceOf(RemoteResource::class, $resource);
+        self::assertSame(
+            $data['public_id'],
+            $resource->resourceId,
+        );
+        self::assertSame(
+            $data['url'],
+            $resource->url,
+        );
+        self::assertSame(
+            $data['secure_url'],
+            $resource->secure_url,
+        );
+        self::assertSame(
+            $data['bytes'],
+            $resource->size,
+        );
+        self::assertSame(
+            RemoteResource::TYPE_VIDEO,
+            $resource->mediaType,
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getRemoteResource
+     */
+    public function testGetRemoteDocument(): void
+    {
+        $data = [
+            'public_id' => 'testResourceId',
+            'url' => 'http://some.url/path',
+            'secure_url' => 'https://some.url/path',
+            'bytes' => 1024,
+            'resource_type' => 'image',
+            'format' => 'pdf',
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with('testResourceId', 'image')
+            ->willReturn($data);
+
+        $resource = $this->cloudinaryProvider->getRemoteResource('testResourceId', 'image');
+
+        self::assertInstanceOf(RemoteResource::class, $resource);
+        self::assertSame(
+            $data['public_id'],
+            $resource->resourceId,
+        );
+        self::assertSame(
+            $data['url'],
+            $resource->url,
+        );
+        self::assertSame(
+            $data['secure_url'],
+            $resource->secure_url,
+        );
+        self::assertSame(
+            $data['bytes'],
+            $resource->size,
+        );
+        self::assertSame(
+            RemoteResource::TYPE_OTHER,
+            $resource->mediaType,
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchResources
+     */
+    public function testSearchResources(): void
+    {
+        $query = new Query('query', 'image', 0);
+        $result = Result::fromResponse(
+            new Response($this->getSearchResponse()),
+        );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('search')
+            ->with($query)
+            ->willReturn($result);
+
+        self::assertSame(
+            $result,
+            $this->cloudinaryProvider->searchResources($query),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchResources
+     */
+    public function testSearchResourcesWithLimitAndOffset(): void
+    {
+        $query = new Query(
+            'query',
+            'image',
+            25,
+            null,
+            null,
+            '823b',
+        );
+
+        $result = Result::fromResponse(
+            new Response(
+                $this->getSearchResponse(),
+            ),
+        );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('search')
+            ->with($query)
+            ->willReturn($result);
+
+        self::assertSame(
+            $result,
+            $this->cloudinaryProvider->searchResources($query),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchResources
+     */
+    public function testSearchResourcesByTag(): void
+    {
+        $query = new Query(
+            '',
+            'image',
+            25,
+            null,
+            'tag',
+        );
+
+        $result = Result::fromResponse(
+            new Response(
+                $this->getSearchResponse(),
+            ),
+        );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('search')
+            ->with($query)
+            ->willReturn($result);
+
+        self::assertSame(
+            $result,
+            $this->cloudinaryProvider->searchResources($query),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchResourcesCount
+     */
+    public function testSearchResourceCount(): void
+    {
+        $query = new Query('query', 'image', 0);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('searchCount')
+            ->with($query)
+            ->willReturn(125);
+
+        self::assertSame(
+            125,
+            $this->cloudinaryProvider->searchResourcesCount($query),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::deleteResource
+     */
+    public function testDeleteResource(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('delete')
+            ->with($resource->resourceId);
+
+        $this->cloudinaryProvider->deleteResource($resource);
+    }
+
+    /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::buildVariation
      */
     public function testBuildVariation(): void
     {
-        $resource = new RemoteResource(
+        $resource = RemoteResource::createFromParameters(
             [
                 'resourceId' => 'testId',
                 'url' => 'http://cloudinary.com/some/url',
@@ -800,7 +690,7 @@ final class CloudinaryProviderTest extends TestCase
      */
     public function testBuildVariationWithProvidedConfiguration(): void
     {
-        $resource = new RemoteResource(
+        $resource = RemoteResource::createFromParameters(
             [
                 'resourceId' => 'testId',
                 'url' => 'http://cloudinary.com/some/url',
@@ -828,6 +718,278 @@ final class CloudinaryProviderTest extends TestCase
         self::assertSame(
             'https://cloudinary.com/c_fit,w_200,h_200/testId',
             $variation->url,
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::addTagToResource
+     */
+    public function testAddTag(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('addTag')
+            ->with($resource->resourceId, $resource->resourceType, 'testTag');
+
+        $this->cloudinaryProvider->addTagToResource($resource, 'testTag');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::removeTagFromResource
+     */
+    public function testRemoveTag(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('removeTag')
+            ->with($resource->resourceId, $resource->resourceType, 'testTag');
+
+        $this->cloudinaryProvider->removeTagFromResource($resource, 'testTag');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::removeAllTagsFromResource
+     */
+    public function testRemoveAllTags(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('removeAllTags')
+            ->with($resource->resourceId, $resource->resourceType);
+
+        $this->cloudinaryProvider->removeAllTagsFromResource($resource);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateTags
+     */
+    public function testUpdateTags(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $tags = [
+            'newtag1',
+            'newtag2',
+        ];
+
+        $options = [
+            'tags' => implode(',', $tags),
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('update')
+            ->with($resource->resourceId, $resource->resourceType, $options);
+
+        $this->cloudinaryProvider->updateTags($resource, $tags);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateResourceContext
+     */
+    public function testUpdateResourceContext(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $options = [
+            'context' => [
+                'caption' => 'test_caption',
+            ],
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('update')
+            ->with($resource->resourceId, $resource->resourceType, $options);
+
+        $this->cloudinaryProvider->updateResourceContext(
+            $resource,
+            [
+                'caption' => 'test_caption',
+            ],
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getVideoThumbnail
+     */
+    public function testGetVideoThumbnail(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $options = [
+            'start_offset' => 'auto',
+            'resource_type' => 'video',
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoThumbnail')
+            ->with($resource->resourceId, $options)
+            ->willReturn('https://cloudinary.com/upload/image/video_thumbnail.jpg');
+
+        self::assertSame(
+            'https://cloudinary.com/upload/image/video_thumbnail.jpg',
+            $this->cloudinaryProvider->getVideoThumbnail($resource),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getVideoThumbnail
+     */
+    public function testVideoThumbnailWithProvidedOptions(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $options = [
+            'start_offset' => 'auto',
+            'resource_type' => 'video',
+            'crop' => 'fill',
+            'width' => 200,
+            'height' => 200,
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoThumbnail')
+            ->with($resource->resourceId, $options)
+            ->willReturn('https://cloudinary.com/upload/image/video_thumbnail.jpg');
+
+        self::assertSame(
+            'https://cloudinary.com/upload/image/video_thumbnail.jpg',
+            $this->cloudinaryProvider->getVideoThumbnail(
+                $resource,
+                [
+                    'crop' => 'fill',
+                    'width' => 200,
+                    'height' => 200,
+                ],
+            ),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoTag
+     */
+    public function testGetVideoTag(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $options = [
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+            'controls' => true,
+            'poster' => [],
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoTag')
+            ->with($resource->resourceId, $options)
+            ->willReturn('<video src="htttps://cloudinary.com/upload/video.mp4></video>');
+
+        self::assertSame(
+            '<video src="htttps://cloudinary.com/upload/video.mp4></video>',
+            $this->cloudinaryProvider->generateVideoTag(
+                $resource,
+                'test_group',
+                [],
+            ),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoTag
+     */
+    public function testGetVideoTagWithProvidedVariation(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $variationConfig = [
+            'crop' => 'fit',
+            'width' => 200,
+        ];
+
+        $options = [
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+            'controls' => true,
+            'poster' => $variationConfig,
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoTag')
+            ->with($resource->resourceId, $options + $variationConfig)
+            ->willReturn('<video src="htttps://cloudinary.com/upload/video.mp4></video>');
+
+        self::assertSame(
+            '<video src="htttps://cloudinary.com/upload/video.mp4></video>',
+            $this->cloudinaryProvider->generateVideoTag(
+                $resource,
+                'test_group',
+                $variationConfig,
+            ),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateDownloadLink
+     */
+    public function testGenerateDownloadLink(): void
+    {
+        $resource = RemoteResource::createFromParameters([
+            'resourceId' => 'testResourceId',
+            'resourceType' => 'image',
+        ]);
+
+        $options = [
+            'type' => 'upload',
+            'resource_type' => 'image',
+            'flags' => 'attachment',
+            'secure' => true,
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getDownloadLink')
+            ->with($resource->resourceId, $resource->resourceType, $options)
+            ->willReturn('https://cloudinary.com/upload/file.zip');
+
+        self::assertSame(
+            'https://cloudinary.com/upload/file.zip',
+            $this->cloudinaryProvider->generateDownloadLink($resource),
         );
     }
 

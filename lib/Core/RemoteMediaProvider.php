@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core;
 
-use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\API\Values\Variation;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\Variation;
 use Netgen\RemoteMedia\Core\Transformation\Registry as TransformationRegistry;
 use Psr\Log\LoggerInterface;
 
@@ -17,8 +17,7 @@ abstract class RemoteMediaProvider
 
     protected VariationResolver $variationResolver;
 
-    /** @var \Psr\Log\LoggerInterface */
-    protected $logger;
+    protected ?LoggerInterface $logger;
 
     public function __construct(
         TransformationRegistry $registry,
@@ -30,11 +29,36 @@ abstract class RemoteMediaProvider
         $this->logger = $logger;
     }
 
+    abstract public function getIdentifier(): string;
+
     abstract public function usage(): array;
 
     abstract public function supportsFolders(): bool;
 
+    abstract public function listFolders(): array;
+
+    abstract public function listSubFolders(string $parentFolder): array;
+
+    abstract public function createFolder(string $path): void;
+
+    abstract public function countResources(): int;
+
+    abstract public function countResourcesInFolder(string $folder): int;
+
+    abstract public function listTags(): array;
+
     abstract public function upload(UploadFile $uploadFile, ?array $options = []): RemoteResource;
+
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
+    abstract public function getRemoteResource(string $resourceId, string $resourceType = 'image'): RemoteResource;
+
+    abstract public function searchResources(Query $query): Result;
+
+    abstract public function searchResourcesCount(Query $query): int;
+
+    abstract public function deleteResource(RemoteResource $resource): void;
 
     /**
      * Gets the remote media Variation.
@@ -45,31 +69,16 @@ abstract class RemoteMediaProvider
      */
     abstract public function buildVariation(RemoteResource $resource, string $variationGroup, $format, ?bool $secure = true): Variation;
 
-    abstract public function listFolders(): array;
+    abstract public function addTagToResource(RemoteResource $resource, string $tag): void;
 
-    abstract public function listSubFolders(string $parentFolder): array;
+    abstract public function removeTagFromResource(RemoteResource $resource, string $tag): void;
 
-    abstract public function createFolder(string $path): void;
+    abstract public function removeAllTagsFromResource(RemoteResource $resource): void;
 
-    abstract public function countResourcesInFolder(string $folder): int;
-
-    abstract public function countResources(): int;
-
-    abstract public function searchResources(Query $query): Result;
-
-    abstract public function searchResourcesCount(Query $query): int;
-
-    abstract public function getRemoteResource(string $resourceId, string $resourceType = 'image'): RemoteResource;
-
-    abstract public function listTags(): array;
-
-    abstract public function addTagToResource(string $resourceId, string $tag, string $resourceType = 'image'): void;
-
-    abstract public function removeTagFromResource(string $resourceId, string $tag, string $resourceType = 'image'): void;
-
-    abstract public function removeAllTagsFromResource(string $resourceId, string $resourceType = 'image'): void;
-
-    abstract public function updateTags(string $resourceId, string $tags, string $resourceType = 'image'): void;
+    /**
+     * @param string[] $tags
+     */
+    abstract public function updateTags(RemoteResource $resource, array $tags): void;
 
     /**
      * Updates the resource context.
@@ -79,17 +88,13 @@ abstract class RemoteMediaProvider
      *      'alt' => 'alt text'
      * ];.
      */
-    abstract public function updateResourceContext(string $resourceId, string $resourceType, array $context): void;
+    abstract public function updateResourceContext(RemoteResource $resource, array $context): void;
 
     abstract public function getVideoThumbnail(RemoteResource $resource, ?array $options = []): string;
 
     abstract public function generateVideoTag(RemoteResource $resource, string $variationGroup, $format = []): string;
 
-    abstract public function deleteResource(string $resourceId, string $resourceType = 'image'): void;
-
     abstract public function generateDownloadLink(RemoteResource $resource): string;
-
-    abstract public function getIdentifier(): string;
 
     protected function logError(string $message): void
     {

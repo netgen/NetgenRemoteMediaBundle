@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
+use InvalidArgumentException;
+use function array_key_exists;
 use function in_array;
 use function json_encode;
 use function property_exists;
@@ -14,10 +16,10 @@ final class RemoteResource
     public const TYPE_VIDEO = 'video';
     public const TYPE_OTHER = 'other';
 
-    public ?string $resourceId = null;
-    public ?string $resourceType = 'image';
+    public string $resourceId;
+    public string $resourceType = 'image';
     public string $mediaType = 'image';
-    public ?string $type = 'upload';
+    public string $type = 'upload';
 
     public ?string $url = null;
     public ?string $secure_url = null;
@@ -40,9 +42,9 @@ final class RemoteResource
         'caption' => '',
     ];
 
-    public function __construct(array $properties = [])
+    private function __construct(array $parameters = [])
     {
-        foreach ($properties as $key => $value) {
+        foreach ($parameters as $key => $value) {
             if (!property_exists($this, $key)) {
                 continue;
             }
@@ -56,8 +58,21 @@ final class RemoteResource
         return json_encode($this);
     }
 
+    public static function createFromParameters(array $parameters): self
+    {
+        if (!array_key_exists('resourceId', $parameters)) {
+            throw new InvalidArgumentException('Missing required "resourceId" property!');
+        }
+
+        return new self($parameters);
+    }
+
     public static function createFromCloudinaryResponse(array $response): self
     {
+        if (!array_key_exists('public_id', $response) || $response['public_id'] === null || $response['public_id'] === '') {
+            throw new InvalidArgumentException('Missing required "resourceId" property!');
+        }
+
         $altText = !empty($response['context']['custom']['alt_text'])
             ? $response['context']['custom']['alt_text']
             : '';
