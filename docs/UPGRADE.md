@@ -20,3 +20,5 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
 * Configuration for variations is now done organized in `variation groups` instead of `content types` so a few methods have changed their signature:
     * `Netgen\RemoteMedia\Core\VariationResolver::getVariationsForContentType($contentTypeIdentifier)` became `Netgen\RemoteMedia\Core\VariationResolver::getVariationsForGroup(string $contentTypeIdentifier): array`
 * This core bundle doesn't support siteaccess-aware image variations configuration anymore.
+* `Query` and `Result` objects related to search have been made more generic and changed their namespace from `Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search` to `Netgen\RemoteMedia\API\Search`.
+* `Result` object now returns an array of `RemoteResource` objects instead of associative array directly from Cloudinary. The method has been changed from `getResults()` to `getResources()`.
