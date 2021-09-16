@@ -21,7 +21,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
  * If a browser does not support either of these formats then the image is delivered in the format
  * specified by the file extension.
  */
-final class Format implements HandlerInterface
+class Format implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

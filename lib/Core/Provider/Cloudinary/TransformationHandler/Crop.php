@@ -16,7 +16,7 @@ use function array_key_exists;
  * for the current alias (format), it builds crop options.
  * Otherwise, fails.
  */
-final class Crop implements HandlerInterface
+class Crop implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

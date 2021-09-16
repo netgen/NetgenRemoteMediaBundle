@@ -18,7 +18,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * is visible. This mode doesn't scale up the image if your requested
  * dimensions are larger than the original image's.
  */
-final class Limit implements HandlerInterface
+class Limit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

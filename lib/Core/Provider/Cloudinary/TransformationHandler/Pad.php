@@ -16,7 +16,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * and height, padding is added to the image to reach the required size.
  * You can also specify the color of the background in the case that padding is added.
  */
-final class Pad implements HandlerInterface
+class Pad implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

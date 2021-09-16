@@ -18,7 +18,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
  * List of all available effects:
  * http://cloudinary.com/documentation/image_transformations#applying_image_effects_and_filters
  */
-final class Effect implements HandlerInterface
+class Effect implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

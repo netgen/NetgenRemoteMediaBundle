@@ -16,7 +16,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
  * by using both the width and height parameters or with only one of them:
  * the other dimension is automatically updated to maintain the aspect ratio.
  */
-final class Resize implements HandlerInterface
+class Resize implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

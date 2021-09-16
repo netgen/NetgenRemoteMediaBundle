@@ -16,7 +16,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * of the original image might be visible if the requested aspect
  * ratio is different from the original aspect ratio).
  */
-final class Fill implements HandlerInterface
+class Fill implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

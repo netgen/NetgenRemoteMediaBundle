@@ -6,7 +6,7 @@ namespace Netgen\RemoteMedia\Core;
 
 use function array_merge;
 
-final class VariationResolver
+class VariationResolver
 {
     private array $variations = [];
 

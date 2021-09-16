@@ -16,7 +16,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * shrunk. If only the width or height is given, then the image is
  * scaled to the new dimension while retaining the original aspect ratio
  */
-final class Scale implements HandlerInterface
+class Scale implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

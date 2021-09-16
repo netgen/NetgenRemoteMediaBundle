@@ -20,7 +20,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * added to the image to reach the required size.
  * You can also specify the color of the background in the case that padding is added.
  */
-final class Mpad implements HandlerInterface
+class Mpad implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

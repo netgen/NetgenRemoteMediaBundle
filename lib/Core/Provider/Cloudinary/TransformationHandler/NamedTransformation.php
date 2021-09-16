@@ -19,7 +19,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
  * Named transformations can also include other named transformations, which allows you to
  * define a chain of transformations to run on uploaded images very easily.
  */
-final class NamedTransformation implements HandlerInterface
+class NamedTransformation implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

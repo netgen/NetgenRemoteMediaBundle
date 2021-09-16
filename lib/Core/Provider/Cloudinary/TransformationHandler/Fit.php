@@ -14,7 +14,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * within a bounding box defined by the given width and height parameters.
  * The original aspect ratio is retained and all of the original image is visible.
  */
-final class Fit implements HandlerInterface
+class Fit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

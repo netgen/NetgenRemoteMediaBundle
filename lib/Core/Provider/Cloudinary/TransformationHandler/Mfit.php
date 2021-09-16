@@ -18,7 +18,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * is visible. This mode doesn't scale down the image if your requested
  * dimensions are smaller than the original image's.
  */
-final class Mfit implements HandlerInterface
+class Mfit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

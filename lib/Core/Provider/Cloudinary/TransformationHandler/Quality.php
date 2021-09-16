@@ -28,7 +28,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
  *                  quality. Example of a target audience: sites using thumbnail images that
  *                  link to higher quality images.
  */
-final class Quality implements HandlerInterface
+class Quality implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns

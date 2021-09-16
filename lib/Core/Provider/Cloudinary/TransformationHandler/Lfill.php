@@ -19,7 +19,7 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * original aspect ratio). This mode doesn't scale up the image if your
  * requested dimensions are bigger than the original image's.
  */
-final class Lfill implements HandlerInterface
+class Lfill implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
