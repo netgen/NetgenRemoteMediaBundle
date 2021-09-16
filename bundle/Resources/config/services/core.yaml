@@ -38,5 +38,5 @@ services:
     netgen_remote_media.next_cursor_resolver:
         class: Netgen\RemoteMedia\Core\NextCursorResolver
         arguments:
-            - "@ezpublish.cache_pool"
+            - "@ngrm.cache"
             - "%netgen_remote_media.cloudinary.cache_ttl%"

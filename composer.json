@@ -1,7 +1,7 @@
 {
     "name": "netgen/remote-media-bundle",
     "description": "Remote media core implementation",
-    "type": "ezplatform-bundle",
+    "type": "symfony-bundle",
     "keywords": [
         "remote media",
         "netgen",
