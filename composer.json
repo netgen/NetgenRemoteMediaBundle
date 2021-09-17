@@ -26,7 +26,7 @@
         }
     ],
     "require": {
-        "php": "^7.4",
+        "php": "^7.4 || ^8.0",
         "cloudinary/cloudinary_php": "^1.0",
         "symfony/mime": "^3.4.47 || ^4.4 || ^5.2",
         "symfony/twig-bundle": "^3.4.47 || ^4.4 || ^5.2",
