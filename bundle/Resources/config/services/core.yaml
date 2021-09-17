@@ -6,7 +6,7 @@ services:
         class: Netgen\RemoteMedia\Core\VariationResolver
         lazy: true
         calls:
-            - [setVariations, ["$image_variations;netgen_remote_media$"]]
+            - [setVariations, ["%netgen_remote_media.image_variations%"]]
 
     netgen_remote_media.provider.cloudinary.gateway:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway
