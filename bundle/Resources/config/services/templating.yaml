@@ -1,0 +1,12 @@
+services:
+    netgen_remote_media.templating.twig.extension.remote_media:
+        class: Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension\RemoteMediaExtension
+        tags:
+            - { name: twig.extension }
+
+    netgen_remote_media.templating.twig.runtime.remote_media:
+        class: Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime
+        arguments:
+            - "@netgen_remote_media.provider"
+        tags:
+            - { name: twig.runtime }
