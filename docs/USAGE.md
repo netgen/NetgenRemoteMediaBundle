@@ -19,27 +19,25 @@ Image variations are defined through the YAML configuration. The configuration i
 Example:
 ```yaml
 netgen_remote_media:
-    system:
+    image_variations:
         default:
-            image_variations:
-                default:
-                    full:
-                        transformations:
-                            - { name: resize, params: [800, 600] }
-                            - { name: quality, params: ['auto', 'best'] }
-                            - { name: effect, params: ['art', 'sizzle'] }
-                            - { name: format, params: ['auto'] }
-                    formatted:
-                        transformations:
-                            - { name: transformation, params: ['namedTransformation'] }
-                frontpage:
-                    small:
-                        transformations:
-                            - { name: fit, params: [250,250] }
-                    full:
-                        transformations:
-                            - { name: crop, params: [1600, 800] }
-                            - { name: fill, params: [1600, 800] }
+            full:
+                transformations:
+                    - { name: resize, params: [800, 600] }
+                    - { name: quality, params: ['auto', 'best'] }
+                    - { name: effect, params: ['art', 'sizzle'] }
+                    - { name: format, params: ['auto'] }
+            formatted:
+                transformations:
+                    - { name: transformation, params: ['namedTransformation'] }
+        frontpage:
+            small:
+                transformations:
+                    - { name: fit, params: [250,250] }
+            full:
+                transformations:
+                    - { name: crop, params: [1600, 800] }
+                    - { name: fill, params: [1600, 800] }
 ```
 
 You can check the list of the available tranformations [here](Resources/docs/Transfromations.md). Further details on what each transformation does is available on [Cloudinary web](http://cloudinary.com/documentation/image_transformations).
