@@ -21,6 +21,7 @@ use function count;
 use function date;
 use function floor;
 use function implode;
+use function is_string;
 use function log;
 use function max;
 use function min;

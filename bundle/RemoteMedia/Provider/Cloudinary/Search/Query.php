@@ -7,6 +7,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search
 use function get_object_vars;
 use function http_build_query;
 use function implode;
+use function is_array;
 
 final class Query
 {

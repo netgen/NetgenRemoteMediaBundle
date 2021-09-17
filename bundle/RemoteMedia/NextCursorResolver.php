@@ -9,6 +9,7 @@ use RuntimeException;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use function http_build_query;
 use function implode;
+use function is_array;
 use function str_replace;
 use function trim;
 
