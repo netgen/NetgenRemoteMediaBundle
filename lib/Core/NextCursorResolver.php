@@ -6,8 +6,8 @@ namespace Netgen\RemoteMedia\Core;
 
 use Netgen\RemoteMedia\API\NextCursorResolverInterface;
 use Netgen\RemoteMedia\API\Search\Query;
+use Psr\Cache\CacheItemPoolInterface;
 use RuntimeException;
-use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use function http_build_query;
 use function implode;
 use function is_array;
@@ -20,11 +20,11 @@ final class NextCursorResolver implements NextCursorResolverInterface
     public const PROVIDER_KEY = 'cloudinary';
     public const NEXT_CURSOR = 'nextcursor';
 
-    private TagAwareAdapterInterface $cache;
+    private CacheItemPoolInterface $cache;
 
     private int $ttl;
 
-    public function __construct(TagAwareAdapterInterface $cache, int $ttl = 7200)
+    public function __construct(CacheItemPoolInterface $cache, int $ttl = 7200)
     {
         $this->cache = $cache;
         $this->ttl = $ttl;

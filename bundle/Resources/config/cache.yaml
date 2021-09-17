@@ -2,4 +2,4 @@ cache:
     default_memcached_provider: 'memcached://localhost'
     pools:
         ngrm.cache:
-            adapter: cache.adapter.redis
+            adapter: cache.adapter.redis_tag_aware
