@@ -107,4 +107,9 @@ class Value extends BaseValue
 
         return $value;
     }
+
+    public function isEmpty(): bool
+    {
+        return $this->resourceId === null;
+    }
 }

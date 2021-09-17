@@ -67,9 +67,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
         /** @var \Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\RemoteMediaStorage\Gateway $gateway */
         $gateway = $this->getGateway($context);
 
-        $emptyValue = $this->fieldTypeService->getFieldType('ngremotemedia')->getEmptyValue();
-
-        if ($data instanceof Value && $data !== $emptyValue) {
+        if ($data instanceof Value && !$data->isEmpty()) {
             $gateway->storeFieldData(
                 $field->id,
                 $data->resourceId,
