@@ -8,6 +8,7 @@ use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use function array_merge;
 use function array_unique;
 use function array_walk;
@@ -50,14 +51,16 @@ final class Psr6CachedGateway extends Gateway
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
-        $tags = array_unique(array_merge(
-            $this->getCacheTags(self::SEARCH),
-            $this->getCacheTags(self::LIST),
-            $this->getCacheTags(self::FOLDER_LIST),
-            $this->getCacheTags(self::FOLDER_COUNT),
-        ));
+        if ($this->isCacheTaggable()) {
+            $tags = array_unique(array_merge(
+                $this->getCacheTags(self::SEARCH),
+                $this->getCacheTags(self::LIST),
+                $this->getCacheTags(self::FOLDER_LIST),
+                $this->getCacheTags(self::FOLDER_COUNT),
+            ));
 
-        $this->cache->invalidateTags($tags);
+            $this->cache->invalidateTags($tags);
+        }
 
         return $uploadResult;
     }
@@ -83,7 +86,11 @@ final class Psr6CachedGateway extends Gateway
 
         $cacheItem->set($result);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::SEARCH));
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag($this->getCacheTags(self::SEARCH));
+        }
+
         $this->cache->save($cacheItem);
 
         return $result;
@@ -105,7 +112,13 @@ final class Psr6CachedGateway extends Gateway
 
         $cacheItem->set($result);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::SEARCH_COUNT));
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag(
+                $this->getCacheTags(self::SEARCH_COUNT),
+            );
+        }
+
         $this->cache->save($cacheItem);
 
         return $result;
@@ -125,7 +138,10 @@ final class Psr6CachedGateway extends Gateway
         $list = $this->gateway->listFolders();
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
+        }
 
         return $list;
     }
@@ -144,7 +160,10 @@ final class Psr6CachedGateway extends Gateway
         $list = $this->gateway->listSubFolders($parentFolder);
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
+        }
 
         return $list;
     }
@@ -173,7 +192,10 @@ final class Psr6CachedGateway extends Gateway
         $count = $this->gateway->countResourcesInFolder($folder);
         $cacheItem->set($count);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::FOLDER_COUNT));
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag($this->getCacheTags(self::FOLDER_COUNT));
+        }
 
         return $count;
     }
@@ -192,7 +214,10 @@ final class Psr6CachedGateway extends Gateway
         $value = $this->gateway->get($id, $type);
         $cacheItem->set($value);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getItemCacheTags($id));
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag($this->getItemCacheTags($id));
+        }
 
         return $value;
     }
@@ -211,7 +236,10 @@ final class Psr6CachedGateway extends Gateway
         $list = $this->gateway->listTags();
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
-        $cacheItem->tag($this->getCacheTags(self::TAG_LIST));
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag($this->getCacheTags(self::TAG_LIST));
+        }
 
         return $list;
     }
@@ -266,6 +294,11 @@ final class Psr6CachedGateway extends Gateway
         ));
 
         $this->cache->invalidateTags($tags);
+    }
+
+    private function isCacheTaggable(): bool
+    {
+        return $this->cache instanceof TagAwareAdapterInterface;
     }
 
     /**

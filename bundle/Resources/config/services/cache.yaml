@@ -1,0 +1,7 @@
+services:
+    netgen_remote_media.cache.adapter:
+        synthetic: true
+
+    ngrm.cache:
+        parent: netgen_remote_media.cache.adapter
+        tags: { name: cache.pool }

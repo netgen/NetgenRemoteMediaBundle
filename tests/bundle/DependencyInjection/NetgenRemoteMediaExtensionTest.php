@@ -22,6 +22,8 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_key', 'testkey');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_secret', 'testsecret');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.remove_unused_resources', false);
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.adapter_service_name', 'cache.adapter.memcached');
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.provider', 'memcached://test:test@localhost');
 
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.testprovider');
     }
@@ -58,6 +60,10 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
                         ],
                     ],
                 ],
+            ],
+            'cache' => [
+                'adapter' => 'cache.adapter.memcached',
+                'provider' => 'memcached://test:test@localhost',
             ],
         ];
     }

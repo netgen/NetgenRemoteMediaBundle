@@ -17,6 +17,7 @@ final class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('netgen_remote_media');
         $this->addProviderSection($treeBuilder->getRootNode());
         $this->addImageConfiguration($treeBuilder->getRootNode());
+        $this->addCacheConfiguration($treeBuilder->getRootNode());
 
         return $treeBuilder;
     }
@@ -110,6 +111,25 @@ final class Configuration implements ConfigurationInterface
                                     ->end()
                                 ->end()
                             ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addCacheConfiguration(ArrayNodeDefinition $rootNode): void
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('cache')
+                    ->children()
+                        ->scalarNode('adapter')
+                            ->isRequired()
+                            ->cannotBeEmpty()
+                            ->defaultValue('cache.adapter.filesystem')
+                        ->end()
+                        ->scalarNode('provider')
+                            ->defaultNull()
                         ->end()
                     ->end()
                 ->end()
