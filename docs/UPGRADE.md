@@ -34,3 +34,5 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
  * `RemoteResource` object's constructor has been set to private; now it's possible to instantiate it through two available static methods and both methods are taking care that resource ID is not empty (as empty value is not valid anymore): they will throw an `InvalidArgumentException` if this parameter is missing:
     * `public static function createFromParameters(array $parameters): self`
     * `public static function createFromCloudinaryResponse(array $response): self`
+ * The bundle was using eZ's `ezpublish.cache_pool` cache pool for caching while it was depending on eZ. Now it requires cache pool to be provided in order to work. See [Install instructions](INSTALL.md) for more info.
+ * Paramter for cache TTL `netgen_remote_media.cloudinary.cache_ttl` has been removed in favour of semantic configuration for cache. See [Install instructions](INSTALL.md) for more info.

@@ -18,21 +18,19 @@ netgen_remote_media:
 
 #### Cache configuration
 
-This bundle has a PSR6 compatible remote media provider for Cloudinary which caches all requests towards Cloudinary to prevent breaking the API rate limit and to improve performance. You can manually configure cache adapter service as well as provider (which can be a name of provider service or an URI, in case of eg. Redis or Memcached):
+This bundle has a PSR6 compatible remote media provider for Cloudinary which caches all requests towards Cloudinary to prevent breaking the API rate limit and to improve performance. You can manually configure cache pool as well as desired TTOL:
 
 
 ```yaml
 netgen_remote_media:
     cache:
-        adapter: cache.adapter.redis
-        provider: 'redis://localhost'
+        pool: cache.app
+        ttl: 7200
 ```
 
-By default, `cache.adapter.filesystem` is being used which is supported in Symfony v3, v4 and v5. You can use any available adapter from Symfony (see https://symfony.com/doc/current/cache.html) or implement your own adapter.
+Above shown are the default used parameters. For more information about creating and configuring cache pools, see https://symfony.com/doc/current/cache.html.
 
-**Warning:** the provider uses tagging functionality to be able to invalidate cache on eg. resource upload, edit or delete. In order to support cache tagging, a corresponding tag-aware adapter has to be used. If you use a non-tag-aware adapter, tagging will be disabled which means that you will experience some issues while using the bundle. Eg. newly uploaded resource might not be visible immediatelly (until the cache doesn't expire) in the browser or search.
-
-**Note:** default adapter `cache.adapter.filesystem` **does not** support tagging!
+**Warning:** the provider uses tagging functionality to be able to invalidate cache on eg. resource upload, edit or delete. In order to support cache tagging, a corresponding tag-aware pool has to be used. If you use a non-tag-aware pool, tagging will be disabled which means that you will experience some issues while using the bundle. Eg. newly uploaded resource might not be visible immediatelly (until the cache doesn't expire) in the browser or search.
 
 ### Require the bundle
 
