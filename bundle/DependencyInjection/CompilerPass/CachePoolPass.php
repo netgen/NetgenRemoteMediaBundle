@@ -14,6 +14,10 @@ final class CachePoolPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
+        if (!$container->hasParameter('netgen_remote_media.cache.pool_name')) {
+            return;
+        }
+
         $container->setDefinition(
             'netgen_remote_media.cache.pool',
             $container->findDefinition(
