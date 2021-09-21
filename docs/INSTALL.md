@@ -24,7 +24,7 @@ This bundle has a PSR6 compatible remote media provider for Cloudinary which cac
 ```yaml
 netgen_remote_media:
     cache:
-        provider: cache.adapter.redis
+        adapter: cache.adapter.redis
         provider: 'redis://localhost'
 ```
 
