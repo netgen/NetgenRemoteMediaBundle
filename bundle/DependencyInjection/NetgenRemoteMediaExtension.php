@@ -63,12 +63,12 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['image_variations'],
         );
         $container->setParameter(
-            'netgen_remote_media.cache.adapter_service_name',
-            $config['cache']['adapter'],
+            'netgen_remote_media.cache.pool_name',
+            $config['cache']['pool'],
         );
         $container->setParameter(
-            'netgen_remote_media.cache.provider',
-            $config['cache']['provider'],
+            'netgen_remote_media.cache.ttl',
+            $config['cache']['ttl'],
         );
 
         $loader->load('default_parameters.yaml');

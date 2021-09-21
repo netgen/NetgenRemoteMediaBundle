@@ -13,5 +13,5 @@ image_variations:
                 - { name: crop, params: [1600, 900] }
                 - { name: resize, params: [1600, 900] }
 cache:
-    adapter: cache.adapter.filesystem
-    provider: ~
+    pool: cache.app
+    ttl: 7200

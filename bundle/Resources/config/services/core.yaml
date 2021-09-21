@@ -18,8 +18,8 @@ services:
       class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway
       arguments:
         - "@netgen_remote_media.provider.cloudinary.gateway"
-        - "@ngrm.cache"
-        - "%netgen_remote_media.cloudinary.cache_ttl%"
+        - "@netgen_remote_media.cache.pool"
+        - "%netgen_remote_media.cache.ttl%"
 
     netgen_remote_media.provider.cloudinary:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider
@@ -38,5 +38,5 @@ services:
     netgen_remote_media.next_cursor_resolver:
         class: Netgen\RemoteMedia\Core\NextCursorResolver
         arguments:
-            - "@ngrm.cache"
-            - "%netgen_remote_media.cloudinary.cache_ttl%"
+            - "@netgen_remote_media.cache.pool"
+            - "%netgen_remote_media.cache.ttl%"
