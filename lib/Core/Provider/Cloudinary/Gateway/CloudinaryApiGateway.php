@@ -290,7 +290,7 @@ final class CloudinaryApiGateway extends Gateway
             $resourceTypes = [$resourceTypes];
         }
 
-        if (count($resourceTypes) > 0) {
+        if (is_array($resourceTypes) && count($resourceTypes) > 0) {
             $resourceTypes = array_map(static fn ($value) => sprintf('resource_type:"%s"', $value), $resourceTypes);
 
             $expressions[] = '(' . implode(' OR ', $resourceTypes) . ')';
