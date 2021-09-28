@@ -27,6 +27,7 @@ use function max;
 use function min;
 use function round;
 use function sprintf;
+use function is_array;
 
 class CloudinaryApiGateway extends Gateway
 {
@@ -412,7 +413,7 @@ class CloudinaryApiGateway extends Gateway
             $resourceTypes = [$resourceTypes];
         }
 
-        if (count($resourceTypes) > 0) {
+        if (is_array($resourceTypes) && count($resourceTypes) > 0) {
             $resourceTypes = array_map(static function ($value) {
                 return sprintf('resource_type:"%s"', $value);
             }, $resourceTypes);
