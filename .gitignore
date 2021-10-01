@@ -4,7 +4,7 @@ composer.phar
 composer.lock
 phpunit.phar
 .php-version
-.php-cs-fixer.cache
+.php_cs.cache
 .phpunit.result.cache
 **/.sass-cache
 npm-debug.log
