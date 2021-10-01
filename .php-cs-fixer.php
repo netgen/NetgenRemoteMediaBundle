@@ -1,6 +1,9 @@
 <?php
 
-return PhpCsFixer\Config::create()
+declare(strict_types=1);
+
+$config = new PhpCsFixer\Config();
+$config
     ->setRiskyAllowed(true)
     ->setRules([
         '@PSR12' => true,
@@ -47,3 +50,5 @@ return PhpCsFixer\Config::create()
             ->in(__DIR__)
     )
 ;
+
+return $config;
