@@ -5,6 +5,7 @@ composer.lock
 phpunit.phar
 .php-version
 .php_cs.cache
+.php-cs-fixer.cache
 .phpunit.result.cache
 **/.sass-cache
 npm-debug.log
