@@ -27,7 +27,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "cloudinary/cloudinary_php": "^1.0",
+        "cloudinary/cloudinary_php": "^1.20",
         "symfony/mime": "^4.4 || ^5.2",
         "symfony/twig-bundle": "^4.4 || ^5.2",
         "symfony/framework-bundle": "^4.4 || ^5.2"
@@ -36,7 +36,7 @@
         "phpunit/phpunit": "^9.5",
         "matthiasnoback/symfony-dependency-injection-test": "^4.2",
         "matthiasnoback/symfony-config-test": "^4.2",
-        "mikey179/vfsstream": "^1.0",
+        "mikey179/vfsstream": "^1.6",
         "friendsofphp/php-cs-fixer": "^3.0",
         "rector/rector": "^0.11.53"
     },
@@ -55,5 +55,10 @@
     "scripts": {
         "test": "@php vendor/bin/phpunit --colors=always",
         "fix": "@php vendor/bin/php-cs-fixer fix"
+    },
+    "extra": {
+        "symfony": {
+            "require": "~5.2.0"
+        }
     }
 }
