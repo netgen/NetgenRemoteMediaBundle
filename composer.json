@@ -55,10 +55,5 @@
     "scripts": {
         "test": "@php vendor/bin/phpunit --colors=always",
         "fix": "@php vendor/bin/php-cs-fixer fix"
-    },
-    "extra": {
-        "symfony": {
-            "require": "~5.2.0"
-        }
     }
 }
