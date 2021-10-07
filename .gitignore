@@ -1,6 +1,7 @@
 .idea/
 vendor/
 var/
+ezpublish_legacy/
 composer.phar
 composer.lock
 phpunit.phar

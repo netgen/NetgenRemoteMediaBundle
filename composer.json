@@ -58,6 +58,7 @@
         "fix": "@php vendor/bin/php-cs-fixer fix"
     },
     "extra": {
+        "ezpublish-legacy-dir": "ezpublish_legacy",
         "branch-alias": {
             "dev-master": "2.0.x-dev"
         }
