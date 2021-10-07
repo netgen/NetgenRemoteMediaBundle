@@ -1,6 +1,9 @@
 <?php
 
-return PhpCsFixer\Config::create()
+declare(strict_types=1);
+
+$config = new PhpCsFixer\Config();
+$config
     ->setRiskyAllowed(true)
     ->setRules([
         '@Symfony' => true,
@@ -54,7 +57,9 @@ return PhpCsFixer\Config::create()
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->exclude(['vendor', 'docs', 'ezpublish_legacy'])
+            ->exclude(['vendor', 'docs'])
             ->in(__DIR__)
     )
 ;
+
+return $config;
