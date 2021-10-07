@@ -29,7 +29,7 @@ abstract class BaseTest extends TestCase
                         'h' => 200,
                     ],
                 ],
-            ],
+            ]
         );
     }
 }

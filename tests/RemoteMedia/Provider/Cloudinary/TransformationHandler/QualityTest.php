@@ -24,7 +24,7 @@ class QualityTest extends BaseTest
     {
         self::assertEquals(
             ['quality' => 80],
-            $this->quality->process($this->value, 'test', [80]),
+            $this->quality->process($this->value, 'test', [80])
         );
     }
 
@@ -34,7 +34,7 @@ class QualityTest extends BaseTest
             [
                 'quality' => 'auto:best',
             ],
-            $this->quality->process($this->value, 'test', ['auto', 'best']),
+            $this->quality->process($this->value, 'test', ['auto', 'best'])
         );
     }
 

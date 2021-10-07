@@ -92,7 +92,7 @@ class NextCursorResolver
         ];
 
         return $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::NEXT_CURSOR, implode('|', $queryVars), $offset]),
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::NEXT_CURSOR, implode('|', $queryVars), $offset])
         );
     }
 

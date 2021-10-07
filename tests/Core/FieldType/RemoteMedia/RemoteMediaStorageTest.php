@@ -81,9 +81,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => $value,
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $this->remoteMediaProvider->expects(self::once())
@@ -108,9 +108,9 @@ class RemoteMediaStorageTest extends TestCase
                             'caption' => 'Test caption',
                             'variations' => [],
                         ],
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $this->remoteMediaProvider->expects(self::once())
@@ -134,9 +134,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => [],
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         self::assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
@@ -150,9 +150,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         self::assertNotTrue($this->storage->storeFieldData($this->versionInfo, $field, $this->context));
@@ -166,9 +166,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         self::assertEmpty($this->storage->getFieldData($this->versionInfo, $field, $this->context));
@@ -186,9 +186,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $field2 = new ContentField(
@@ -197,9 +197,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $content = new Content(
@@ -208,9 +208,9 @@ class RemoteMediaStorageTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $this->contentService->expects(self::once())
@@ -246,9 +246,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $field2 = new ContentField(
@@ -257,9 +257,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $content = new Content(
@@ -268,9 +268,9 @@ class RemoteMediaStorageTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $this->contentService->expects(self::once())
@@ -311,9 +311,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => $value,
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $originalField = new Field(
@@ -322,9 +322,9 @@ class RemoteMediaStorageTest extends TestCase
                 'value' => new FieldValue(
                     [
                         'externalData' => 'some_value',
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         self::assertNotTrue($this->storage->copyLegacyField($this->versionInfo, $field, $originalField, $this->context));

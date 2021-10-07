@@ -24,7 +24,7 @@ class FormatTest extends BaseTest
     {
         self::assertEquals(
             ['fetch_format' => 'png'],
-            $this->format->process($this->value, 'png_format', ['png']),
+            $this->format->process($this->value, 'png_format', ['png'])
         );
     }
 

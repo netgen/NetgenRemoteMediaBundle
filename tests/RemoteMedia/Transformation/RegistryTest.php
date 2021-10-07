@@ -41,7 +41,7 @@ class RegistryTest extends TestCase
     {
         self::assertEquals(
             $this->cropTransformation,
-            $this->registry->getHandler('crop', 'cloudinary'),
+            $this->registry->getHandler('crop', 'cloudinary')
         );
     }
 

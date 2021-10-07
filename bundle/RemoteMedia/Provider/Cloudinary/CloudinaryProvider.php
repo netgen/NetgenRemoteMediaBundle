@@ -438,7 +438,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             try {
                 $transformationHandler = $this->registry->getHandler(
                     $transformationIdentifier,
-                    $this->getIdentifier(),
+                    $this->getIdentifier()
                 );
             } catch (TransformationHandlerNotFoundException $transformationHandlerNotFoundException) {
                 $this->logError($transformationHandlerNotFoundException->getMessage());

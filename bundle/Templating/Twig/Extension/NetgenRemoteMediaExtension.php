@@ -65,7 +65,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
         return [
             new TwigFilter(
                 'scaling_format',
-                [$this, 'scalingFormat'],
+                [$this, 'scalingFormat']
             ),
         ];
     }
@@ -80,43 +80,43 @@ class NetgenRemoteMediaExtension extends AbstractExtension
         return [
             new TwigFunction(
                 'netgen_remote_variation',
-                [$this, 'getRemoteImageVariation'],
+                [$this, 'getRemoteImageVariation']
             ),
             new TwigFunction(
                 'netgen_remote_variation_embed',
-                [$this, 'getRemoteImageVariationEmbed'],
+                [$this, 'getRemoteImageVariationEmbed']
             ),
             new TwigFunction(
                 'netgen_remote_video',
-                [$this, 'getRemoteVideoTag'],
+                [$this, 'getRemoteVideoTag']
             ),
             new TwigFunction(
                 'netgen_remote_video_embed',
-                [$this, 'getRemoteVideoTagEmbed'],
+                [$this, 'getRemoteVideoTagEmbed']
             ),
             new TwigFunction(
                 'netgen_remote_video_thumbnail',
-                [$this, 'getVideoThumbnail'],
+                [$this, 'getVideoThumbnail']
             ),
             new TwigFunction(
                 'netgen_remote_download',
-                [$this, 'getResourceDownloadLink'],
+                [$this, 'getResourceDownloadLink']
             ),
             new TwigFunction(
                 'netgen_remote_media',
-                [$this, 'getRemoteResource'],
+                [$this, 'getRemoteResource']
             ),
             new TwigFunction(
                 'netgen_remote_media_embed',
-                [$this, 'getRemoteResourceEmbed'],
+                [$this, 'getRemoteResourceEmbed']
             ),
             new TwigFunction(
                 'ngrm_is_croppable',
-                [$this, 'contentTypeIsCroppable'],
+                [$this, 'contentTypeIsCroppable']
             ),
             new TwigFunction(
                 'ngrm_available_variations',
-                [$this, 'variationsForContent'],
+                [$this, 'variationsForContent']
             ),
         ];
     }
@@ -259,7 +259,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
     public function contentTypeIsCroppable(Content $content)
     {
         $contentTypeIdentifier = $this->contentTypeService->loadContentType(
-            $content->contentInfo->contentTypeId,
+            $content->contentInfo->contentTypeId
         )->identifier;
 
         return !empty($this->variationResolver->getCroppbableVariations($contentTypeIdentifier));
@@ -278,7 +278,7 @@ class NetgenRemoteMediaExtension extends AbstractExtension
     {
         if ($contentTypeIdentifier instanceof Content) {
             $contentTypeIdentifier = $this->contentTypeService->loadContentType(
-                $contentTypeIdentifier->contentInfo->contentTypeId,
+                $contentTypeIdentifier->contentInfo->contentTypeId
             )->identifier;
         }
 

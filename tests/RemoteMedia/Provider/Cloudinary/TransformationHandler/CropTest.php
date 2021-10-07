@@ -32,7 +32,7 @@ class CropTest extends BaseTest
                     'crop' => 'crop',
                 ],
             ],
-            $this->crop->process($this->value, 'small'),
+            $this->crop->process($this->value, 'small')
         );
     }
 

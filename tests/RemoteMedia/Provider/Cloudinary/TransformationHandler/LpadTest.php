@@ -23,7 +23,7 @@ class LpadTest extends BaseTest
     {
         self::assertEquals(
             ['crop' => 'lpad'],
-            $this->lpad->process($this->value, 'small'),
+            $this->lpad->process($this->value, 'small')
         );
     }
 
@@ -35,7 +35,7 @@ class LpadTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->lpad->process($this->value, 'small', [100, 200]),
+            $this->lpad->process($this->value, 'small', [100, 200])
         );
     }
 
@@ -48,7 +48,7 @@ class LpadTest extends BaseTest
                 'height' => 200,
                 'background' => 'red',
             ],
-            $this->lpad->process($this->value, 'small', [100, 200, 'red']),
+            $this->lpad->process($this->value, 'small', [100, 200, 'red'])
         );
     }
 }

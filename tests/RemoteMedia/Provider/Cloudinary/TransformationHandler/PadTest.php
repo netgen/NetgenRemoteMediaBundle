@@ -23,7 +23,7 @@ class PadTest extends BaseTest
     {
         self::assertEquals(
             ['crop' => 'pad'],
-            $this->pad->process($this->value, 'small'),
+            $this->pad->process($this->value, 'small')
         );
     }
 
@@ -35,7 +35,7 @@ class PadTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->pad->process($this->value, 'small', [100, 200]),
+            $this->pad->process($this->value, 'small', [100, 200])
         );
     }
 
@@ -48,7 +48,7 @@ class PadTest extends BaseTest
                 'height' => 200,
                 'background' => 'red',
             ],
-            $this->pad->process($this->value, 'small', [100, 200, 'red']),
+            $this->pad->process($this->value, 'small', [100, 200, 'red'])
         );
     }
 }

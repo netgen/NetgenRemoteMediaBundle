@@ -24,7 +24,7 @@ class NamedTransformationTest extends BaseTest
     {
         self::assertEquals(
             ['transformation' => 'thisIsNamedTransformation'],
-            $this->namedTransformation->process($this->value, 'named', ['thisIsNamedTransformation']),
+            $this->namedTransformation->process($this->value, 'named', ['thisIsNamedTransformation'])
         );
     }
 

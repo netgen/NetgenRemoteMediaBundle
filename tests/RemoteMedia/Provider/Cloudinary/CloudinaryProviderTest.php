@@ -51,7 +51,7 @@ class CloudinaryProviderTest extends TestCase
             $this->registry,
             $this->variationResolver,
             $this->gateway,
-            false,
+            false
         );
     }
 
@@ -59,21 +59,21 @@ class CloudinaryProviderTest extends TestCase
     {
         self::assertEquals(
             'cloudinary',
-            $this->cloudinaryProvider->getIdentifier(),
+            $this->cloudinaryProvider->getIdentifier()
         );
     }
 
     public function testSupportsContentBrowser()
     {
         self::assertFalse(
-            $this->cloudinaryProvider->supportsContentBrowser(),
+            $this->cloudinaryProvider->supportsContentBrowser()
         );
     }
 
     public function testSupportsFolders()
     {
         self::assertTrue(
-            $this->cloudinaryProvider->supportsFolders(),
+            $this->cloudinaryProvider->supportsFolders()
         );
     }
 
@@ -116,7 +116,7 @@ class CloudinaryProviderTest extends TestCase
             ->method('search')
             ->with($query)
             ->willReturn(
-                Result::fromResponse(new Response($this->getSearchResponse())),
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
         $this->cloudinaryProvider->searchResources($query);
@@ -131,7 +131,7 @@ class CloudinaryProviderTest extends TestCase
             ->method('search')
             ->with($query)
             ->willReturn(
-                Result::fromResponse(new Response($this->getSearchResponse())),
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
         $this->cloudinaryProvider->searchResources($query);
@@ -146,7 +146,7 @@ class CloudinaryProviderTest extends TestCase
             ->method('search')
             ->with($query)
             ->willReturn(
-                Result::fromResponse(new Response($this->getSearchResponse())),
+                Result::fromResponse(new Response($this->getSearchResponse()))
             );
 
         $this->cloudinaryProvider->searchResources($query);
@@ -162,7 +162,7 @@ class CloudinaryProviderTest extends TestCase
 
         self::assertInstanceOf(Value::class, $value);
         self::assertNull(
-            $value->resourceId,
+            $value->resourceId
         );
     }
 
@@ -175,7 +175,7 @@ class CloudinaryProviderTest extends TestCase
                 'secure_url' => 'https://some.url/path',
                 'bytes' => 1024,
                 'resource_type' => 'image',
-            ],
+            ]
         );
 
         $this->gateway
@@ -188,23 +188,23 @@ class CloudinaryProviderTest extends TestCase
         self::assertInstanceOf(Value::class, $value);
         self::assertEquals(
             'testResourceId',
-            $value->resourceId,
+            $value->resourceId
         );
         self::assertEquals(
             'http://some.url/path',
-            $value->url,
+            $value->url
         );
         self::assertEquals(
             'https://some.url/path',
-            $value->secure_url,
+            $value->secure_url
         );
         self::assertEquals(
             1024,
-            $value->size,
+            $value->size
         );
         self::assertEquals(
             Value::TYPE_IMAGE,
-            $value->mediaType,
+            $value->mediaType
         );
     }
 
@@ -217,7 +217,7 @@ class CloudinaryProviderTest extends TestCase
                 'secure_url' => 'https://some.url/path',
                 'bytes' => 1024,
                 'resource_type' => 'video',
-            ],
+            ]
         );
 
         $this->gateway
@@ -230,7 +230,7 @@ class CloudinaryProviderTest extends TestCase
         self::assertInstanceOf(Value::class, $value);
         self::assertEquals(
             Value::TYPE_VIDEO,
-            $value->mediaType,
+            $value->mediaType
         );
     }
 
@@ -244,7 +244,7 @@ class CloudinaryProviderTest extends TestCase
                 'bytes' => 1024,
                 'resource_type' => 'image',
                 'format' => 'pdf',
-            ],
+            ]
         );
 
         $this->gateway
@@ -257,7 +257,7 @@ class CloudinaryProviderTest extends TestCase
         self::assertInstanceOf(Value::class, $value);
         self::assertEquals(
             Value::TYPE_OTHER,
-            $value->mediaType,
+            $value->mediaType
         );
     }
 
@@ -395,7 +395,7 @@ class CloudinaryProviderTest extends TestCase
                 'resourceId' => 'testResourceId',
                 'resourceType' => 'image',
                 'type' => 'upload',
-            ],
+            ]
         );
 
         $this->gateway
@@ -406,7 +406,7 @@ class CloudinaryProviderTest extends TestCase
 
         self::assertEquals(
             'test.com/download-link',
-            $this->cloudinaryProvider->generateDownloadLink($value),
+            $this->cloudinaryProvider->generateDownloadLink($value)
         );
     }
 
@@ -447,7 +447,7 @@ class CloudinaryProviderTest extends TestCase
                 'secure_url' => 'https://some.url/filename',
                 'bytes' => 1024,
                 'resource_type' => 'image',
-            ],
+            ]
         );
 
         $this->gateway
@@ -455,7 +455,7 @@ class CloudinaryProviderTest extends TestCase
             ->method('upload')
             ->with(
                 $uploadFile->uri(),
-                $options,
+                $options
             );
 
         $value = $this->cloudinaryProvider->upload($uploadFile, ['overwrite' => true]);
@@ -464,23 +464,23 @@ class CloudinaryProviderTest extends TestCase
 
         self::assertEquals(
             'filename',
-            $value->resourceId,
+            $value->resourceId
         );
         self::assertEquals(
             'http://some.url/filename',
-            $value->url,
+            $value->url
         );
         self::assertEquals(
             'https://some.url/filename',
-            $value->secure_url,
+            $value->secure_url
         );
         self::assertEquals(
             1024,
-            $value->size,
+            $value->size
         );
         self::assertEquals(
             Value::TYPE_IMAGE,
-            $value->mediaType,
+            $value->mediaType
         );
     }
 
@@ -509,7 +509,7 @@ class CloudinaryProviderTest extends TestCase
                 'secure_url' => 'https://some.url/file.zip',
                 'bytes' => 1024,
                 'resource_type' => 'other',
-            ],
+            ]
         );
 
         $this->gateway
@@ -517,7 +517,7 @@ class CloudinaryProviderTest extends TestCase
             ->method('upload')
             ->with(
                 $file->url(),
-                $options,
+                $options
             );
 
         $uploadFile = UploadFile::fromUri($file->url());
@@ -528,23 +528,23 @@ class CloudinaryProviderTest extends TestCase
 
         self::assertEquals(
             'file.zip',
-            $value->resourceId,
+            $value->resourceId
         );
         self::assertEquals(
             'http://some.url/file.zip',
-            $value->url,
+            $value->url
         );
         self::assertEquals(
             'https://some.url/file.zip',
-            $value->secure_url,
+            $value->secure_url
         );
         self::assertEquals(
             1024,
-            $value->size,
+            $value->size
         );
         self::assertEquals(
             Value::TYPE_OTHER,
-            $value->mediaType,
+            $value->mediaType
         );
     }
 
@@ -572,7 +572,7 @@ class CloudinaryProviderTest extends TestCase
                         'h' => 200,
                     ],
                 ],
-            ],
+            ]
         );
 
         $variation = $this->cloudinaryProvider->buildVariation($value, 'test_content_type', '');
@@ -580,7 +580,7 @@ class CloudinaryProviderTest extends TestCase
         self::assertInstanceOf(Variation::class, $variation);
         self::assertEquals(
             $value->secure_url,
-            $variation->url,
+            $variation->url
         );
     }
 
@@ -599,7 +599,7 @@ class CloudinaryProviderTest extends TestCase
                         'h' => 200,
                     ],
                 ],
-            ],
+            ]
         );
 
         $this->gateway->method('getVariationUrl')->willReturn('https://cloudinary.com/c_fit,w_200,h_200/testId');
@@ -607,13 +607,13 @@ class CloudinaryProviderTest extends TestCase
         $variation = $this->cloudinaryProvider->buildVariation(
             $value,
             'test_content_type',
-            ['crop' => 'fit', 'width' => 200, 'height' => 200],
+            ['crop' => 'fit', 'width' => 200, 'height' => 200]
         );
 
         self::assertInstanceOf(Variation::class, $variation);
         self::assertEquals(
             'https://cloudinary.com/c_fit,w_200,h_200/testId',
-            $variation->url,
+            $variation->url
         );
     }
 

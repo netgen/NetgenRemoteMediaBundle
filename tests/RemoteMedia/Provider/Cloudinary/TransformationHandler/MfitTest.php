@@ -23,7 +23,7 @@ class MfitTest extends BaseTest
     {
         self::assertEquals(
             ['crop' => 'mfit'],
-            $this->mfit->process($this->value, 'small'),
+            $this->mfit->process($this->value, 'small')
         );
     }
 
@@ -35,7 +35,7 @@ class MfitTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->mfit->process($this->value, 'small', [100, 200]),
+            $this->mfit->process($this->value, 'small', [100, 200])
         );
     }
 }

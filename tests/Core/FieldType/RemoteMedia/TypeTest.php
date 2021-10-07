@@ -92,7 +92,7 @@ class TypeTest extends TestCase
                 'data' => null,
                 'externalData' => (array) $this->inputValue,
                 'sortKey' => false,
-            ],
+            ]
         );
 
         self::assertEquals($fieldValue, $this->type->toPersistenceValue($this->inputValue));
@@ -105,7 +105,7 @@ class TypeTest extends TestCase
                 'data' => $this->value,
                 'externalData' => $this->value,
                 'sortKey' => false,
-            ],
+            ]
         );
 
         self::assertEquals($fieldValue, $this->type->toPersistenceValue($this->value));
@@ -123,7 +123,7 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => $this->value,
-            ],
+            ]
         );
 
         self::assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
@@ -134,7 +134,7 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => self::PARAMETERS,
-            ],
+            ]
         );
 
         self::assertEquals($this->value, $this->type->fromPersistenceValue($fieldValue));
@@ -145,7 +145,7 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => null,
-            ],
+            ]
         );
 
         self::assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));
@@ -156,7 +156,7 @@ class TypeTest extends TestCase
         $fieldValue = new FieldValue(
             [
                 'data' => $this->emptyValue,
-            ],
+            ]
         );
 
         self::assertEquals($this->emptyValue, $this->type->fromPersistenceValue($fieldValue));

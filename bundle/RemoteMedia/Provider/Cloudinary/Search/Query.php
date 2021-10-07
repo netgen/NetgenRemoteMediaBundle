@@ -85,7 +85,7 @@ final class Query
             null,
             $nextCursor,
             $sortBy,
-            $resourceIds,
+            $resourceIds
         );
     }
 

@@ -23,7 +23,7 @@ class LfillTest extends BaseTest
     {
         self::assertEquals(
             ['crop' => 'lfill'],
-            $this->lfill->process($this->value, 'small'),
+            $this->lfill->process($this->value, 'small')
         );
     }
 
@@ -35,7 +35,7 @@ class LfillTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->lfill->process($this->value, 'small', [100, 200]),
+            $this->lfill->process($this->value, 'small', [100, 200])
         );
     }
 }

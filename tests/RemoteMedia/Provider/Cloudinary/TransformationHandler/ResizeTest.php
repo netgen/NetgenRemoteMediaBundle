@@ -27,7 +27,7 @@ class ResizeTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->resize->process($this->value, 'small', [100, 200]),
+            $this->resize->process($this->value, 'small', [100, 200])
         );
     }
 

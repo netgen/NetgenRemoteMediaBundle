@@ -43,7 +43,7 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getVariationsForContentType('article'),
+            $this->variationResolver->getVariationsForContentType('article')
         );
     }
 
@@ -67,7 +67,7 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getVariationsForContentType('blog_post'),
+            $this->variationResolver->getVariationsForContentType('blog_post')
         );
     }
 
@@ -86,7 +86,7 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getCroppbableVariations('article'),
+            $this->variationResolver->getCroppbableVariations('article')
         );
     }
 
@@ -110,7 +110,7 @@ class VariationResolverTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getEmbedVariations(),
+            $this->variationResolver->getEmbedVariations()
         );
     }
 

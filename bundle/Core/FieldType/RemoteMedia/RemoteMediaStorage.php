@@ -65,7 +65,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $data->resourceId,
                 $versionInfo->contentInfo->id,
                 $this->provider->getIdentifier(),
-                $versionInfo->versionNo,
+                $versionInfo->versionNo
             );
         } elseif (is_array($data) && !empty($data)) {
             $options['alt_text'] = $data['alt_text'];
@@ -82,7 +82,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                 $value->resourceId,
                 $versionInfo->contentInfo->id,
                 $this->provider->getIdentifier(),
-                $versionInfo->versionNo,
+                $versionInfo->versionNo
             );
 
             return true;
@@ -121,7 +121,7 @@ class RemoteMediaStorage extends GatewayBasedStorage
                     // load resource_id from table
                     $resourceIdsToDelete = array_merge(
                         $resourceIdsToDelete,
-                        $gateway->loadFromTable($content->id, $field->id, $versionNo, $this->provider->getIdentifier()),
+                        $gateway->loadFromTable($content->id, $field->id, $versionNo, $this->provider->getIdentifier())
                     );
 
                     // delete for current version

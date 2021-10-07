@@ -26,7 +26,7 @@ class EffectTest extends BaseTest
             [
                 'effect' => 'grayscale',
             ],
-            $this->effect->process($this->value, 'small', ['grayscale']),
+            $this->effect->process($this->value, 'small', ['grayscale'])
         );
     }
 
@@ -36,7 +36,7 @@ class EffectTest extends BaseTest
             [
                 'effect' => 'saturation:50',
             ],
-            $this->effect->process($this->value, 'small', ['saturation', '50']),
+            $this->effect->process($this->value, 'small', ['saturation', '50'])
         );
     }
 

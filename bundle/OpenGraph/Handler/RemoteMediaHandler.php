@@ -98,7 +98,7 @@ class RemoteMediaHandler extends Handler
             }
 
             $contentType = $this->contentTypeService->loadContentType(
-                $this->content->versionInfo->contentInfo->contentTypeId,
+                $this->content->versionInfo->contentInfo->contentTypeId
             );
 
             $variation = $this->provider->buildVariation($media, $contentType->identifier, $params[1]);
@@ -106,7 +106,7 @@ class RemoteMediaHandler extends Handler
             return $variation->url;
         } catch (Exception $exception) {
             $this->logger->error(
-                sprintf('Open Graph remote media handler: Error while getting media with id %s: ', $field->value->resourceId) . $exception->getMessage(),
+                sprintf('Open Graph remote media handler: Error while getting media with id %s: ', $field->value->resourceId) . $exception->getMessage()
             );
         }
 

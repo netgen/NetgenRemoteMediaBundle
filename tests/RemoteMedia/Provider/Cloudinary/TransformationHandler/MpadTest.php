@@ -23,7 +23,7 @@ class MpadTest extends BaseTest
     {
         self::assertEquals(
             ['crop' => 'mpad'],
-            $this->mpad->process($this->value, 'small'),
+            $this->mpad->process($this->value, 'small')
         );
     }
 
@@ -35,7 +35,7 @@ class MpadTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->mpad->process($this->value, 'small', [100, 200]),
+            $this->mpad->process($this->value, 'small', [100, 200])
         );
     }
 }

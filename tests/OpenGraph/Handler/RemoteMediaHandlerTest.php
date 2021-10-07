@@ -69,9 +69,9 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
         $this->content = new Content(
             [
                 'versionInfo' => new VersionInfo(
-                    ['contentInfo' => new ContentInfo(['contentTypeId' => 2])],
+                    ['contentInfo' => new ContentInfo(['contentTypeId' => 2])]
                 ),
-            ],
+            ]
         );
 
         $this->provider = $this->getMockBuilder(RemoteMediaProvider::class)
@@ -95,16 +95,16 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
             $this->provider,
             $this->contentTypeService,
             $this->requestStack,
-            $this->logger,
+            $this->logger
         );
         $this->remoteMediaHandler->setContent($this->content);
 
         $this->field = new Field(
             [
                 'value' => new Value(
-                    ['secure_url' => 'https://res.example.com/some/uri'],
+                    ['secure_url' => 'https://res.example.com/some/uri']
                 ),
-            ],
+            ]
         );
     }
 
@@ -172,8 +172,8 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
                         'id' => 2,
                         'identifier' => 'test',
                         'fieldDefinitions' => [],
-                    ],
-                ),
+                    ]
+                )
             );
 
         $this->translationHelper->expects(self::exactly(2))
@@ -194,7 +194,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
 
         self::assertEquals(
             'https://res.example.com/some/url',
-            $item[0]->getTagValue(),
+            $item[0]->getTagValue()
         );
     }
 
@@ -216,7 +216,7 @@ class RemoteMediaHandlerTest extends HandlerBaseTest
 
         self::assertEquals(
             'https://res.example.com/some/uri',
-            $item[0]->getTagValue(),
+            $item[0]->getTagValue()
         );
     }
 

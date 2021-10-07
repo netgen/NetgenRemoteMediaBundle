@@ -110,7 +110,7 @@ class NextCursorResolverTest extends TestCase
             'image',
             15,
             '(test_folder)',
-            'some tag',
+            'some tag'
         );
     }
 }

@@ -23,7 +23,7 @@ class ScaleTest extends BaseTest
     {
         self::assertEquals(
             ['crop' => 'scale'],
-            $this->scale->process($this->value, 'small'),
+            $this->scale->process($this->value, 'small')
         );
     }
 
@@ -35,7 +35,7 @@ class ScaleTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->scale->process($this->value, 'small', [100, 200]),
+            $this->scale->process($this->value, 'small', [100, 200])
         );
     }
 }

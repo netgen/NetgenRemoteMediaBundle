@@ -71,7 +71,7 @@ class CloudinaryApiGateway extends Gateway
                 'api_key' => $apiKey,
                 'api_secret' => $apiSecret,
                 'cdn_subdomain' => $useSubdomains,
-            ],
+            ]
         );
 
         $this->cloudinaryUploader = new Uploader();

@@ -31,7 +31,7 @@ class UploadFileTest extends TestCase
                 'type' => 'image/jpg',
                 'tmp_name' => 'oji939i.jpg',
                 'size' => 100,
-            ],
+            ]
         );
 
         $uploadFile = UploadFile::fromZHTTPFile($eZHTTPFile);

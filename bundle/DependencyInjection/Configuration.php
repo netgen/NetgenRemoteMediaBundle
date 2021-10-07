@@ -83,7 +83,7 @@ class Configuration extends SiteAccessConfiguration
                                 ],
                             ],
                         ],
-                    ],
+                    ]
                 )
                 ->useAttributeAsKey('variation_name')
                 ->normalizeKeys(false)
@@ -104,13 +104,13 @@ class Configuration extends SiteAccessConfiguration
                                             static function ($v) {
                                                 // Check if passed array only contains a "params" key
                                                 return is_array($v) && count($v) === 1 && isset($v['params']);
-                                            },
+                                            }
                                         )
                                         ->then(
                                             static function ($v) {
                                                 // If we have the "params" key, just use the value.
                                                 return $v['params'];
-                                            },
+                                            }
                                         )
                                     ->end()
                                     ->prototype('variable')->end()

@@ -69,7 +69,7 @@ class CloudinaryApiGatewayTest extends TestCase
 
         self::assertEquals(
             'https://res.cloudinary.com/testcloud/image/upload/test.jpg',
-            $this->apiGateway->getVariationUrl($source, $options),
+            $this->apiGateway->getVariationUrl($source, $options)
         );
     }
 
@@ -90,7 +90,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('execute')
             ->willReturn(
-                new Api\Response($this->getSearchResponse()),
+                new Api\Response($this->getSearchResponse())
             ); // @todo: finish this
 
         $this->apiGateway->search($query);
@@ -113,7 +113,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('execute')
             ->willReturn(
-                new Api\Response($this->getSearchResponse()),
+                new Api\Response($this->getSearchResponse())
             ); // @todo: finish this
 
         $this->apiGateway->search($query);
@@ -139,7 +139,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('execute')
             ->willReturn(
-                new Api\Response($this->getSearchResponse()),
+                new Api\Response($this->getSearchResponse())
             ); // @todo: finish this
 
         $this->apiGateway->search($query);
@@ -177,12 +177,12 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('execute')
             ->willReturn(
-                new Api\Response($this->getSearchResponse()),
+                new Api\Response($this->getSearchResponse())
             );
 
         self::assertEquals(
             200,
-            $this->apiGateway->countResourcesInFolder('folderName'),
+            $this->apiGateway->countResourcesInFolder('folderName')
         );
     }
 
@@ -201,7 +201,7 @@ class CloudinaryApiGatewayTest extends TestCase
 
         self::assertEquals(
             [],
-            $result,
+            $result
         );
     }
 

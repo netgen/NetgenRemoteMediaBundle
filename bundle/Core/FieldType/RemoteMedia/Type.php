@@ -106,7 +106,7 @@ class Type extends FieldType
                         'variations' => $value->variations,
                     ],
                     'sortKey' => $this->getSortInfo($value),
-                ],
+                ]
             );
         }
         if ($value instanceof Value) {
@@ -115,7 +115,7 @@ class Type extends FieldType
                     'data' => $value,
                     'externalData' => $value,
                     'sortKey' => $this->getSortInfo($value),
-                ],
+                ]
             );
         }
     }

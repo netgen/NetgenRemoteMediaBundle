@@ -55,7 +55,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             $this->provider,
             $this->translationHelper,
             $this->contentTypeService,
-            $this->variationResolver,
+            $this->variationResolver
         );
     }
 
@@ -63,7 +63,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
     {
         self::assertEquals(
             'netgen_remote_media',
-            $this->extension->getName(),
+            $this->extension->getName()
         );
     }
 
@@ -82,7 +82,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             [
                 'id' => 'some_field',
                 'value' => new Value(),
-            ],
+            ]
         );
 
         $content = new Content(
@@ -91,9 +91,9 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $variation = new Variation();
@@ -109,8 +109,8 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                     [
                         'fieldDefinitions' => [],
                         'identifier' => 'test_identifier',
-                    ],
-                ),
+                    ]
+                )
             );
 
         $this->provider->expects(self::once())
@@ -126,7 +126,7 @@ class NetgenRemoteMediaExtensionTest extends TestCase
             [
                 'id' => 'some_field',
                 'value' => new Value(),
-            ],
+            ]
         );
 
         $content = new Content(
@@ -135,9 +135,9 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                 'versionInfo' => new VersionInfo(
                     [
                         'contentInfo' => new ContentInfo(),
-                    ],
+                    ]
                 ),
-            ],
+            ]
         );
 
         $this->translationHelper->expects(self::once())
@@ -151,8 +151,8 @@ class NetgenRemoteMediaExtensionTest extends TestCase
                     [
                         'fieldDefinitions' => [],
                         'identifier' => 'test_identifier',
-                    ],
-                ),
+                    ]
+                )
             );
 
         $this->provider->expects(self::once())

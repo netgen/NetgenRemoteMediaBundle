@@ -37,15 +37,15 @@ class NetgenRemoteMediaExtension extends Extension implements PrependExtensionIn
 
         $container->setParameter(
             sprintf('netgen_remote_media.parameters.%s.account_name', $config['provider']),
-            $config['account_name'],
+            $config['account_name']
         );
         $container->setParameter(
             sprintf('netgen_remote_media.parameters.%s.account_key', $config['provider']),
-            $config['account_key'],
+            $config['account_key']
         );
         $container->setParameter(
             sprintf('netgen_remote_media.parameters.%s.account_secret', $config['provider']),
-            $config['account_secret'],
+            $config['account_secret']
         );
 
         $container->setParameter('netgen_remote_media.remove_unused_resources', $config['remove_unused']);

@@ -23,7 +23,7 @@ class FitTest extends BaseTest
     {
         self::assertEquals(
             ['crop' => 'fit'],
-            $this->fit->process($this->value, 'small'),
+            $this->fit->process($this->value, 'small')
         );
     }
 
@@ -35,7 +35,7 @@ class FitTest extends BaseTest
                 'width' => 100,
                 'height' => 200,
             ],
-            $this->fit->process($this->value, 'small', [100, 200]),
+            $this->fit->process($this->value, 'small', [100, 200])
         );
     }
 }

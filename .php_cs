@@ -33,7 +33,6 @@ return PhpCsFixer\Config::create()
         'self_accessor' => false,
         'single_line_comment_style' => false,
         'space_after_semicolon' => false,
-        'trailing_comma_in_multiline' => ['elements' => ['arrays', 'arguments']],
         'yoda_style' => ['equal' => false, 'identical' => false, 'less_and_greater' => false],
 
         // Additional rules
