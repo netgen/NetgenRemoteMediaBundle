@@ -57,7 +57,7 @@ $config
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()
-            ->exclude(['vendor', 'docs'])
+            ->exclude(['vendor', 'docs', 'ezpublish_legacy'])
             ->in(__DIR__)
     )
 ;
