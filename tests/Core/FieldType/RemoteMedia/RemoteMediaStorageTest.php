@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\API\Repository\ContentService;
-use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\API\Repository\Values\Content\ContentInfo;
 use eZ\Publish\API\Repository\Values\Content\Field as ContentField;
 use eZ\Publish\Core\FieldType\StorageGateway;
@@ -40,12 +39,6 @@ class RemoteMediaStorageTest extends TestCase
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
     protected $remoteMediaProvider;
-
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $fieldTypeService;
-
     /**
      * @var VersionInfo
      */
@@ -62,12 +55,10 @@ class RemoteMediaStorageTest extends TestCase
 
         $this->contentService = $this->createMock(ContentService::class);
         $this->remoteMediaProvider = $this->createMock(RemoteMediaProvider::class);
-        $this->fieldTypeService = $this->createMock(FieldTypeService::class);
-        $this->fieldTypeService->method('getFieldType')->willReturn(new Type());
 
         $gateways = ['ngremotemedia' => $this->gateway];
 
-        $this->storage = new RemoteMediaStorage($this->contentService, $this->remoteMediaProvider, $this->fieldTypeService, $gateways);
+        $this->storage = new RemoteMediaStorage($this->contentService, $this->remoteMediaProvider, $gateways);
 
         $this->versionInfo = new VersionInfo();
         $this->versionInfo->contentInfo = new ContentInfo();
@@ -98,10 +89,6 @@ class RemoteMediaStorageTest extends TestCase
 
         $this->remoteMediaProvider->expects(self::once())
             ->method('getIdentifier');
-
-        $this->fieldTypeService->expects(self::once())
-            ->method('getFieldType')
-            ->willReturn(new Type());
 
         $this->gateway->expects(self::once())
             ->method('storeFieldData');
@@ -340,10 +327,6 @@ class RemoteMediaStorageTest extends TestCase
                 ),
             ],
         );
-
-        $this->fieldTypeService->expects(self::once())
-            ->method('getFieldType')
-            ->willReturn(new Type());
 
         self::assertNotTrue($this->storage->copyLegacyField($this->versionInfo, $field, $originalField, $this->context));
     }

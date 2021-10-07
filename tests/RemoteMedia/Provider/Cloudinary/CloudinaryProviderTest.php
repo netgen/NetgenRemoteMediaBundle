@@ -387,6 +387,7 @@ class CloudinaryProviderTest extends TestCase
             'type' => 'upload',
             'resource_type' => 'image',
             'flags' => 'attachment',
+            'secure' => true,
         ];
 
         $value = new Value(

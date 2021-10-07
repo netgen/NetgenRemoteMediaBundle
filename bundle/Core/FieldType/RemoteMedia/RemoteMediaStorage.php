@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia;
 
 use eZ\Publish\API\Repository\ContentService;
-use eZ\Publish\API\Repository\FieldTypeService;
 use eZ\Publish\Core\FieldType\GatewayBasedStorage;
 use eZ\Publish\SPI\Persistence\Content\Field;
 use eZ\Publish\SPI\Persistence\Content\VersionInfo;
@@ -27,11 +26,6 @@ class RemoteMediaStorage extends GatewayBasedStorage
      */
     protected $provider;
 
-    /**
-     * @var \eZ\Publish\API\Repository\FieldTypeService
-     */
-    protected $fieldTypeService;
-
     protected $deleteUnused;
 
     /**
@@ -40,12 +34,10 @@ class RemoteMediaStorage extends GatewayBasedStorage
     public function __construct(
         ContentService $contentService,
         RemoteMediaProvider $provider,
-        FieldTypeService $fieldTypeService,
         array $gateways = []
     ) {
         $this->contentService = $contentService;
         $this->provider = $provider;
-        $this->fieldTypeService = $fieldTypeService;
 
         parent::__construct($gateways);
     }

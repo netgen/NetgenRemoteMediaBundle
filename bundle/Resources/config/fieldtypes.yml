@@ -15,7 +15,6 @@ services:
         arguments:
             - "@ezpublish.api.service.content"
             - "@netgen_remote_media.provider"
-            - "@ezpublish.api.service.field_type"
         calls:
             - [setDeleteUnused, ["%netgen_remote_media.remove_unused_resources%"]]
         tags:
