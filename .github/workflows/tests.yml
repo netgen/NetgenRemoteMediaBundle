@@ -15,11 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         php: ['7.2', '7.3', '7.4']
-        symfony: ['~2.8.0', '~3.4.0']
+        symfony: ['~3.4.0', '~4.4.0']
         deps: ['normal']
         include:
           - php: '7.2'
-            symfony: '~2.8.0'
+            symfony: '~3.4.0'
             deps: 'low'
 
     steps:
