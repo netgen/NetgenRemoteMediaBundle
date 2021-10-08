@@ -30,7 +30,7 @@
         "php": "^7.2",
         "ezsystems/ezpublish-kernel": "^7.4",
         "doctrine/orm": "^2.4",
-        "cloudinary/cloudinary_php": "^1.0"
+        "cloudinary/cloudinary_php": "^1.10"
     },
     "require-dev": {
         "ezsystems/legacy-bridge": "^2.0",
