@@ -13,6 +13,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: OskarStark/php-cs-fixer-ga@master
+      - uses: OskarStark/php-cs-fixer-ga:2.19
         with:
           args: --diff --dry-run
