@@ -8,13 +8,16 @@
 
 Netgen Remote Media Bundle is an eZ Publish bundle providing field type which supports remote resource providers, primarily [Cloudinary](http://cloudinary.com/).
 
-This repository contains field type (and legacy data type) implementation and provides the interface for the legacy administration.
+This repository contains field type (and legacy data type) implementation and provides the interface for the legacy administration. It also contains integration for eZ XML and Richtext fields (as a custom tag).
 
 ## Features
 
 - field type support for remote resources (only Cloudinary supported at the moment)
-- support for images, videos, and documents upload
+- eZ XML field custom tag
+- eZ Richtext field custom tag
+- support for images, videos, audio files, documents and raw files upload
 - images cropping editor
+- support for both legacy and new stack administrations
 
 ## Licence and installation instructions
 
@@ -26,11 +29,17 @@ This repository contains field type (and legacy data type) implementation and pr
 
 For usage documentation see [USAGE.md](docs/USAGE.md)
 
+For transformations usage see [TRANSFORMATIONS.md](docs/TRANSFORMATIONS.md)
+
+## Changelog
+
+For changes in specific versions see [CHANGELOG.md](docs/CHANGELOG.md)
+
 ## Contributing
 
 For frontend development see [FRONTEND.md][docs/frontend.md]
 
 ## Copyright
 
-- Copyright (C) 2016 Keyteq. All rights reserved.
-- Copyright (C) 2016 Netgen. All rights reserved.
+- Copyright (C) 2021 Keyteq. All rights reserved.
+- Copyright (C) 2021 Netgen. All rights reserved.

@@ -89,7 +89,6 @@ $ node copyFilesDev.js
 
 This script fakes additional files (normally created with production build).
 
-
 ## Project structure
 
 ```bash

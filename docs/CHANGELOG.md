@@ -1,5 +1,18 @@
 # Netgen Remote Media Bundle changelog
 
+## 2.0
+
+* now all resource types are fully supported
+* filtering and search options have been improved
+* re-implemented integration for eZ XML text field
+* added implementation for eZ Richtext field
+* added support for multi-level folder structure
+* re-implemented frontend in Vue.js
+* added support for waveform image for audio files
+* updated PHP CS fixer configuration for coding standards
+* added configuration for GitHub CI (coding standards and tests)
+* improved coverage with tests
+
 ## 1.1.11
 
 ### Fixed
