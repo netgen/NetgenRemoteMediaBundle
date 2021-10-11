@@ -37,7 +37,7 @@
         "netgen/open-graph-bundle": "^1.2",
         "netgen/admin-ui-bundle": "^2.0",
         "matthiasnoback/symfony-dependency-injection-test": "^3.0",
-        "mikey179/vfsstream": "^1.0",
+        "mikey179/vfsstream": "^1.2",
         "phpunit/phpunit": "^7.0",
         "friendsofphp/php-cs-fixer": "^2.18",
         "rector/rector": "^0.5.22"
