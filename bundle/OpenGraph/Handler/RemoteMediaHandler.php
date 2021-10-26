@@ -86,7 +86,7 @@ class RemoteMediaHandler extends Handler
      */
     protected function getFieldValue(Field $field, $tagName, array $params = [])
     {
-        if ($this->fieldHelper->isFieldEmpty($this->content, $params[0])) {
+        if ($this->fieldHelper->isFieldEmpty($this->content, $field->fieldDefIdentifier)) {
             throw new FieldEmptyException($field->fieldDefIdentifier);
         }
 
