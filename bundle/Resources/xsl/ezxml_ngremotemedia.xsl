@@ -11,7 +11,19 @@
 
     <xsl:template match="custom[@name='ngremotemedia']">
         <div>
-            <xsl:attribute name="class">remote-image-inline <xsl:value-of select="@custom:cssclass"/></xsl:attribute>
+            <xsl:attribute name="class">remote-image-inline <xsl:value-of select="@custom:cssclass"/>
+                <xsl:if test="@align!=''">
+                    <xsl:choose>
+                        <xsl:when test="@align='middle'">
+                            object-center
+                        </xsl:when>
+
+                        <xsl:otherwise>
+                            object-<xsl:value-of select="@align"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:if>
+            </xsl:attribute>
 
             <xsl:choose>
                 <xsl:when test="@custom:resourceType='image'">

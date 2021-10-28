@@ -22,11 +22,13 @@ const handleDOMContentLoaded = function() {
                 NgRemoteMediaInputFields : window[`NgRemoteMediaInputFields_${el.dataset.id}`],
                 NgRemoteMediaAvailableVariations : window[`NgRemoteMediaAvailableVariations_${el.dataset.id}`],
                 NgRemoteMediaAvailableEditorVariations : window[`NgRemoteMediaAvailableEditorVariations_${el.dataset.id}`],
+                NgRemoteMediaAvailableAlignOptions,
                 editorInsertModalOpen: false,
                 editorInsertModalLoading: false,
                 editorInsertCallback: null,
                 selectedEditorVariation: '',
                 caption: '',
+                align: '',
                 cssClass: '',
                 selectedImage: {
                     id: '',
@@ -85,6 +87,7 @@ const handleDOMContentLoaded = function() {
                     };
 
                     this.caption = '';
+                    this.align = '';
                     this.cssClass = '';
                     this.selectedEditorVariation = '';
 
@@ -117,6 +120,10 @@ const handleDOMContentLoaded = function() {
 
                     if (typeof data.caption !== 'undefined') {
                         this.caption = data.caption;
+                    }
+
+                    if (typeof data.align !== 'undefined') {
+                        this.align = data.align;
                     }
 
                     if (typeof data.cssclass !== 'undefined') {
