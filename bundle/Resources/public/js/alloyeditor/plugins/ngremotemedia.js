@@ -31,8 +31,8 @@
   const InsertMedia = {
     exec: function (editor) {
       var data = {};
-      window[`remoteMediaezrichtext`].setEditorInsertCallback(InsertMediaCallback);
-      window[`remoteMediaezrichtext`].openEditorInsertModal(data);
+      window[`remoteMedia_ezrichtext`].setEditorInsertCallback(InsertMediaCallback);
+      window[`remoteMedia_ezrichtext`].openEditorInsertModal(data);
       currentEditorInstance = editor;
     },
   };
