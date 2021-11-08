@@ -1,6 +1,6 @@
 /* eslint-disable prefer-arrow-callback */
 (function (tinymce) {
-    function insertMediaCallback(data, caption, cssClass) {
+    function insertMediaCallback(data, caption, align, cssClass) {
         var imageUrl = '';
         if (data.type === 'image') {
             if (data.variation_url !== null) {
@@ -13,12 +13,20 @@
         }
 
         let previewUrl = imageUrl !== '' ? imageUrl : '/extension/ezoe/design/standard/images/tango/mail-attachment.png';
+        let elementClass = "ezoeItemCustomTag ngremotemedia";
+        let alignAttr = '';
+
+        if (typeof align !== 'undefined' && align !== '') {
+          elementClass += (' ezoeAlign' + align);
+          alignAttr = 'align="'+align+'"';
+        }
 
         let html = '<img type="custom" src="'+previewUrl+'"'
             + 'data-mce-src="'+previewUrl+'"'
+            + alignAttr
             + 'customattributes=\'caption|'+caption+'attribute_separationcssclass|'+cssClass+'attribute_separationcoords|'+JSON.stringify(data.image_variations)
             + 'attribute_separationresourceId|'+data.resourceId+'attribute_separationresourceType|'+data.type+'attribute_separationimage_url|'+imageUrl
-            + 'attribute_separationvariation|'+data.selected_variation+'\'"'+'class="ezoeItemCustomTag ngremotemedia" style="">';
+            + 'attribute_separationvariation|'+data.selected_variation+'\'"'+'class="'+elementClass+'" style="">';
 
         tinymce.execCommand('mceInsertContent', false, html);
     }
@@ -39,6 +47,7 @@
 
                 var data = {};
                 if (attributeType === 'custom' && hasNgrmClass === true && attributeString) {
+                    data.align = tinymce.activeEditor.selection.getNode().getAttribute('align');
                     let attributes = attributeString.split('attribute_separation');
 
                     attributes.forEach(function (attribute) {

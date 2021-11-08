@@ -76,6 +76,7 @@
             'upload_button_save': "{{ "ngrm.edit.vue.upload.button.save"|trans }}",
             'upload_placeholder_new_folder': "{{ "ngrm.edit.vue.upload.placeholder.new_folder"|trans }}",
             'editor_insert_variations_label': "{{ "ngrm.edit.vue.editor_insert.variations.label"|trans }}",
+            'editor_insert_align_label': "{{ "ngrm.edit.vue.editor_insert.align.label"|trans }}",
             'editor_insert_caption_label': "{{ "ngrm.edit.vue.editor_insert.caption.label"|trans }}",
             'editor_insert_css_class_label': "{{ "ngrm.edit.vue.editor_insert.css_class.label"|trans }}",
             'editor_insert_variations_original_image': "{{ "ngrm.edit.vue.editor_insert.variations.original_image"|trans }}",
@@ -96,5 +97,14 @@
                 'editor_insert': '{{ path('netgen_remote_media_ezadmin_editor_insert') }}',
             }
         };
+    }
+
+    if (typeof NgRemoteMediaAvailableAlignOptions === 'undefined') {
+        NgRemoteMediaAvailableAlignOptions = [
+            {code: '', label: '{{ 'ngrm.edit.vue.editor_insert.align.none'|trans }}'},
+            {code: 'left', label: '{{ 'ngrm.edit.vue.editor_insert.align.left'|trans }}'},
+            {code: 'middle', label: '{{ 'ngrm.edit.vue.editor_insert.align.middle'|trans }}'},
+            {code: 'right', label: '{{ 'ngrm.edit.vue.editor_insert.align.right'|trans }}'},
+        ];
     }
 </script>

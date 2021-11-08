@@ -29,6 +29,16 @@
       </div>
 
       <div class="form-field">
+        <label :for="'selected_variation_'+fieldId">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_align_label}}</label>
+        <v-select
+          :id="'selected_variation_'+fieldId"
+          :options="this.$root.$data.NgRemoteMediaAvailableAlignOptions"
+          :reduce="option => option.code"
+          v-model="align"
+        />
+      </div>
+
+      <div class="form-field">
         <label :for="'css_class_'+fieldId">{{this.$root.$data.NgRemoteMediaTranslations.editor_insert_css_class_label}}</label>
         <input type="text"
            :id="'css_class_'+fieldId"
@@ -57,7 +67,7 @@ import axios from "axios";
 
 export default {
   name: "EditorInsertModal",
-  props: ["loading", "fieldId", "config", "selectedImage", "selectedEditorVariation", "caption", "cssClass"],
+  props: ["loading", "fieldId", "config", "selectedImage", "selectedEditorVariation", "caption", "align", "cssClass"],
   components: {
     'modal': Modal,
     'interactions': Interactions,
@@ -81,7 +91,7 @@ export default {
 
       const response = await axios.post(this.$root.$data.config.paths.editor_insert, data);
 
-      this.$root.$data.editorInsertCallback(response.data, this.caption, this.cssClass);
+      this.$root.$data.editorInsertCallback(response.data, this.caption, this.align, this.cssClass);
       this.$emit('close');
     },
     handleSelectedImageChanged(selectedImage) {

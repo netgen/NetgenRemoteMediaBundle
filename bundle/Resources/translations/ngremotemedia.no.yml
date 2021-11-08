@@ -71,6 +71,12 @@ ngrm:
                 title: 'Insert remote media'
                 caption:
                     label: 'Caption'
+                align:
+                    label: 'Align'
+                    none: 'None'
+                    left: 'Left'
+                    middle: 'Center'
+                    right: 'Right'
                 css_class:
                     label: 'CSS class'
                 variations:
