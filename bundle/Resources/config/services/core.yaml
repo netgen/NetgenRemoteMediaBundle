@@ -40,3 +40,7 @@ services:
         arguments:
             - "@netgen_remote_media.cache.pool"
             - "%netgen_remote_media.cache.ttl%"
+
+    netgen_remote_media.provider.cloudinary.resource_type_converter:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\ResourceTypeConverter
+        public: false
