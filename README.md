@@ -25,6 +25,8 @@ This repository contains field type (and legacy data type) implementation and pr
 
 [Installation instructions](docs/INSTALL.md)
 
+[Upgrade instructions](docs/UPGRADE.md)
+
 ## Documentation
 
 For usage documentation see [USAGE.md](docs/USAGE.md)
