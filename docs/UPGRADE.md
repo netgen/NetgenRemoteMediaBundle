@@ -20,7 +20,6 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
 * Configuration for variations is now done organized in `variation groups` instead of `content types` so a few methods have changed their signature:
     * `Netgen\RemoteMedia\Core\VariationResolver::getVariationsForContentType($contentTypeIdentifier)` became `Netgen\RemoteMedia\Core\VariationResolver::getVariationsForGroup(string $contentTypeIdentifier): array`
 * This core bundle doesn't support siteaccess-aware image variations configuration anymore.
-* `Query` and `Result` objects related to search have been made more generic and changed their namespace from `Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search` to `Netgen\RemoteMedia\API\Search`.
 * `Result` object now returns an array of `RemoteResource` objects instead of associative array directly from Cloudinary. The method has been changed from `getResults()` to `getResources()`.
 * Most methods that were accepting `resourceId` and `resourceType` in the `RemoteMediaProvider` class are now accepting `RemoteResource` object instead. Those methods are:
     * `deleteResource(RemoteResource $resource)`
@@ -55,3 +54,16 @@ Old object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia` has been
 * there are useful methods for manipulating with tags, such as `hasTag()`, `addTag()` or `removeTag()`
 * `variations` property has been removed -> it's now a part of the separate `RemoteResourceLocation` object as a `cropSettings` property
 * metadata is now an ordinary array, without pre-defined form, it's goal is to keep inside all additional data that cloud provider might return but are not mandatory for the core functionality -> there are useful methods for manipulating the metadata array, such as `hasMetaDataProperty()` and `getMetaDataProperty()`
+
+#### Search query and result objects
+
+Old class `Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Result` has been replaced with new one `Netgen\RemoteMedia\API\Values\SearchResult` with the following changes:
+
+* static constructor has been removed from it, making it provider independent; it has been replaced with a factory
+
+Old class `Netgen\Bundle\RemoteMediaBundle\RemoteMedia\Provider\Cloudinary\Search\Query` has been replaced with new one `Netgen\RemoteMedia\API\Values\Query` with the following changes:
+
+* it now receives an array of types (the provider is responsible to convert this type to corresponding one for eg. Cloudinary)
+* it now receives an array of folders instead of single one
+* it now receives an array of tags instead of single one
+* it now receives an array of remoteIds instead of resourceIds (the provider is responsible to convert this remoteId to corresponding parameters for eg. Cloudinary)
