@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\API\Search;
+namespace Netgen\RemoteMedia\API\Values;
 
 use Cloudinary\Api\Response;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 
-final class Result
+final class SearchResult
 {
     private int $totalCount;
 
@@ -16,24 +16,14 @@ final class Result
     /** @var \Netgen\RemoteMedia\API\Values\RemoteResource[] */
     private array $resources = [];
 
-    private function __construct(int $totalCount, ?string $nextCursor, array $resources)
+    /**
+     * @param \Netgen\RemoteMedia\API\Values\RemoteResource[] $resources
+     */
+    public function __construct(int $totalCount, ?string $nextCursor, array $resources)
     {
         $this->totalCount = $totalCount;
         $this->nextCursor = $nextCursor;
         $this->resources = $resources;
-    }
-
-    public static function fromResponse(Response $response): self
-    {
-        $totalCount = $response['total_count'];
-        $nextCursor = $response['next_cursor'] ?? null;
-
-        $resources = [];
-        foreach ($response['resources'] as $resourceData) {
-            $resources[] = RemoteResource::createFromCloudinaryResponse($resourceData);
-        }
-
-        return new self($totalCount, $nextCursor, $resources);
     }
 
     public function getTotalCount(): int

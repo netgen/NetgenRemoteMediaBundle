@@ -44,3 +44,15 @@ services:
     netgen_remote_media.provider.cloudinary.resource_type_converter:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\ResourceTypeConverter
         public: false
+
+    netgen_remote_media.provider.cloudinary.factory.remote_resource:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\RemoteResourceFactory
+        public: false
+        arguments:
+            - '@netgen_remote_media.provider.cloudinary.resource_type_converter'
+
+    netgen_remote_media.provider.cloudinary.factory.search_result:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\SearchResultFactory
+        public: false
+        arguments:
+            - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
