@@ -29,10 +29,29 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
     * `removeAllTagsFromResource(RemoteResource $resource)`
     * `updateTags(RemoteResource $resource, array $tags)`
     * `updateResourceContext(RemoteResource $resource, array $context)`
- * Method `RemoteMediaProvider::updateTags()` now accepts an array of tags instead of string.
- * Method `RemoteMediaProvider::getRemoteResource()` doesn't return empty value, instead it throws a `Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException` exception. Empty value is not valid anymore.
- * `RemoteResource` object's constructor has been set to private; now it's possible to instantiate it through two available static methods and both methods are taking care that resource ID is not empty (as empty value is not valid anymore): they will throw an `InvalidArgumentException` if this parameter is missing:
-    * `public static function createFromParameters(array $parameters): self`
-    * `public static function createFromCloudinaryResponse(array $response): self`
- * The bundle was using eZ's `ezpublish.cache_pool` cache pool for caching while it was depending on eZ. Now it requires cache pool to be provided in order to work. See [Install instructions](INSTALL.md) for more info.
- * Paramter for cache TTL `netgen_remote_media.cloudinary.cache_ttl` has been removed in favour of semantic configuration for cache. See [Install instructions](INSTALL.md) for more info.
+* Method `RemoteMediaProvider::updateTags()` now accepts an array of tags instead of string.
+* Method `RemoteMediaProvider::getRemoteResource()` doesn't return empty value, instead it throws a `Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException` exception. Empty value is not valid anymore.
+* `RemoteResource` object's constructor has been set to private; now it's possible to instantiate it through two available static methods and both methods are taking care that resource ID is not empty (as empty value is not valid anymore): they will throw an `InvalidArgumentException` if this parameter is missing:
+   * `public static function createFromParameters(array $parameters): self`
+   * `public static function createFromCloudinaryResponse(array $response): self`
+* The bundle was using eZ's `ezpublish.cache_pool` cache pool for caching while it was depending on eZ. Now it requires cache pool to be provided in order to work. See [Install instructions](INSTALL.md) for more info.
+* Paramter for cache TTL `netgen_remote_media.cloudinary.cache_ttl` has been removed in favour of semantic configuration for cache. See [Install instructions](INSTALL.md) for more info.
+
+### Code changes
+
+#### Value changed to RemoteResource
+
+Old object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia` has been replaced with new object `Netgen\RemoteMedia\API\Values\RemoteResource` with the following changes:
+
+* it doesn't extend eZ's field type value object anymore since this bundle is now detached from eZ
+* all properties are now private and there are corresponding getters as well as some helper methods to manipulate with the object
+* static constructors have been removed from the value object -> they've been replaced with factory
+* now it contains `id` which represents the ID of the stored resource in the database (via Doctrine) -> can be `null` if the resource has been fetched from remote
+* now it contains `remoteId` which is used to uniquely identify the resource on the cloud -> in case when cloud providers require multiple parameters to uniquely identify the resource (eg. Cloudinary requires `resourceId`, `resourceType` and `type`), each provider is responsible to merge this info into single array which will be used as `remoteId`
+* `mediaType` property has been removed; now we have a single `type` and it's up to the provider to convert this to the appropriate type for cloud provider
+* now it contains two new types: `audio` and `document`
+* now it contains only single `url` property instead of both URL and secure URL - it's up to provider to decide whether it will provide secure or not secure URLs
+* `altText`, `caption` and `tags` have been extracted from metadata array to separate properties
+* there are useful methods for manipulating with tags, such as `hasTag()`, `addTag()` or `removeTag()`
+* `variations` property has been removed -> it's now a part of the separate `RemoteResourceLocation` object as a `cropSettings` property
+* metadata is now an ordinary array, without pre-defined form, it's goal is to keep inside all additional data that cloud provider might return but are not mandatory for the core functionality -> there are useful methods for manipulating the metadata array, such as `hasMetaDataProperty()` and `getMetaDataProperty()`
