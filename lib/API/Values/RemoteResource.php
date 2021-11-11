@@ -4,121 +4,143 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
-use InvalidArgumentException;
+use function array_diff;
 use function array_key_exists;
 use function in_array;
-use function json_encode;
 use function property_exists;
 
 final class RemoteResource
 {
     public const TYPE_IMAGE = 'image';
     public const TYPE_VIDEO = 'video';
+    public const TYPE_AUDIO = 'audio';
+    public const TYPE_DOCUMENT = 'document';
     public const TYPE_OTHER = 'other';
 
-    public string $resourceId;
-    public string $resourceType = 'image';
-    public string $mediaType = 'image';
-    public string $type = 'upload';
+    private ?int $id = null;
+    private string $remoteId;
+    private string $type;
 
-    public ?string $url = null;
-    public ?string $secure_url = null;
-    public int $size = 0;
+    private string $url;
+    private int $size = 0;
 
-    public array $variations = [];
+    private ?string $altText = null;
+    private ?string $caption = null;
+
+    /** @var string[] */
+    private array $tags = [];
 
     /** @var array<string, mixed> */
-    public array $metaData = [
-        'version' => '',
-        'width' => '',
-        'height' => '',
-        'created' => '',
-        'format' => '',
-        'tags' => [],
-        'signature' => '',
-        'etag' => '',
-        'overwritten' => '',
-        'alt_text' => '',
-        'caption' => '',
-    ];
+    private array $metaData = [];
 
-    private function __construct(array $parameters = [])
+    /**
+     * @param array<string,mixed> $properties
+     */
+    public function __construct(array $properties = [])
     {
-        foreach ($parameters as $key => $value) {
-            if (!property_exists($this, $key)) {
+        foreach ($properties as $name => $value) {
+            if (!property_exists($this, $name)) {
                 continue;
             }
 
-            $this->{$key} = $value;
+            $this->{$name} = $value;
         }
     }
 
-    public function __toString(): string
+    public function getId(): ?int
     {
-        return json_encode($this);
+        return $this->id;
+    }
+
+    public function getRemoteId(): string
+    {
+        return $this->remoteId;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    public function getSize(): int
+    {
+        return $this->size;
+    }
+
+    public function getAltText(): ?string
+    {
+        return $this->altText;
+    }
+
+    public function updateAltText(?string $altText): void
+    {
+        $this->altText = $altText;
+    }
+
+    public function getCaption(): ?string
+    {
+        return $this->caption;
+    }
+
+    public function updateCaption(?string $caption): void
+    {
+        $this->altText = $caption;
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return string[]
      */
-    public static function createFromParameters(array $parameters): self
+    public function getTags(): array
     {
-        if (!array_key_exists('resourceId', $parameters)) {
-            throw new InvalidArgumentException('Missing required "resourceId" property!');
+        return $this->tags;
+    }
+
+    public function hasTag(string $tag): bool
+    {
+        return in_array($tag, $this->tags, true);
+    }
+
+    public function addTag(string $tag): void
+    {
+        $this->tags[] = $tag;
+    }
+
+    public function removeTag(string $tag): void
+    {
+        if (!in_array($tag, $this->tags, true)) {
+            return;
         }
 
-        return new self($parameters);
+        $this->tags = array_diff($this->tags, [$tag]);
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return array<string,mixed>
      */
-    public static function createFromCloudinaryResponse(array $response): self
+    public function getMetaData(): array
     {
-        if (!array_key_exists('public_id', $response) || $response['public_id'] === null || $response['public_id'] === '') {
-            throw new InvalidArgumentException('Missing required "resourceId" property!');
+        return $this->metaData;
+    }
+
+    public function hasMetaDataProperty(string $name): bool
+    {
+        return array_key_exists($name, $this->metaData);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMetaDataProperty(string $name)
+    {
+        if (!$this->hasMetaDataProperty($name)) {
+            return null;
         }
 
-        $altText = !empty($response['context']['custom']['alt_text'])
-            ? $response['context']['custom']['alt_text']
-            : '';
-
-        if ($altText === '') {
-            $altText = !empty($response['context']['alt_text']) ? $response['context']['alt_text'] : '';
-        }
-
-        $metaData = [
-            'version' => !empty($response['version']) ? $response['version'] : '',
-            'width' => !empty($response['width']) ? $response['width'] : '',
-            'height' => !empty($response['height']) ? $response['height'] : '',
-            'format' => !empty($response['format']) ? $response['format'] : '',
-            'created' => !empty($response['created_at']) ? $response['created_at'] : '',
-            'tags' => !empty($response['tags']) ? $response['tags'] : [],
-            'signature' => !empty($response['signature']) ? $response['signature'] : '',
-            'etag' => !empty($response['etag']) ? $response['etag'] : '',
-            'overwritten' => !empty($response['overwritten']) ? $response['overwritten'] : '',
-            'alt_text' => $altText,
-            'caption' => !empty($response['context']['custom']['caption']) ? $response['context']['custom']['caption'] : '',
-        ];
-
-        $resource = new self();
-        $resource->resourceId = $response['public_id'];
-        $resource->resourceType = !empty($response['resource_type']) ? $response['resource_type'] : 'image';
-        $resource->type = !empty($response['type']) ? $response['type'] : 'upload';
-        $resource->url = $response['url'];
-        $resource->secure_url = $response['secure_url'];
-        $resource->size = $response['bytes'];
-        $resource->metaData = $metaData;
-        $resource->variations = !empty($response['variations']) ? $response['variations'] : [];
-
-        if ($response['resource_type'] === 'video') {
-            $resource->mediaType = self::TYPE_VIDEO;
-        } elseif ($response['resource_type'] === 'image' && (!isset($response['format']) || !in_array($response['format'], ['pdf', 'doc', 'docx'], true))) {
-            $resource->mediaType = self::TYPE_IMAGE;
-        } else {
-            $resource->mediaType = self::TYPE_OTHER;
-        }
-
-        return $resource;
+        return $this->metaData[$name];
     }
 }
