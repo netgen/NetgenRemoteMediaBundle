@@ -253,7 +253,14 @@ class NgRemoteMediaType extends eZDataType
             $provider = $container->get('netgen_remote_media.provider');
             $remoteValue = $provider->getRemoteResource($value->resourceId, $value->resourceType);
 
-            $value->metaData = $remoteValue->metaData;
+            if ($value->resourceId !== $remoteValue->resourceId) {
+                $value = $remoteValue;
+
+                $attribute->setAttribute(self::FIELD_VALUE, json_encode($remoteValue));
+                $this->saveExternalData($attribute, $remoteValue, $provider);
+            } else {
+                $value->metaData = $remoteValue->metaData;
+            }
         }
 
         return $value;
