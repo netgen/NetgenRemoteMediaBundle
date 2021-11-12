@@ -8,13 +8,14 @@
 {##
  # This field type block accepts the following parameters:
  # - string alias: either name of one of the named variations, or in the format [W]x[H]
+ # - @deprecated string format: same as alias, kept for BC with 1.x, will be removed in 3.0
  # - string alt_text: if set, overrides the alternative text from the image
  # - string title: used as title if set, otherwise caption from the image is used
  # - bool   dimensions: if set to true, will add width and height to img tag. false by default.
  # - string link_href: if set, will wrap img tag with link (<a> tag)
  #}
 {% block ngremotemedia_field %}
-    {% set format = parameters.alias|default('') %}
+    {% set format = parameters.alias ?? parameters.format|default('') %}
     {% set dimensions = parameters.dimensions|default(false) %}
 
     {% set videoConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_VIDEO') %}
