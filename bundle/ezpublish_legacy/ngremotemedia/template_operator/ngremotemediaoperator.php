@@ -104,6 +104,10 @@ class NgRemoteMediaOperator
                 'value' => array(
                     'type' => 'Value',
                     'required' => true
+                ),
+                'options' => array(
+                    'type' => 'array',
+                    'required' => false
                 )
             ),
             'ngremotevideo' => array(
@@ -146,7 +150,7 @@ class NgRemoteMediaOperator
         } elseif ($operatorName === 'ng_remote_croppable') {
             $operatorValue = $this->isCroppable($namedParameters['class_identifier']);
         } elseif ($operatorName === 'videoThumbnail') {
-            $operatorValue = $this->videoThumbnail($namedParameters['value']);
+            $operatorValue = $this->videoThumbnail($namedParameters['value'], $namedParameters['options']);
         } elseif ($operatorName === 'ngremotevideo') {
             $operatorValue = $this->getvideoTag(
                 $namedParameters['value'],
@@ -228,12 +232,12 @@ class NgRemoteMediaOperator
         return !empty($variationResolver->getCroppbableVariations($class_identifier));
     }
 
-    function videoThumbnail($value)
+    function videoThumbnail($value, $options = [])
     {
         $container = ezpKernel::instance()->getServiceContainer();
         $provider = $container->get( 'netgen_remote_media.provider' );
 
-        return $provider->getVideoThumbnail($value);
+        return $provider->getVideoThumbnail($value, $options);
     }
 
     function getVideoTag($value, $availableFormats, $format)

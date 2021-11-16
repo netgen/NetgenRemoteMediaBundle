@@ -6,10 +6,10 @@
         type: "{% if field_value %}{{ field_value.resourceType|default('image') }}{% else %}image{% endif %}",
         {% if not field_value or field_value.mediaType == 'image' %}
             mediaType: "image",
-            previewUrl: "{% if field_value %}{{ field_value.secure_url }}{% endif %}",
+            previewUrl: "{% if field_value %}{{ netgen_remote_media(field_value, 'admin_preview').url }}{% endif %}",
         {% elseif field_value.mediaType == 'video' %}
             mediaType: "video",
-            previewUrl: "{{ netgen_remote_video_thumbnail(field_value) }}",
+            previewUrl: "{{ netgen_remote_video_thumbnail(field_value, {'content_type_identifier': 'default', 'variation_name': 'admin_preview'}) }}",
         {% else %}
             mediaType: "other",
             previewUrl: "",
