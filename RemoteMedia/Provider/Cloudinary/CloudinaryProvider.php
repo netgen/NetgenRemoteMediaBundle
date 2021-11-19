@@ -464,7 +464,8 @@ class CloudinaryProvider extends RemoteMediaProvider
         $options = array(
             'type' => $value->metaData['type'],
             'resource_type' => $value->metaData['resource_type'],
-            'flags' => 'attachment'
+            'flags' => 'attachment',
+            'secure' => true
         );
 
         return $this->gateway->getDownloadLink($value->resourceId, $options);
