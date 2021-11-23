@@ -297,7 +297,7 @@ class CloudinaryApiGateway extends Gateway
     public function get($id, $type)
     {
         try {
-            return (array) $this->cloudinaryApi->resource($id, ['resource_type' => $type]);
+            return (array) $this->cloudinaryApi->resource(urlencode($id), ['resource_type' => $type]);
         } catch (Cloudinary\Error $e) {
             return [];
         }
