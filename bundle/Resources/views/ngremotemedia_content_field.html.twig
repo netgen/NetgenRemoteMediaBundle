@@ -13,6 +13,9 @@
  # - string title: used as title if set, otherwise caption from the image is used
  # - bool   dimensions: if set to true, will add width and height to img tag. false by default.
  # - string link_href: if set, will wrap img tag with link (<a> tag)
+ # - string link_target: default empty, example: '_blank'
+ # - string link_class: default empty, adds css class to the link
+ # - string link_title: default empty, adds title attribute to the link
  #}
 {% block ngremotemedia_field %}
     {% set format = parameters.alias ?? parameters.format|default('') %}
@@ -23,6 +26,9 @@
     {% set otherConst = constant('Netgen\\Bundle\\RemoteMediaBundle\\Core\\FieldType\\RemoteMedia\\Value::TYPE_OTHER') %}
 
     {% set link_href = parameters.link_href|default('') %}
+    {% set link_target = parameters.link_target|default('') %}
+    {% set link_class = parameters.link_class|default('') %}
+    {% set link_title = parameters.link_title|default('') %}
 
     {% if field.value.mediaType == imageConst %}
         {% if parameters.alt_text is defined and parameters.alt_text is not empty %}
@@ -30,6 +36,11 @@
         {% else %}
             {% set alt_text = field.value.metaData.alt_text|default('') %}
         {% endif %}
+
+        {% if alt_text is empty %}
+            {% set alt_text = content.name %}
+        {% endif %}
+
         {% if parameters.title is defined and parameters.title is not empty %}
             {% set title = parameters.title %}
         {% else %}
@@ -41,7 +52,11 @@
         {% endif %}
 
         {% if link_href is not empty %}
-        <a href="{{ link_href }}">
+        <a href="{{ link_href }}"
+            {% if link_target is not empty %}target="{{ link_target }}" {% if link_target == '_blank' %}rel="nofollow noopener noreferrer"{% endif %}{% endif %}
+            {% if link_class is not empty %}class="{{ link_class }}{% endif %}
+            {% if link_title is not empty %} title="{{ link_title }}" {% endif %}
+            aria-label="{{ alt_text }}" >
         {% endif %}
 
             {% if variation is defined and variation.url%}
