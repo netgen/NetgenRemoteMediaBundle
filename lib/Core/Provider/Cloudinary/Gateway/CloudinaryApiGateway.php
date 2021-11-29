@@ -19,6 +19,7 @@ use function cl_video_thumbnail_path;
 use function cloudinary_url_internal;
 use function count;
 use function date;
+use function explode;
 use function floor;
 use function implode;
 use function is_string;
@@ -183,8 +184,14 @@ final class CloudinaryApiGateway extends Gateway
     public function get(string $id, string $type): array
     {
         try {
+            $id = array_map(function (string $part) {
+                return urlencode($part);
+            }, explode('/', $id));
+
+            $id = implode('/', $id);
+
             return (array) $this->cloudinaryApi->resource(
-                urlencode($id),
+                $id,
                 [
                     'resource_type' => $type,
                 ],
