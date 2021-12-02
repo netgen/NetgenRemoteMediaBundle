@@ -4,7 +4,7 @@ system:
             default:
                 admin_preview:
                     transformations:
-                        - { name: limit, params: [600,600] }
+                        - { name: limit, params: [400,400] }
             ng_article:
                 test:
                     transformations:

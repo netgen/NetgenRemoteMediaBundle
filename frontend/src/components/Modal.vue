@@ -37,7 +37,7 @@ export default {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, .8);
-  z-index: 11;
+  z-index: 500000;
 
   .media-modal {
     background-color: $wild-sand;

@@ -47,10 +47,10 @@ final class Helper
 
         if ($mediaType === Value::TYPE_IMAGE) {
             $browseUrl = $this->provider->buildVariation($value, 'admin', $thumbOptions)->url;
-            $previewUrl = $value->secure_url;
+            $previewUrl = $this->provider->buildVariation($value, 'default', 'admin_preview')->url;
         } elseif ($mediaType === Value::TYPE_VIDEO) {
             $browseUrl = $this->provider->getVideoThumbnail($value, $thumbOptions);
-            $previewUrl = $this->provider->getVideoThumbnail($value);
+            $previewUrl = $this->provider->getVideoThumbnail($value, ['content_type_identifier' => 'default', 'variation_name' => 'admin_preview']);
         } else {
             $browseUrl = '';
             $previewUrl = '';

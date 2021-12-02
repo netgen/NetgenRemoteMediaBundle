@@ -5,8 +5,8 @@
 }
 
 {if $value.resourceId}
+    {def $format = 'admin_preview'}
     {if $value.mediaType|eq('image')}
-        {def $format = 'admin_preview'}
         {def $variation = ngremotemedia($value, $attribute.object.class_identifier, $format)}
 
         {if not(is_set($alt_text))}
@@ -29,7 +29,7 @@
 
         <br/>
 
-        {def $thumbnail = videoThumbnail($value)}
+        {def $thumbnail = videoThumbnail($value, hash('content_type_identifier', $attribute.object.class_identifier, 'variation_name', $format))}
         <img src="{$thumbnail}"/>
     {else}
         <i class="fa fa-book" aria-hidden="true"></i>
