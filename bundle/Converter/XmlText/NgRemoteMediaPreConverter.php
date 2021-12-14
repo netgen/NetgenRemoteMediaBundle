@@ -46,7 +46,7 @@ class NgRemoteMediaPreConverter implements Converter
             $resource = $this->remoteMediaProvider->getRemoteResource($resourceId, $resourceType);
             $resource->variations = json_decode($imageVariations, true);
 
-            switch ($resource->resourceType) {
+            switch ($resource->mediaType) {
                 case 'video':
                     $videoTag = $this->remoteMediaProvider->generateVideoTag($resource, 'embedded', $variation);
                     $src = $this->remoteMediaProvider->getVideoThumbnail($resource);
@@ -64,14 +64,15 @@ class NgRemoteMediaPreConverter implements Converter
                     break;
 
                 default:
-                    $filename = $resource->resourceId ?? basename($resource->resourceId);
-                    $src = $resource->secure_url;
+                    $src = $this->remoteMediaProvider->generateDownloadLink($resource);
+                    $filename = $src ? basename($src) : '';
             }
 
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'src', $src);
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'videoTag', $videoTag);
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'filename', $filename);
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'alt', $resource->metaData['alt_text'] ?? '');
+            $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'mediaType', $resource->mediaType ?? '');
         }
     }
 }
