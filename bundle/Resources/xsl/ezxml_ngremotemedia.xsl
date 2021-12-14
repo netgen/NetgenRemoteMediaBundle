@@ -40,7 +40,7 @@
                 <xsl:otherwise>
                     <a>
                         <xsl:attribute name="href"><xsl:value-of select="@custom:src"/></xsl:attribute>
-                        <xsl:value-of select="@custom:filename"/>
+                        <xsl:value-of select="@custom:resourceId"/>
                     </a>
                 </xsl:otherwise>
             </xsl:choose>

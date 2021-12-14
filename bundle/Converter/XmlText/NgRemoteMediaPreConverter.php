@@ -65,12 +65,10 @@ class NgRemoteMediaPreConverter implements Converter
 
                 default:
                     $src = $this->remoteMediaProvider->generateDownloadLink($resource);
-                    $filename = $src ? basename($src) : '';
             }
 
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'src', $src);
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'videoTag', $videoTag);
-            $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'filename', $filename);
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'alt', $resource->metaData['alt_text'] ?? '');
             $tag->setAttributeNS(self::CUSTOMTAG_NAMESPACE, 'mediaType', $resource->mediaType ?? '');
         }
