@@ -25,7 +25,7 @@ class SearchField implements Indexable
         return [
             new Search\Field(
                 'value',
-                $field->value->data['url'],
+                $field->value->data['url'] ?? null,
                 new StringField(),
             ),
         ];
