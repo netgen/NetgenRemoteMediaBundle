@@ -22,7 +22,7 @@ use function date;
 use function explode;
 use function floor;
 use function implode;
-use function is_string;
+use function is_array;
 use function log;
 use function max;
 use function min;
@@ -285,8 +285,8 @@ final class CloudinaryApiGateway extends Gateway
     {
         $expressions = [];
 
-        $resourceTypes = $query->getResourceType();
-        if (is_string($resourceTypes)) {
+        $resourceTypes = $query->getResourceType() ?? [];
+        if (!is_array($resourceTypes)) {
             $resourceTypes = [$resourceTypes];
         }
 
