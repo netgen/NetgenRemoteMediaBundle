@@ -205,6 +205,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
         $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
+        $this->cache->save($cacheItem);
 
         return $list;
     }
@@ -229,6 +230,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
         $cacheItem->tag($this->getCacheTags(self::FOLDER_LIST));
+        $this->cache->save($cacheItem);
 
         return $list;
     }
@@ -273,6 +275,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->set($count);
         $cacheItem->expiresAfter($this->ttl);
         $cacheItem->tag($this->getCacheTags(self::FOLDER_COUNT));
+        $this->cache->save($cacheItem);
 
         return $count;
     }
@@ -300,6 +303,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->set($value);
         $cacheItem->expiresAfter($this->ttl);
         $cacheItem->tag($this->getItemCacheTags($id));
+        $this->cache->save($cacheItem);
 
         return $value;
     }
@@ -324,6 +328,7 @@ class Psr6CachedGateway extends Gateway
         $cacheItem->set($list);
         $cacheItem->expiresAfter($this->ttl);
         $cacheItem->tag($this->getCacheTags(self::TAG_LIST));
+        $this->cache->save($cacheItem);
 
         return $list;
     }
