@@ -50,3 +50,9 @@ services:
         public: false
         arguments:
             - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
+
+    netgen_remote_media.provider.cloudinary.resolver.search_expression:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression
+        public: false
+        arguments:
+            - '@netgen_remote_media.provider.cloudinary.converter.resource_type'
