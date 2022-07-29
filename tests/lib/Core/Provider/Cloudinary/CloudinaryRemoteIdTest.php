@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
 
+use Cloudinary\Api\Response;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use PHPUnit\Framework\TestCase;
+use stdClass;
+use function json_encode;
 
 class CloudinaryRemoteIdTest extends TestCase
 {
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromCloudinaryData
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromCloudinaryResponse
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getRemoteId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceType
@@ -19,15 +22,24 @@ class CloudinaryRemoteIdTest extends TestCase
      */
     public function testFromCloudinaryData(): void
     {
-        $data = [
+        $response = new stdClass();
+        $response->body = json_encode([
             'public_id' => 'my_test_image.jpg',
             'resource_type' => 'image',
             'type' => 'upload',
             'secure_url' => 'https://cloudinary.com/cloudname/upload/image/my_test_image.jpg',
             'size' => 23456,
+        ]);
+        $response->responseCode = 200;
+        $response->headers = [
+            'X-FeatureRateLimit-Reset' => 'test',
+            'X-FeatureRateLimit-Limit' => 'test',
+            'X-FeatureRateLimit-Remaining' => 'test',
         ];
 
-        $remoteId = CloudinaryRemoteId::fromCloudinaryData($data);
+        $response = new Response($response);
+
+        $remoteId = CloudinaryRemoteId::fromCloudinaryResponse($response);
 
         self::assertSame(
             'upload|image|my_test_image.jpg',
@@ -90,5 +102,15 @@ class CloudinaryRemoteIdTest extends TestCase
         self::expectException(InvalidRemoteIdException::class);
 
         CloudinaryRemoteId::fromRemoteId('some_image.jpg');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromRemoteId
+     */
+    public function testFromHalfInvalidRemoteId(): void
+    {
+        self::expectException(InvalidRemoteIdException::class);
+
+        CloudinaryRemoteId::fromRemoteId('image|some_image.jpg');
     }
 }
