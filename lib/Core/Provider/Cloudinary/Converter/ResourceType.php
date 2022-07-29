@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
+namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use function in_array;
 
-final class ResourceTypeConverter
+final class ResourceType
 {
     /**
      * Cloudinary supported audio formats.
