@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
+use Cloudinary\Api\Response;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use function count;
 use function explode;
@@ -24,15 +25,18 @@ final class CloudinaryRemoteId
         $this->resourceId = $resourceId;
     }
 
-    public static function fromCloudinaryData(array $data): self
+    public static function fromCloudinaryResponse(Response $response): self
     {
         return new self(
-            $data['type'] ?? 'upload',
-            $data['resource_type'] ?? 'image',
-            $data['public_id'],
+            $response['type'] ?? 'upload',
+            $response['resource_type'] ?? 'image',
+            $response['public_id'],
         );
     }
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException
+     */
     public static function fromRemoteId(string $remoteId): self
     {
         $parts = explode('|', $remoteId);
