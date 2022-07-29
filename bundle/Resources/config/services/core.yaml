@@ -51,6 +51,10 @@ services:
         arguments:
             - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
 
+    netgen_remote_media.provider.cloudinary.resolver.upload_options:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions
+        public: false
+
     netgen_remote_media.provider.cloudinary.resolver.search_expression:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression
         public: false
