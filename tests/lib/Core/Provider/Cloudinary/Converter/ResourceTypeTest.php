@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
+namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Converter;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\ResourceTypeConverter;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use PHPUnit\Framework\TestCase;
 
-final class ResourceTypeConverterTest extends TestCase
+final class ResourceTypeTest extends TestCase
 {
     protected ResourceTypeConverter $converter;
 
@@ -18,7 +18,7 @@ final class ResourceTypeConverterTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\ResourceTypeConverter::fromCloudinaryData
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::fromCloudinaryResponse
      * @dataProvider fromCloudinaryDataProvider
      */
     public function testFromCloudinaryData(string $type, ?string $format, string $expectedFormat): void
@@ -30,7 +30,7 @@ final class ResourceTypeConverterTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\ResourceTypeConverter::toCloudinaryType
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::toCloudinaryType
      * @dataProvider toCloudinaryTypeProvider
      */
     public function testToCloudinaryType(string $type, string $expectedType): void
