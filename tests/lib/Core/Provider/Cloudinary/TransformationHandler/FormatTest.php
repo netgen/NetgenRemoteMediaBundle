@@ -6,35 +6,35 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Format;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\TestCase;
 
-final class FormatTest extends BaseTest
+final class FormatTest extends TestCase
 {
     protected Format $format;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->format = new Format();
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Format::process
      */
-    public function testFormat(): void
+    public function test(): void
     {
         self::assertSame(
             ['fetch_format' => 'png'],
-            $this->format->process($this->resource, 'png_format', ['png']),
+            $this->format->process(['png']),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Format::process
      */
-    public function testMissingFormatConfiguration(): void
+    public function testInvalidConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);
 
-        $this->format->process($this->resource, 'png_format');
+        $this->format->process();
     }
 }

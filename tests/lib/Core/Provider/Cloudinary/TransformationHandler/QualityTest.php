@@ -6,14 +6,14 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Quality;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\TestCase;
 
-final class QualityTest extends BaseTest
+final class QualityTest extends TestCase
 {
     protected Quality $quality;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->quality = new Quality();
     }
 
@@ -24,7 +24,7 @@ final class QualityTest extends BaseTest
     {
         self::assertSame(
             ['quality' => 80],
-            $this->quality->process($this->resource, 'test', [80]),
+            $this->quality->process([80]),
         );
     }
 
@@ -37,7 +37,7 @@ final class QualityTest extends BaseTest
             [
                 'quality' => 'auto:best',
             ],
-            $this->quality->process($this->resource, 'test', ['auto', 'best']),
+            $this->quality->process(['auto', 'best']),
         );
     }
 
@@ -48,16 +48,16 @@ final class QualityTest extends BaseTest
     {
         $this->expectException(TransformationHandlerFailedException::class);
 
-        $this->quality->process($this->resource, 'test', ['test', 'best']);
+        $this->quality->process(['test', 'best']);
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Quality::process
      */
-    public function testMissingNamedTransformationConfiguration(): void
+    public function testWithoutConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);
 
-        $this->quality->process($this->resource, 'test');
+        $this->quality->process();
     }
 }

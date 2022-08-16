@@ -5,40 +5,64 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit;
+use PHPUnit\Framework\TestCase;
 
-final class FitTest extends BaseTest
+final class FitTest extends TestCase
 {
     protected Fit $fit;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->fit = new Fit();
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit::process
      */
-    public function testFitSimple(): void
+    public function testWithoutConfig(): void
     {
         self::assertSame(
             ['crop' => 'fit'],
-            $this->fit->process($this->resource, 'small'),
+            $this->fit->process(),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit::process
+     * @dataProvider dataProvider
      */
-    public function testFitWithDimensions(): void
+    public function test(array $config, array $result): void
     {
         self::assertSame(
-            [
-                'crop' => 'fit',
-                'width' => 100,
-                'height' => 200,
-            ],
-            $this->fit->process($this->resource, 'small', [100, 200]),
+            $result,
+            $this->fit->process($config),
         );
+    }
+
+    public function dataProvider(): array
+    {
+        return [
+            [
+                [],
+                [
+                    'crop' => 'fit',
+                ],
+            ],
+            [
+                [100],
+                [
+                    'crop' => 'fit',
+                    'width' => 100,
+                ],
+            ],
+            [
+                [100, 200],
+                [
+                    'crop' => 'fit',
+                    'width' => 100,
+                    'height' => 200,
+                ],
+            ],
+        ];
     }
 }

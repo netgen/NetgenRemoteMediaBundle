@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 
@@ -21,13 +20,13 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
  * If a browser does not support either of these formats then the image is delivered in the format
  * specified by the file extension.
  */
-class Format implements HandlerInterface
+final class Format implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
      * properly configured array of options.
      */
-    public function process(RemoteResource $resource, string $variationName, array $config = []): array
+    public function process(array $config = []): array
     {
         if (empty($config[0])) {
             throw new TransformationHandlerFailedException(self::class);
