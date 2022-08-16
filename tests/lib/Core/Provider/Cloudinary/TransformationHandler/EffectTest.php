@@ -6,50 +6,60 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\TestCase;
 
-final class EffectTest extends BaseTest
+final class EffectTest extends TestCase
 {
     protected Effect $effect;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->effect = new Effect();
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
      */
-    public function testEffectSimple(): void
+    public function testSimple(): void
     {
         self::assertSame(
             [
                 'effect' => 'grayscale',
             ],
-            $this->effect->process($this->resource, 'small', ['grayscale']),
+            $this->effect->process(['grayscale']),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
      */
-    public function testEffect(): void
+    public function test(): void
     {
         self::assertSame(
             [
                 'effect' => 'saturation:50',
             ],
-            $this->effect->process($this->resource, 'small', ['saturation', '50']),
+            $this->effect->process(['saturation', '50']),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
      */
-    public function testCropVariationDoesNotExist(): void
+    public function testMissingConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);
 
-        $this->effect->process($this->resource, 'large');
+        $this->effect->process();
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
+     */
+    public function testInvalidConfig(): void
+    {
+        $this->expectException(TransformationHandlerFailedException::class);
+
+        $this->effect->process([]);
     }
 }

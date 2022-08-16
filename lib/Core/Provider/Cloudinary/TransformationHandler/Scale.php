@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 
 /**
@@ -16,13 +15,13 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * shrunk. If only the width or height is given, then the image is
  * scaled to the new dimension while retaining the original aspect ratio
  */
-class Scale implements HandlerInterface
+final class Scale implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
      * properly configured array of options.
      */
-    public function process(RemoteResource $resource, string $variationName, array $config = []): array
+    public function process(array $config = []): array
     {
         $options = [
             'crop' => 'scale',

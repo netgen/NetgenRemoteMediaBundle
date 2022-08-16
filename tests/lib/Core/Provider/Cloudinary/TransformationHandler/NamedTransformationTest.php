@@ -6,14 +6,14 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\NamedTransformation;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\TestCase;
 
-final class NamedTransformationTest extends BaseTest
+final class NamedTransformationTest extends TestCase
 {
     protected NamedTransformation $namedTransformation;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->namedTransformation = new NamedTransformation();
     }
 
@@ -24,7 +24,7 @@ final class NamedTransformationTest extends BaseTest
     {
         self::assertSame(
             ['transformation' => 'thisIsNamedTransformation'],
-            $this->namedTransformation->process($this->resource, 'named', ['thisIsNamedTransformation']),
+            $this->namedTransformation->process(['thisIsNamedTransformation']),
         );
     }
 
@@ -35,6 +35,6 @@ final class NamedTransformationTest extends BaseTest
     {
         $this->expectException(TransformationHandlerFailedException::class);
 
-        $this->namedTransformation->process($this->resource, 'named');
+        $this->namedTransformation->process();
     }
 }
