@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use function json_encode;
 
-class CloudinaryRemoteIdTest extends TestCase
+final class CloudinaryRemoteIdTest extends TestCase
 {
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromCloudinaryResponse
