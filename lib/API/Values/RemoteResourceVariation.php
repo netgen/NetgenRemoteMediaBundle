@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
-use function json_encode;
-use function property_exists;
-
-final class Variation
+final class RemoteResourceVariation
 {
-    public RemoteResource $resource;
-    public string $url;
+    private RemoteResource $resource;
+    private string $url;
 
     public function __construct(RemoteResource $resource, string $url)
     {
@@ -18,8 +15,21 @@ final class Variation
         $this->url = $url;
     }
 
-    public function __toString(): string
+    public static function fromResource(RemoteResource $resource): self
     {
-        return json_encode(['url' => $url]);
+        return new self(
+            $resource,
+            $resource->getUrl(),
+        );
+    }
+
+    public function getRemoteResource(): RemoteResource
+    {
+        return $this->resource;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
     }
 }
