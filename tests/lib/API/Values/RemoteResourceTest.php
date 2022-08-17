@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use PHPUnit\Framework\TestCase;
 
 final class RemoteResourceTest extends TestCase
@@ -13,34 +12,28 @@ final class RemoteResourceTest extends TestCase
     /**
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getId
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetaData
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetaDataProperty
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadata
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadataProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getRemoteId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getSize
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getType
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getUrl
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetaDataProperty
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetadataProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
      */
     public function testConstruct(): void
     {
-        $remoteIdObject = CloudinaryRemoteId::fromCloudinaryData([
-            'public_id' => 'c87hg9xfxrd4itiim3t0',
-            'type' => 'upload',
-            'resource_type' => 'image',
-        ]);
-
         $resource = new RemoteResource([
             'id' => 56,
-            'remoteId' => $remoteIdObject->getRemoteId(),
+            'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
             'type' => 'image',
             'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
             'size' => 120253,
             'altText' => 'alt text',
             'caption' => 'caption text',
             'tags' => ['tag1'],
-            'metaData' => [
+            'metadata' => [
                 'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                 'width' => 864,
@@ -58,7 +51,7 @@ final class RemoteResourceTest extends TestCase
         );
 
         self::assertSame(
-            $remoteIdObject->getRemoteId(),
+            'upload|image|c87hg9xfxrd4itiim3t0',
             $resource->getRemoteId(),
         );
 
@@ -116,6 +109,7 @@ final class RemoteResourceTest extends TestCase
 
         self::assertTrue($resource->hasMetaDataProperty('version'));
         self::assertFalse($resource->hasMetaDataProperty('non_existing_parameter'));
+        self::assertNull($resource->getMetaDataProperty('non_existing_parameter'));
     }
 
     /**
@@ -160,5 +154,12 @@ final class RemoteResourceTest extends TestCase
 
         self::assertEmpty($resource->getTags());
         self::assertFalse($resource->hasTag('tag1'));
+    }
+
+    public function testLocations(): void
+    {
+        $resource = new RemoteResource();
+
+        self::assertEmpty($resource->locations);
     }
 }

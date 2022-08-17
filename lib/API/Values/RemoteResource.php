@@ -4,34 +4,85 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use function array_diff;
 use function array_key_exists;
 use function in_array;
 use function property_exists;
 
+/**
+ * @ORM\Entity()
+ * @ORM\Table(name="ngrm_remote_resource")
+ * @ORM\HasLifecycleCallbacks()
+ */
 final class RemoteResource
 {
+    use TimestampableTrait;
+
     public const TYPE_IMAGE = 'image';
     public const TYPE_VIDEO = 'video';
     public const TYPE_AUDIO = 'audio';
     public const TYPE_DOCUMENT = 'document';
     public const TYPE_OTHER = 'other';
 
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     */
     private ?int $id = null;
+
+    /**
+     * @ORM\Column(name="remote_id", unique=true, type="string", length=255)
+     */
     private string $remoteId;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
     private string $type;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
     private string $url;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
     private int $size = 0;
 
+    /**
+     * @ORM\Column(name="alt_text", type="text", length=1000, nullable=true)
+     */
     private ?string $altText = null;
+
+    /**
+     * @ORM\Column(type="text", length=1000, nullable=true)
+     */
     private ?string $caption = null;
 
-    /** @var string[] */
+    /**
+     * @var string[]
+     *
+     * @ORM\Column(type="array", nullable=true)
+     */
     private array $tags = [];
 
-    /** @var array<string, mixed> */
-    private array $metaData = [];
+    /**
+     * @var array<string, mixed>
+     *
+     * @ORM\Column(name="metadata", type="array", nullable=true)
+     */
+    private array $metadata = [];
+
+    /**
+     * @var \Doctrine\ORM\PersistentCollection
+     *
+     * @ORM\OneToMany(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation", mappedBy="remote_resource_id", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    public PersistentCollection $locations;
 
     /**
      * @param array<string,mixed> $properties
@@ -62,9 +113,19 @@ final class RemoteResource
         return $this->type;
     }
 
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
     public function getUrl(): string
     {
         return $this->url;
+    }
+
+    public function setUrl(string $url): void
+    {
+        $this->url = $url;
     }
 
     public function getSize(): int
@@ -72,12 +133,17 @@ final class RemoteResource
         return $this->size;
     }
 
+    public function setSize(?int $size): void
+    {
+        $this->size = $size;
+    }
+
     public function getAltText(): ?string
     {
         return $this->altText;
     }
 
-    public function updateAltText(?string $altText): void
+    public function setAltText(?string $altText): void
     {
         $this->altText = $altText;
     }
@@ -87,7 +153,7 @@ final class RemoteResource
         return $this->caption;
     }
 
-    public function updateCaption(?string $caption): void
+    public function setCaption(?string $caption): void
     {
         $this->altText = $caption;
     }
@@ -98,6 +164,14 @@ final class RemoteResource
     public function getTags(): array
     {
         return $this->tags;
+    }
+
+    /**
+     * @param string[] $tags
+     */
+    public function setTags(array $tags): void
+    {
+        $this->tags = $tags;
     }
 
     public function hasTag(string $tag): bool
@@ -122,25 +196,34 @@ final class RemoteResource
     /**
      * @return array<string,mixed>
      */
-    public function getMetaData(): array
+    public function getMetadata(): array
     {
-        return $this->metaData;
+        return $this->metadata;
     }
 
-    public function hasMetaDataProperty(string $name): bool
+    /**
+     * @param array<string,mixed> $metadata
+     */
+    public function setMetadata(array $metadata): void
     {
-        return array_key_exists($name, $this->metaData);
+        $this->metadata = $metadata;
+    }
+
+
+    public function hasMetadataProperty(string $name): bool
+    {
+        return array_key_exists($name, $this->metadata);
     }
 
     /**
      * @return mixed
      */
-    public function getMetaDataProperty(string $name)
+    public function getMetadataProperty(string $name)
     {
-        if (!$this->hasMetaDataProperty($name)) {
+        if (!$this->hasMetadataProperty($name)) {
             return null;
         }
 
-        return $this->metaData[$name];
+        return $this->metadata[$name];
     }
 }
