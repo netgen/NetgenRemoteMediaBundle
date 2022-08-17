@@ -1,0 +1,10 @@
+orm:
+    entity_managers:
+        default:
+            auto_mapping: false
+            mappings:
+                netgen_remote_media:
+                    type: annotation
+                    prefix: Netgen\RemoteMedia\API\Values
+                    dir: "%kernel.root_dir%/../vendor/netgen/remote-media-bundle/lib/API/Values"
+                    is_bundle: false
