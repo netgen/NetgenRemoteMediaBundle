@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
-use Netgen\RemoteMedia\API\RemoteResourceFactoryInterface;
+use Cloudinary\Api\Response;
+use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
+
 use function gettype;
 use function in_array;
-use function is_array;
 
 final class RemoteResourceFactory implements RemoteResourceFactoryInterface
 {
@@ -25,7 +26,7 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
         $this->validateData($data);
 
         return new RemoteResource([
-            'remoteId' => CloudinaryRemoteId::fromCloudinaryData($data)->getRemoteId(),
+            'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse($data)->getRemoteId(),
             'type' => $this->resolveResourceType($data),
             'url' => $data['secure_url'] ?? $data['url'],
             'size' => $data['bytes'] ?? 0,
@@ -43,8 +44,8 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
      */
     private function validateData($data): void
     {
-        if (!is_array($data)) {
-            throw new InvalidDataException('CloudinaryRemoteResourceFactory requires an array, "' . gettype($data) . '" provided.');
+        if (!$data instanceof Response) {
+            throw new InvalidDataException('CloudinaryRemoteResourceFactory requires "Cloudinary\Api\Response" as data, "' . gettype($data) . '" provided.');
         }
 
         if (($data['public_id'] ?? null) === null) {
@@ -52,7 +53,7 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
         }
     }
 
-    private function resolveResourceType(array $data): string
+    private function resolveResourceType(Response $data): string
     {
         $type = $data['resource_type'] ?? RemoteResource::TYPE_OTHER;
         $format = $data['format'] ?? null;
@@ -60,7 +61,7 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
         return $this->resourceTypeConverter->fromCloudinaryData($type, $format);
     }
 
-    private function resolveAltText(array $data): ?string
+    private function resolveAltText(Response $data): ?string
     {
         if (($data['context']['custom']['alt_text'] ?? null) !== null) {
             return $data['context']['custom']['alt_text'];
@@ -72,7 +73,7 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
     /**
      * @return array<string, mixed>
      */
-    private function resolveMetaData(array $data): array
+    private function resolveMetaData(Response $data): array
     {
         $supportedMetaData = [
             'version',
@@ -85,7 +86,7 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
             'overwritten',
         ];
 
-        $metaData = $data;
+        $metaData = (array) $data;
         foreach ($metaData as $key => $value) {
             if (!in_array($key, $supportedMetaData, true)) {
                 unset($metaData[$key]);
