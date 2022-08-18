@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\API;
+namespace Netgen\RemoteMedia\API\Factory;
 
 use Netgen\RemoteMedia\API\Search\Result;
 
-interface SearchResultFactoryInterface
+interface SearchResult
 {
     /**
      * @param mixed $data
