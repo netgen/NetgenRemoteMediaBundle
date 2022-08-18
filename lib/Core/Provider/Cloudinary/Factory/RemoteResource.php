@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
+namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
 use Cloudinary\Api\Response;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
-use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResource as RemoteResourceValue;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
 use function gettype;
 use function in_array;
 
-final class RemoteResourceFactory implements RemoteResourceFactoryInterface
+final class RemoteResource implements RemoteResourceFactoryInterface
 {
     private ResourceTypeConverter $resourceTypeConverter;
 
@@ -21,11 +23,11 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
         $this->resourceTypeConverter = $resourceTypeConverter;
     }
 
-    public function create($data): RemoteResource
+    public function create($data): RemoteResourceValue
     {
         $this->validateData($data);
 
-        return new RemoteResource([
+        return new RemoteResourceValue([
             'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse($data)->getRemoteId(),
             'type' => $this->resolveResourceType($data),
             'url' => $data['secure_url'] ?? $data['url'],
@@ -55,7 +57,7 @@ final class RemoteResourceFactory implements RemoteResourceFactoryInterface
 
     private function resolveResourceType(Response $data): string
     {
-        $type = $data['resource_type'] ?? RemoteResource::TYPE_OTHER;
+        $type = $data['resource_type'] ?? RemoteResourceValue::TYPE_OTHER;
         $format = $data['format'] ?? null;
 
         return $this->resourceTypeConverter->fromCloudinaryData($type, $format);

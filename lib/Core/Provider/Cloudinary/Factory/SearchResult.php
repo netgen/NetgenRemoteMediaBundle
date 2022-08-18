@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
+namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
-use Netgen\RemoteMedia\API\RemoteResource;
+use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactory;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
 
-final class SearchResultFactory implements SearchResultFactoryInterface
+final class SearchResult implements SearchResultFactoryInterface
 {
-    private RemoteResource $remoteResourceFactory;
+    private RemoteResourceFactory $remoteResourceFactory;
 
-    public function __construct(RemoteResource $remoteResourceFactory)
+    public function __construct(RemoteResourceFactory $remoteResourceFactory)
     {
         $this->remoteResourceFactory = $remoteResourceFactory;
     }

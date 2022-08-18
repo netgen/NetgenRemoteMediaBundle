@@ -2,19 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
+namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 
-use Netgen\RemoteMedia\API\RemoteResource;
+use Cloudinary\Api\Response as CloudinaryApiResponse;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\RemoteResourceFactory;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource as RemoteResourceFactory;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 use PHPUnit\Framework\TestCase;
 
-class RemoteResourceFactoryTest extends TestCase
+use function json_encode;
+
+final class RemoteResourceTest extends TestCase
 {
-    protected RemoteResource $remoteResourceFactory;
+    protected RemoteResourceFactory $remoteResourceFactory;
 
     protected function setUp(): void
     {
@@ -24,10 +25,10 @@ class RemoteResourceFactoryTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\RemoteResourceFactory::create
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
      * @dataProvider createDataProvider
      */
-    public function testCreateImage(array $cloudinaryResponse, RemoteResource $expectedResource): void
+    public function testCreateImage(CloudinaryApiResponse $cloudinaryResponse, RemoteResource $expectedResource): void
     {
         $resource = $this->remoteResourceFactory->create($cloudinaryResponse);
 
@@ -75,32 +76,34 @@ class RemoteResourceFactoryTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\RemoteResourceFactory::create
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
      */
     public function testCreateInvalidData(): void
     {
         self::expectException(InvalidDataException::class);
-        self::expectExceptionMessage('CloudinaryRemoteResourceFactory requires an array, "string" provided.');
+        self::expectExceptionMessage('CloudinaryRemoteResourceFactory requires "Cloudinary\Api\Response" as data, "string" provided.');
 
         $this->remoteResourceFactory->create('test');
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\RemoteResourceFactory::create
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
      */
     public function testCreateMissingPublicId(): void
     {
         self::expectException(InvalidDataException::class);
         self::expectExceptionMessage('Missing required "public_id" property!');
 
-        $this->remoteResourceFactory->create([]);
+        $this->remoteResourceFactory->create(
+            $this->createCloudinaryApiResponseFromArray(['test' => 'test']),
+        );
     }
 
     public function createDataProvider(): array
     {
         return [
             [
-                [
+                $this->createCloudinaryApiResponseFromArray([
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -127,13 +130,9 @@ class RemoteResourceFactoryTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ],
+                ]),
                 new RemoteResource([
-                    'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse([
-                        'public_id' => 'c87hg9xfxrd4itiim3t0',
-                        'type' => 'upload',
-                        'resource_type' => 'image',
-                    ])->getRemoteId(),
+                    'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
                     'type' => 'image',
                     'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
                     'size' => 120253,
@@ -153,7 +152,7 @@ class RemoteResourceFactoryTest extends TestCase
                 ]),
             ],
             [
-                [
+                $this->createCloudinaryApiResponseFromArray([
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -164,13 +163,9 @@ class RemoteResourceFactoryTest extends TestCase
                     'type' => 'upload',
                     'url' => 'http://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
                     'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
-                ],
+                ]),
                 new RemoteResource([
-                    'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse([
-                        'public_id' => 'c87hg9xfxrd4itiim3t0',
-                        'type' => 'upload',
-                        'resource_type' => 'image',
-                    ])->getRemoteId(),
+                    'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
                     'type' => 'document',
                     'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
                     'size' => 120253,
@@ -186,7 +181,7 @@ class RemoteResourceFactoryTest extends TestCase
                 ]),
             ],
             [
-                [
+                $this->createCloudinaryApiResponseFromArray([
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -210,13 +205,9 @@ class RemoteResourceFactoryTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ],
+                ]),
                 new RemoteResource([
-                    'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse([
-                        'public_id' => 'c87hg9xfxrd4itiim3t0',
-                        'type' => 'upload',
-                        'resource_type' => 'video',
-                    ])->getRemoteId(),
+                    'remoteId' => 'upload|video|c87hg9xfxrd4itiim3t0',
                     'type' => 'video',
                     'url' => 'http://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
                     'size' => 120253,
@@ -235,7 +226,7 @@ class RemoteResourceFactoryTest extends TestCase
                 ]),
             ],
             [
-                [
+                $this->createCloudinaryApiResponseFromArray([
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -255,13 +246,9 @@ class RemoteResourceFactoryTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ],
+                ]),
                 new RemoteResource([
-                    'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse([
-                        'public_id' => 'c87hg9xfxrd4itiim3t0',
-                        'type' => 'upload',
-                        'resource_type' => 'video',
-                    ])->getRemoteId(),
+                    'remoteId' => 'upload|video|c87hg9xfxrd4itiim3t0',
                     'type' => 'video',
                     'url' => 'http://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
                     'size' => 120253,
@@ -279,7 +266,7 @@ class RemoteResourceFactoryTest extends TestCase
                 ]),
             ],
             [
-                [
+                $this->createCloudinaryApiResponseFromArray([
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -296,13 +283,9 @@ class RemoteResourceFactoryTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ],
+                ]),
                 new RemoteResource([
-                    'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse([
-                        'public_id' => 'c87hg9xfxrd4itiim3t0',
-                        'type' => 'private',
-                        'resource_type' => 'video',
-                    ])->getRemoteId(),
+                    'remoteId' => 'private|video|c87hg9xfxrd4itiim3t0',
                     'type' => 'audio',
                     'url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp3',
                     'size' => 12025,
@@ -318,7 +301,7 @@ class RemoteResourceFactoryTest extends TestCase
                 ]),
             ],
             [
-                [
+                $this->createCloudinaryApiResponseFromArray([
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -328,13 +311,9 @@ class RemoteResourceFactoryTest extends TestCase
                     'bytes' => 12025,
                     'type' => 'private',
                     'secure_url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.zip',
-                ],
+                ]),
                 new RemoteResource([
-                    'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse([
-                        'public_id' => 'c87hg9xfxrd4itiim3t0',
-                        'type' => 'private',
-                        'resource_type' => 'raw',
-                    ])->getRemoteId(),
+                    'remoteId' => 'private|raw|c87hg9xfxrd4itiim3t0',
                     'type' => 'other',
                     'url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.zip',
                     'size' => 12025,
@@ -348,5 +327,18 @@ class RemoteResourceFactoryTest extends TestCase
                 ]),
             ],
         ];
+    }
+
+    private function createCloudinaryApiResponseFromArray(array $data): CloudinaryApiResponse
+    {
+        return new CloudinaryApiResponse((object) [
+            'body' => json_encode($data),
+            'responseCode' => 200,
+            'headers' => [
+                'X-FeatureRateLimit-Reset' => 'test',
+                'X-FeatureRateLimit-Limit' => 'test',
+                'X-FeatureRateLimit-Remaining' => 'test',
+            ],
+        ]);
     }
 }

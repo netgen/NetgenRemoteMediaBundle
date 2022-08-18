@@ -2,27 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
+namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 
-use Netgen\RemoteMedia\API\RemoteResource;
-use Netgen\RemoteMedia\API\SearchResult;
+use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactory;
+use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
+use Netgen\RemoteMedia\API\Search\Result as SearchResult;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\API\Values\SearchResult;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\SearchResultFactory;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult as SearchResultFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+
 use function count;
 
-class SearchResultFactoryTest extends TestCase
+final class SearchResultFactoryTest extends TestCase
 {
-    protected SearchResult $searchResultFactory;
+    protected SearchResultFactoryInterface $searchResultFactory;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\RemoteResource */
+    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\RemoteResource */
     protected MockObject $remoteResourceFactoryMock;
 
     protected function setUp(): void
     {
-        $this->remoteResourceFactoryMock = self::createMock(RemoteResource::class);
+        $this->remoteResourceFactoryMock = self::createMock(RemoteResourceFactory::class);
 
         $this->searchResultFactory = new SearchResultFactory(
             $this->remoteResourceFactoryMock,
