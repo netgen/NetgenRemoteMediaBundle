@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
 
-use Netgen\RemoteMedia\API\RemoteResourceFactoryInterface;
-use Netgen\RemoteMedia\API\SearchResultFactoryInterface;
+use Netgen\RemoteMedia\API\RemoteResource;
+use Netgen\RemoteMedia\API\SearchResult;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\SearchResult;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\SearchResultFactory;
@@ -15,14 +15,14 @@ use function count;
 
 class SearchResultFactoryTest extends TestCase
 {
-    protected SearchResultFactoryInterface $searchResultFactory;
+    protected SearchResult $searchResultFactory;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\RemoteResourceFactoryInterface */
+    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\RemoteResource */
     protected MockObject $remoteResourceFactoryMock;
 
     protected function setUp(): void
     {
-        $this->remoteResourceFactoryMock = self::createMock(RemoteResourceFactoryInterface::class);
+        $this->remoteResourceFactoryMock = self::createMock(RemoteResource::class);
 
         $this->searchResultFactory = new SearchResultFactory(
             $this->remoteResourceFactoryMock,
