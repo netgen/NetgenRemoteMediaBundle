@@ -10,9 +10,12 @@ services:
 
     netgen_remote_media.provider.cloudinary.gateway:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway
+        arguments:
+            - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
+            - '@netgen_remote_media.provider.cloudinary.factory.search_result'
+            - '@netgen_remote_media.provider.cloudinary.resolver.search_expression'
         calls:
             - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%"]]
-            - [setInternalLimit, ["%netgen_remote_media.cloudinary.internal_limit%"]]
 
     netgen_remote_media.provider.cloudinary.gateway.cached:
       class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway
