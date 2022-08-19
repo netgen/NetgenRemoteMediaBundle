@@ -6,8 +6,8 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 
 use Cloudinary\Api\Response as CloudinaryApiResponse;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource as RemoteResourceFactory;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource as RemoteResourceFactory;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 use PHPUnit\Framework\TestCase;
 
@@ -25,7 +25,12 @@ final class RemoteResourceTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveAltText
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveMetaData
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveResourceType
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
      * @dataProvider createDataProvider
      */
     public function testCreateImage(CloudinaryApiResponse $cloudinaryResponse, RemoteResource $expectedResource): void
@@ -77,6 +82,7 @@ final class RemoteResourceTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
      */
     public function testCreateInvalidData(): void
     {
@@ -88,6 +94,7 @@ final class RemoteResourceTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
      */
     public function testCreateMissingPublicId(): void
     {

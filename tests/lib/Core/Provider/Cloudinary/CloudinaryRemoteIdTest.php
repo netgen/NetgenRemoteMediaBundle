@@ -14,13 +14,14 @@ use function json_encode;
 final class CloudinaryRemoteIdTest extends TestCase
 {
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromCloudinaryResponse
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getRemoteId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceType
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getType
      */
-    public function testFromCloudinaryData(): void
+    public function testFromCloudinaryResponse(): void
     {
         $response = new stdClass();
         $response->body = json_encode([
@@ -63,6 +64,7 @@ final class CloudinaryRemoteIdTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromRemoteId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getRemoteId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceId

@@ -31,7 +31,8 @@ final class SearchResultFactoryTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\SearchResultFactory::create
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult::create
      * @dataProvider createDataProvider
      */
     public function testCreate(array $data, SearchResult $expectedResult): void

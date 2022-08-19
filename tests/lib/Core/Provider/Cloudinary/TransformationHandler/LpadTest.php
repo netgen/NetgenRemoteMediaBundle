@@ -63,6 +63,15 @@ final class LpadTest extends TestCase
                     'height' => 200,
                 ],
             ],
+            [
+                [300, 400, 'red'],
+                [
+                    'crop' => 'lpad',
+                    'width' => 300,
+                    'height' => 400,
+                    'background' => 'red',
+                ],
+            ],
         ];
     }
 }

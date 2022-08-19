@@ -21,6 +21,7 @@ final class SearchExpressionTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolve
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveFolders
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveResourceIds
