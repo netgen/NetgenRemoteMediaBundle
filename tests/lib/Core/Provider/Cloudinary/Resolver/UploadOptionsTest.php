@@ -34,19 +34,21 @@ final class UploadOptionsTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::appendExtension
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::parseMimeCategory
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolve
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::appendExtension
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::parseMimeCategory
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::resolve
      * @dataProvider dataProvider
      */
-    public function testResolve(ResourceStruct $resourceStruct, string $mimeType, array $options): void
+    public function testResolve(ResourceStruct $resourceStruct, string $mimeType, array $options, bool $hasExtension = true): void
     {
-        $this->mimeTypes
-            ->expects(self::once())
-            ->method('guessMimeType')
-            ->with($resourceStruct->getFileStruct()->getUri())
-            ->willReturn($mimeType);
+        if ($hasExtension) {
+            $this->mimeTypes
+                ->expects(self::once())
+                ->method('guessMimeType')
+                ->with($resourceStruct->getFileStruct()->getUri())
+                ->willReturn($mimeType);
+        }
 
         $resolvedOptions = $this->resolver->resolve($resourceStruct);
 
@@ -227,6 +229,27 @@ final class UploadOptionsTest extends TestCase
                     'resource_type' => 'auto',
                     'tags' => [],
                 ],
+            ],
+            [
+                new ResourceStruct(
+                    FileStruct::fromUri('/var/storage/media/no_extension_example'),
+                    'auto',
+                    Folder::fromPath('raw'),
+                ),
+                'raw',
+                [
+                    'public_id' => 'raw/no_extension_example',
+                    'overwrite' => false,
+                    'invalidate' => false,
+                    'discard_original_filename' => true,
+                    'context' => [
+                        'alt' => '',
+                        'caption' => '',
+                    ],
+                    'resource_type' => 'auto',
+                    'tags' => [],
+                ],
+                false,
             ],
         ];
     }
