@@ -10,10 +10,19 @@ use Cloudinary\Search as CloudinarySearch;
 use Cloudinary\Uploader as CloudinaryUploader;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
+use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
+use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+
 use function array_key_exists;
 use function array_map;
 use function array_merge;
+use function cl_image_tag;
 use function cl_video_tag;
 use function cl_video_thumbnail_path;
 use function cloudinary_url_internal;
@@ -30,20 +39,38 @@ use function round;
 use function sprintf;
 use function urlencode;
 
-final class CloudinaryApiGateway extends Gateway
+final class CloudinaryApiGateway implements GatewayInterface
 {
-    protected Cloudinary $cloudinary;
+    private Cloudinary $cloudinary;
 
-    protected CloudinaryApi $cloudinaryApi;
+    private CloudinaryApi $cloudinaryApi;
 
-    protected CloudinaryUploader $cloudinaryUploader;
+    private CloudinaryUploader $cloudinaryUploader;
 
-    protected CloudinarySearch $cloudinarySearch;
+    private CloudinarySearch $cloudinarySearch;
 
-    protected int $internalLimit;
+    private RemoteResourceFactoryInterface $remoteResourceFactory;
 
-    public function initCloudinary(string $cloudName, string $apiKey, string $apiSecret, bool $useSubdomains = false)
-    {
+    private SearchResultFactoryInterface $searchResultFactory;
+
+    private SearchExpressionResolver $searchExpressionResolver;
+
+    public function __construct(
+        RemoteResourceFactoryInterface $remoteResourceFactory,
+        SearchResultFactoryInterface $searchResultFactory,
+        SearchExpressionResolver $searchExpressionResolver
+    ) {
+        $this->remoteResourceFactory = $remoteResourceFactory;
+        $this->searchResultFactory = $searchResultFactory;
+        $this->searchExpressionResolver = $searchExpressionResolver;
+    }
+
+    public function initCloudinary(
+        string $cloudName,
+        string $apiKey,
+        string $apiSecret,
+        bool $useSubdomains = false
+    ): void {
         $this->cloudinary = new Cloudinary();
         $this->cloudinary->config(
             [
@@ -61,26 +88,21 @@ final class CloudinaryApiGateway extends Gateway
 
     public function setServices(
         Cloudinary $cloudinary,
-        CloudinaryUploader $uploader,
-        CloudinaryApi $api,
-        CloudinarySearch $search
+        CloudinaryUploader $cloudinaryUploader,
+        CloudinaryApi $cloudinaryApi,
+        CloudinarySearch $cloudinarySearch
     ): void {
         $this->cloudinary = $cloudinary;
-        $this->cloudinaryUploader = $uploader;
-        $this->cloudinaryApi = $api;
-        $this->cloudinarySearch = $search;
+        $this->cloudinaryUploader = $cloudinaryUploader;
+        $this->cloudinaryApi = $cloudinaryApi;
+        $this->cloudinarySearch = $cloudinarySearch;
     }
 
-    public function setInternalLimit(int $internalLimit): void
-    {
-        $this->internalLimit = $internalLimit;
-    }
-
-    public function usage(): array
+    public function usage(): StatusData
     {
         $usage = $this->cloudinaryApi->usage();
 
-        return [
+        return new StatusData([
             'plan' => $usage['plan'],
             'rate_limit_allowed' => $usage->rate_limit_allowed,
             'rate_limit_remaining' => $usage->rate_limit_remaining,
@@ -97,75 +119,14 @@ final class CloudinaryApiGateway extends Gateway
             'credits_usage' => $usage['credits']['usage'] ?? null,
             'credits_limit' => $usage['credits']['limit'] ?? null,
             'credits_usage_percent' => $usage['credits']['used_percent'] ?? null,
-        ];
-    }
-
-    public function upload(string $fileUri, array $options): array
-    {
-        return $this->cloudinaryUploader->upload($fileUri, $options);
-    }
-
-    public function getVariationUrl(string $source, array $options): string
-    {
-        return cloudinary_url_internal($source, $options);
-    }
-
-    public function search(Query $query): Result
-    {
-        $expression = $this->buildSearchExpression($query);
-
-        $search = $this->cloudinarySearch
-            ->expression($expression)
-            ->max_results($query->getLimit())
-            ->with_field('context')
-            ->with_field('tags');
-
-        if ($query->getNextCursor() !== null) {
-            $search->next_cursor($query->getNextCursor());
-        }
-
-        $response = $search->execute();
-
-        return Result::fromResponse($response);
-    }
-
-    public function searchCount(Query $query): int
-    {
-        $expression = $this->buildSearchExpression($query);
-
-        $search = $this->cloudinarySearch
-            ->expression($expression)
-            ->max_results(0);
-
-        $response = $search->execute();
-
-        return Result::fromResponse($response)->getTotalCount();
-    }
-
-    public function listFolders(): array
-    {
-        return $this->cloudinaryApi
-            ->root_folders()
-            ->getArrayCopy()['folders'];
-    }
-
-    public function listSubFolders(string $parentFolder): array
-    {
-        return $this->cloudinaryApi
-            ->subfolders($parentFolder)
-            ->getArrayCopy()['folders'];
-    }
-
-    public function createFolder(string $path): void
-    {
-        $this->cloudinaryApi->create_folder($path);
+        ]);
     }
 
     public function countResources(): int
     {
         $usage = $this->cloudinaryApi->usage();
 
-        return $usage['resources'];
+        return (int) $usage['resources'];
     }
 
     public function countResourcesInFolder(string $folder): int
@@ -178,27 +139,115 @@ final class CloudinaryApiGateway extends Gateway
 
         $response = $search->execute();
 
-        return $response['total_count'];
+        return (int) $response['total_count'];
     }
 
-    public function get(string $id, string $type): array
+    public function listFolders(): array
+    {
+        return array_map(
+            static fn ($value) => $value['path'],
+            $this->cloudinaryApi
+                ->root_folders()
+                ->getArrayCopy()['folders'],
+        );
+    }
+
+    public function listSubFolders(string $parentFolder): array
+    {
+        return array_map(
+            static fn ($value) => $value['path'],
+            $this->cloudinaryApi
+                ->subfolders($parentFolder)
+                ->getArrayCopy()['folders'],
+        );
+    }
+
+    public function createFolder(string $path): void
+    {
+        $this->cloudinaryApi->create_folder($path);
+    }
+
+    public function get(CloudinaryRemoteId $remoteId): RemoteResource
     {
         try {
-            $id = array_map(function (string $part) {
-                return urlencode($part);
-            }, explode('/', $id));
-
-            $id = implode('/', $id);
-
-            return (array) $this->cloudinaryApi->resource(
-                $id,
+            $response = $this->cloudinaryApi->resource(
+                $remoteId->getResourceId(),
                 [
-                    'resource_type' => $type,
+                    'type' => $remoteId->getType(),
+                    'resource_type' => $remoteId->getResourceType(),
                 ],
             );
-        } catch (Cloudinary\Error $e) {
-            return [];
+
+            return $this->remoteResourceFactory->create($response);
+        } catch (CloudinaryApi\NotFound $e) {
+            throw new RemoteResourceNotFoundException($remoteId->getRemoteId());
         }
+    }
+
+    public function upload(string $fileUri, array $options): RemoteResource
+    {
+        $response = $this->cloudinaryUploader->upload($fileUri, $options);
+
+        return $this->remoteResourceFactory->create($response);
+    }
+
+    public function update(CloudinaryRemoteId $remoteId, array $options): void
+    {
+        $options['type'] = $remoteId->getType();
+        $options['resource_type'] = $remoteId->getResourceType();
+
+        $this->cloudinaryApi->update($remoteId->getResourceId(), $options);
+    }
+
+    public function delete(CloudinaryRemoteId $remoteId): void
+    {
+        $options = [
+            'invalidate' => true,
+            'type' => $remoteId->getType(),
+            'resource_type' => $remoteId->getResourceType(),
+        ];
+
+        $this->cloudinaryUploader->destroy($remoteId->getResourceId(), $options);
+    }
+
+    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string
+    {
+        $options = [
+            'type' => $remoteId->getType(),
+            'resource_type' => $remoteId->getResourceType(),
+            'transformation' => $transformations,
+            'secure' => true,
+        ];
+
+        return cloudinary_url_internal($remoteId->getResourceId(), $options);
+    }
+
+    public function search(Query $query): Result
+    {
+        $search = $this->cloudinarySearch
+            ->expression($this->searchExpressionResolver->resolve($query))
+            ->max_results($query->getLimit())
+            ->with_field('context')
+            ->with_field('tags');
+
+        if ($query->getNextCursor() !== null) {
+            $search->next_cursor($query->getNextCursor());
+        }
+
+        $response = $search->execute();
+
+        return $this->searchResultFactory->create($response);
+    }
+
+    public function searchCount(Query $query): int
+    {
+        $search = $this->cloudinarySearch
+            ->expression($this->searchExpressionResolver->resolve($query))
+            ->max_results(0);
+
+        $response = $search->execute();
+
+        return $response['total_count'] ?? 0;
     }
 
     public function listTags(): array
@@ -220,102 +269,36 @@ final class CloudinaryApiGateway extends Gateway
         return $tags;
     }
 
-    public function addTag(string $id, string $type, string $tag): void
+    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $this->cloudinaryUploader->add_tag(
-            $tag,
-            [$id],
-            [
-                'resource_type' => $type,
-            ],
-        );
+        $options['type'] = $remoteId->getType();
+        $options['resource_type'] = $remoteId->getResourceType();
+
+        return cl_video_thumbnail_path($remoteId->getResourceId(), $options);
     }
 
-    public function removeTag(string $id, string $type, string $tag): void
+    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $this->cloudinaryUploader->remove_tag(
-            $tag,
-            [$id],
-            [
-                'resource_type' => $type,
-            ],
-        );
+        $options['type'] = $remoteId->getType();
+        $options['resource_type'] = $remoteId->getResourceType();
+
+        return cl_image_tag($remoteId->getResourceId(), $options);
     }
 
-    public function removeAllTags(string $id, string $type): void
+    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $this->cloudinaryUploader->remove_all_tags([$id], ['resource_type' => $type]);
+        $options['type'] = $remoteId->getType();
+        $options['resource_type'] = $remoteId->getResourceType();
+
+        return cl_video_tag($remoteId->getResourceId(), $options);
     }
 
-    public function update(string $id, string $type, array $options): void
+    public function getDownloadLink(CloudinaryRemoteId $remoteId): string
     {
-        $options['resource_type'] = $type;
+        $options['type'] = $remoteId->getType();
+        $options['resource_type'] = $remoteId->getResourceType();
 
-        $this->cloudinaryApi->update($id, $options);
-    }
-
-    public function getVideoThumbnail(string $id, array $options = []): string
-    {
-        return cl_video_thumbnail_path($id, $options);
-    }
-
-    public function getVideoTag(string $id, array $options = []): string
-    {
-        return cl_video_tag($id, $options);
-    }
-
-    public function getDownloadLink(string $id, string $type, array $options): string
-    {
-        $options['resource_type'] = $type;
-
-        return $this->cloudinary->cloudinary_url($id, $options);
-    }
-
-    public function delete(string $id, string $type): void
-    {
-        $options = [
-            'invalidate' => true,
-            'resource_type' => $type,
-        ];
-
-        $this->cloudinaryUploader->destroy($id, $options);
-    }
-
-    private function buildSearchExpression(Query $query): string
-    {
-        $expressions = [];
-
-        $resourceTypes = $query->getResourceType() ?? [];
-        if (!is_array($resourceTypes)) {
-            $resourceTypes = [$resourceTypes];
-        }
-
-        if (is_array($resourceTypes) && count($resourceTypes) > 0) {
-            $resourceTypes = array_map(static fn ($value) => sprintf('resource_type:"%s"', $value), $resourceTypes);
-
-            $expressions[] = '(' . implode(' OR ', $resourceTypes) . ')';
-        }
-
-        if ($query->getQuery() !== '') {
-            $expressions[] = sprintf('%s*', $query->getQuery());
-        }
-
-        if ($query->getTag()) {
-            $expressions[] = sprintf('tags:%s', $query->getTag());
-        }
-
-        if ($query->getFolder() !== null) {
-            $expressions[] = sprintf('folder:"%s"', $query->getFolder());
-        }
-
-        $resourceIds = $query->getResourceIds();
-        if (count($resourceIds) > 0) {
-            $resourceIds = array_map(static fn ($value) => sprintf('public_id:"%s"', $value), $resourceIds);
-
-            $expressions[] = '(' . implode(' OR ', $resourceIds) . ')';
-        }
-
-        return implode(' AND ', $expressions);
+        return $this->cloudinary->cloudinary_url($remoteId->getResourceId(), $options);
     }
 
     private function formatBytes(int $bytes, int $precision = 2): string
