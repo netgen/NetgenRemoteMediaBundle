@@ -2,11 +2,12 @@ services:
     netgen_remote_media.handler_registry:
         class: Netgen\RemoteMedia\Core\Transformation\Registry
 
-    netgen_remote_media.variation.resolver:
-        class: Netgen\RemoteMedia\Core\VariationResolver
+    netgen_remote_media.resolver.variation:
+        class: Netgen\RemoteMedia\Core\Resolver\Variation
         lazy: true
         calls:
             - [setVariations, ["%netgen_remote_media.image_variations%"]]
+            - [setServices, ["@netgen_remote_media.handler_registry", "@?logger"]]
 
     netgen_remote_media.provider.cloudinary.gateway:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway
