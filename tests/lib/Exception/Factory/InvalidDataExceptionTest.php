@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 final class InvalidDataExceptionTest extends TestCase
 {
     /**
-     * @covers \Netgen\RemoteMedia\Exception\NotSupportedException::__construct
+     * @covers \Netgen\RemoteMedia\Exception\Factory\InvalidDataException::__construct
      */
     public function testException(): void
     {
@@ -21,7 +21,7 @@ final class InvalidDataExceptionTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Exception\NotSupportedException::__construct
+     * @covers \Netgen\RemoteMedia\Exception\Factory\InvalidDataException::__construct
      */
     public function testExceptionWithCustomMessage(): void
     {

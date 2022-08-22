@@ -113,19 +113,9 @@ final class RemoteResource
         return $this->type;
     }
 
-    public function setType(string $type): void
-    {
-        $this->type = $type;
-    }
-
     public function getUrl(): string
     {
         return $this->url;
-    }
-
-    public function setUrl(string $url): void
-    {
-        $this->url = $url;
     }
 
     public function getSize(): int
@@ -133,29 +123,14 @@ final class RemoteResource
         return $this->size;
     }
 
-    public function setSize(?int $size): void
-    {
-        $this->size = $size;
-    }
-
     public function getAltText(): ?string
     {
         return $this->altText;
     }
 
-    public function setAltText(?string $altText): void
-    {
-        $this->altText = $altText;
-    }
-
     public function getCaption(): ?string
     {
         return $this->caption;
-    }
-
-    public function setCaption(?string $caption): void
-    {
-        $this->altText = $caption;
     }
 
     /**
@@ -166,13 +141,6 @@ final class RemoteResource
         return $this->tags;
     }
 
-    /**
-     * @param string[] $tags
-     */
-    public function setTags(array $tags): void
-    {
-        $this->tags = $tags;
-    }
 
     public function hasTag(string $tag): bool
     {
@@ -199,14 +167,6 @@ final class RemoteResource
     public function getMetadata(): array
     {
         return $this->metadata;
-    }
-
-    /**
-     * @param array<string,mixed> $metadata
-     */
-    public function setMetadata(array $metadata): void
-    {
-        $this->metadata = $metadata;
     }
 
 

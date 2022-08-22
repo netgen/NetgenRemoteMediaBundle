@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Exception\Cloudinary;
 
-use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
+use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use PHPUnit\Framework\TestCase;
 
 final class InvalidRemoteIdExceptionTest extends TestCase
@@ -14,9 +14,9 @@ final class InvalidRemoteIdExceptionTest extends TestCase
      */
     public function testException(): void
     {
-        $this->expectException(InvalidDataException::class);
-        $this->expectExceptionMessage('Invalid data has been provided to the remote resource factory.');
+        $this->expectException(InvalidRemoteIdException::class);
+        $this->expectExceptionMessage('Provided remoteId "test" is invalid.');
 
-        throw new InvalidDataException();
+        throw new InvalidRemoteIdException('test');
     }
 }

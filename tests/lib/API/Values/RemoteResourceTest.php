@@ -21,6 +21,8 @@ final class RemoteResourceTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getUrl
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetadataProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getCaption
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getAltText
      */
     public function testConstruct(): void
     {
@@ -43,6 +45,7 @@ final class RemoteResourceTest extends TestCase
                 'etag' => 'test_tag',
                 'overwritten' => 'true',
             ],
+            'test' => 'test',
         ]);
 
         self::assertSame(
@@ -151,15 +154,9 @@ final class RemoteResourceTest extends TestCase
         self::assertTrue($resource->hasTag('tag1'));
 
         $resource->removeTag('tag1');
+        $resource->removeTag('tag5');
 
         self::assertEmpty($resource->getTags());
         self::assertFalse($resource->hasTag('tag1'));
-    }
-
-    public function testLocations(): void
-    {
-        $resource = new RemoteResource();
-
-        self::assertEmpty($resource->locations);
     }
 }

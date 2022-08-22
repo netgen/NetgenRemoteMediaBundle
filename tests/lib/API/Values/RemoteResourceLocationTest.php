@@ -16,6 +16,7 @@ final class RemoteResourceLocationTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettings
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettingsForVariation
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getRemoteResource
      */
     public function test(): void
