@@ -11,6 +11,7 @@ final class FolderTest extends TestCase
 {
     /**
      * @covers \Netgen\RemoteMedia\API\Values\Folder::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\Folder::__toString
      * @covers \Netgen\RemoteMedia\API\Values\Folder::getName
      * @covers \Netgen\RemoteMedia\API\Values\Folder::getParent
      * @covers \Netgen\RemoteMedia\API\Values\Folder::getPath
@@ -50,6 +51,11 @@ final class FolderTest extends TestCase
         self::assertSame(
             $path,
             $folder->getPath(),
+        );
+
+        self::assertSame(
+            $path,
+            (string) $folder,
         );
     }
 
