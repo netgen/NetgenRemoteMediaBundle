@@ -63,3 +63,6 @@ services:
         public: false
         arguments:
             - '@netgen_remote_media.provider.cloudinary.converter.resource_type'
+
+    netgen_remote_media.factory.date_time:
+        class: Netgen\RemoteMedia\Core\Factory\DateTime
