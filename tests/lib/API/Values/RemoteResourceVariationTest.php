@@ -58,7 +58,7 @@ final class RemoteResourceVariationTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getRemoteResource
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::fromResource
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getUrl
      */
     public function testFromResource(): void

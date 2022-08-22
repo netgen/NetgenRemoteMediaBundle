@@ -18,12 +18,14 @@ final class StatusDataTest extends TestCase
      */
     public function test(): void
     {
-        $statusData = new StatusData([
+        $data = [
             'plan' => 'Advanced',
             'api_rate_limit' => 1000,
             'resources' => 500,
             'variations' => 3000,
-        ]);
+        ];
+
+        $statusData = new StatusData($data);
 
         self::assertTrue(
             $statusData->has('plan'),
@@ -78,6 +80,11 @@ final class StatusDataTest extends TestCase
         self::assertSame(
             6000,
             $statusData->get('credits'),
+        );
+
+        self::assertSame(
+            $data,
+            $statusData->all(),
         );
     }
 }
