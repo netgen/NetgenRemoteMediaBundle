@@ -85,6 +85,7 @@ final class QueryTest extends TestCase
     /**
      * @covers \Netgen\RemoteMedia\API\Search\Query::__construct
      * @covers \Netgen\RemoteMedia\API\Search\Query::__toString
+     * @covers \Netgen\RemoteMedia\API\Search\Query::fromRemoteIds
      * @covers \Netgen\RemoteMedia\API\Search\Query::getFolders
      * @covers \Netgen\RemoteMedia\API\Search\Query::getLimit
      * @covers \Netgen\RemoteMedia\API\Search\Query::getNextCursor

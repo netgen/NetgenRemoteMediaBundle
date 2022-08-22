@@ -78,11 +78,11 @@ final class RemoteResource
     private array $metadata = [];
 
     /**
-     * @var \Doctrine\ORM\PersistentCollection
+     * @var \Doctrine\ORM\PersistentCollection|array
      *
      * @ORM\OneToMany(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation", mappedBy="remote_resource_id", cascade={"persist", "remove"}, orphanRemoval=true)
      */
-    public PersistentCollection $locations;
+    public $locations;
 
     /**
      * @param array<string,mixed> $properties
