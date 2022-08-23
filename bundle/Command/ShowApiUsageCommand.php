@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Command;
 
-use Netgen\RemoteMedia\Core\RemoteMediaProvider;
+use Netgen\RemoteMedia\API\ProviderInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+
 use function str_replace;
 use function ucfirst;
 
 final class ShowApiUsageCommand extends Command
 {
-    private RemoteMediaProvider $provider;
+    private ProviderInterface $provider;
 
-    public function __construct(RemoteMediaProvider $provider)
+    public function __construct(ProviderInterface $provider)
     {
         $this->provider = $provider;
 
@@ -25,15 +26,16 @@ final class ShowApiUsageCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('netgen:ngremotemedia:usage')
+            ->setName('netgen:remote_media:usage')
             ->setDescription('Show API usage (rate limits etc.)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $usage = $this->provider->usage();
+        $statusData = $this->provider->status();
 
-        foreach ($usage as $key => $value) {
+        $output->writeln('Source: <comment>' . $this->getPrettyKey($this->provider->getIdentifier()) . '</comment>');
+        foreach ($statusData->all() as $key => $value) {
             $output->writeln($this->getPrettyKey($key) . ': <comment>' . $value . '</comment>');
         }
 
