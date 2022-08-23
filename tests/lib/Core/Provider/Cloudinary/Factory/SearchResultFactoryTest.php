@@ -9,12 +9,12 @@ use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Result as SearchResult;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult as SearchResultFactory;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
 use function count;
 
-final class SearchResultFactoryTest extends TestCase
+final class SearchResultFactoryTest extends AbstractTest
 {
     protected SearchResultFactoryInterface $searchResultFactory;
 
@@ -42,28 +42,9 @@ final class SearchResultFactoryTest extends TestCase
             ->method('create')
             ->willReturn(new RemoteResource());
 
-        $result = $this->searchResultFactory->create($data);
-
-        self::assertInstanceOf(SearchResult::class, $result);
-
-        self::assertSame(
-            $expectedResult->getTotalCount(),
-            $result->getTotalCount(),
-        );
-
-        self::assertSame(
-            $expectedResult->getNextCursor(),
-            $result->getNextCursor(),
-        );
-
-        self::containsOnlyInstancesOf(
-            RemoteResource::class,
-            $result->getResources(),
-        );
-
-        self::assertSame(
-            count($expectedResult->getResources()),
-            count($result->getResources()),
+        self::assertSearchResultSame(
+            $expectedResult,
+            $this->searchResultFactory->create($data),
         );
     }
 

@@ -6,9 +6,9 @@ namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
-use PHPUnit\Framework\TestCase;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 
-final class RemoteResourceVariationTest extends TestCase
+final class RemoteResourceVariationTest extends AbstractTest
 {
     private RemoteResource $remoteResource;
 
@@ -30,24 +30,9 @@ final class RemoteResourceVariationTest extends TestCase
     {
         $variation = new RemoteResourceVariation($this->remoteResource, 'https://cloudinary.com/test/variation/test_image');
 
-        self::assertInstanceOf(
-            RemoteResource::class,
+        self::assertRemoteResourceSame(
+            $this->remoteResource,
             $variation->getRemoteResource(),
-        );
-
-        self::assertSame(
-            $this->remoteResource->getId(),
-            $variation->getRemoteResource()->getId(),
-        );
-
-        self::assertSame(
-            $this->remoteResource->getRemoteId(),
-            $variation->getRemoteResource()->getRemoteId(),
-        );
-
-        self::assertSame(
-            $this->remoteResource->getUrl(),
-            $variation->getRemoteResource()->getUrl(),
         );
 
         self::assertSame(
@@ -65,24 +50,9 @@ final class RemoteResourceVariationTest extends TestCase
     {
         $variation = RemoteResourceVariation::fromResource($this->remoteResource);
 
-        self::assertInstanceOf(
-            RemoteResource::class,
+        self::assertRemoteResourceSame(
+            $this->remoteResource,
             $variation->getRemoteResource(),
-        );
-
-        self::assertSame(
-            $this->remoteResource->getId(),
-            $variation->getRemoteResource()->getId(),
-        );
-
-        self::assertSame(
-            $this->remoteResource->getRemoteId(),
-            $variation->getRemoteResource()->getRemoteId(),
-        );
-
-        self::assertSame(
-            $this->remoteResource->getUrl(),
-            $variation->getRemoteResource()->getUrl(),
         );
 
         self::assertSame(

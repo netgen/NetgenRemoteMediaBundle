@@ -1,0 +1,123 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Netgen\RemoteMedia\Tests;
+
+use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
+use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use PHPUnit\Framework\TestCase;
+
+abstract class AbstractTest extends TestCase
+{
+    public static function assertRemoteResourceSame(RemoteResource $expected, RemoteResource $actual): void
+    {
+        self::assertSame(
+            $expected->getId(),
+            $actual->getId(),
+        );
+
+        self::assertSame(
+            $expected->getRemoteId(),
+            $actual->getRemoteId(),
+        );
+
+        self::assertSame(
+            $expected->getType(),
+            $actual->getType(),
+        );
+
+        self::assertSame(
+            $expected->getUrl(),
+            $actual->getUrl(),
+        );
+
+        self::assertSame(
+            $expected->getSize(),
+            $actual->getSize(),
+        );
+
+        self::assertSame(
+            $expected->getAltText(),
+            $actual->getAltText(),
+        );
+
+        self::assertSame(
+            $expected->getCaption(),
+            $actual->getCaption(),
+        );
+
+        self::assertSame(
+            $expected->getTags(),
+            $actual->getTags(),
+        );
+
+        self::assertSame(
+            $expected->getMetadata(),
+            $actual->getMetadata(),
+        );
+
+        self::assertSame(
+            $expected->getCreatedAt(),
+            $actual->getCreatedAt(),
+        );
+
+        self::assertSame(
+            $expected->getUpdatedAt(),
+            $actual->getUpdatedAt(),
+        );
+    }
+
+    public static function assertRemoteResourceLocationSame(RemoteResourceLocation $expected, RemoteResourceLocation $actual): void
+    {
+        self::assertRemoteResourceSame(
+            $expected->getRemoteResource(),
+            $actual->getRemoteResource(),
+        );
+
+        self::assertSame(
+            $expected->getCropSettings(),
+            $actual->getCropSettings(),
+        );
+    }
+
+    public static function assertRemoteResourceVariationSame(RemoteResourceVariation $expected, RemoteResourceVariation $actual): void
+    {
+        self::assertRemoteResourceSame(
+            $expected->getRemoteResource(),
+            $actual->getRemoteResource(),
+        );
+
+        self::assertSame(
+            $expected->getUrl(),
+            $actual->getUrl(),
+        );
+    }
+
+    public static function assertSearchResultSame(Result $expected, Result $actual): void
+    {
+        self::assertSame(
+            $expected->getNextCursor(),
+            $actual->getNextCursor(),
+        );
+
+        self::assertSame(
+            $expected->getTotalCount(),
+            $actual->getTotalCount(),
+        );
+
+        self::assertSame(
+            count($expected->getResources()),
+            count($actual->getResources()),
+        );
+
+        foreach ($expected->getResources() as $key => $resource) {
+            self::assertRemoteResourceSame(
+                $expected->getResources()[$key],
+                $actual->getResources()[$key],
+            );
+        }
+    }
+}

@@ -21,14 +21,14 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as Resour
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 
 use function count;
 use function json_encode;
 
-class CloudinaryApiGatewayTest extends TestCase
+class CloudinaryApiGatewayTest extends AbstractTest
 {
     protected const CLOUD_NAME = 'testcloud';
 
@@ -436,26 +436,9 @@ class CloudinaryApiGatewayTest extends TestCase
             ->with($cloudinaryResponse)
             ->willReturn($remoteResource);
 
-        $resource = $this->apiGateway->get($remoteId);
-
-        self::assertInstanceOf(
-            RemoteResource::class,
-            $resource,
-        );
-
-        self::assertSame(
-            $remoteResource->getRemoteId(),
-            $resource->getRemoteId(),
-        );
-
-        self::assertSame(
-            $remoteResource->getType(),
-            $resource->getType(),
-        );
-
-        self::assertSame(
-            $remoteResource->getUrl(),
-            $resource->getUrl(),
+        self::assertRemoteResourceSame(
+            $remoteResource,
+            $this->apiGateway->get($remoteId),
         );
     }
 
@@ -479,7 +462,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->willThrowException(new Api\NotFound());
 
         self::expectException(RemoteResourceNotFoundException::class);
-        self::expectExceptionMessage('Remote resource with ID \'upload|image|folder/test_image.jpg\' not found.');
+        self::expectExceptionMessage('Remote resource with ID "upload|image|folder/test_image.jpg" not found.');
 
         $this->apiGateway->get($remoteId);
     }
@@ -569,7 +552,17 @@ class CloudinaryApiGatewayTest extends TestCase
             'folders' => ['test_folder'],
         ]);
 
-        $searchResult = new Result(200, '123', [new RemoteResource()]);
+        $searchResult = new Result(
+            200,
+            '123',
+            [
+                new RemoteResource([
+                    'remoteId' => 'upload|image|test.jpg',
+                    'type' => 'image',
+                    'url' => 'https://cloudinary.com/test/upload/image/test.jpg',
+                ]),
+            ],
+        );
 
         $this->searchResultFactoryMock
             ->expects(self::once())
@@ -577,31 +570,9 @@ class CloudinaryApiGatewayTest extends TestCase
             ->with($apiResponse)
             ->willReturn($searchResult);
 
-        $result = $this->apiGateway->search($query);
-
-        self::assertInstanceOf(
-            Result::class,
-            $result,
-        );
-
-        self::assertSame(
-            $searchResult->getTotalCount(),
-            $result->getTotalCount(),
-        );
-
-        self::assertSame(
-            $searchResult->getNextCursor(),
-            $result->getNextCursor(),
-        );
-
-        self::assertSame(
-            count($searchResult->getResources()),
-            count($result->getResources()),
-        );
-
-        self::assertContainsOnlyInstancesOf(
-            RemoteResource::class,
-            $result->getResources(),
+        self::assertSearchResultSame(
+            $searchResult,
+            $this->apiGateway->search($query),
         );
     }
 
@@ -653,7 +624,17 @@ class CloudinaryApiGatewayTest extends TestCase
             'nextCursor' => $nextCursor,
         ]);
 
-        $searchResult = new Result(200, '123', [new RemoteResource()]);
+        $searchResult = new Result(
+            200,
+            '123',
+            [
+                new RemoteResource([
+                    'remoteId' => 'upload|image|test.jpg',
+                    'type' => 'image',
+                    'url' => 'https://cloudinary.com/test/upload/image/test.jpg',
+                ]),
+            ],
+        );
 
         $this->searchResultFactoryMock
             ->expects(self::once())
@@ -661,31 +642,9 @@ class CloudinaryApiGatewayTest extends TestCase
             ->with($apiResponse)
             ->willReturn($searchResult);
 
-        $result = $this->apiGateway->search($query);
-
-        self::assertInstanceOf(
-            Result::class,
-            $result,
-        );
-
-        self::assertSame(
-            $searchResult->getTotalCount(),
-            $result->getTotalCount(),
-        );
-
-        self::assertSame(
-            $searchResult->getNextCursor(),
-            $result->getNextCursor(),
-        );
-
-        self::assertSame(
-            count($searchResult->getResources()),
-            count($result->getResources()),
-        );
-
-        self::assertContainsOnlyInstancesOf(
-            RemoteResource::class,
-            $result->getResources(),
+        self::assertSearchResultSame(
+            $searchResult,
+            $this->apiGateway->search($query),
         );
     }
 
