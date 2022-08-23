@@ -265,16 +265,17 @@ abstract class AbstractProvider implements ProviderInterface
         return $this->internalBuildVideoThumbnail($resource, $transformations, $startOffset);
     }
 
-    public function generateHtmlTag(RemoteResource $resource, array $htmlAttributes = []): string
+    public function generateHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false): string
     {
-        return $this->generateRawVariationHtmlTag($resource, [], $htmlAttributes);
+        return $this->generateRawVariationHtmlTag($resource, [], $htmlAttributes, $forceVideo);
     }
 
     public function generateVariationHtmlTag(
         RemoteResourceLocation $location,
         string $variationGroup,
         string $variationName,
-        array $htmlAttributes = []
+        array $htmlAttributes = [],
+        bool $forceVideo = false
     ): string {
         $transformations = $this->variationResolver->processConfiguredVariation(
             $location,
@@ -283,11 +284,15 @@ abstract class AbstractProvider implements ProviderInterface
             $variationName,
         );
 
-        return $this->generateRawVariationHtmlTag($location->getRemoteResource(), $transformations, $htmlAttributes);
+        return $this->generateRawVariationHtmlTag($location->getRemoteResource(), $transformations, $htmlAttributes, $forceVideo);
     }
 
-    public function generateRawVariationHtmlTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
-    {
+    public function generateRawVariationHtmlTag(
+        RemoteResource $resource,
+        array $transformations = [],
+        array $htmlAttributes = [],
+        bool $forceVideo = false
+    ): string {
         switch ($resource->getType()) {
             case RemoteResource::TYPE_IMAGE:
                 return $this->generatePictureTag($resource, $transformations, $htmlAttributes);
@@ -296,7 +301,9 @@ abstract class AbstractProvider implements ProviderInterface
                 return $this->generateVideoTag($resource, $transformations, $htmlAttributes);
 
             case RemoteResource::TYPE_AUDIO:
-                return $this->generateAudioTag($resource, $transformations, $htmlAttributes);
+                return $forceVideo
+                    ? $this->generateVideoTag($resource, $transformations, $htmlAttributes)
+                    : $this->generateAudioTag($resource, $transformations, $htmlAttributes);
 
             case RemoteResource::TYPE_DOCUMENT:
                 return $this->generateDocumentTag($resource, $transformations, $htmlAttributes);
