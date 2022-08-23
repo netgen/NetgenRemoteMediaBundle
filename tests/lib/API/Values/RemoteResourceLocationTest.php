@@ -8,9 +8,9 @@ use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\CropSettingsNotFoundException;
-use PHPUnit\Framework\TestCase;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 
-final class RemoteResourceLocationTest extends TestCase
+final class RemoteResourceLocationTest extends AbstractTest
 {
     /**
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
@@ -23,6 +23,8 @@ final class RemoteResourceLocationTest extends TestCase
     {
         $resource = new RemoteResource([
             'remoteId' => 'test_remote_id',
+            'type' => 'raw',
+            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
         ]);
 
         $location = new RemoteResourceLocation(
@@ -36,14 +38,9 @@ final class RemoteResourceLocationTest extends TestCase
 
         self::assertNull($location->getId());
 
-        self::assertInstanceOf(
-            RemoteResource::class,
+        self::assertRemoteResourceSame(
+            $resource,
             $location->getRemoteResource(),
-        );
-
-        self::assertSame(
-            'test_remote_id',
-            $location->getRemoteResource()->getRemoteId(),
         );
 
         self::assertCount(

@@ -22,11 +22,11 @@ use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Exception\NotSupportedException;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-final class AbstractProviderTest extends TestCase
+final class AbstractProviderTest extends AbstractTest
 {
     private AbstractProvider $provider;
 
@@ -384,7 +384,7 @@ final class AbstractProviderTest extends TestCase
 
         $returnedResource = $this->provider->load(15);
 
-        $this->assertRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $remoteResource,
             $returnedResource,
         );
@@ -430,7 +430,7 @@ final class AbstractProviderTest extends TestCase
 
         $returnedResource = $this->provider->loadByRemoteId('test_image.jpg');
 
-        $this->assertRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $remoteResource,
             $returnedResource,
         );
@@ -477,7 +477,7 @@ final class AbstractProviderTest extends TestCase
             ->expects(self::once())
             ->method('flush');
 
-        $this->assertRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $remoteResource,
             $this->provider->store($remoteResource),
         );
@@ -511,7 +511,7 @@ final class AbstractProviderTest extends TestCase
             ->expects(self::once())
             ->method('flush');
 
-        $this->assertRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $remoteResource,
             $this->provider->store($remoteResource),
         );
@@ -569,7 +569,7 @@ final class AbstractProviderTest extends TestCase
             ->expects(self::once())
             ->method('flush');
 
-        $this->assertRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $newRemoteResource,
             $this->provider->store($remoteResource),
         );
@@ -666,7 +666,7 @@ final class AbstractProviderTest extends TestCase
 
         $returnedLocation = $this->provider->loadLocation(30);
 
-        $this->assertRemoteResourceLocationSame(
+        self::assertRemoteResourceLocationSame(
             $location,
             $returnedLocation,
         );
@@ -783,7 +783,7 @@ final class AbstractProviderTest extends TestCase
             ->expects(self::once())
             ->method('flush');
 
-        $this->assertRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $resource,
             $this->provider->upload($struct),
         );
@@ -841,7 +841,7 @@ final class AbstractProviderTest extends TestCase
             ->with($resource, $transformations)
             ->willReturn($variation);
 
-        $this->assertRemoteResourceVariationSame(
+        self::assertRemoteResourceVariationSame(
             $variation,
             $this->provider->buildVariation($location, 'article', 'small'),
         );
@@ -882,7 +882,7 @@ final class AbstractProviderTest extends TestCase
             ->with($resource, $transformations)
             ->willReturn($variation);
 
-        $this->assertRemoteResourceVariationSame(
+        self::assertRemoteResourceVariationSame(
             $variation,
             $this->provider->buildRawVariation($resource, $transformations),
         );
@@ -913,7 +913,7 @@ final class AbstractProviderTest extends TestCase
             ->with($resource, [], 15)
             ->willReturn($variation);
 
-        $this->assertRemoteResourceVariationSame(
+        self::assertRemoteResourceVariationSame(
             $variation,
             $this->provider->buildVideoThumbnail($resource, 15),
         );
@@ -959,7 +959,7 @@ final class AbstractProviderTest extends TestCase
             ->with($resource, $transformations, 15)
             ->willReturn($variation);
 
-        $this->assertRemoteResourceVariationSame(
+        self::assertRemoteResourceVariationSame(
             $variation,
             $this->provider->buildVideoThumbnailVariation($location, 'article', 'jpeg', 15),
         );
@@ -992,7 +992,7 @@ final class AbstractProviderTest extends TestCase
             ->with($resource, $transformations, null)
             ->willReturn($variation);
 
-        $this->assertRemoteResourceVariationSame(
+        self::assertRemoteResourceVariationSame(
             $variation,
             $this->provider->buildVideoThumbnailRawVariation($resource, $transformations),
         );
@@ -1118,6 +1118,40 @@ final class AbstractProviderTest extends TestCase
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
      */
+    public function testGenerateRawVariationHtmlTagAudioForceVideo(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'example.mp3',
+            'url' => 'https://cloudinary.com/upload/video/example.mp3',
+            'type' => 'audio',
+            'size' => 120,
+        ]);
+
+        $transformations = [['fetch_format' => 'mp3']];
+
+        $htmlAttributes = [
+            'width' => '100%',
+        ];
+
+        $tag = '<video width="100%"><source src="https://cloudinary.com/upload/video/example.mp3"></video>';
+
+        $this->provider
+            ->expects(self::once())
+            ->method('generateVideoTag')
+            ->with($resource, $transformations, $htmlAttributes)
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->provider->generateRawVariationHtmlTag($resource, $transformations, $htmlAttributes, true),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
+     */
     public function testGenerateRawVariationHtmlTagDocument(): void
     {
         $resource = new RemoteResource([
@@ -1169,90 +1203,6 @@ final class AbstractProviderTest extends TestCase
         self::assertSame(
             $tag,
             $this->provider->generateRawVariationHtmlTag($resource, [], $htmlAttributes),
-        );
-    }
-
-    private function assertRemoteResourceSame(RemoteResource $a, RemoteResource $b): void
-    {
-        self::assertSame(
-            $a->getId(),
-            $b->getId(),
-        );
-
-        self::assertSame(
-            $a->getRemoteId(),
-            $b->getRemoteId(),
-        );
-
-        self::assertSame(
-            $a->getType(),
-            $b->getType(),
-        );
-
-        self::assertSame(
-            $a->getUrl(),
-            $b->getUrl(),
-        );
-
-        self::assertSame(
-            $a->getSize(),
-            $b->getSize(),
-        );
-
-        self::assertSame(
-            $a->getAltText(),
-            $b->getAltText(),
-        );
-
-        self::assertSame(
-            $a->getCaption(),
-            $b->getCaption(),
-        );
-
-        self::assertSame(
-            $a->getTags(),
-            $b->getTags(),
-        );
-
-        self::assertSame(
-            $a->getMetadata(),
-            $b->getMetadata(),
-        );
-
-        self::assertSame(
-            $a->getCreatedAt(),
-            $b->getCreatedAt(),
-        );
-
-        self::assertSame(
-            $a->getUpdatedAt(),
-            $b->getUpdatedAt(),
-        );
-    }
-
-    private function assertRemoteResourceLocationSame(RemoteResourceLocation $a, RemoteResourceLocation $b): void
-    {
-        $this->assertRemoteResourceSame(
-            $a->getRemoteResource(),
-            $b->getRemoteResource(),
-        );
-
-        self::assertSame(
-            $a->getCropSettings(),
-            $b->getCropSettings(),
-        );
-    }
-
-    private function assertRemoteResourceVariationSame(RemoteResourceVariation $a, RemoteResourceVariation $b): void
-    {
-        $this->assertRemoteResourceSame(
-            $a->getRemoteResource(),
-            $b->getRemoteResource(),
-        );
-
-        self::assertSame(
-            $a->getUrl(),
-            $b->getUrl(),
         );
     }
 }

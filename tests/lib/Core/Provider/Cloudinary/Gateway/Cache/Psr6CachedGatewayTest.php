@@ -12,8 +12,8 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
@@ -22,7 +22,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 use function count;
 use function sprintf;
 
-final class Psr6CachedGatewayTest extends TestCase
+final class Psr6CachedGatewayTest extends AbstractTest
 {
     private const CACHE_TTL = 7200;
 
@@ -705,26 +705,9 @@ final class Psr6CachedGatewayTest extends TestCase
             ->method('get')
             ->willReturn($remoteResource);
 
-        $resource = $this->taggableCachedGateway->get($remoteId);
-
-        self::assertInstanceOf(
-            RemoteResource::class,
-            $resource,
-        );
-
-        self::assertSame(
-            $remoteResource->getRemoteId(),
-            $resource->getRemoteId(),
-        );
-
-        self::assertSame(
-            $remoteResource->getType(),
-            $resource->getType(),
-        );
-
-        self::assertSame(
-            $remoteResource->getUrl(),
-            $resource->getUrl(),
+        self::assertRemoteResourceSame(
+            $remoteResource,
+            $this->taggableCachedGateway->get($remoteId),
         );
     }
 
@@ -790,26 +773,9 @@ final class Psr6CachedGatewayTest extends TestCase
             ->method('save')
             ->with($cacheItem);
 
-        $resource = $this->taggableCachedGateway->get($remoteId);
-
-        self::assertInstanceOf(
-            RemoteResource::class,
-            $resource,
-        );
-
-        self::assertSame(
-            $remoteResource->getRemoteId(),
-            $resource->getRemoteId(),
-        );
-
-        self::assertSame(
-            $remoteResource->getType(),
-            $resource->getType(),
-        );
-
-        self::assertSame(
-            $remoteResource->getUrl(),
-            $resource->getUrl(),
+        self::assertRemoteResourceSame(
+            $remoteResource,
+            $this->taggableCachedGateway->get($remoteId),
         );
     }
 
@@ -865,26 +831,9 @@ final class Psr6CachedGatewayTest extends TestCase
             ->method('save')
             ->with($cacheItem);
 
-        $resource = $this->nonTaggableCachedGateway->get($remoteId);
-
-        self::assertInstanceOf(
-            RemoteResource::class,
-            $resource,
-        );
-
-        self::assertSame(
-            $remoteResource->getRemoteId(),
-            $resource->getRemoteId(),
-        );
-
-        self::assertSame(
-            $remoteResource->getType(),
-            $resource->getType(),
-        );
-
-        self::assertSame(
-            $remoteResource->getUrl(),
-            $resource->getUrl(),
+        self::assertRemoteResourceSame(
+            $remoteResource,
+            $this->nonTaggableCachedGateway->get($remoteId),
         );
     }
 
@@ -943,21 +892,9 @@ final class Psr6CachedGatewayTest extends TestCase
             ->with($fileUri, $options)
             ->willReturn($resource);
 
-        $returnedResource = $this->nonTaggableCachedGateway->upload($fileUri, $options);
-
-        self::assertInstanceOf(
-            RemoteResource::class,
-            $returnedResource,
-        );
-
-        self::assertSame(
-            'upload|image|test_image.jpg',
-            $returnedResource->getRemoteId(),
-        );
-
-        self::assertSame(
-            'image',
-            $returnedResource->getType(),
+        self::assertRemoteResourceSame(
+            $resource,
+            $this->nonTaggableCachedGateway->upload($fileUri, $options),
         );
     }
 
@@ -1053,31 +990,9 @@ final class Psr6CachedGatewayTest extends TestCase
             'folders' => ['test_folder'],
         ]);
 
-        $result = $this->taggableCachedGateway->search($query);
-
-        self::assertInstanceOf(
-            Result::class,
-            $result,
-        );
-
-        self::assertSame(
-            $searchResult->getTotalCount(),
-            $result->getTotalCount(),
-        );
-
-        self::assertSame(
-            $searchResult->getNextCursor(),
-            $result->getNextCursor(),
-        );
-
-        self::assertSame(
-            count($searchResult->getResources()),
-            count($result->getResources()),
-        );
-
-        self::assertContainsOnlyInstancesOf(
-            RemoteResource::class,
-            $result->getResources(),
+        self::assertSearchResultSame(
+            $searchResult,
+            $this->taggableCachedGateway->search($query),
         );
     }
 
@@ -1140,31 +1055,9 @@ final class Psr6CachedGatewayTest extends TestCase
             ->method('save')
             ->with($cacheItem);
 
-        $result = $this->taggableCachedGateway->search($query);
-
-        self::assertInstanceOf(
-            Result::class,
-            $result,
-        );
-
-        self::assertSame(
-            $searchResult->getTotalCount(),
-            $result->getTotalCount(),
-        );
-
-        self::assertSame(
-            $searchResult->getNextCursor(),
-            $result->getNextCursor(),
-        );
-
-        self::assertSame(
-            count($searchResult->getResources()),
-            count($result->getResources()),
-        );
-
-        self::assertContainsOnlyInstancesOf(
-            RemoteResource::class,
-            $result->getResources(),
+        self::assertSearchResultSame(
+            $searchResult,
+            $this->taggableCachedGateway->search($query),
         );
     }
 
@@ -1219,31 +1112,9 @@ final class Psr6CachedGatewayTest extends TestCase
             ->method('save')
             ->with($cacheItem);
 
-        $result = $this->nonTaggableCachedGateway->search($query);
-
-        self::assertInstanceOf(
-            Result::class,
-            $result,
-        );
-
-        self::assertSame(
-            $searchResult->getTotalCount(),
-            $result->getTotalCount(),
-        );
-
-        self::assertSame(
-            $searchResult->getNextCursor(),
-            $result->getNextCursor(),
-        );
-
-        self::assertSame(
-            count($searchResult->getResources()),
-            count($result->getResources()),
-        );
-
-        self::assertContainsOnlyInstancesOf(
-            RemoteResource::class,
-            $result->getResources(),
+        self::assertSearchResultSame(
+            $searchResult,
+            $this->nonTaggableCachedGateway->search($query),
         );
     }
 
