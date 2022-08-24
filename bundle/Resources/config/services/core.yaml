@@ -69,3 +69,7 @@ services:
 
     netgen_remote_media.factory.date_time:
         class: Netgen\RemoteMedia\Core\Factory\DateTime
+
+    netgen_remote_media.provider.cloudinary.verifier.controller.signature:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature
+        public: false
