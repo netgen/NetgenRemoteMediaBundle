@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
-use Cloudinary\Api\Response;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource as RemoteResourceValue;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
@@ -28,7 +27,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         $this->validateData($data);
 
         return new RemoteResourceValue([
-            'remoteId' => CloudinaryRemoteId::fromCloudinaryResponse($data)->getRemoteId(),
+            'remoteId' => CloudinaryRemoteId::fromCloudinaryData($data)->getRemoteId(),
             'type' => $this->resolveResourceType($data),
             'url' => $data['secure_url'] ?? $data['url'],
             'size' => $data['bytes'] ?? 0,
@@ -46,16 +45,12 @@ final class RemoteResource implements RemoteResourceFactoryInterface
      */
     private function validateData($data): void
     {
-        if (!$data instanceof Response) {
-            throw new InvalidDataException('CloudinaryRemoteResourceFactory requires "Cloudinary\Api\Response" as data, "' . gettype($data) . '" provided.');
-        }
-
         if (($data['public_id'] ?? null) === null) {
             throw new InvalidDataException('Missing required "public_id" property!');
         }
     }
 
-    private function resolveResourceType(Response $data): string
+    private function resolveResourceType(array $data): string
     {
         $type = $data['resource_type'] ?? RemoteResourceValue::TYPE_OTHER;
         $format = $data['format'] ?? null;
@@ -63,7 +58,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         return $this->resourceTypeConverter->fromCloudinaryData($type, $format);
     }
 
-    private function resolveAltText(Response $data): ?string
+    private function resolveAltText(array $data): ?string
     {
         if (($data['context']['custom']['alt_text'] ?? null) !== null) {
             return $data['context']['custom']['alt_text'];
@@ -75,7 +70,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
     /**
      * @return array<string, mixed>
      */
-    private function resolveMetaData(Response $data): array
+    private function resolveMetaData(array $data): array
     {
         $supportedMetaData = [
             'version',

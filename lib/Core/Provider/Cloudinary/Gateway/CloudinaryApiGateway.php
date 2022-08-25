@@ -174,7 +174,7 @@ final class CloudinaryApiGateway implements GatewayInterface
                 ],
             );
 
-            return $this->remoteResourceFactory->create($response);
+            return $this->remoteResourceFactory->create((array) $response);
         } catch (CloudinaryApi\NotFound $e) {
             throw new RemoteResourceNotFoundException($remoteId->getRemoteId());
         }
@@ -184,7 +184,7 @@ final class CloudinaryApiGateway implements GatewayInterface
     {
         $response = $this->cloudinaryUploader->upload($fileUri, $options);
 
-        return $this->remoteResourceFactory->create($response);
+        return $this->remoteResourceFactory->create((array) $response);
     }
 
     public function update(CloudinaryRemoteId $remoteId, array $options): void

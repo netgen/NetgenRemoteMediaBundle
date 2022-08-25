@@ -25,7 +25,6 @@ use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
-use function count;
 use function json_encode;
 
 class CloudinaryApiGatewayTest extends AbstractTest
@@ -101,9 +100,9 @@ class CloudinaryApiGatewayTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::formatBytes
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::initCloudinary
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::setServices
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::formatBytes
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::usage
      */
     public function testUsage(): void
