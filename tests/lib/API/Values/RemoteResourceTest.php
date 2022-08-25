@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use PHPUnit\Framework\TestCase;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 
-final class RemoteResourceTest extends TestCase
+final class RemoteResourceTest extends AbstractTest
 {
     /**
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getAltText
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getCaption
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadata
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadataProperty
@@ -21,8 +23,6 @@ final class RemoteResourceTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getUrl
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetadataProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getCaption
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getAltText
      */
     public function testConstruct(): void
     {
@@ -113,6 +113,68 @@ final class RemoteResourceTest extends TestCase
         self::assertTrue($resource->hasMetaDataProperty('version'));
         self::assertFalse($resource->hasMetaDataProperty('non_existing_parameter'));
         self::assertNull($resource->getMetaDataProperty('non_existing_parameter'));
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setAltText
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setCaption
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setMetadata
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setRemoteId
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setSize
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setTags
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setType
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setUrl
+     */
+    public function testSetters(): void
+    {
+        $expected = new RemoteResource([
+            'id' => 56,
+            'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
+            'type' => 'image',
+            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+            'size' => 120253,
+            'altText' => 'alt text',
+            'caption' => 'caption text',
+            'tags' => ['tag1'],
+            'metadata' => [
+                'version' => '1371995958',
+                'signature' => 'f8645b000be7d717599affc89a068157e4748276',
+                'width' => 864,
+                'height' => 576,
+                'format' => 'jpg',
+                'created_at' => '2013-06-23T13:59:18Z',
+                'etag' => 'test_tag',
+                'overwritten' => 'true',
+            ],
+            'test' => 'test',
+        ]);
+
+        $resource = new RemoteResource(['id' => 56]);
+
+        $resource
+            ->setRemoteId('upload|image|c87hg9xfxrd4itiim3t0')
+            ->setType('image')
+            ->setUrl('https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg')
+            ->setSize(120253)
+            ->setAltText('alt text')
+            ->setCaption('caption text')
+            ->setTags(['tag1'])
+            ->setMetadata([
+                'version' => '1371995958',
+                'signature' => 'f8645b000be7d717599affc89a068157e4748276',
+                'width' => 864,
+                'height' => 576,
+                'format' => 'jpg',
+                'created_at' => '2013-06-23T13:59:18Z',
+                'etag' => 'test_tag',
+                'overwritten' => 'true',
+            ]);
+
+        self::assertRemoteResourceSame(
+            $expected,
+            $resource,
+        );
     }
 
     /**

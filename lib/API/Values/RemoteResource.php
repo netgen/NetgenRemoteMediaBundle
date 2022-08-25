@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\API\Values;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
 use function array_diff;
 use function array_key_exists;
 use function in_array;
@@ -80,7 +79,7 @@ final class RemoteResource
     /**
      * @var \Doctrine\ORM\PersistentCollection|array
      *
-     * @ORM\OneToMany(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation", mappedBy="remote_resource_id", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation", mappedBy="remoteResource", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     public $locations;
 
@@ -108,9 +107,23 @@ final class RemoteResource
         return $this->remoteId;
     }
 
+    public function setRemoteId(string $remoteId): self
+    {
+        $this->remoteId = $remoteId;
+
+        return $this;
+    }
+
     public function getType(): string
     {
         return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
     public function getUrl(): string
@@ -118,9 +131,23 @@ final class RemoteResource
         return $this->url;
     }
 
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
     public function getSize(): int
     {
         return $this->size;
+    }
+
+    public function setSize(int $size): self
+    {
+        $this->size = $size;
+
+        return $this;
     }
 
     public function getAltText(): ?string
@@ -128,9 +155,23 @@ final class RemoteResource
         return $this->altText;
     }
 
+    public function setAltText(?string $altText): self
+    {
+        $this->altText = $altText;
+
+        return $this;
+    }
+
     public function getCaption(): ?string
     {
         return $this->caption;
+    }
+
+    public function setCaption(?string $caption): self
+    {
+        $this->caption = $caption;
+
+        return $this;
     }
 
     /**
@@ -141,6 +182,15 @@ final class RemoteResource
         return $this->tags;
     }
 
+    /**
+     * @param string[] $tags
+     */
+    public function setTags(array $tags): self
+    {
+        $this->tags = $tags;
+
+        return $this;
+    }
 
     public function hasTag(string $tag): bool
     {
@@ -169,6 +219,15 @@ final class RemoteResource
         return $this->metadata;
     }
 
+    /**
+     * @param array<string,mixed> $metadata
+     */
+    public function setMetadata(array $metadata): self
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
 
     public function hasMetadataProperty(string $name): bool
     {

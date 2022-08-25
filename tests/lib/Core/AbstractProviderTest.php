@@ -556,7 +556,7 @@ final class AbstractProviderTest extends AbstractTest
             ->willReturn($oldRemoteResource);
 
         $this->dateTimeFactory
-            ->expects(self::once())
+            ->expects(self::exactly(2))
             ->method('createCurrent')
             ->willReturn($dateTime);
 

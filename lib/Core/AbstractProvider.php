@@ -141,6 +141,8 @@ abstract class AbstractProvider implements ProviderInterface
     public function store(RemoteResource $resource): RemoteResource
     {
         if ($resource->getId()) {
+            $resource->setUpdatedAt($this->dateTimeFactory->createCurrent());
+
             $this->entityManager->persist($resource);
             $this->entityManager->flush();
 
@@ -156,20 +158,15 @@ abstract class AbstractProvider implements ProviderInterface
             return $resource;
         }
 
-        $existingResource = new RemoteResource([
-            'id' => $existingResource->getId(),
-            'remoteId' => $existingResource->getRemoteId(),
-            'type' => $resource->getType(),
-            'url' => $resource->getUrl(),
-            'size' => $resource->getSize(),
-            'altText' => $resource->getAltText(),
-            'caption' => $resource->getCaption(),
-            'tags' => $resource->getTags(),
-            'metadata' => $resource->getMetadata(),
-            'createdAt' => $existingResource->getCreatedAt(),
-            'updatedAt' => $this->dateTimeFactory->createCurrent(),
-            'locations' => $existingResource->locations,
-        ]);
+        $existingResource
+            ->setType($resource->getType())
+            ->setUrl($resource->getUrl())
+            ->setSize($resource->getSize())
+            ->setAltText($resource->getAltText())
+            ->setCaption($resource->getCaption())
+            ->setTags($resource->getTags())
+            ->setMetadata($resource->getMetadata())
+            ->setUpdatedAt($this->dateTimeFactory->createCurrent());
 
         $this->entityManager->persist($existingResource);
         $this->entityManager->flush();
