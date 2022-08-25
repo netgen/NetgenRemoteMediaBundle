@@ -14,7 +14,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 use function count;
 
-final class SearchResultFactoryTest extends AbstractTest
+final class SearchResultTest extends AbstractTest
 {
     protected SearchResultFactoryInterface $searchResultFactory;
 
@@ -40,7 +40,7 @@ final class SearchResultFactoryTest extends AbstractTest
         $this->remoteResourceFactoryMock
             ->expects(self::exactly(count($data['resources'] ?? [])))
             ->method('create')
-            ->willReturn(new RemoteResource());
+            ->willReturnOnConsecutiveCalls(...$expectedResult->getResources());
 
         self::assertSearchResultSame(
             $expectedResult,
@@ -74,8 +74,16 @@ final class SearchResultFactoryTest extends AbstractTest
                     2,
                     'dsr943565kjosdf',
                     [
-                        new RemoteResource(),
-                        new RemoteResource(),
+                        new RemoteResource([
+                            'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
+                            'type' => 'image',
+                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                        ]),
+                        new RemoteResource([
+                            'remoteId' => 'upload|video|c87hg9xfxrd4defe3t0',
+                            'type' => 'video',
+                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4defe3t0.mp4',
+                        ]),
                     ],
                 ),
             ],
@@ -84,7 +92,7 @@ final class SearchResultFactoryTest extends AbstractTest
                     'total_count' => 1,
                     'resources' => [
                         [
-                            'public_id' => 'c87hg9xfxrd4itiim3t0',
+                            'public_id' => 'upload|image|c87hg9xfxrd4itiim3t0',
                             'resource_type' => 'image',
                             'type' => 'upload',
                             'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
@@ -95,7 +103,11 @@ final class SearchResultFactoryTest extends AbstractTest
                     1,
                     null,
                     [
-                        new RemoteResource(),
+                        new RemoteResource([
+                            'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
+                            'type' => 'image',
+                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                        ]),
                     ],
                 ),
             ],

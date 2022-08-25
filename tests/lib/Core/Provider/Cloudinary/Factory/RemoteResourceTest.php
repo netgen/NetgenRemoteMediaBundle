@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 
-use Cloudinary\Api\Response as CloudinaryApiResponse;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource as RemoteResourceFactory;
@@ -33,7 +32,7 @@ final class RemoteResourceTest extends TestCase
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
      * @dataProvider createDataProvider
      */
-    public function testCreateImage(CloudinaryApiResponse $cloudinaryResponse, RemoteResource $expectedResource): void
+    public function testCreateImage(array $cloudinaryResponse, RemoteResource $expectedResource): void
     {
         $resource = $this->remoteResourceFactory->create($cloudinaryResponse);
 
@@ -84,33 +83,19 @@ final class RemoteResourceTest extends TestCase
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
      */
-    public function testCreateInvalidData(): void
-    {
-        self::expectException(InvalidDataException::class);
-        self::expectExceptionMessage('CloudinaryRemoteResourceFactory requires "Cloudinary\Api\Response" as data, "string" provided.');
-
-        $this->remoteResourceFactory->create('test');
-    }
-
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
-     */
     public function testCreateMissingPublicId(): void
     {
         self::expectException(InvalidDataException::class);
         self::expectExceptionMessage('Missing required "public_id" property!');
 
-        $this->remoteResourceFactory->create(
-            $this->createCloudinaryApiResponseFromArray(['test' => 'test']),
-        );
+        $this->remoteResourceFactory->create(['test' => 'test']);
     }
 
     public function createDataProvider(): array
     {
         return [
             [
-                $this->createCloudinaryApiResponseFromArray([
+                [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -137,7 +122,7 @@ final class RemoteResourceTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ]),
+                ],
                 new RemoteResource([
                     'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
                     'type' => 'image',
@@ -159,7 +144,7 @@ final class RemoteResourceTest extends TestCase
                 ]),
             ],
             [
-                $this->createCloudinaryApiResponseFromArray([
+                [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -170,7 +155,7 @@ final class RemoteResourceTest extends TestCase
                     'type' => 'upload',
                     'url' => 'http://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
                     'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
-                ]),
+                ],
                 new RemoteResource([
                     'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
                     'type' => 'document',
@@ -188,7 +173,7 @@ final class RemoteResourceTest extends TestCase
                 ]),
             ],
             [
-                $this->createCloudinaryApiResponseFromArray([
+                [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -212,7 +197,7 @@ final class RemoteResourceTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ]),
+                ],
                 new RemoteResource([
                     'remoteId' => 'upload|video|c87hg9xfxrd4itiim3t0',
                     'type' => 'video',
@@ -233,7 +218,7 @@ final class RemoteResourceTest extends TestCase
                 ]),
             ],
             [
-                $this->createCloudinaryApiResponseFromArray([
+                [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -253,7 +238,7 @@ final class RemoteResourceTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ]),
+                ],
                 new RemoteResource([
                     'remoteId' => 'upload|video|c87hg9xfxrd4itiim3t0',
                     'type' => 'video',
@@ -273,7 +258,7 @@ final class RemoteResourceTest extends TestCase
                 ]),
             ],
             [
-                $this->createCloudinaryApiResponseFromArray([
+                [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -290,7 +275,7 @@ final class RemoteResourceTest extends TestCase
                         'variation1',
                         'variation2',
                     ],
-                ]),
+                ],
                 new RemoteResource([
                     'remoteId' => 'private|video|c87hg9xfxrd4itiim3t0',
                     'type' => 'audio',
@@ -308,7 +293,7 @@ final class RemoteResourceTest extends TestCase
                 ]),
             ],
             [
-                $this->createCloudinaryApiResponseFromArray([
+                [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -318,7 +303,7 @@ final class RemoteResourceTest extends TestCase
                     'bytes' => 12025,
                     'type' => 'private',
                     'secure_url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.zip',
-                ]),
+                ],
                 new RemoteResource([
                     'remoteId' => 'private|raw|c87hg9xfxrd4itiim3t0',
                     'type' => 'other',
@@ -334,18 +319,5 @@ final class RemoteResourceTest extends TestCase
                 ]),
             ],
         ];
-    }
-
-    private function createCloudinaryApiResponseFromArray(array $data): CloudinaryApiResponse
-    {
-        return new CloudinaryApiResponse((object) [
-            'body' => json_encode($data),
-            'responseCode' => 200,
-            'headers' => [
-                'X-FeatureRateLimit-Reset' => 'test',
-                'X-FeatureRateLimit-Limit' => 'test',
-                'X-FeatureRateLimit-Remaining' => 'test',
-            ],
-        ]);
     }
 }

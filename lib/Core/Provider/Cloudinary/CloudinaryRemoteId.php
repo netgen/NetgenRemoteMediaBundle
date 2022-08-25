@@ -18,19 +18,19 @@ final class CloudinaryRemoteId
 
     private string $resourceId;
 
-    private function __construct(string $type, string $resourceType, string $resourceId)
+    public function __construct(string $type, string $resourceType, string $resourceId)
     {
         $this->type = $type;
         $this->resourceType = $resourceType;
         $this->resourceId = $resourceId;
     }
 
-    public static function fromCloudinaryResponse(Response $response): self
+    public static function fromCloudinaryData(array $data): self
     {
         return new self(
-            $response['type'] ?? 'upload',
-            $response['resource_type'] ?? 'image',
-            $response['public_id'],
+            $data['type'] ?? 'upload',
+            $data['resource_type'] ?? 'image',
+            $data['public_id'],
         );
     }
 

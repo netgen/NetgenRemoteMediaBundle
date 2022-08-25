@@ -15,32 +15,23 @@ final class CloudinaryRemoteIdTest extends TestCase
 {
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromCloudinaryResponse
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromCloudinaryData
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getRemoteId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceId
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceType
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getType
      */
-    public function testFromCloudinaryResponse(): void
+    public function testFromCloudinaryData(): void
     {
-        $response = new stdClass();
-        $response->body = json_encode([
+        $data = [
             'public_id' => 'my_test_image.jpg',
             'resource_type' => 'image',
             'type' => 'upload',
             'secure_url' => 'https://cloudinary.com/cloudname/upload/image/my_test_image.jpg',
             'size' => 23456,
-        ]);
-        $response->responseCode = 200;
-        $response->headers = [
-            'X-FeatureRateLimit-Reset' => 'test',
-            'X-FeatureRateLimit-Limit' => 'test',
-            'X-FeatureRateLimit-Remaining' => 'test',
         ];
 
-        $response = new Response($response);
-
-        $remoteId = CloudinaryRemoteId::fromCloudinaryResponse($response);
+        $remoteId = CloudinaryRemoteId::fromCloudinaryData($data);
 
         self::assertSame(
             'upload|image|my_test_image.jpg',
