@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests;
 
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
@@ -77,10 +78,12 @@ abstract class AbstractTest extends TestCase
             $actual->getRemoteResource(),
         );
 
-        self::assertSame(
-            $expected->getCropSettings(),
-            $actual->getCropSettings(),
-        );
+        foreach ($expected->getCropSettings() as $key => $cropSettings) {
+            self::assertCropSettingsSame(
+                $expected->getCropSettings()[$key],
+                $actual->getCropSettings()[$key],
+            );
+        }
     }
 
     public static function assertRemoteResourceVariationSame(RemoteResourceVariation $expected, RemoteResourceVariation $actual): void
@@ -119,5 +122,33 @@ abstract class AbstractTest extends TestCase
                 $actual->getResources()[$key],
             );
         }
+    }
+
+    public static function assertCropSettingsSame(CropSettings $expected, CropSettings $actual): void
+    {
+        self::assertSame(
+            $expected->getVariationName(),
+            $actual->getVariationName(),
+        );
+
+        self::assertSame(
+            $expected->getWidth(),
+            $actual->getWidth(),
+        );
+
+        self::assertSame(
+            $expected->getHeight(),
+            $actual->getHeight(),
+        );
+
+        self::assertSame(
+            $expected->getX(),
+            $actual->getX(),
+        );
+
+        self::assertSame(
+            $expected->getY(),
+            $actual->getY(),
+        );
     }
 }

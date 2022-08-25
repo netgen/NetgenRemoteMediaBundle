@@ -53,19 +53,54 @@ final class RemoteResourceLocationTest extends AbstractTest
             $location->getCropSettings(),
         );
 
-        self::assertInstanceOf(
-            CropSettings::class,
+        self::assertCropSettingsSame(
+            new CropSettings('small', 50, 80, 800, 400),
+            $location->getCropSettingsForVariation('small'),
+        );
+
+        self::assertCropSettingsSame(
+            new CropSettings('medium', 30, 50, 1200, 600),
             $location->getCropSettingsForVariation('medium'),
         );
 
-        self::assertSame(
-            'small',
-            $location->getCropSettingsForVariation('small')->getVariationName(),
+        self::assertCropSettingsSame(
+            new CropSettings('large', 10, 25, 2000, 1000),
+            $location->getCropSettingsForVariation('large'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::setCropSettings
+     */
+    public function testSetCropSettings(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'test_remote_id',
+            'type' => 'raw',
+            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
+        ]);
+
+        $expected = new RemoteResourceLocation(
+            $resource,
+            [
+                new CropSettings('small', 50, 80, 800, 400),
+                new CropSettings('medium', 30, 50, 1200, 600),
+                new CropSettings('large', 10, 25, 2000, 1000),
+            ],
         );
 
-        self::assertSame(
-            1200,
-            $location->getCropSettingsForVariation('medium')->getWidth(),
+        $location = new RemoteResourceLocation($resource);
+
+        $location->setCropSettings([
+            new CropSettings('small', 50, 80, 800, 400),
+            new CropSettings('medium', 30, 50, 1200, 600),
+            new CropSettings('large', 10, 25, 2000, 1000),
+        ]);
+
+        self::assertRemoteResourceLocationSame(
+            $expected,
+            $location,
         );
     }
 

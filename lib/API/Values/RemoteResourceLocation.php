@@ -61,6 +61,16 @@ final class RemoteResourceLocation
     }
 
     /**
+     * @param \Netgen\RemoteMedia\API\Values\CropSettings[] $cropSettings
+     */
+    public function setCropSettings(array $cropSettings): self
+    {
+        $this->cropSettings = $cropSettings;
+
+        return $this;
+    }
+
+    /**
      * @throws \Netgen\RemoteMedia\Exception\CropSettingsNotFoundException
      */
     public function getCropSettingsForVariation(string $variationName): CropSettings
