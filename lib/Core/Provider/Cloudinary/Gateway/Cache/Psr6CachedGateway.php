@@ -8,6 +8,7 @@ use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CacheableGatewayInterface;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -21,7 +22,7 @@ use function implode;
 use function str_replace;
 use function trim;
 
-final class Psr6CachedGateway implements GatewayInterface
+final class Psr6CachedGateway implements CacheableGatewayInterface
 {
     public const PROJECT_KEY = 'ngremotemedia';
     public const PROVIDER_KEY = 'cloudinary';
