@@ -129,9 +129,14 @@ final class CloudinaryProvider extends AbstractProvider
 
     protected function internalListFolders(?Folder $parent = null): array
     {
-        return $parent instanceof Folder
-            ? $this->gateway->listSubFolders($parent->getPath())
-            : $this->gateway->listFolders();
+        return array_map(
+            function ($folderPath) {
+                return Folder::fromPath($folderPath);
+            },
+            $parent instanceof Folder
+                ? $this->gateway->listSubFolders($parent->getPath())
+                : $this->gateway->listFolders()
+        );
     }
 
     protected function internalCreateFolder(string $name, ?Folder $parent = null): Folder
