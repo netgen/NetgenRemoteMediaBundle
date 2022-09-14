@@ -306,7 +306,7 @@ abstract class AbstractProvider implements ProviderInterface
                 return $this->generateDocumentTag($resource, $transformations, $htmlAttributes);
 
             default:
-                return $this->generateDownloadTag($resource, $transformations, $htmlAttributes);
+                return $this->generateDownloadTag($resource, $htmlAttributes);
         }
     }
 

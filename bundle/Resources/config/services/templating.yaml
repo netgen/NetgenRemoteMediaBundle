@@ -8,6 +8,5 @@ services:
         class: Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime
         arguments:
             - "@netgen_remote_media.provider"
-            - "@netgen_remote_media.variation.resolver"
         tags:
             - { name: twig.runtime }
