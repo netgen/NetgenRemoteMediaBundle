@@ -5,36 +5,27 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Templating\Twig\Runtime;
 
 use Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime;
+use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\Core\RemoteMediaProvider;
-use Netgen\RemoteMedia\Core\VariationResolver;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
+use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class RemoteMediaRuntimeTest extends TestCase
+final class RemoteMediaRuntimeTest extends AbstractTest
 {
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject&\Netgen\RemoteMedia\Core\RemoteMediaProvider
-     */
+    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
     private MockObject $providerMock;
-
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject&\Netgen\RemoteMedia\Core\VariationResolver
-     */
-    private MockObject $variationResolverMock;
 
     private RemoteMediaRuntime $runtime;
 
     protected function setUp(): void
     {
-        $this->providerMock = $this->createMock(RemoteMediaProvider::class);
-        $this->variationResolverMock = $this->createMock(VariationResolver::class);
+        $this->providerMock = $this->createMock(ProviderInterface::class);
 
-        $this->runtime = new RemoteMediaRuntime(
-            $this->providerMock,
-            $this->variationResolverMock,
-        );
+        $this->runtime = new RemoteMediaRuntime($this->providerMock);
     }
 
     /**
@@ -43,20 +34,23 @@ final class RemoteMediaRuntimeTest extends TestCase
      */
     public function testGetRemoteResource(): void
     {
-        $resource = RemoteResource::createFromParameters([
-            'resourceId' => 'test_image',
-            'resourceType' => 'image',
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
         ]);
 
         $this->providerMock
             ->expects(self::once())
-            ->method('getRemoteResource')
-            ->with($resource->resourceId, $resource->resourceType)
+            ->method('load')
+            ->with(30)
             ->willReturn($resource);
 
-        self::assertSame(
+        self::assertRemoteResourceSame(
             $resource,
-            $this->runtime->getRemoteResource($resource->resourceId, $resource->resourceType),
+            $this->runtime->getRemoteResource(30),
         );
     }
 
@@ -68,124 +62,492 @@ final class RemoteMediaRuntimeTest extends TestCase
     {
         $this->providerMock
             ->expects(self::once())
-            ->method('getRemoteResource')
-            ->with('test_video', 'video')
-            ->willThrowException(
-                new RemoteResourceNotFoundException('test_video', 'video'),
-            );
+            ->method('load')
+            ->with(50)
+            ->willThrowException(new RemoteResourceNotFoundException('50'));
 
         self::assertNull(
-            $this->runtime->getRemoteResource('test_video', 'video'),
+            $this->runtime->getRemoteResource(50),
         );
     }
 
     /**
      * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getDownloadUrl
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceLocation
      */
-    public function testGetDownloadUrl(): void
+    public function testGetRemoteResourceLocation(): void
     {
-        $resource = RemoteResource::createFromParameters([
-            'resourceId' => 'test_file.zip',
-            'resourceType' => 'raw',
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
         ]);
 
-        $downloadUrl = 'https://cloudinary.com/upload/test_file.zip';
+        $location = new RemoteResourceLocation($resource);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadLocation')
+            ->with(10)
+            ->willReturn($location);
+
+        self::assertRemoteResourceLocationSame(
+            $location,
+            $this->runtime->getRemoteResourceLocation(10),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceLocation
+     */
+    public function testGetRemoteResourceLocationNotFound(): void
+    {
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadLocation')
+            ->with(10)
+            ->willThrowException(new RemoteResourceLocationNotFoundException(10));
+
+        self::assertNull(
+            $this->runtime->getRemoteResourceLocation(10),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceByRemoteId
+     */
+    public function testGetRemoteResourceByRemoteId(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+        ]);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadByRemoteId')
+            ->with('image|upload|test_image.jpg')
+            ->willReturn($resource);
+
+        self::assertRemoteResourceSame(
+            $resource,
+            $this->runtime->getRemoteResourceByRemoteId('image|upload|test_image.jpg'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceByRemoteId
+     */
+    public function testGetRemoteResourceByRemoteIdNotFound(): void
+    {
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadByRemoteId')
+            ->with('image|upload|test_image.jpg')
+            ->willThrowException(new RemoteResourceNotFoundException('50'));
+
+        self::assertNull(
+            $this->runtime->getRemoteResourceByRemoteId('image|upload|test_image.jpg'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceFromRemote
+     */
+    public function testGetRemoteResourceFromRemote(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+        ]);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadFromRemote')
+            ->with('image|upload|test_image.jpg')
+            ->willReturn($resource);
+
+        self::assertRemoteResourceSame(
+            $resource,
+            $this->runtime->getRemoteResourceFromRemote('image|upload|test_image.jpg'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceByRemoteId
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceFromRemote
+     */
+    public function testGetRemoteResourceFromRemoteNotFound(): void
+    {
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadFromRemote')
+            ->with('image|upload|test_image.jpg')
+            ->willThrowException(new RemoteResourceNotFoundException('50'));
+
+        self::assertNull(
+            $this->runtime->getRemoteResourceFromRemote('image|upload|test_image.jpg'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::buildRemoteResourceVariation
+     */
+    public function testBuildRemoteResourceVariation(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+        ]);
+
+        $location = new RemoteResourceLocation($resource);
+        $variation = new RemoteResourceVariation($resource, 'https://cloudinary.com/upload/image/c10_20_0_0/test_image.jpg');
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('buildVariation')
+            ->with($location, 'article', 'header')
+            ->willReturn($variation);
+
+        self::assertRemoteResourceVariationSame(
+            $variation,
+            $this->runtime->buildRemoteResourceVariation($location, 'article', 'header'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::buildRemoteResourceRawVariation
+     */
+    public function testBuildRemoteResourceRawVariation(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+        ]);
+
+        $cropOptions = [
+            'x' => 5,
+            'y' => 10,
+            'width' => 200,
+            'height' => 100,
+            'crop' => 'crop',
+        ];
+
+        $transformations = [$cropOptions];
+
+        $variation = new RemoteResourceVariation($resource, 'https://cloudinary.com/upload/image/c10_20_0_0/test_image.jpg');
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('buildRawVariation')
+            ->with($resource, $transformations)
+            ->willReturn($variation);
+
+        self::assertRemoteResourceVariationSame(
+            $variation,
+            $this->runtime->buildRemoteResourceRawVariation($resource, $transformations),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getVideoThumbnail
+     */
+    public function testGetVideoThumbnail(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+        ]);
+
+        $variation = new RemoteResourceVariation($resource, 'https://cloudinary.com/upload/video/test_video.mp4');
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('buildVideoThumbnail')
+            ->with($resource, 15)
+            ->willReturn($variation);
+
+        self::assertRemoteResourceVariationSame(
+            $variation,
+            $this->runtime->getVideoThumbnail($resource, 15),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getVideoThumbnailVariation
+     */
+    public function testGetVideoThumbnailVariation(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+        ]);
+
+        $location = new RemoteResourceLocation($resource);
+        $variation = new RemoteResourceVariation($resource, 'https://cloudinary.com/upload/video/c_20_10_0_0/test_video.mp4');
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('buildVideoThumbnailVariation')
+            ->with(
+                $location,
+                'article',
+                'header',
+                15,
+            )
+            ->willReturn($variation);
+
+        self::assertRemoteResourceVariationSame(
+            $variation,
+            $this->runtime->getVideoThumbnailVariation(
+                $location,
+                'article',
+                'header',
+                15,
+            ),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getVideoThumbnailRawVariation
+     */
+    public function testGetVideoThumbnailRawVariation(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+        ]);
+
+        $cropOptions = [
+            'x' => 5,
+            'y' => 10,
+            'width' => 200,
+            'height' => 100,
+            'crop' => 'crop',
+        ];
+
+        $transformations = [$cropOptions];
+
+        $variation = new RemoteResourceVariation($resource, 'https://cloudinary.com/upload/video/c_20_10_0_0/test_video.mp4');
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('buildVideoThumbnailRawVariation')
+            ->with(
+                $resource,
+                $transformations,
+                15,
+            )
+            ->willReturn($variation);
+
+        self::assertRemoteResourceVariationSame(
+            $variation,
+            $this->runtime->getVideoThumbnailRawVariation(
+                $resource,
+                $transformations,
+                15,
+            ),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceHtmlTag
+     */
+    public function testGetRemoteResourceHtmlTag(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+        ]);
+
+        $htmlAttributes = ['style' => 'width:100%;'];
+        $tag = '<video style="width:100%;"><source src="https://cloudinary.com/upload/video/test_video.mp4"></video>';
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('generateHtmlTag')
+            ->with($resource, $htmlAttributes, true)
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->runtime->getRemoteResourceHtmlTag($resource, $htmlAttributes, true),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceVariationHtmlTag
+     */
+    public function testGetRemoteResourceVariationHtmlTag(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+        ]);
+
+        $location = new RemoteResourceLocation($resource);
+
+        $htmlAttributes = ['style' => 'width:100%;'];
+        $tag = '<video style="width:100%;"><source src="https://cloudinary.com/upload/video/c_20_10_0_0/test_video.mp4"></video>';
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('generateVariationHtmlTag')
+            ->with(
+                $location,
+                'article',
+                'header',
+                $htmlAttributes,
+                true,
+            )
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->runtime->getRemoteResourceVariationHtmlTag(
+                $location,
+                'article',
+                'header',
+                $htmlAttributes,
+                true,
+            ),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceRawVariationHtmlTag
+     */
+    public function testGetRemoteResourceRawVariationHtmlTag(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+        ]);
+
+        $cropOptions = [
+            'x' => 5,
+            'y' => 10,
+            'width' => 200,
+            'height' => 100,
+            'crop' => 'crop',
+        ];
+
+        $transformations = [$cropOptions];
+
+        $htmlAttributes = ['style' => 'width:100%;'];
+        $tag = '<video style="width:100%;"><source src="https://cloudinary.com/upload/video/c_20_10_0_0/test_video.mp4"></video>';
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('generateRawVariationHtmlTag')
+            ->with(
+                $resource,
+                $transformations,
+                $htmlAttributes,
+                true,
+            )
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->runtime->getRemoteResourceRawVariationHtmlTag(
+                $resource,
+                $transformations,
+                $htmlAttributes,
+                true,
+            ),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getRemoteResourceDownloadUrl
+     */
+    public function testGetRemoteResourceDownloadUrl(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+        ]);
+
+        $url = 'https://cloudinary.com/upload/video/download/test_video.mp4';
 
         $this->providerMock
             ->expects(self::once())
             ->method('generateDownloadLink')
             ->with($resource)
-            ->willReturn($downloadUrl);
+            ->willReturn($url);
 
         self::assertSame(
-            $downloadUrl,
-            $this->runtime->getDownloadUrl($resource),
+            $url,
+            $this->runtime->getRemoteResourceDownloadUrl($resource),
         );
     }
 
     /**
      * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getVideoThumbnailUrl
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::applyScalingFormat
      */
-    public function testGetVideoThumbnailUrl(): void
-    {
-        $resource = RemoteResource::createFromParameters([
-            'resourceId' => 'test_video',
-            'resourceType' => 'video',
-        ]);
-
-        $videoThumbnailUrl = 'https://cloudinary.com/upload/some_variation_config/test_video_thumbnail.jpg';
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('getVideoThumbnail')
-            ->with($resource)
-            ->willReturn($videoThumbnailUrl);
-
-        self::assertSame(
-            $videoThumbnailUrl,
-            $this->runtime->getVideoThumbnailUrl($resource),
-        );
-    }
-
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getAvailableVariations
-     */
-    public function testGetAvailableVariations(): void
-    {
-        $variations = ['variation_1', 'variation_2'];
-
-        $this->variationResolverMock
-            ->expects(self::once())
-            ->method('getVariationsForGroup')
-            ->with('test_group')
-            ->willReturn($variations);
-
-        self::assertSame(
-            $variations,
-            $this->runtime->getAvailableVariations('test_group'),
-        );
-    }
-
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getAvailableVariations
-     */
-    public function testGetAvailableScalableVariations(): void
-    {
-        $variations = ['variation_1', 'variation_2'];
-
-        $this->variationResolverMock
-            ->expects(self::once())
-            ->method('getCroppbableVariations')
-            ->with('test_group')
-            ->willReturn($variations);
-
-        self::assertSame(
-            $variations,
-            $this->runtime->getAvailableVariations('test_group', true),
-        );
-    }
-
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::applyScallingFormat
-     */
-    public function testApplyScallingFormatEmpty(): void
+    public function testApplyScalingFormatEmpty(): void
     {
         self::assertSame(
             [],
-            $this->runtime->applyScallingFormat([]),
+            $this->runtime->applyScalingFormat([]),
         );
     }
 
     /**
      * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::applyScallingFormat
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::applyScalingFormat
      */
-    public function testApplyScallingFormat(): void
+    public function testApplyScalingFormat(): void
     {
         $variations = [
             'small' => [
@@ -213,7 +575,7 @@ final class RemoteMediaRuntimeTest extends TestCase
 
         self::assertSame(
             $expectedVariations,
-            $this->runtime->applyScallingFormat($variations),
+            $this->runtime->applyScalingFormat($variations),
         );
     }
 }

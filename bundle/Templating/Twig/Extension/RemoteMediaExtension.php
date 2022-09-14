@@ -11,34 +11,76 @@ use Twig\TwigFunction;
 
 final class RemoteMediaExtension extends AbstractExtension
 {
-    public function getFunctions()
+    /**
+     * @return \Twig\TwigFunction[]
+     */
+    public function getFunctions(): array
     {
         return [
             new TwigFunction(
-                'netgen_remote_media_remote_resource',
+                'ngrm_remote_resource',
                 [RemoteMediaRuntime::class, 'getRemoteResource'],
             ),
             new TwigFunction(
-                'netgen_remote_media_download_url',
-                [RemoteMediaRuntime::class, 'getDownloadUrl'],
+                'ngrm_remote_resource_location',
+                [RemoteMediaRuntime::class, 'getRemoteResourceLocation'],
             ),
             new TwigFunction(
-                'netgen_remote_media_video_thumbnail_url',
-                [RemoteMediaRuntime::class, 'getVideoThumbnailUrl'],
+                'ngrm_remote_resource_by_remote_id',
+                [RemoteMediaRuntime::class, 'getRemoteResourceByRemoteId'],
             ),
             new TwigFunction(
-                'netgen_remote_media_available_variations',
-                [RemoteMediaRuntime::class, 'getAvailableVariations'],
+                'ngrm_remote_resource_from_remote',
+                [RemoteMediaRuntime::class, 'getRemoteResourceFromRemote'],
+            ),
+            new TwigFunction(
+                'ngrm_remote_resource_variation',
+                [RemoteMediaRuntime::class, 'buildRemoteResourceVariation'],
+            ),
+            new TwigFunction(
+                'ngrm_remote_resource_raw_variation',
+                [RemoteMediaRuntime::class, 'buildRemoteResourceRawVariation'],
+            ),
+            new TwigFunction(
+                'ngrm_video_thumbnail',
+                [RemoteMediaRuntime::class, 'getVideoThumbnail'],
+            ),
+            new TwigFunction(
+                'ngrm_video_thumbnail_variation',
+                [RemoteMediaRuntime::class, 'getVideoThumbnailVariation'],
+            ),
+            new TwigFunction(
+                'ngrm_video_thumbnail_raw_variation',
+                [RemoteMediaRuntime::class, 'getVideoThumbnailRawVariation'],
+            ),
+            new TwigFunction(
+                'ngrm_remote_resource_html_tag',
+                [RemoteMediaRuntime::class, 'getRemoteResourceHtmlTag'],
+            ),
+            new TwigFunction(
+                'ngrm_remote_resource_variation_html_tag',
+                [RemoteMediaRuntime::class, 'getRemoteResourceVariationHtmlTag'],
+            ),
+            new TwigFunction(
+                'ngrm_remote_resource_raw_variation_html_tag',
+                [RemoteMediaRuntime::class, 'getRemoteResourceRawVariationHtmlTag'],
+            ),
+            new TwigFunction(
+                'ngrm_remote_resource_download_url',
+                [RemoteMediaRuntime::class, 'getRemoteResourceDownloadUrl'],
             ),
         ];
     }
 
-    public function getFilters()
+    /**
+     * @return \Twig\TwigFilter[]
+     */
+    public function getFilters(): array
     {
         return [
             new TwigFilter(
-                'netgen_remote_media_scalling_format',
-                [RemoteMediaRuntime::class, 'applyScallingFormat'],
+                'ngrm_scaling_format',
+                [RemoteMediaRuntime::class, 'applyScalingFormat'],
             ),
         ];
     }

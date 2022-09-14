@@ -94,11 +94,22 @@ interface ProviderInterface
      */
     public function buildVideoThumbnailRawVariation(RemoteResource $resource, array $transformations = [], ?int $startOffset = null): RemoteResourceVariation;
 
-    public function generateHtmlTag(RemoteResource $resource): string;
+    public function generateHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false): string;
 
-    public function generateVariationHtmlTag(RemoteResourceLocation $location, string $variationGroup, string $variationName): string;
+    public function generateVariationHtmlTag(
+        RemoteResourceLocation $location,
+        string $variationGroup,
+        string $variationName,
+        array $htmlAttributes = [],
+        bool $forceVideo = false
+    ): string;
 
-    public function generateRawVariationHtmlTag(RemoteResource $resource, array $transformations = []): string;
+    public function generateRawVariationHtmlTag(
+        RemoteResource $resource,
+        array $transformations = [],
+        array $htmlAttributes = [],
+        bool $forceVideo = false
+    ): string;
 
     public function generateDownloadLink(RemoteResource $resource): string;
 }

@@ -273,6 +273,7 @@ final class CloudinaryApiGateway implements GatewayInterface
     {
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
+        $options['secure'] = true;
 
         return cl_video_thumbnail_path($remoteId->getResourceId(), $options);
     }
@@ -281,6 +282,7 @@ final class CloudinaryApiGateway implements GatewayInterface
     {
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
+        $options['secure'] = true;
 
         return cl_image_tag($remoteId->getResourceId(), $options);
     }
@@ -289,14 +291,18 @@ final class CloudinaryApiGateway implements GatewayInterface
     {
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
+        $options['secure'] = true;
 
         return cl_video_tag($remoteId->getResourceId(), $options);
     }
 
     public function getDownloadLink(CloudinaryRemoteId $remoteId): string
     {
-        $options['type'] = $remoteId->getType();
-        $options['resource_type'] = $remoteId->getResourceType();
+        $options = [
+            'type' => $remoteId->getType(),
+            'resource_type' => $remoteId->getResourceType(),
+            'secure' => true,
+        ];
 
         return $this->cloudinary->cloudinary_url($remoteId->getResourceId(), $options);
     }
