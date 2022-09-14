@@ -21,6 +21,7 @@ use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Psr\Log\LoggerInterface;
 
+use function array_map;
 use function basename;
 use function count;
 use function sprintf;
@@ -130,12 +131,10 @@ final class CloudinaryProvider extends AbstractProvider
     protected function internalListFolders(?Folder $parent = null): array
     {
         return array_map(
-            function ($folderPath) {
-                return Folder::fromPath($folderPath);
-            },
+            static fn ($folderPath) => Folder::fromPath($folderPath),
             $parent instanceof Folder
                 ? $this->gateway->listSubFolders($parent->getPath())
-                : $this->gateway->listFolders()
+                : $this->gateway->listFolders(),
         );
     }
 
