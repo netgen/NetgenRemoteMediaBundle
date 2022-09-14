@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Tests;
 
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\CropSettings;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
@@ -13,6 +14,33 @@ use PHPUnit\Framework\TestCase;
 
 abstract class AbstractTest extends TestCase
 {
+    public static function assertFolderSame(Folder $expected, Folder $actual): void
+    {
+        self::assertSame(
+            $expected->getName(),
+            $actual->getName(),
+        );
+
+        self::assertSame(
+            $expected->getPath(),
+            $actual->getPath(),
+        );
+
+        if (!$expected->getParent() instanceof Folder) {
+            self::assertSame(
+                $expected->getParent(),
+                $actual->getParent(),
+            );
+
+            return;
+        }
+
+        self::assertFolderSame(
+            $expected->getParent(),
+            $actual->getParent(),
+        );
+    }
+
     public static function assertRemoteResourceSame(RemoteResource $expected, RemoteResource $actual): void
     {
         self::assertSame(

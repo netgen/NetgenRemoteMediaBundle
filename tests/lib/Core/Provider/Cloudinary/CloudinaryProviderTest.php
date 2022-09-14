@@ -371,12 +371,21 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->gateway
             ->expects(self::once())
             ->method('listFolders')
-            ->willReturn($folders);
+            ->willReturn(['media']);
+
+        $returnedFolders = $this->cloudinaryProvider->listFolders();
 
         self::assertSame(
-            $folders,
-            $this->cloudinaryProvider->listFolders(),
+            count($folders),
+            count($returnedFolders),
         );
+
+        foreach ($folders as $key => $folder) {
+            self::assertFolderSame(
+                $folder,
+                $returnedFolders[$key],
+            );
+        }
     }
 
     /**
@@ -397,12 +406,25 @@ final class CloudinaryProviderTest extends AbstractTest
             ->expects(self::once())
             ->method('listSubFolders')
             ->with($parent)
-            ->willReturn($folders);
+            ->willReturn([
+                'media/images',
+                'media/videos',
+                'media/documents',
+            ]);
+
+        $returnedFolders = $this->cloudinaryProvider->listFolders($parent);
 
         self::assertSame(
-            $folders,
-            $this->cloudinaryProvider->listFolders($parent),
+            count($folders),
+            count($returnedFolders),
         );
+
+        foreach ($folders as $key => $folder) {
+            self::assertFolderSame(
+                $folder,
+                $returnedFolders[$key],
+            );
+        }
     }
 
     /**
