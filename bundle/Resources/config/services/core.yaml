@@ -1,16 +1,18 @@
 services:
     netgen_remote_media.handler_registry:
         class: Netgen\RemoteMedia\Core\Transformation\Registry
+        public: false
 
     netgen_remote_media.resolver.variation:
         class: Netgen\RemoteMedia\Core\Resolver\Variation
-        lazy: true
+        public: false
         calls:
             - [setVariations, ["%netgen_remote_media.image_variations%"]]
             - [setServices, ["@netgen_remote_media.handler_registry", "@?logger"]]
 
     netgen_remote_media.provider.cloudinary.gateway:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway
+        public: false
         arguments:
             - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
             - '@netgen_remote_media.provider.cloudinary.factory.search_result'
@@ -20,6 +22,7 @@ services:
 
     netgen_remote_media.provider.cloudinary.gateway.cached:
       class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway
+      public: false
       arguments:
         - "@netgen_remote_media.provider.cloudinary.gateway"
         - "@netgen_remote_media.cache.pool"
@@ -27,6 +30,7 @@ services:
 
     netgen_remote_media.provider.cloudinary:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider
+        public: false
         arguments:
             - "@netgen_remote_media.handler_registry"
             - "@netgen_remote_media.resolver.variation"
@@ -38,6 +42,7 @@ services:
 
     netgen_remote_media.helper:
         class: Netgen\RemoteMedia\Core\Helper
+        public: false
         arguments:
             - "@netgen_remote_media.provider"
 
@@ -69,6 +74,7 @@ services:
 
     netgen_remote_media.factory.date_time:
         class: Netgen\RemoteMedia\Core\Factory\DateTime
+        public: false
 
     netgen_remote_media.provider.cloudinary.verifier.controller.signature:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature
