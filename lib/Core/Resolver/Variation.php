@@ -32,17 +32,21 @@ final class Variation
         $this->logger = $logger ?? new NullLogger();
     }
 
-    public function getVariationsForGroup(string $group): array
+    public function getAvailableVariations(?string $group = null): array
     {
+        if ($group === null) {
+            return $this->variations['default'] ?? [];
+        }
+
         $defaultVariations = $this->variations['default'] ?? [];
         $contentTypeVariations = $this->variations[$group] ?? [];
 
         return array_merge($defaultVariations, $contentTypeVariations);
     }
 
-    public function getCroppbableVariations(string $group): array
+    public function getAvailableCroppableVariations(?string $group = null): array
     {
-        $variations = $this->getVariationsForGroup($group);
+        $variations = $this->getAvailableVariations($group);
 
         $croppableVariations = [];
         foreach ($variations as $variationName => $variationOptions) {
@@ -65,7 +69,7 @@ final class Variation
         string $variationGroup,
         string $variationName
     ): array {
-        $configuredVariations = $this->getVariationsForGroup($variationGroup);
+        $configuredVariations = $this->getAvailableVariations($variationGroup);
 
         $options = [];
 

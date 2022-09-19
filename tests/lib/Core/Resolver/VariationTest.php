@@ -45,11 +45,35 @@ final class VariationTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getVariationsForGroup
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableVariations
      * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
      * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
      */
-    public function testGroupVariationsWithOverride(): void
+    public function testGetAvailableVariations(): void
+    {
+        self::assertSame(
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [100, 100],
+                    ],
+                ],
+                'non_croppable' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+            ],
+            $this->variationResolver->getAvailableVariations(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableVariations
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
+     */
+    public function testGetAvailableVariationsForGroup(): void
     {
         self::assertSame(
             [
@@ -75,16 +99,16 @@ final class VariationTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getVariationsForGroup('article'),
+            $this->variationResolver->getAvailableVariations('article'),
         );
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getVariationsForGroup
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableVariations
      * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
      * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
      */
-    public function testContentTypeVariationsWithOutOverride(): void
+    public function testGetAvailableVariationsWithoutOverride(): void
     {
         self::assertSame(
             [
@@ -104,16 +128,35 @@ final class VariationTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getVariationsForGroup('blog_post'),
+            $this->variationResolver->getAvailableVariations('blog_post'),
         );
     }
 
     /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getCroppbableVariations
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableCroppableVariations
      * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
      * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
      */
-    public function testCroppableVariations(): void
+    public function testGetAvailableCroppableVariations(): void
+    {
+        self::assertSame(
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [100, 100],
+                    ],
+                ],
+            ],
+            $this->variationResolver->getAvailableCroppableVariations(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableCroppableVariations
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
+     */
+    public function testGetAvailableCroppableVariationsForGroup(): void
     {
         self::assertSame(
             [
@@ -129,7 +172,7 @@ final class VariationTest extends TestCase
                     ],
                 ],
             ],
-            $this->variationResolver->getCroppbableVariations('article'),
+            $this->variationResolver->getAvailableCroppableVariations('article'),
         );
     }
 
