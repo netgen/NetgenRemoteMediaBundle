@@ -9,6 +9,7 @@ use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Tests\AbstractTest;
@@ -25,7 +26,28 @@ final class RemoteMediaRuntimeTest extends AbstractTest
     {
         $this->providerMock = $this->createMock(ProviderInterface::class);
 
-        $this->runtime = new RemoteMediaRuntime($this->providerMock);
+        $variations = [
+            'default' => [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [100, 100],
+                    ],
+                ],
+                'non_croppable' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+            ],
+        ];
+
+        $variationResolver = new VariationResolver();
+        $variationResolver->setVariations($variations);
+
+        $this->runtime = new RemoteMediaRuntime(
+            $this->providerMock,
+            $variationResolver,
+        );
     }
 
     /**
@@ -528,6 +550,47 @@ final class RemoteMediaRuntimeTest extends AbstractTest
         self::assertSame(
             $url,
             $this->runtime->getRemoteResourceDownloadUrl($resource),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getAvailableVariations
+     */
+    public function testGetAvailableVariations(): void
+    {
+        self::assertSame(
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [100, 100],
+                    ],
+                ],
+                'non_croppable' => [
+                    'transformations' => [
+                        'resize' => [100, 100],
+                    ],
+                ],
+            ],
+            $this->runtime->getAvailableVariations(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::getAvailableCroppableVariations
+     */
+    public function testGetAvailableCroppableVariations(): void
+    {
+        self::assertSame(
+            [
+                'small' => [
+                    'transformations' => [
+                        'crop' => [100, 100],
+                    ],
+                ],
+            ],
+            $this->runtime->getAvailableCroppableVariations(),
         );
     }
 

@@ -69,6 +69,14 @@ final class RemoteMediaExtension extends AbstractExtension
                 'ngrm_remote_resource_download_url',
                 [RemoteMediaRuntime::class, 'getRemoteResourceDownloadUrl'],
             ),
+            new TwigFunction(
+                'ngrm_available_variations',
+                [RemoteMediaRuntime::class, 'getAvailableVariations'],
+            ),
+            new TwigFunction(
+                'ngrm_available_croppable_variations',
+                [RemoteMediaRuntime::class, 'getAvailableCroppableVariations'],
+            ),
         ];
     }
 

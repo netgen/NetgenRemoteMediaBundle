@@ -10,15 +10,19 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Twig\Extension\AbstractExtension;
 
 final class RemoteMediaRuntime extends AbstractExtension
 {
     protected ProviderInterface $provider;
 
-    public function __construct(ProviderInterface $provider)
+    protected VariationResolver $variationResolver;
+
+    public function __construct(ProviderInterface $provider, VariationResolver $variationResolver)
     {
         $this->provider = $provider;
+        $this->variationResolver = $variationResolver;
     }
 
     public function getRemoteResource(int $resourceId): ?RemoteResource
@@ -120,6 +124,16 @@ final class RemoteMediaRuntime extends AbstractExtension
     public function getRemoteResourceDownloadUrl(RemoteResource $resource): string
     {
         return $this->provider->generateDownloadLink($resource);
+    }
+
+    public function getAvailableVariations(?string $group = null): array
+    {
+        return $this->variationResolver->getAvailableVariations($group);
+    }
+
+    public function getAvailableCroppableVariations(?string $group = null): array
+    {
+        return $this->variationResolver->getAvailableCroppableVariations($group);
     }
 
     public function applyScalingFormat(array $variations): array
