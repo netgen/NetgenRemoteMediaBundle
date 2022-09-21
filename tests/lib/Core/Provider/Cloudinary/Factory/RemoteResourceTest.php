@@ -131,7 +131,7 @@ final class RemoteResourceTest extends TestCase
                     'altText' => 'alt text',
                     'caption' => 'caption text',
                     'tags' => ['tag1'],
-                    'metaData' => [
+                    'metadata' => [
                         'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
@@ -164,7 +164,7 @@ final class RemoteResourceTest extends TestCase
                     'altText' => null,
                     'caption' => null,
                     'tags' => [],
-                    'metaData' => [
+                    'metadata' => [
                         'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'pdf',
@@ -205,7 +205,7 @@ final class RemoteResourceTest extends TestCase
                     'size' => 120253,
                     'altText' => 'alt text',
                     'tags' => ['tag1', 'tag2'],
-                    'metaData' => [
+                    'metadata' => [
                         'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
@@ -245,7 +245,7 @@ final class RemoteResourceTest extends TestCase
                     'url' => 'http://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
                     'size' => 120253,
                     'tags' => ['tag1', 'tag2'],
-                    'metaData' => [
+                    'metadata' => [
                         'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
@@ -282,7 +282,7 @@ final class RemoteResourceTest extends TestCase
                     'url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp3',
                     'size' => 12025,
                     'tags' => [],
-                    'metaData' => [
+                    'metadata' => [
                         'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'mp3',
@@ -310,7 +310,7 @@ final class RemoteResourceTest extends TestCase
                     'url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.zip',
                     'size' => 12025,
                     'tags' => [],
-                    'metaData' => [
+                    'metadata' => [
                         'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'zip',
