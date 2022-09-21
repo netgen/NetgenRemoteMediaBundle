@@ -83,6 +83,15 @@ final class CloudinaryProvider extends AbstractProvider
         return $this->gateway->usage();
     }
 
+    public function getSupportedTypes(): array
+    {
+        return [
+            'image',
+            'video',
+            'raw',
+        ];
+    }
+
     public function count(): int
     {
         return $this->gateway->countResources();

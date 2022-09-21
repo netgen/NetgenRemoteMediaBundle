@@ -25,6 +25,8 @@ interface ProviderInterface
 
     public function status(): StatusData;
 
+    public function getSupportedTypes(): array;
+
     public function listFolders(?Folder $parent = null): array;
 
     public function createFolder(string $name, ?Folder $parent = null): Folder;

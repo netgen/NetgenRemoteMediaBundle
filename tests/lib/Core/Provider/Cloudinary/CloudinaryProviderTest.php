@@ -143,6 +143,18 @@ final class CloudinaryProviderTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getSupportedTypes
+     */
+    public function testGetSupportedTypes(): void
+    {
+        $supportedTypes = $this->cloudinaryProvider->getSupportedTypes();
+
+        self::assertIsArray($supportedTypes);
+        self::assertNotEmpty($supportedTypes);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::count
      */
     public function testCount(): void
