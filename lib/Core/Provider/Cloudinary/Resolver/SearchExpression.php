@@ -60,7 +60,7 @@ final class SearchExpression
             return null;
         }
 
-        return sprintf('*%s*', $query->getQuery());
+        return sprintf('%s*', $query->getQuery());
     }
 
     private function resolveFolders(Query $query): ?string
