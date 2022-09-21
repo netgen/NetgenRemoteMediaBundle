@@ -10,7 +10,6 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
-use function gettype;
 use function in_array;
 
 final class RemoteResource implements RemoteResourceFactoryInterface
@@ -34,7 +33,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'altText' => $this->resolveAltText($data),
             'caption' => $data['context']['custom']['caption'] ?? null,
             'tags' => $data['tags'] ?? [],
-            'metaData' => $this->resolveMetaData($data),
+            'metadata' => $this->resolveMetaData($data),
         ]);
     }
 
@@ -83,13 +82,13 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'overwritten',
         ];
 
-        $metaData = (array) $data;
-        foreach ($metaData as $key => $value) {
+        $metadata = $data;
+        foreach ($metadata as $key => $value) {
             if (!in_array($key, $supportedMetaData, true)) {
-                unset($metaData[$key]);
+                unset($metadata[$key]);
             }
         }
 
-        return $metaData;
+        return $metadata;
     }
 }

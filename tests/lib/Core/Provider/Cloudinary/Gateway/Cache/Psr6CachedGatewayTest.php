@@ -695,7 +695,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'metaData' => [
+            'metadata' => [
                 'format' => 'jpg',
             ],
         ]);
@@ -739,7 +739,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'metaData' => [
+            'metadata' => [
                 'format' => 'jpg',
             ],
         ]);
@@ -805,7 +805,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'metaData' => [
+            'metadata' => [
                 'format' => 'jpg',
             ],
         ]);
