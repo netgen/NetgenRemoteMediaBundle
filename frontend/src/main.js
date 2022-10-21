@@ -32,7 +32,6 @@ const handleDOMContentLoaded = function() {
                     id: '',
                     name: '',
                     type: 'image',
-                    mediaType: 'image',
                     format: '',
                     url: '',
                     browse_url: '',
@@ -71,7 +70,6 @@ const handleDOMContentLoaded = function() {
                         id: '',
                         name: '',
                         type: 'image',
-                        mediaType: 'image',
                         format: '',
                         url: '',
                         previewUrl: '',
@@ -94,15 +92,14 @@ const handleDOMContentLoaded = function() {
                         variations = data.image_variations;
                     }
 
-                    if (typeof data.resourceType !== 'undefined' && data.resourceType !== null && typeof data.resourceId !== 'undefined' && data.resourceId !== null) {
-                        const response = await fetch(this.config.paths.editor_fetch + '?resource_type=' + data.resourceType + '&resource_id=' + data.resourceId);
+                    if (typeof data.type !== 'undefined' && data.type !== null && typeof data.remoteId !== 'undefined' && data.remoteId !== null) {
+                        const response = await fetch(this.config.paths.editor_fetch + '?resource_type=' + data.remoteId + '&resource_id=' + data.remoteId);
                         const item = await response.json();
 
                         this.selectedImage = {
-                            id: item.resourceId,
+                            id: item.remoteId,
                             name: item.filename,
                             type: item.type,
-                            mediaType: item.mediaType,
                             format: item.format,
                             url: item.url,
                             previewUrl: item.preview_url,

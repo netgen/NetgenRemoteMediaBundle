@@ -1,5 +1,5 @@
 <template>
-  <div class="overlay">
+  <div class="ngrm-overlay">
     <div class="media-modal">
       <div class="title">
         {{title}}
@@ -30,7 +30,7 @@ export default {
 <style scoped lang="scss">
 @import "../scss/variables";
 
-.overlay {
+.ngrm-overlay {
   position: fixed;
   top: 0;
   bottom: 0;

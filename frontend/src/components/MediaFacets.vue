@@ -2,31 +2,30 @@
   <div class="mediaFacets">
     <div class="body">
       <div class="form-field">
-        <label for="mediaType">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_media_type }}</label>
+        <label for="type">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_type }}</label>
         <v-select
-            :options="mediaTypes"
+            :options="types"
             label="name"
-            v-model="selectedMediaType"
+            v-model="selectedType"
             @input="handleTypeChange"
             :reduce="option => option.id"
-            :placeholder="this.$root.$data.NgRemoteMediaTranslations.browse_all_media_types"
+            :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_types : this.$root.$data.NgRemoteMediaTranslations.browse_all_types"
         />
       </div>
 
-      <div class="form-field">
+      <div v-if="folders" class="form-field">
         <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_folder }}</label>
         <treeselect
           :multiple="false"
           :options="folders"
           :load-options="loadSubFolders"
-          close-on-select="true"
           @input="handleFolderChange"
           :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_folders : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
           :disabled="facetsLoading"
         />
       </div>
 
-      <div class="form-field">
+      <div v-if="tags" class="form-field">
         <label for="tag">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_tag }}</label>
         <v-select
             :options="tags"
@@ -42,7 +41,6 @@
       <div class="search-wrapper">
         <span class="search-label">{{ this.$root.$data.NgRemoteMediaTranslations.search }}</span>
         <div class="search">
-          <ul class="searchType"></ul>
           <input
             type="text"
             :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_placeholder"
@@ -62,7 +60,6 @@ import {
   TYPE_IMAGE,
   TYPE_VIDEO,
   TYPE_RAW,
-  SEARCH_NAME,
   FOLDER_ALL,
   FOLDER_ROOT,
   TAG_ALL,
@@ -75,14 +72,13 @@ import {encodeQueryData} from "@/utility/utility";
 
 export default {
   name: "MediaFacets",
-  props: ["tags", "facets", "facetsLoading", "mediaTypes"],
+  props: ["tags", "types", "facets", "facetsLoading"],
   data() {
     return {
       TYPE_ALL,
       TYPE_IMAGE,
       TYPE_VIDEO,
       TYPE_RAW,
-      SEARCH_NAME,
       FOLDER_ALL,
       FOLDER_ROOT,
       TAG_ALL,
@@ -92,16 +88,14 @@ export default {
         children: null
       }],
       selectedFolder: this.facets.folder,
-      selectedMediaType: this.facets.mediaType,
-      query: this.facets.query
+      selectedType: this.facets.type,
+      query: this.facets.query,
+      tag: this.facets.tag
     };
   },
   methods: {
-    handleSearchChange(searchType) {
-      this.$emit("change", { searchType });
-    },
-    handleTypeChange(mediaType) {
-      this.$emit("change", { mediaType });
+    handleTypeChange(type) {
+      this.$emit("change", { type });
     },
     handleFolderChange(value) {
       this.selectedFolder = value;
@@ -116,7 +110,7 @@ export default {
     async loadSubFolders(data) {
       const node = data.parentNode;
       const query = {
-        folder: node.id,
+        folder: node.id === '(root)' ? '' : node.id,
       };
 
       const response = await fetch(this.$root.$data.config.paths.load_folders+'?'+encodeQueryData(query));

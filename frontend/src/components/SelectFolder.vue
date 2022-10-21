@@ -71,7 +71,7 @@ export default {
     async loadSubFolders(folderPath) {
       this.loading = true;
       var ajaxUrl = this.$root.$data.config.paths.load_folders;
-      if (folderPath !== null) {
+      if (folderPath) {
         const query = {
           folder: folderPath,
         };
@@ -111,7 +111,9 @@ export default {
           : null;
 
       var data = new FormData();
-      data.append('parent', parentPath);
+      if (parentPath) {
+        data.append('parent', parentPath);
+      }
       data.append('folder', this.newFolder);
 
       await axios.post(this.$root.$data.config.paths.create_folder, data);

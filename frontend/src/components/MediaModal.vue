@@ -1,6 +1,6 @@
 <template>
   <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :tags="tags" :media-types="mediaTypes" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
+    <media-facets :tags="tags" :types="types" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
     <media-galery
         :media="media"
         :canLoadMore="canLoadMore"
@@ -16,16 +16,16 @@
 <script>
 import MediaFacets from "./MediaFacets";
 import MediaGalery from "./MediaGalery";
-import {FOLDER_ALL, FOLDER_ROOT, TAG_ALL, SEARCH_NAME, TYPE_ALL, TYPE_IMAGE, TYPE_VIDEO, TYPE_RAW} from "../constants/facets";
 import { encodeQueryData } from "../utility/utility";
 import debounce from "debounce";
 import Modal from "./Modal";
+import { FOLDER_ROOT } from "../constants/facets";
 
 const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["tags", "facetsLoading", "selectedMediaId", "paths"],
+  props: ["tags", "types", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGalery,
@@ -38,26 +38,11 @@ export default {
       nextCursor: null,
       loading: true,
       facets: {
-        folder: FOLDER_ALL,
-        searchType: SEARCH_NAME,
-        mediaType: "",
+        folder: "",
+        type: "",
         query: "",
         tag: ""
-      },
-      mediaTypes: [
-        {
-          name: this.$root.$data.NgRemoteMediaTranslations.browse_image_and_documents,
-          id: TYPE_IMAGE
-        },
-        {
-          name: this.$root.$data.NgRemoteMediaTranslations.browse_video_and_audio,
-          id: TYPE_VIDEO
-        },
-        {
-          name: this.$root.$data.NgRemoteMediaTranslations.browse_raw,
-          id: TYPE_RAW
-        }
-      ]
+      }
     };
   },
   methods: {
@@ -72,13 +57,29 @@ export default {
       const query = {
         limit: NUMBER_OF_ITEMS,
         offset: patch ? this.media.length : 0,
-        q: this.facets.query,
-        mediatype: this.facets.mediaType || TYPE_ALL,
-        folder: this.facets.folder || FOLDER_ALL,
-        search_type: this.facets.searchType,
-        next_cursor: patch ? this.nextCursor : null,
-        tag: this.facets.tag || TAG_ALL
       };
+
+      if (this.facets.query) {
+        query['query'] = this.facets.query;
+      }
+
+      if (this.facets.type) {
+        query['type'] = this.facets.type;
+      }
+
+      if (this.facets.folder) {
+        query['folder'] = this.facets.folder === FOLDER_ROOT
+          ? ''
+          : this.facets.folder;
+      }
+
+      if (this.facets.tag) {
+        query['tag'] = this.facets.tag;
+      }
+
+      if (patch && this.nextCursor) {
+        query['next_cursor'] = this.nextCursor;
+      }
 
       const url = `${this.paths.browse}?${encodeQueryData(query)}`;
 
