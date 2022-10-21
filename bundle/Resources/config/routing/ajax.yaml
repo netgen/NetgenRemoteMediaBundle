@@ -1,3 +1,15 @@
+netgen_remote_media_ajax_folder_load:
+    path: /folder/load
+    defaults:
+        _controller: netgen_remote_media.controller.folder.load
+    methods: [GET]
+
+netgen_remote_media_ajax_folder_create:
+    path: /folder/create
+    defaults:
+        _controller: netgen_remote_media.controller.folder.create
+    methods: [POST]
+
 netgen_remote_media_ajax_browse:
     path: /browse
     defaults:
