@@ -15,7 +15,7 @@ use function property_exists;
  * @ORM\Table(name="ngrm_remote_resource")
  * @ORM\HasLifecycleCallbacks()
  */
-final class RemoteResource
+class RemoteResource
 {
     use TimestampableTrait;
 
@@ -24,6 +24,14 @@ final class RemoteResource
     public const TYPE_AUDIO = 'audio';
     public const TYPE_DOCUMENT = 'document';
     public const TYPE_OTHER = 'other';
+
+    public const SUPPORTED_TYPES = [
+        self::TYPE_IMAGE,
+        self::TYPE_VIDEO,
+        self::TYPE_AUDIO,
+        self::TYPE_DOCUMENT,
+        self::TYPE_OTHER,
+    ];
 
     /**
      * @ORM\Id()
