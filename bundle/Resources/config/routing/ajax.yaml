@@ -1,3 +1,9 @@
+netgen_remote_media_ajax_facets_load:
+    path: /facets/load
+    defaults:
+        _controller: netgen_remote_media.controller.facets.load
+    methods: [GET]
+
 netgen_remote_media_ajax_folder_load:
     path: /folder/load
     defaults:

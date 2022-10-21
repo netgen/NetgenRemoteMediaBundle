@@ -1,4 +1,11 @@
 services:
+    netgen_remote_media.controller.facets.load:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@translator'
+
     netgen_remote_media.controller.folder.load:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Load
         public: true

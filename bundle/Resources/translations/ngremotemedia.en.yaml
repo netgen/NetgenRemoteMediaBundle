@@ -1,4 +1,10 @@
 ngrm:
+    provider:
+        cloudinary:
+            supported_types:
+                image: 'Images and documents'
+                video: 'Video and audio'
+                raw: 'Other'
     edit:
         form:
             field:
