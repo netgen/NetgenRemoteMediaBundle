@@ -31,11 +31,9 @@ ngrm:
             browse:
                 title: 'Select media'
                 facets:
-                    image_and_documents: 'Image and documents'
-                    video_and_audio: 'Video and audio'
-                    raw: 'RAW'
-                    select_media_type: 'Select media type'
-                    all_media_types: 'All media types'
+                    select_type: 'Select type'
+                    loading_types: 'Loading types...'
+                    all_types: 'All types'
                     select_folder: 'Select folder'
                     loading_folders: 'Loading folders...'
                     all_folders: 'All folders'

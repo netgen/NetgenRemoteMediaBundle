@@ -27,7 +27,7 @@
 
     <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.image_variations" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="this.$root.$data.NgRemoteMediaAvailableVariations"></crop-modal>
-    <media-modal :tags="tags" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <media-modal :tags="tags" :types="types" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
     <upload-modal v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :name="selectedImage.name" ></upload-modal>
   </div>
 </template>
@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     isCroppable() {
-      return !!this.selectedImage.id && this.selectedImage.mediaType === "image" && Object.keys(this.$root.$data.NgRemoteMediaAvailableVariations).length > 0;
+      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.$root.$data.NgRemoteMediaAvailableVariations).length > 0;
     },
     stringifiedVariations() {
       return JSON.stringify(
@@ -65,6 +65,7 @@ export default {
       mediaModalOpen: false,
       cropModalOpen: false,
       uploadModalOpen: false,
+      types: [],
       folders: [],
       tags: [],
       facetsLoading: true
@@ -99,16 +100,15 @@ export default {
     },
     handleMediaSelected(item) {
       this.selectedImage = {
-        id: item.resourceId,
+        id: item.remoteId,
         name: item.filename,
         type: item.type,
-        mediaType: item.mediaType,
         format: item.format,
         url: item.url,
-        previewUrl: item.preview_url,
+        previewUrl: item.previewUrl,
         alternateText: item.alt_text,
         tags: item.tags,
-        size: item.filesize,
+        size: item.size,
         variations: {},
         height: item.height,
         width: item.width
@@ -142,7 +142,6 @@ export default {
         id: '',
         name: '',
         type: 'image',
-        mediaType: 'image',
         format: '',
         url: '',
         previewUrl: '',
@@ -158,6 +157,7 @@ export default {
     async fetchFacets() {
       const response = await fetch(this.config.paths.load_facets);
       const data = await response.json();
+      this.types = data.types;
       this.tags = data.tags;
       this.facetsLoading = false;
     },
@@ -167,15 +167,6 @@ export default {
       this.fetchFacets();
     },
     getFileType(file){
-      const type = file.type.split("/")[0];
-
-      if (type !== "video"){
-        return "image";
-      }
-
-      return type;
-    },
-    getFileMediaType(file){
       const type = file.type.split("/")[0];
 
       if (type !== "video" && type !== "image"){
@@ -197,7 +188,6 @@ export default {
           id: file.name,
           name: file.name,
           type: this.getFileType(file),
-          mediaType: this.getFileMediaType(file),
           format: this.getFileFormat(file),
           url: '',
           previewUrl: '',
@@ -209,7 +199,7 @@ export default {
           width: 0
         };
 
-        if (this.selectedImage.mediaType === "image"){
+        if (this.selectedImage.type === "image"){
           const reader = new FileReader();
           reader.addEventListener(
             'load',

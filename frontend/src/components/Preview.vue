@@ -13,7 +13,7 @@
 
       <h3 class="title">{{selectedImage.name}}</h3>
       <p>{{this.$root.$data.NgRemoteMediaTranslations.preview_size}}: {{formattedSize}}</p>
-      <p>{{selectedImage.mediaType}} / {{selectedImage.format}}</p>
+      <p>{{selectedImage.type}} / {{selectedImage.format}}</p>
 
       <div class="image-meta-data">
         <div class="ngremotemedia-alttext">

@@ -5,9 +5,9 @@
         <span class="ngrm-icon-folder"></span>
         <span><strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_empty_folder }}</strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_upload_media }}</span>
       </div>
-      <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.resourceId === selectedMediaId}">
-        <div v-if="item.mediaType==='image' || (item.mediaType==='video' && item.browse_url!=='')" class="media-container">
-          <img :src="item.browse_url" :alt="item.filename" class="img"/>
+      <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.remoteId === selectedMediaId}">
+        <div v-if="item.type==='image' || (item.type==='video' && item.browseUrl!=='')" class="media-container">
+          <img :src="item.browseUrl" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description"><span class="format">{{item.format}}</span> - {{item.width}} x {{item.height}} - {{showFilesize(item)}}</div>
         </div>
@@ -46,7 +46,7 @@ export default {
   props: ["media", "canLoadMore", "onLoadMore", "selectedMediaId", "loading"],
   methods: {
     showFilesize(item) {
-      return prettyBytes(item.filesize);
+      return prettyBytes(item.size);
     },
   }
 };
