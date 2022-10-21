@@ -12,7 +12,7 @@ use Netgen\RemoteMedia\Exception\CropSettingsNotFoundException;
  * @ORM\Table(name="ngrm_remote_resource_location")
  * @ORM\HasLifecycleCallbacks()
  */
-final class RemoteResourceLocation
+class RemoteResourceLocation
 {
     use TimestampableTrait;
 

@@ -1,0 +1,5 @@
+netgen_remote_media_ajax_browse:
+    path: /browse
+    defaults:
+        _controller: netgen_remote_media.controller.browse
+    methods: [GET]
