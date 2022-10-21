@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Callback\Cloudinary;
 
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\Persistence\ObjectRepository;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify as NotifyController;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
@@ -25,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use function json_encode;
 use function time;
 
-class NotifyTest extends TestCase
+final class NotifyTest extends TestCase
 {
     private NotifyController $controller;
 
