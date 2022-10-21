@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_encode;
+
 final class BrowseTest extends TestCase
 {
     private BrowseController $controller;
@@ -146,7 +148,6 @@ final class BrowseTest extends TestCase
             ->method('buildVideoThumbnail')
             ->with($result->getResources()[2])
             ->willReturn($videoThumbnail);
-
 
         $expectedResponseContent = json_encode([
             'hits' => [
