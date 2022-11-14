@@ -8,7 +8,7 @@
 
     <div :id="'ngremotemedia-buttons-'+fieldId" class="ngremotemedia-buttons" :data-id="fieldId">
 
-      <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.resource_id" v-model="selectedImage.id" class="media-id" />
+      <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.remoteId" v-model="selectedImage.id" class="media-id" />
 
       <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_scale" >
       <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_remove_media" />
@@ -25,7 +25,7 @@
       </div>
     </div>
 
-    <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.image_variations" v-model="stringifiedVariations" class="media-id"/>
+    <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="this.$root.$data.NgRemoteMediaAvailableVariations"></crop-modal>
     <media-modal :tags="tags" :types="types" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
     <upload-modal v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :name="selectedImage.name" ></upload-modal>

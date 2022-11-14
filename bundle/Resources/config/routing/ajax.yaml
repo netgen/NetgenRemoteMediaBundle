@@ -16,8 +16,8 @@ netgen_remote_media_ajax_folder_create:
         _controller: netgen_remote_media.controller.folder.create
     methods: [POST]
 
-netgen_remote_media_ajax_browse:
-    path: /browse
+netgen_remote_media_ajax_resource_browse:
+    path: /resource/browse
     defaults:
-        _controller: netgen_remote_media.controller.browse
+        _controller: netgen_remote_media.controller.resource.browse
     methods: [GET]

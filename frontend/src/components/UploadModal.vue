@@ -1,5 +1,5 @@
 <template>
-  <modal title="Upload image" @close="$emit('close')">
+  <modal title="Upload media" @close="$emit('close')">
     <div>
       <select-folder :selected-folder="selectedFolder" @change="handleFolderChange"></select-folder>
 
