@@ -52,18 +52,18 @@ return [
 ];
 ```
 
-In case of Symfony v3, activate the bundle in `app/AppKernel.php` file by adding it to the `$bundles` array in `registerBundles` method:
+### Add routing
 
-```php
-public function registerBundles()
-{
-    ...
+This bundle has some internal Symfony routes. In order for them to work, include them in your main `config/routes.yaml`:
 
-    $bundles[] = new Netgen\Bundle\RemoteMediaBundle\NetgenRemoteMediaBundle();
-
-    return $bundles;
-}
+```yaml
+netgen_remote_media:
+    resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
 ```
+
+### Configure Cloudinary webhook notifications (optional)
+
+If you want to be able to manage resources through Cloudinary interface as well, you might want to configure the [Cloudinary webhook notifications](Cloudinary/WEBHOOK_NOTIFICATIONS.md). Read more on the link.
 
 ### Clear the caches
 
