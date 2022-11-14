@@ -15,7 +15,7 @@
 
 <script>
 import MediaFacets from "./MediaFacets";
-import MediaGalery from "./MediaGalery";
+import MediaGallery from "./MediaGalery";
 import { encodeQueryData } from "../utility/utility";
 import debounce from "debounce";
 import Modal from "./Modal";
@@ -28,7 +28,7 @@ export default {
   props: ["tags", "types", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
-    "media-galery": MediaGalery,
+    "media-galery": MediaGallery,
     modal: Modal
   },
   data() {
@@ -81,7 +81,7 @@ export default {
         query['next_cursor'] = this.nextCursor;
       }
 
-      const url = `${this.paths.browse}?${encodeQueryData(query)}`;
+      const url = `${this.paths.browse_resources}?${encodeQueryData(query)}`;
 
       try {
         const response = await fetch(url, {

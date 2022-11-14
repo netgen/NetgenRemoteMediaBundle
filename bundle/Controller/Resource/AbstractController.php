@@ -1,53 +1,30 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Netgen\Bundle\RemoteMediaBundle\Controller;
+namespace Netgen\Bundle\RemoteMediaBundle\Controller\Resource;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
-use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as SymfonyAbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function basename;
 
-final class Browse
+abstract class AbstractController extends SymfonyAbstractController
 {
-    private ProviderInterface $provider;
+    protected ProviderInterface $provider;
 
     public function __construct(ProviderInterface $provider)
     {
         $this->provider = $provider;
     }
 
-    public function __invoke(Request $request): Response
-    {
-        $query = new Query([
-            'query' => $request->query->get('query'),
-            'types' => $request->query->get('type') ? [$request->query->get('type')] : [],
-            'folders' => $request->query->get('folder') !== null ? [$request->query->get('folder')] : [],
-            'tags' => $request->query->get('tag') ? [$request->query->get('tag')] : [],
-            'limit' => $request->query->get('limit') ? (int) $request->query->get('limit') : 25,
-            'nextCursor' => $request->query->get('next_cursor'),
-        ]);
-
-        $results = $this->provider->search($query);
-
-        $result = [
-            'hits' => $this->formatResources($results->getResources()),
-            'load_more' => $results->getNextCursor() !== null,
-            'next_cursor' => $results->getNextCursor(),
-        ];
-
-        return new JsonResponse($result);
-    }
+    abstract public function __invoke(Request $request): Response;
 
     /**
      * @return array<string, mixed>
      */
-    private function formatResource(RemoteResource $resource): array
+    protected function formatResource(RemoteResource $resource): array
     {
         $transformation = [
             'crop' => 'fit',
@@ -84,7 +61,7 @@ final class Browse
     /**
      * @param \Netgen\RemoteMedia\API\Values\RemoteResource[] $resources
      */
-    private function formatResources(array $resources): array
+    protected function formatResources(array $resources): array
     {
         $list = [];
         foreach ($resources as $resource) {

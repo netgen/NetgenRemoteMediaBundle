@@ -7,7 +7,7 @@
 
     <div class="image-meta">
       <input type="hidden"
-         :name="this.$root.$data.NgRemoteMediaInputFields.media_type"
+         :name="this.$root.$data.NgRemoteMediaInputFields.type"
          v-model="selectedImage.type"
       >
 
@@ -19,7 +19,7 @@
         <div class="ngremotemedia-alttext">
           <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_alternate_text}}</span>
           <input type="text"
-               :name="this.$root.$data.NgRemoteMediaInputFields.alt_text"
+               :name="this.$root.$data.NgRemoteMediaInputFields.altText"
                v-model="selectedImage.alternateText"
                class="media-alttext data"
           >

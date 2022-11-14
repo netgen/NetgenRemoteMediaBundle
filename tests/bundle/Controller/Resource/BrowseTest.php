@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller;
+namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Resource;
 
-use Netgen\Bundle\RemoteMediaBundle\Controller\Browse as BrowseController;
+use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse as BrowseController;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
@@ -33,10 +33,10 @@ final class BrowseTest extends TestCase
     }
 
     /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Browse::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Browse::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Browse::formatResource
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Browse::formatResources
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__invoke
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResource
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResources
      */
     public function test(): void
     {
