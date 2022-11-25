@@ -82,6 +82,8 @@ final class StatusDataTest extends TestCase
             $statusData->get('credits'),
         );
 
+        $data['credits'] = 6000;
+
         self::assertSame(
             $data,
             $statusData->all(),

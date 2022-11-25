@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
 
-use Cloudinary\Api\Response;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
-use PHPUnit\Framework\TestCase;
-use stdClass;
-use function json_encode;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 
-final class CloudinaryRemoteIdTest extends TestCase
+final class CloudinaryRemoteIdTest extends AbstractTest
 {
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::__construct
@@ -52,6 +50,8 @@ final class CloudinaryRemoteIdTest extends TestCase
             'upload',
             $remoteId->getType(),
         );
+
+        self::assertNull($remoteId->getFolder());
     }
 
     /**
@@ -64,15 +64,15 @@ final class CloudinaryRemoteIdTest extends TestCase
      */
     public function testFromRemoteId(): void
     {
-        $remoteId = CloudinaryRemoteId::fromRemoteId('private|video|my_test_video.mp4');
+        $remoteId = CloudinaryRemoteId::fromRemoteId('private|video|media/videos/my_test_video.mp4');
 
         self::assertSame(
-            'private|video|my_test_video.mp4',
+            'private|video|media/videos/my_test_video.mp4',
             $remoteId->getRemoteId(),
         );
 
         self::assertSame(
-            'my_test_video.mp4',
+            'media/videos/my_test_video.mp4',
             $remoteId->getResourceId(),
         );
 
@@ -84,6 +84,11 @@ final class CloudinaryRemoteIdTest extends TestCase
         self::assertSame(
             'private',
             $remoteId->getType(),
+        );
+
+        self::assertFolderSame(
+            Folder::fromPath('media/videos'),
+            $remoteId->getFolder(),
         );
     }
 

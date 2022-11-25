@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource as RemoteResourceFactory;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
-use PHPUnit\Framework\TestCase;
+use Netgen\RemoteMedia\Tests\AbstractTest;
 
-use function json_encode;
-
-final class RemoteResourceTest extends TestCase
+final class RemoteResourceTest extends AbstractTest
 {
     protected RemoteResourceFactory $remoteResourceFactory;
 
@@ -36,46 +35,9 @@ final class RemoteResourceTest extends TestCase
     {
         $resource = $this->remoteResourceFactory->create($cloudinaryResponse);
 
-        self::assertNull($resource->getId());
-
-        self::assertSame(
-            $expectedResource->getRemoteId(),
-            $resource->getRemoteId(),
-        );
-
-        self::assertSame(
-            $expectedResource->getType(),
-            $resource->getType(),
-        );
-
-        self::assertSame(
-            $expectedResource->getUrl(),
-            $resource->getUrl(),
-        );
-
-        self::assertSame(
-            $expectedResource->getSize(),
-            $resource->getSize(),
-        );
-
-        self::assertSame(
-            $expectedResource->getAltText(),
-            $resource->getAltText(),
-        );
-
-        self::assertSame(
-            $expectedResource->getCaption(),
-            $resource->getCaption(),
-        );
-
-        self::assertSame(
-            $expectedResource->getTags(),
-            $resource->getTags(),
-        );
-
-        self::assertSame(
-            $expectedResource->getMetaData(),
-            $resource->getMetaData(),
+        self::assertRemoteResourceSame(
+            $expectedResource,
+            $resource,
         );
     }
 
@@ -145,7 +107,7 @@ final class RemoteResourceTest extends TestCase
             ],
             [
                 [
-                    'public_id' => 'c87hg9xfxrd4itiim3t0',
+                    'public_id' => 'other/c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'format' => 'pdf',
@@ -153,13 +115,14 @@ final class RemoteResourceTest extends TestCase
                     'created_at' => '2013-06-23T13:59:18Z',
                     'bytes' => 120253,
                     'type' => 'upload',
-                    'url' => 'http://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
-                    'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
+                    'url' => 'http://res.cloudinary.com/demo/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
+                    'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
                 ],
                 new RemoteResource([
-                    'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
+                    'remoteId' => 'upload|image|other/c87hg9xfxrd4itiim3t0',
                     'type' => 'document',
-                    'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0',
+                    'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
+                    'folder' => Folder::fromPath('other'),
                     'size' => 120253,
                     'altText' => null,
                     'caption' => null,
@@ -294,7 +257,7 @@ final class RemoteResourceTest extends TestCase
             ],
             [
                 [
-                    'public_id' => 'c87hg9xfxrd4itiim3t0',
+                    'public_id' => 'media/raw/new/c87hg9xfxrd4itiim3t0',
                     'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'format' => 'zip',
@@ -302,12 +265,13 @@ final class RemoteResourceTest extends TestCase
                     'created_at' => '2011-06-23T13:59:18Z',
                     'bytes' => 12025,
                     'type' => 'private',
-                    'secure_url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.zip',
+                    'secure_url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/media/raw/new/c87hg9xfxrd4itiim3t0.zip',
                 ],
                 new RemoteResource([
-                    'remoteId' => 'private|raw|c87hg9xfxrd4itiim3t0',
+                    'remoteId' => 'private|raw|media/raw/new/c87hg9xfxrd4itiim3t0',
                     'type' => 'other',
-                    'url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.zip',
+                    'url' => 'https://res.cloudinary.com/demo/video/upload/v1371995958/media/raw/new/c87hg9xfxrd4itiim3t0.zip',
+                    'folder' => Folder::fromPath('media/raw/new'),
                     'size' => 12025,
                     'tags' => [],
                     'metadata' => [

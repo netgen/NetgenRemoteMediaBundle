@@ -8,6 +8,7 @@ use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse as BrowseControll
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -67,6 +68,7 @@ final class BrowseTest extends TestCase
                     'remoteId' => 'upload|image|media/images/image.jpg',
                     'type' => 'image',
                     'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
+                    'folder' => Folder::fromPath('media/images'),
                     'size' => 95,
                     'tags' => ['test', 'image'],
                 ]),
@@ -74,6 +76,7 @@ final class BrowseTest extends TestCase
                     'remoteId' => 'upload|image|media/images/image2.jpg',
                     'type' => 'image',
                     'url' => 'https://cloudinary.com/test/upload/images/image2.jpg',
+                    'folder' => Folder::fromPath('media/images'),
                     'size' => 75,
                     'tags' => ['test'],
                 ]),
@@ -81,6 +84,7 @@ final class BrowseTest extends TestCase
                     'remoteId' => 'upload|image|media/videos/example.mp4',
                     'type' => 'video',
                     'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
+                    'folder' => Folder::fromPath('media/videos'),
                     'size' => 550,
                     'tags' => ['test', 'video'],
                 ]),
@@ -153,6 +157,7 @@ final class BrowseTest extends TestCase
             'hits' => [
                 [
                     'remoteId' => 'upload|image|media/images/image.jpg',
+                    'folder' => 'media/images',
                     'tags' => ['test', 'image'],
                     'type' => 'image',
                     'size' => 95,
@@ -167,6 +172,7 @@ final class BrowseTest extends TestCase
                 ],
                 [
                     'remoteId' => 'upload|image|media/images/image2.jpg',
+                    'folder' => 'media/images',
                     'tags' => ['test'],
                     'type' => 'image',
                     'size' => 75,
@@ -181,6 +187,7 @@ final class BrowseTest extends TestCase
                 ],
                 [
                     'remoteId' => 'upload|image|media/videos/example.mp4',
+                    'folder' => 'media/videos',
                     'tags' => ['test', 'video'],
                     'type' => 'video',
                     'size' => 550,

@@ -193,15 +193,16 @@ final class Notify extends AbstractController
                 continue;
             }
 
-            $resource->setRemoteId(
-                (new CloudinaryRemoteId(
-                    $apiResource['type'],
-                    $apiResource['resource_type'],
-                    $apiResource['public_id'],
-                ))->getRemoteId(),
+            $cloudinaryRemoteId = new CloudinaryRemoteId(
+                $apiResource['type'],
+                $apiResource['resource_type'],
+                $apiResource['public_id'],
             );
 
-            $resource->setUrl($apiResource['secure_url']);
+            $resource
+                ->setRemoteId($cloudinaryRemoteId->getRemoteId())
+                ->setUrl($apiResource['secure_url'])
+                ->setFolder($cloudinaryRemoteId->getFolder());
 
             $this->provider->store($resource);
 
