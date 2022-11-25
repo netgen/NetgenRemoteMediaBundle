@@ -25,10 +25,13 @@ final class RemoteResource implements RemoteResourceFactoryInterface
     {
         $this->validateData($data);
 
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromCloudinaryData($data);
+
         return new RemoteResourceValue([
-            'remoteId' => CloudinaryRemoteId::fromCloudinaryData($data)->getRemoteId(),
+            'remoteId' => $cloudinaryRemoteId->getRemoteId(),
             'type' => $this->resolveResourceType($data),
             'url' => $data['secure_url'] ?? $data['url'],
+            'folder' => $cloudinaryRemoteId->getFolder(),
             'size' => $data['bytes'] ?? 0,
             'altText' => $this->resolveAltText($data),
             'caption' => $data['context']['custom']['caption'] ?? null,

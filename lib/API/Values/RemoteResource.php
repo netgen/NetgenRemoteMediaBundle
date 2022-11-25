@@ -56,6 +56,11 @@ class RemoteResource
     private string $url;
 
     /**
+     * @ORM\Column(name="folder", type="string", length=255)
+     */
+    private ?Folder $folder = null;
+
+    /**
      * @ORM\Column(type="integer")
      */
     private int $size = 0;
@@ -142,6 +147,18 @@ class RemoteResource
     public function setUrl(string $url): self
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    public function getFolder(): ?Folder
+    {
+        return $this->folder;
+    }
+
+    public function setFolder(?Folder $folder): self
+    {
+        $this->folder = $folder;
 
         return $this;
     }

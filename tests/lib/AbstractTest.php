@@ -97,6 +97,20 @@ abstract class AbstractTest extends TestCase
             $expected->getUpdatedAt(),
             $actual->getUpdatedAt(),
         );
+
+        if (!$expected->getFolder() instanceof Folder) {
+            self::assertSame(
+                $expected->getFolder(),
+                $actual->getFolder(),
+            );
+
+            return;
+        }
+
+        self::assertFolderSame(
+            $expected->getFolder(),
+            $actual->getFolder(),
+        );
     }
 
     public static function assertRemoteResourceLocationSame(RemoteResourceLocation $expected, RemoteResourceLocation $actual): void

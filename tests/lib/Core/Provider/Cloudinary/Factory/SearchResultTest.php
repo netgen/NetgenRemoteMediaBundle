@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactory;
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Result as SearchResult;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult as SearchResultFactory;
 use Netgen\RemoteMedia\Tests\AbstractTest;
@@ -92,10 +93,10 @@ final class SearchResultTest extends AbstractTest
                     'total_count' => 1,
                     'resources' => [
                         [
-                            'public_id' => 'upload|image|c87hg9xfxrd4itiim3t0',
+                            'public_id' => 'media/image/c87hg9xfxrd4itiim3t0',
                             'resource_type' => 'image',
                             'type' => 'upload',
-                            'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                            'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg',
                         ],
                     ],
                 ],
@@ -106,7 +107,8 @@ final class SearchResultTest extends AbstractTest
                         new RemoteResource([
                             'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
                             'type' => 'image',
-                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg',
+                            'folder' => Folder::fromPath('media/image'),
                         ]),
                     ],
                 ),

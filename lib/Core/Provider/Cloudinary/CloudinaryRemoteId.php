@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
-use Cloudinary\Api\Response;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use function count;
 use function explode;
@@ -76,5 +76,17 @@ final class CloudinaryRemoteId
     public function getResourceId(): string
     {
         return $this->resourceId;
+    }
+
+    public function getFolder(): ?Folder
+    {
+        $resourceIdParts = explode('/', $this->resourceId);
+        array_pop($resourceIdParts);
+
+        if (empty($resourceIdParts)) {
+            return null;
+        }
+
+        return Folder::fromPath(implode('/', $resourceIdParts));
     }
 }
