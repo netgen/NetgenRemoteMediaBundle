@@ -28,7 +28,6 @@ use function max;
 use function min;
 use function round;
 use function sprintf;
-use function urlencode;
 
 class CloudinaryApiGateway extends Gateway
 {
@@ -264,12 +263,6 @@ class CloudinaryApiGateway extends Gateway
     public function get($id, $type)
     {
         try {
-            $id = array_map(function (string $part) {
-                return urlencode($part);
-            }, explode('/', $id));
-
-            $id = implode('/', $id);
-
             return (array) $this->cloudinaryApi->resource($id, ['resource_type' => $type]);
         } catch (Cloudinary\Error $e) {
             return [];
