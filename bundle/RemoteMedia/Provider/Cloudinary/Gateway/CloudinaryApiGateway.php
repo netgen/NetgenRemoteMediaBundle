@@ -28,7 +28,6 @@ use function max;
 use function min;
 use function round;
 use function sprintf;
-use function urlencode;
 
 class CloudinaryApiGateway extends Gateway
 {
