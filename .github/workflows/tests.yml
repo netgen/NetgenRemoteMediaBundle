@@ -38,7 +38,7 @@ jobs:
       - run: composer global require --no-scripts symfony/flex
 
       # Install eZ Publish legacy installer as a global dependency
-      - run: composer config --no-plugins allow-plugins.ezsystems/ezpublish-legacy-installer [true|false]
+      - run: composer config --no-plugins allow-plugins.ezsystems/ezpublish-legacy-installer true
 
       - run: composer config extra.symfony.require ${{ matrix.symfony }}
 
