@@ -1,0 +1,2 @@
+serializer:
+    circular_reference_handler: netgen_remote_media.utils.circular_reference_handler

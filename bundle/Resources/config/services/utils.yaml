@@ -1,0 +1,4 @@
+services:
+    netgen_remote_media.utils.circular_reference_handler:
+        class: Netgen\RemoteMedia\Utils\CircularReferenceHandler
+        public: false
