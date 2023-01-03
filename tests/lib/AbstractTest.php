@@ -64,6 +64,11 @@ abstract class AbstractTest extends TestCase
         );
 
         self::assertSame(
+            $expected->getName(),
+            $actual->getName(),
+        );
+
+        self::assertSame(
             $expected->getSize(),
             $actual->getSize(),
         );

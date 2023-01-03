@@ -11,6 +11,7 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as Resour
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
 use function in_array;
+use function pathinfo;
 
 final class RemoteResource implements RemoteResourceFactoryInterface
 {
@@ -31,6 +32,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'remoteId' => $cloudinaryRemoteId->getRemoteId(),
             'type' => $this->resolveResourceType($data),
             'url' => $data['secure_url'] ?? $data['url'],
+            'name' => pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
             'folder' => $cloudinaryRemoteId->getFolder(),
             'size' => $data['bytes'] ?? 0,
             'altText' => $this->resolveAltText($data),

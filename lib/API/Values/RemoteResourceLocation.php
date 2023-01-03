@@ -25,7 +25,6 @@ class RemoteResourceLocation
 
     /**
      * @ORM\ManyToOne(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResource", inversedBy="locations")
-     * @ORM\JoinColumn(name="remote_resource_id", referencedColumnName="id")
      */
     private RemoteResource $remoteResource;
 

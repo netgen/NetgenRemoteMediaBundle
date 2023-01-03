@@ -235,6 +235,7 @@ final class NotifyTest extends TestCase
             'remoteId' => 'upload|image|sample',
             'type' => 'image',
             'url' => 'https://res.cloudinary.com/demo/image/upload/v1608120578/sample.jpg',
+            'name' => 'sample',
             'size' => 380250,
         ]);
 
@@ -322,6 +323,7 @@ final class NotifyTest extends TestCase
             'remoteId' => 'upload|image|sample',
             'type' => 'image',
             'url' => 'https://res.cloudinary.com/demo/image/upload/v1608120578/sample.jpg',
+            'name' => 'sample',
             'size' => 380250,
         ]);
 
@@ -330,6 +332,7 @@ final class NotifyTest extends TestCase
             'remoteId' => 'upload|video|sample2',
             'type' => 'video',
             'url' => 'https://res.cloudinary.com/demo/image/upload/v1608120578/sample2.mp4',
+            'name' => 'sample2',
             'size' => 3802530,
         ]);
 

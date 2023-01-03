@@ -695,6 +695,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            'name' => 'test_image.jpg',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -739,6 +740,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            'name' => 'test_image.jpg',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -805,6 +807,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            'name' => 'test_image.jpg',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -865,7 +868,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->willThrowException(new RemoteResourceNotFoundException($remoteId->getRemoteId()));
 
         self::expectException(RemoteResourceNotFoundException::class);
-        self::expectExceptionMessage(sprintf('Remote resource with ID \'%s\' not found.', $remoteId->getRemoteId()));
+        self::expectExceptionMessage(sprintf('Remote resource with ID "%s" not found.', $remoteId->getRemoteId()));
 
         $this->nonTaggableCachedGateway->get($remoteId);
     }
@@ -884,6 +887,8 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $resource = new RemoteResource([
             'remoteId' => 'upload|image|test_image.jpg',
             'type' => 'image',
+            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
         ]);
 
         $this->apiGatewayMock
@@ -976,7 +981,14 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->method('isHit')
             ->willReturn(true);
 
-        $searchResult = new Result(200, '123', [new RemoteResource()]);
+        $resource = new RemoteResource([
+            'remoteId' => 'upload|image|test_image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
+        ]);
+
+        $searchResult = new Result(200, '123', [$resource]);
 
         $cacheItem
             ->expects(self::once())
@@ -1024,7 +1036,14 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'folders' => ['test_folder'],
         ]);
 
-        $searchResult = new Result(200, '123', [new RemoteResource()]);
+        $resource = new RemoteResource([
+            'remoteId' => 'upload|image|test_image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
+        ]);
+
+        $searchResult = new Result(200, '123', [$resource]);
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -1089,7 +1108,14 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'folders' => ['test_folder'],
         ]);
 
-        $searchResult = new Result(200, '123', [new RemoteResource()]);
+        $resource = new RemoteResource([
+            'remoteId' => 'upload|image|test_image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
+        ]);
+
+        $searchResult = new Result(200, '123', [$resource]);
 
         $this->apiGatewayMock
             ->expects(self::once())

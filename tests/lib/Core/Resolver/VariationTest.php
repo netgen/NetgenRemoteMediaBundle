@@ -187,6 +187,7 @@ final class VariationTest extends TestCase
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -243,6 +244,7 @@ final class VariationTest extends TestCase
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -270,6 +272,7 @@ final class VariationTest extends TestCase
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -312,6 +315,7 @@ final class VariationTest extends TestCase
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -344,6 +348,7 @@ final class VariationTest extends TestCase
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);

@@ -60,6 +60,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -103,6 +104,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -148,6 +150,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -190,6 +193,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
         $resource = new RemoteResource([
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -234,6 +238,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -263,6 +268,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -301,6 +307,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_video.mp4',
             'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
         ]);
@@ -329,6 +336,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_video.mp4',
             'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
         ]);
@@ -368,6 +376,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_video.mp4',
             'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
         ]);
@@ -414,6 +423,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_video.mp4',
             'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
         ]);
@@ -443,6 +453,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_video.mp4',
             'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
         ]);
@@ -486,6 +497,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_video.mp4',
             'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
         ]);
@@ -535,6 +547,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_video.mp4',
             'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
         ]);
