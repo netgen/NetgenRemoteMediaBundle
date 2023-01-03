@@ -14,6 +14,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 use function trim;
 
+use const PHP_EOL;
+
 final class ShowApiUsageCommandTest extends TestCase
 {
     /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */

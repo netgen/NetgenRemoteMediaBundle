@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\API\Values;
 
 use Doctrine\ORM\Mapping as ORM;
+
 use function array_diff;
 use function array_key_exists;
 use function in_array;
@@ -32,6 +33,13 @@ class RemoteResource
         self::TYPE_DOCUMENT,
         self::TYPE_OTHER,
     ];
+
+    /**
+     * @var \Doctrine\ORM\PersistentCollection|array
+     *
+     * @ORM\OneToMany(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation", mappedBy="remoteResource", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    public $locations;
 
     /**
      * @ORM\Id()
@@ -93,13 +101,6 @@ class RemoteResource
      * @ORM\Column(name="metadata", type="array", nullable=true)
      */
     private array $metadata = [];
-
-    /**
-     * @var \Doctrine\ORM\PersistentCollection|array
-     *
-     * @ORM\OneToMany(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation", mappedBy="remoteResource", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    public $locations;
 
     /**
      * @param array<string,mixed> $properties

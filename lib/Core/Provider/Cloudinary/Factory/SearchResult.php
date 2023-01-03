@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactory;
-use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
+use Netgen\RemoteMedia\API\Search\Result;
 
 final class SearchResult implements SearchResultFactoryInterface
 {

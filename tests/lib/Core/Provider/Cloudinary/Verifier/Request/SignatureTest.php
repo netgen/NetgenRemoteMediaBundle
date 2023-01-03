@@ -6,7 +6,6 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Verifier\Request;
 
 use Cloudinary;
 use Cloudinary\SignatureVerifier as CloudinarySignatureVerifier;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature as SignatureVerifier;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;

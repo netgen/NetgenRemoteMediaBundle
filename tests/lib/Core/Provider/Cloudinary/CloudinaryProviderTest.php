@@ -28,6 +28,8 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\MimeTypesInterface;
 
+use function count;
+
 final class CloudinaryProviderTest extends AbstractTest
 {
     protected CloudinaryProvider $cloudinaryProvider;

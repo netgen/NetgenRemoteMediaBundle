@@ -9,6 +9,7 @@ use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
+
 use function base_convert;
 use function count;
 use function explode;

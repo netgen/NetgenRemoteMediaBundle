@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Factory;
 
+use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Factory\DateTime as DateTimeFactoryInterface;
 use Netgen\RemoteMedia\Core\Factory\DateTime as DateTimeFactory;
 use PHPUnit\Framework\TestCase;
-use DateTimeImmutable;
 
 final class DateTimeTest extends TestCase
 {

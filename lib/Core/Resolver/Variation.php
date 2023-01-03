@@ -11,6 +11,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+
 use function array_merge;
 
 final class Variation

@@ -11,8 +11,10 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as Upload
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mime\MimeTypesInterface;
+
 use function pathinfo;
 use function str_replace;
+
 use const PATHINFO_DIRNAME;
 use const PATHINFO_EXTENSION;
 use const PATHINFO_FILENAME;
