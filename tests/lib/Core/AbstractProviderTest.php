@@ -1221,7 +1221,7 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider
             ->expects(self::once())
             ->method('generateDownloadTag')
-            ->with($resource, [], $htmlAttributes)
+            ->with($resource, $htmlAttributes)
             ->willReturn($tag);
 
         self::assertSame(

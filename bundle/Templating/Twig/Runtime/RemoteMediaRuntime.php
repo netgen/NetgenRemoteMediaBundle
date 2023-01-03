@@ -86,9 +86,9 @@ final class RemoteMediaRuntime extends AbstractExtension
         return $this->provider->buildVideoThumbnailRawVariation($resource, $transformations, $startOffset);
     }
 
-    public function getRemoteResourceHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false): string
+    public function getRemoteResourceHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string
     {
-        return $this->provider->generateHtmlTag($resource, $htmlAttributes, $forceVideo);
+        return $this->provider->generateHtmlTag($resource, $htmlAttributes, $forceVideo, $useThumbnail);
     }
 
     public function getRemoteResourceVariationHtmlTag(
@@ -96,7 +96,8 @@ final class RemoteMediaRuntime extends AbstractExtension
         string $variationGroup,
         string $variationName,
         array $htmlAttributes = [],
-        bool $forceVideo = false
+        bool $forceVideo = false,
+        bool $useThumbnail = false
     ): string {
         return $this->provider->generateVariationHtmlTag(
             $location,
@@ -104,6 +105,7 @@ final class RemoteMediaRuntime extends AbstractExtension
             $variationName,
             $htmlAttributes,
             $forceVideo,
+            $useThumbnail,
         );
     }
 
@@ -111,13 +113,15 @@ final class RemoteMediaRuntime extends AbstractExtension
         RemoteResource $resource,
         array $transformations = [],
         array $htmlAttributes = [],
-        bool $forceVideo = false
+        bool $forceVideo = false,
+        bool $useThumbnail = false
     ): string {
         return $this->provider->generateRawVariationHtmlTag(
             $resource,
             $transformations,
             $htmlAttributes,
             $forceVideo,
+            $useThumbnail,
         );
     }
 

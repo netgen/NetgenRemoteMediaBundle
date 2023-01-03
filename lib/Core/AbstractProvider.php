@@ -262,9 +262,9 @@ abstract class AbstractProvider implements ProviderInterface
         return $this->internalBuildVideoThumbnail($resource, $transformations, $startOffset);
     }
 
-    public function generateHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false): string
+    public function generateHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string
     {
-        return $this->generateRawVariationHtmlTag($resource, [], $htmlAttributes, $forceVideo);
+        return $this->generateRawVariationHtmlTag($resource, [], $htmlAttributes, $forceVideo, $useThumbnail);
     }
 
     public function generateVariationHtmlTag(
@@ -272,7 +272,8 @@ abstract class AbstractProvider implements ProviderInterface
         string $variationGroup,
         string $variationName,
         array $htmlAttributes = [],
-        bool $forceVideo = false
+        bool $forceVideo = false,
+        bool $useThumbnail = false
     ): string {
         $transformations = $this->variationResolver->processConfiguredVariation(
             $location,
@@ -281,23 +282,30 @@ abstract class AbstractProvider implements ProviderInterface
             $variationName,
         );
 
-        return $this->generateRawVariationHtmlTag($location->getRemoteResource(), $transformations, $htmlAttributes, $forceVideo);
+        return $this->generateRawVariationHtmlTag($location->getRemoteResource(), $transformations, $htmlAttributes, $forceVideo, $useThumbnail);
     }
 
     public function generateRawVariationHtmlTag(
         RemoteResource $resource,
         array $transformations = [],
         array $htmlAttributes = [],
-        bool $forceVideo = false
+        bool $forceVideo = false,
+        bool $useThumbnail = false
     ): string {
         switch ($resource->getType()) {
             case RemoteResource::TYPE_IMAGE:
                 return $this->generatePictureTag($resource, $transformations, $htmlAttributes);
 
             case RemoteResource::TYPE_VIDEO:
-                return $this->generateVideoTag($resource, $transformations, $htmlAttributes);
+                return $useThumbnail
+                    ? $this->generateVideoThumbnailTag($resource, $transformations, $htmlAttributes)
+                    : $this->generateVideoTag($resource, $transformations, $htmlAttributes);
 
             case RemoteResource::TYPE_AUDIO:
+                if ($useThumbnail) {
+                    return $this->generateVideoThumbnailTag($resource, $transformations, $htmlAttributes);
+                }
+
                 return $forceVideo
                     ? $this->generateVideoTag($resource, $transformations, $htmlAttributes)
                     : $this->generateAudioTag($resource, $transformations, $htmlAttributes);
@@ -333,6 +341,8 @@ abstract class AbstractProvider implements ProviderInterface
     abstract protected function generatePictureTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string;
 
     abstract protected function generateVideoTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string;
+
+    abstract protected function generateVideoThumbnailTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string;
 
     abstract protected function generateAudioTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string;
 

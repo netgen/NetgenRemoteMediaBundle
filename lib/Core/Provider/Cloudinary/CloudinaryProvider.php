@@ -210,6 +210,14 @@ final class CloudinaryProvider extends AbstractProvider
 
     protected function generatePictureTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
+        if (!($htmlAttributes['alt'] ?? null) && $resource->getAltText()) {
+            $htmlAttributes['alt'] = $resource->getAltText();
+        }
+
+        if (!($htmlAttributes['title'] ?? null) && $resource->getCaption()) {
+            $htmlAttributes['title'] = $resource->getCaption();
+        }
+
         $options = [
             'secure' => true,
             'attributes' => $htmlAttributes,
@@ -250,6 +258,39 @@ final class CloudinaryProvider extends AbstractProvider
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
         );
+    }
+
+    protected function generateVideoThumbnailTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
+    {
+        $thumbnailUrl = $this->buildVideoThumbnailRawVariation($resource, $transformations)->getUrl();
+
+        if (!($htmlAttributes['alt'] ?? null) && $resource->getAltText()) {
+            $htmlAttributes['alt'] = $resource->getAltText();
+        }
+
+        if (!($htmlAttributes['title'] ?? null) && $resource->getCaption()) {
+            $htmlAttributes['title'] = $resource->getCaption();
+        }
+
+        $options = [
+            'secure' => true,
+            'attributes' => $htmlAttributes,
+        ];
+
+        if (count($transformations) > 0) {
+            $options['transformation'] = $transformations;
+        }
+
+        $thumbnailTag = $this->gateway->getImageTag(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
+
+        preg_match('/src=["|\']([^"|\']*)["|\']/', $thumbnailTag, $parts);
+
+        if (count($parts) > 1) {
+            return str_replace($parts[1], $thumbnailUrl, $thumbnailTag);
+        }
     }
 
     protected function generateAudioTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
