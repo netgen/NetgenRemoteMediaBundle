@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\API\Upload;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 use function pathinfo;
+
 use const PATHINFO_EXTENSION;
 use const PATHINFO_FILENAME;
 

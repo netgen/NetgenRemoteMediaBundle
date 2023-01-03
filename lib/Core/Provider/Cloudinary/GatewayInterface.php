@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
-use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Search\Query;
+use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 

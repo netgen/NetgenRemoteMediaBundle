@@ -13,6 +13,8 @@ use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 use function in_array;
 use function pathinfo;
 
+use const PATHINFO_FILENAME;
+
 final class RemoteResource implements RemoteResourceFactoryInterface
 {
     private ResourceTypeConverter $resourceTypeConverter;

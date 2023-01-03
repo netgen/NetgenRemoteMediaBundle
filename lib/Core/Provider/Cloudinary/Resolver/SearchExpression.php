@@ -7,11 +7,13 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
+
 use function array_filter;
 use function array_map;
 use function array_unique;
 use function count;
 use function implode;
+use function is_string;
 use function sprintf;
 
 final class SearchExpression

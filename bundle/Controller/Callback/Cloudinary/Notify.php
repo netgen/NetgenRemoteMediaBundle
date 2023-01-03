@@ -22,6 +22,8 @@ use Symfony\Component\HttpFoundation\Response;
 use function json_decode;
 use function pathinfo;
 
+use const PATHINFO_FILENAME;
+
 final class Notify extends AbstractController
 {
     private const RESOURCE_UPLOAD = 'upload';

@@ -11,10 +11,10 @@ final class StatusDataTest extends TestCase
 {
     /**
      * @covers \Netgen\RemoteMedia\API\Values\StatusData::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::has
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::get
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::all
      * @covers \Netgen\RemoteMedia\API\Values\StatusData::add
+     * @covers \Netgen\RemoteMedia\API\Values\StatusData::all
+     * @covers \Netgen\RemoteMedia\API\Values\StatusData::get
+     * @covers \Netgen\RemoteMedia\API\Values\StatusData::has
      */
     public function test(): void
     {

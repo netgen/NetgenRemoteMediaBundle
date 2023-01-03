@@ -24,6 +24,7 @@ use Psr\Log\LoggerInterface;
 use function array_map;
 use function basename;
 use function count;
+use function preg_match;
 use function sprintf;
 use function str_replace;
 

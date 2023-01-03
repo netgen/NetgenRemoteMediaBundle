@@ -8,9 +8,9 @@ use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
-use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Twig\Extension\AbstractExtension;
 
 final class RemoteMediaRuntime extends AbstractExtension

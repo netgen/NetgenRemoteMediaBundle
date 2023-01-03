@@ -12,6 +12,8 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use PHPUnit\Framework\TestCase;
 
+use function count;
+
 abstract class AbstractTest extends TestCase
 {
     public static function assertFolderSame(Folder $expected, Folder $actual): void

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\Resource;
 
 use Netgen\RemoteMedia\API\ProviderInterface;

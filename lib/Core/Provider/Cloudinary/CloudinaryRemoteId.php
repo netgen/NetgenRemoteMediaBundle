@@ -6,6 +6,8 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
+
+use function array_pop;
 use function count;
 use function explode;
 use function implode;
