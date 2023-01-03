@@ -372,6 +372,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 15,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -418,6 +419,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 15,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -464,6 +466,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 15,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -492,6 +495,7 @@ final class AbstractProviderTest extends AbstractTest
         $remoteResource = new RemoteResource([
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -527,6 +531,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 15,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -534,6 +539,7 @@ final class AbstractProviderTest extends AbstractTest
         $remoteResource = new RemoteResource([
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image_2.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 250,
         ]);
@@ -544,6 +550,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 15,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image_2.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 250,
             'updatedAt' => $dateTime,
@@ -585,6 +592,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 15,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 250,
         ]);
@@ -616,6 +624,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 15,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 250,
         ]);
@@ -652,6 +661,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -700,6 +710,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -728,6 +739,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -758,6 +770,7 @@ final class AbstractProviderTest extends AbstractTest
         $resource = new RemoteResource([
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -799,6 +812,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -857,6 +871,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'test_image.jpg',
             'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -898,6 +913,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.mp4',
             'url' => 'https://cloudinary.com/upload/video/example.mp4',
+            'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1000,
         ]);
@@ -929,6 +945,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.mp4',
             'url' => 'https://cloudinary.com/upload/video/example.mp4',
+            'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1000,
         ]);
@@ -975,6 +992,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.mp4',
             'url' => 'https://cloudinary.com/upload/video/example.mp4',
+            'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1000,
         ]);
@@ -1009,6 +1027,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'image.jpg',
             'url' => 'https://cloudinary.com/upload/image/image.jpg',
+            'name' => 'image.jpg',
             'type' => 'image',
             'size' => 200,
         ]);
@@ -1043,6 +1062,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.mp4',
             'url' => 'https://cloudinary.com/upload/video/example.mp4',
+            'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1200,
         ]);
@@ -1090,6 +1110,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.mp3',
             'url' => 'https://cloudinary.com/upload/video/example.mp3',
+            'name' => 'example.mp3',
             'type' => 'audio',
             'size' => 120,
         ]);
@@ -1124,6 +1145,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.mp3',
             'url' => 'https://cloudinary.com/upload/video/example.mp3',
+            'name' => 'example.mp3',
             'type' => 'audio',
             'size' => 120,
         ]);
@@ -1158,6 +1180,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.pdf',
             'url' => 'https://cloudinary.com/upload/raw/example.pdf',
+            'name' => 'example.pdf',
             'type' => 'document',
             'size' => 80,
         ]);
@@ -1186,6 +1209,7 @@ final class AbstractProviderTest extends AbstractTest
             'id' => 30,
             'remoteId' => 'example.zip',
             'url' => 'https://cloudinary.com/upload/raw/example.zip',
+            'name' => 'example.zip',
             'type' => 'other',
             'size' => 30,
         ]);

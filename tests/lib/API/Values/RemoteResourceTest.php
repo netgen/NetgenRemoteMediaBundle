@@ -32,6 +32,7 @@ final class RemoteResourceTest extends AbstractTest
             'remoteId' => 'upload|image|media/c87hg9xfxrd4itiim3t0',
             'type' => 'image',
             'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/c87hg9xfxrd4itiim3t0.jpg',
+            'name' => 'c87hg9xfxrd4itiim3t0',
             'folder' => Folder::fromPath('media'),
             'size' => 120253,
             'altText' => 'alt text',
@@ -68,6 +69,11 @@ final class RemoteResourceTest extends AbstractTest
         self::assertSame(
             'https://res.cloudinary.com/demo/image/upload/v1371995958/media/c87hg9xfxrd4itiim3t0.jpg',
             $resource->getUrl(),
+        );
+
+        self::assertSame(
+            'c87hg9xfxrd4itiim3t0',
+            $resource->getName(),
         );
 
         self::assertFolderSame(
@@ -140,6 +146,7 @@ final class RemoteResourceTest extends AbstractTest
             'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
             'type' => 'image',
             'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg',
+            'name' => 'c87hg9xfxrd4itiim3t0',
             'folder' => Folder::fromPath('media/image'),
             'size' => 120253,
             'altText' => 'alt text',
@@ -164,6 +171,7 @@ final class RemoteResourceTest extends AbstractTest
             ->setRemoteId('upload|image|c87hg9xfxrd4itiim3t0')
             ->setType('image')
             ->setUrl('https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg')
+            ->setName('c87hg9xfxrd4itiim3t0')
             ->setFolder(Folder::fromPath('media/image'))
             ->setSize(120253)
             ->setAltText('alt text')

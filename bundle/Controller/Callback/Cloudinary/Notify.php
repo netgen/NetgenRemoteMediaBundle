@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function json_decode;
+use function pathinfo;
 
 final class Notify extends AbstractController
 {
@@ -127,6 +128,7 @@ final class Notify extends AbstractController
 
             $resource
                 ->setUrl($requestContent['secure_url'])
+                ->setName(pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME))
                 ->setSize($requestContent['bytes'])
                 ->setTags($requestContent['tags']);
 
@@ -201,6 +203,7 @@ final class Notify extends AbstractController
 
             $resource
                 ->setRemoteId($cloudinaryRemoteId->getRemoteId())
+                ->setName(pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME))
                 ->setUrl($apiResource['secure_url'])
                 ->setFolder($cloudinaryRemoteId->getFolder());
 

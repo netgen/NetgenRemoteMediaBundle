@@ -25,6 +25,7 @@ final class RemoteResourceLocationTest extends AbstractTest
             'remoteId' => 'test_remote_id',
             'type' => 'raw',
             'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            'name' => 'test_remote_id',
         ]);
 
         $location = new RemoteResourceLocation(
@@ -79,6 +80,7 @@ final class RemoteResourceLocationTest extends AbstractTest
             'remoteId' => 'test_remote_id',
             'type' => 'raw',
             'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            'name' => 'test_remote_id',
         ]);
 
         $expected = new RemoteResourceLocation(

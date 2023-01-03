@@ -22,6 +22,7 @@ final class RemoteResourceVariationTest extends AbstractTest
             'remoteId' => 'image/test.jpg',
             'type' => 'img',
             'url' => 'https://cloudinary.com/test/upload/image/image/test.jpg',
+            'name' => 'test.jpg',
             'folder' => Folder::fromPath('image'),
         ]);
 
@@ -52,6 +53,7 @@ final class RemoteResourceVariationTest extends AbstractTest
             'remoteId' => 'image/test.jpg',
             'type' => 'img',
             'url' => 'https://cloudinary.com/test/upload/image/image/test.jpg',
+            'name' => 'test.jpg',
             'folder' => Folder::fromPath('image'),
         ]);
 
