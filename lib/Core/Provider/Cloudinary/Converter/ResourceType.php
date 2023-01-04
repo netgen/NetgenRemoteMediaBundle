@@ -18,11 +18,11 @@ final class ResourceType
     private array $audioFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'];
 
     /**
-     * Document formats that Cloudinary treats as image.
+     * Document formats that Cloudinary treats as image or RAW.
      *
      * @var string[]
      */
-    private array $documentFormats = ['pdf', 'doc', 'docx'];
+    private array $documentFormats = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'];
 
     public function fromCloudinaryData(string $type, ?string $format = null): string
     {
@@ -41,6 +41,13 @@ final class ResourceType
 
                 return RemoteResource::TYPE_IMAGE;
 
+            case 'raw':
+                if ($format !== null && $this->isDocumentFormat($format)) {
+                    return RemoteResource::TYPE_DOCUMENT;
+                }
+
+                return RemoteResource::TYPE_OTHER;
+
             default:
                 return RemoteResource::TYPE_OTHER;
         }
@@ -50,8 +57,10 @@ final class ResourceType
     {
         switch ($type) {
             case RemoteResource::TYPE_IMAGE:
-            case RemoteResource::TYPE_DOCUMENT:
                 return 'image';
+
+            case RemoteResource::TYPE_DOCUMENT:
+                return 'image|raw';
 
             case RemoteResource::TYPE_VIDEO:
             case RemoteResource::TYPE_AUDIO:
@@ -60,6 +69,22 @@ final class ResourceType
             default:
                 return 'raw';
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAudioFormats(): array
+    {
+        return $this->audioFormats;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDocumentFormats(): array
+    {
+        return $this->documentFormats;
     }
 
     private function isAudioFormat(string $format): bool

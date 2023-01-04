@@ -43,14 +43,34 @@ final class ResourceTypeTest extends TestCase
         );
     }
 
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::getAudioFormats
+     */
+    public function testGetAudioFormats(): void
+    {
+        self::assertSame(
+            ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'],
+            $this->converter->getAudioFormats(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::getDocumentFormats
+     */
+    public function testGetDocumentFormats(): void
+    {
+        self::assertSame(
+            ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'],
+            $this->converter->getDocumentFormats(),
+        );
+    }
+
     public function fromCloudinaryDataProvider(): array
     {
         return [
             ['image', null, RemoteResource::TYPE_IMAGE],
             ['image', 'jpg', RemoteResource::TYPE_IMAGE],
             ['image', 'pdf', RemoteResource::TYPE_DOCUMENT],
-            ['image', 'doc', RemoteResource::TYPE_DOCUMENT],
-            ['image', 'docx', RemoteResource::TYPE_DOCUMENT],
             ['video', null, RemoteResource::TYPE_VIDEO],
             ['video', 'mp4', RemoteResource::TYPE_VIDEO],
             ['video', 'mp3', RemoteResource::TYPE_AUDIO],
@@ -58,6 +78,11 @@ final class ResourceTypeTest extends TestCase
             ['raw', null, RemoteResource::TYPE_OTHER],
             ['raw', 'zip', RemoteResource::TYPE_OTHER],
             ['raw', 'rar', RemoteResource::TYPE_OTHER],
+            ['raw', 'doc', RemoteResource::TYPE_DOCUMENT],
+            ['raw', 'docx', RemoteResource::TYPE_DOCUMENT],
+            ['raw', 'ppt', RemoteResource::TYPE_DOCUMENT],
+            ['raw', 'pptx', RemoteResource::TYPE_DOCUMENT],
+            ['raw', 'txt', RemoteResource::TYPE_DOCUMENT],
         ];
     }
 
@@ -65,7 +90,7 @@ final class ResourceTypeTest extends TestCase
     {
         return [
             [RemoteResource::TYPE_IMAGE, 'image'],
-            [RemoteResource::TYPE_DOCUMENT, 'image'],
+            [RemoteResource::TYPE_DOCUMENT, 'image|raw'],
             [RemoteResource::TYPE_VIDEO, 'video'],
             [RemoteResource::TYPE_AUDIO, 'video'],
             [RemoteResource::TYPE_OTHER, 'raw'],

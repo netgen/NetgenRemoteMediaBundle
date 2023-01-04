@@ -49,7 +49,7 @@ final class SearchExpressionTest extends TestCase
                 new Query([
                     'query' => 'search term',
                 ]),
-                '*search term*',
+                'search term*',
             ],
             [
                 new Query([
@@ -73,13 +73,17 @@ final class SearchExpressionTest extends TestCase
                 new Query([
                     'types' => ['video'],
                 ]),
-                '(resource_type:"video")',
+                '(resource_type:"video")'
+                . ' AND (((!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac")'
+                . ' AND (!format="m4a") AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))',
             ],
             [
                 new Query([
                     'types' => ['video', 'image', 'raw'],
                 ]),
-                '(resource_type:"video" OR resource_type:"image" OR resource_type:"raw")',
+                '(resource_type:"image" OR resource_type:"video" OR resource_type:"raw")'
+                . ' AND (((!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac")'
+                . ' AND (!format="m4a") AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))',
             ],
             [
                 new Query([
@@ -100,7 +104,12 @@ final class SearchExpressionTest extends TestCase
                     'folders' => ['root/videos'],
                     'tags' => ['tech'],
                 ]),
-                '(resource_type:"video") AND *android* AND (folder:"root/videos") AND (tags:"tech")',
+                '(resource_type:"video")'
+                . ' AND (((!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac") AND (!format="m4a")'
+                . ' AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))'
+                . ' AND android*'
+                . ' AND (folder:"root/videos")'
+                . ' AND (tags:"tech")',
             ],
             [
                 new Query([
@@ -113,8 +122,8 @@ final class SearchExpressionTest extends TestCase
                     'nextCursor' => 'ko5mjv8205hupoew3',
                     'sortBy' => ['created_at' => 'asc'],
                 ]),
-                '(resource_type:"image" OR resource_type:"video")'
-                . ' AND *search term*'
+                '(resource_type:"video" OR resource_type:"image" OR resource_type:"raw")'
+                . ' AND search term*'
                 . ' AND (folder:"root" OR folder:"root/test")'
                 . ' AND (tags:"tech" OR tags:"nature")'
                 . ' AND (public_id:"root/test/picture1" OR public_id:"root/test/picture2" OR public_id:"root/test/picture3")',
