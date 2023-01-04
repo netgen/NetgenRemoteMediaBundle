@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver;
 
 use Netgen\RemoteMedia\API\Search\Query;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 
 use function array_filter;
 use function array_map;
+use function array_merge;
 use function array_unique;
 use function count;
+use function explode;
 use function implode;
+use function in_array;
 use function is_string;
 use function sprintf;
 
@@ -30,6 +34,7 @@ final class SearchExpression
         $expressions = [];
 
         $expressions[] = $this->resolveResourceTypes($query);
+        $expressions[] = $this->resolveFormats($query);
         $expressions[] = $this->resolveSearchQuery($query);
         $expressions[] = $this->resolveFolders($query);
         $expressions[] = $this->resolveTags($query);
@@ -51,9 +56,135 @@ final class SearchExpression
             ),
         );
 
-        $resourceTypes = array_map(static fn ($value) => sprintf('resource_type:"%s"', $value), $resourceTypes);
+        foreach ($resourceTypes as $key => $resourceType) {
+            $newResourceTypes = explode('|', $resourceType);
+
+            if (count($newResourceTypes) > 0) {
+                unset($resourceTypes[$key]);
+                $resourceTypes = array_merge($resourceTypes, $newResourceTypes);
+            }
+        }
+
+        $resourceTypes = array_map(static fn ($value) => sprintf('resource_type:"%s"', $value), array_unique($resourceTypes));
 
         return '(' . implode(' OR ', $resourceTypes) . ')';
+    }
+
+    private function resolveFormats(Query $query): ?string
+    {
+        if (count($query->getTypes()) === 0) {
+            return null;
+        }
+
+        $formats = [];
+        foreach ($query->getTypes() as $type) {
+            switch ($type) {
+                case RemoteResource::TYPE_IMAGE:
+                    $formats += $this->resolveImageFormats($query);
+
+                    break;
+
+                case RemoteResource::TYPE_DOCUMENT:
+                    $formats += $this->resolveDocumentFormats($query);
+
+                    break;
+
+                case RemoteResource::TYPE_VIDEO:
+                    $formats += $this->resolveVideoFormats($query);
+
+                    break;
+
+                case RemoteResource::TYPE_AUDIO:
+                    $formats += $this->resolveAudioFormats($query);
+
+                    break;
+
+                default:
+                    $formats += $this->resolveOtherFormats($query);
+            }
+        }
+
+        $formats = array_unique($formats);
+        $notFormats = [];
+        foreach ($formats as $key => $format) {
+            if (mb_substr($format, 0, 1) === '!') {
+                unset($formats[$key]);
+                $notFormats[] = mb_substr($format, 1);
+            }
+        }
+
+        $formats = array_map(static fn ($value) => sprintf('format="%s"', $value), $formats);
+        $notFormats = array_map(static fn ($value) => sprintf('(!format="%s")', $value), $notFormats);
+
+        $parts = [];
+
+        if (count($formats) > 0) {
+            $parts[] = '(' . implode(' OR ', $formats) . ')';
+        }
+
+        if (count($notFormats) > 0) {
+            $parts[] = '(' . implode(' AND ', $notFormats) . ')';
+        }
+
+        if (count($parts) === 0) {
+            return null;
+        }
+
+        return '(' . implode(' AND ', $parts) . ')';
+    }
+
+    private function resolveImageFormats($query): array
+    {
+        if (in_array(RemoteResource::TYPE_DOCUMENT, $query->getTypes(), true)) {
+            return [];
+        }
+
+        return array_map(
+            static fn ($format) => '!' . $format,
+            $this->resourceTypeConverter->getDocumentFormats(),
+        );
+    }
+
+    private function resolveDocumentFormats($query): array
+    {
+        if (in_array(RemoteResource::TYPE_IMAGE, $query->getTypes(), true)) {
+            return [];
+        }
+
+        return $this->resourceTypeConverter->getDocumentFormats();
+    }
+
+    private function resolveVideoFormats($query): array
+    {
+        if (in_array(RemoteResource::TYPE_AUDIO, $query->getTypes(), true)) {
+            return [];
+        }
+
+        return array_map(
+            static fn ($format) => '!' . $format,
+            $this->resourceTypeConverter->getAudioFormats(),
+        );
+    }
+
+    private function resolveAudioFormats($query): array
+    {
+        if (in_array(RemoteResource::TYPE_VIDEO, $query->getTypes(), true)) {
+            return [];
+        }
+
+        return $this->resourceTypeConverter->getAudioFormats();
+    }
+
+    private function resolveOtherFormats($query): array
+    {
+        if (in_array(RemoteResource::TYPE_DOCUMENT, $query->getTypes(), true)) {
+            return [];
+        }
+
+        return array_map(
+            static fn ($format) => '!' . $format,
+            $this->resourceTypeConverter->getDocumentFormats(),
+        );
     }
 
     private function resolveSearchQuery(Query $query): ?string
