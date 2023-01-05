@@ -15,3 +15,7 @@ image_variations:
 cache:
     pool: cache.app
     ttl: 7200
+
+cloudinary:
+    cache_requests: true
+    log_requests: false

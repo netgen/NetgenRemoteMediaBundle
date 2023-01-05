@@ -19,6 +19,7 @@ final class Configuration implements ConfigurationInterface
         $this->addProviderSection($treeBuilder->getRootNode());
         $this->addImageConfiguration($treeBuilder->getRootNode());
         $this->addCacheConfiguration($treeBuilder->getRootNode());
+        $this->addCloudinaryConfiguration($treeBuilder->getRootNode());
 
         return $treeBuilder;
     }
@@ -127,6 +128,23 @@ final class Configuration implements ConfigurationInterface
                         ->scalarNode('pool')
                         ->end()
                         ->integerNode('ttl')
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addCloudinaryConfiguration(ArrayNodeDefinition $rootNode): void
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('cloudinary')
+                    ->children()
+                        ->booleanNode('cache_requests')
+                            ->defaultValue(true)
+                        ->end()
+                        ->booleanNode('log_requests')
+                            ->defaultValue(false)
                         ->end()
                     ->end()
                 ->end()

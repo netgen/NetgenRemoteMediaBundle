@@ -14,7 +14,7 @@ netgen_remote_media:
     account_secret: [your_secret]
 ```
 
-\* Currently `cloudinary` is the only supported provider.
+**Note:** Currently `cloudinary` is the only supported provider.
 
 #### Cache configuration
 
@@ -31,6 +31,33 @@ netgen_remote_media:
 Above shown are the default used parameters. For more information about creating and configuring cache pools, see https://symfony.com/doc/current/cache.html.
 
 **Warning:** the provider uses tagging functionality to be able to invalidate cache on eg. resource upload, edit or delete. In order to support cache tagging, a corresponding tag-aware pool has to be used. If you use a non-tag-aware pool, tagging will be disabled which means that you will experience some issues while using the bundle. Eg. newly uploaded resource might not be visible immediatelly (until the cache doesn't expire) in the browser or search.
+
+#### Cloudinary configuration
+
+There are three Cloudinary API gateways implemented:
+
+ * API gateway to query Cloudinary API directly
+ * PSR6 cached gateway which internally uses API and caches all requests
+ * Monolog logger gateway which logs all queries towards API
+
+It's possible to configure both caching and logging which will decide about gateways being used:
+
+```yaml
+netgen_remote_media:
+    cloudinary:
+        cache_requests: true
+        log_requests: false
+```
+
+By default, caching is enabled and logging is disabled. If both caching and logging is enabled, gateways will be used with the following order:
+
+```
+Cached gateway -> Logger gateway -> API gateway
+```
+
+So that logger logs only direct requests towards the API.
+
+**Note:** for caching to work, cache has to be configured (see [Cache configuration](#cache-configuration)) .
 
 ### Require the bundle
 
