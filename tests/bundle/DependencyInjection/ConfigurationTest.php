@@ -14,6 +14,8 @@ final class ConfigurationTest extends TestCase
     use ConfigurationTestCaseTrait;
 
     /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
@@ -33,6 +35,8 @@ final class ConfigurationTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
@@ -46,6 +50,14 @@ final class ConfigurationTest extends TestCase
                     'account_name' => 'examplename',
                     'account_key' => 'examplekey',
                     'account_secret' => 'examplesecret',
+                    'cache' => [
+                        'pool' => 'cache.app',
+                        'ttl' => 7200,
+                    ],
+                    'cloudinary' => [
+                        'cache_requests' => true,
+                        'log_requests' => false,
+                    ],
                     'image_variations' => [
                         'default' => [
                             'full' => [
@@ -78,6 +90,8 @@ final class ConfigurationTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
@@ -97,6 +111,8 @@ final class ConfigurationTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
@@ -116,6 +132,8 @@ final class ConfigurationTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
@@ -134,6 +152,8 @@ final class ConfigurationTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder

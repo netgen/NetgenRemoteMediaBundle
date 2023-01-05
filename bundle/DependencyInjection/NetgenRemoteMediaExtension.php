@@ -72,6 +72,18 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['cache']['ttl'],
         );
 
+        $cloudinaryInnerGatewayAlias = $config['cloudinary']['log_requests']
+            ? 'netgen_remote_media.provider.cloudinary.gateway.logged'
+            : 'netgen_remote_media.provider.cloudinary.gateway.api';
+
+        $container->setAlias('netgen_remote_media.provider.cloudinary.gateway.inner', $cloudinaryInnerGatewayAlias);
+
+        $cloudinaryGatewayAlias = $config['cloudinary']['cache_requests']
+            ? 'netgen_remote_media.provider.cloudinary.gateway.cached'
+            : 'netgen_remote_media.provider.cloudinary.gateway.inner';
+
+        $container->setAlias('netgen_remote_media.provider.cloudinary.gateway', $cloudinaryGatewayAlias);
+
         $loader->load('default_parameters.yaml');
         $loader->load('services/**/*.yaml', 'glob');
     }
@@ -82,6 +94,7 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             'default_settings.yaml' => 'netgen_remote_media',
             'doctrine.yaml' => 'doctrine',
             'framework.yaml' => 'framework',
+            'monolog.yaml' => 'monolog',
         ];
 
         foreach ($prependConfigs as $configFile => $prependConfig) {

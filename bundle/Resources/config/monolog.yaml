@@ -1,0 +1,8 @@
+handlers:
+    cloudinary:
+        # log all messages (since debug is the lowest level)
+        level:    info
+        type:     stream
+        path:     '%kernel.logs_dir%/cloudinary.log'
+        channels: [cloudinary]
+channels: ['cloudinary']
