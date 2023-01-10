@@ -569,6 +569,10 @@ class RefreshEzFieldsCommand extends Command
         }
 
         $oldDataText = $attribute['data_text'];
+
+        $oldValue = new Value(json_decode($oldDataText, true));
+        $value->variations = $oldValue->variations;
+
         $newDataText = json_encode($value);
 
         if ($oldDataText === $newDataText) {
