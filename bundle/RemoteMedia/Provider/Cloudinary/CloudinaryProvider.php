@@ -320,9 +320,16 @@ class CloudinaryProvider extends RemoteMediaProvider
 
         $finalOptions = [
             'fallback_content' => 'Your browser does not support HTML5 video tags',
-            'controls' => true,
             'poster' => $transformationOptions,
         ];
+
+        if (!array_key_exists('controls', $format) || $format['controls']) {
+            $finalOptions['controls'] = true;
+        }
+
+        if (array_key_exists('controls', $transformationOptions)) {
+            unset($transformationOptions['controls']);
+        }
 
         $finalOptions = $finalOptions + $transformationOptions;
 
