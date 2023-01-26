@@ -256,11 +256,12 @@ final class CloudinaryApiGateway implements GatewayInterface
         do {
             $result = $this->cloudinaryApi->tags($options);
             $tags = array_merge($tags, $result['tags']);
+            $nextCursor = $result['next_cursor'] ?? null;
 
-            if (array_key_exists('next_cursor', $result)) {
-                $options['next_cursor'] = $result['next_cursor'];
+            if ($nextCursor) {
+                $options['next_cursor'] = $nextCursor;
             }
-        } while (array_key_exists('next_cursor', $result));
+        } while ($nextCursor);
 
         return $tags;
     }
