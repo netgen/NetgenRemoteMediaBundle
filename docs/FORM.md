@@ -1,4 +1,4 @@
-`# Adding Remote Media field in Symfony form
+# Adding Remote Media field in Symfony form
 
 If you want to be able to upload, select, edit or remove remote resources inside a form (eg. in your CMS system), this bundle contains Symfony form type implementation, so it's possible to add it to any existing Symfony form and have the whole interface available there.
 
