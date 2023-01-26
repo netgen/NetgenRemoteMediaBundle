@@ -46,7 +46,7 @@ abstract class AbstractController extends SymfonyAbstractController
 
         return [
             'remoteId' => $resource->getRemoteId(),
-            'folder' => $resource->getFolder()->getPath(),
+            'folder' => $resource->getFolder() ? $resource->getFolder()->getPath() : null,
             'tags' => $resource->getTags(),
             'type' => $resource->getType(),
             'size' => $resource->getSize(),
