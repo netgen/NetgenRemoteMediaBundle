@@ -95,6 +95,7 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             'doctrine.yaml' => 'doctrine',
             'framework.yaml' => 'framework',
             'monolog.yaml' => 'monolog',
+            'twig.yaml' => 'twig',
         ];
 
         foreach ($prependConfigs as $configFile => $prependConfig) {
