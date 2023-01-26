@@ -1,0 +1,50 @@
+{% block remote_media_widget %}
+    {% include '@NetgenRemoteMedia/js_config.html.twig' %}
+
+    {% set field_id = id %}
+    {% set variation_group = variation_group|default('default') %}
+
+    {% set location = null %}
+    {% set location_id = form.children.locationId.vars.value %}
+    {% if location_id %}
+        {% set location = ngrm_remote_resource_location(location_id) %}
+    {% endif %}
+
+    <script type="text/javascript">
+        NgRemoteMediaSelectedImage_{{ field_id }} = {
+            id: "{% if location %}{{ location.remoteResource.remoteId }}{% endif %}",
+            name: "{% if location %}{{ location.remoteResource.remoteId }}{% endif %}",
+            type: "{% if location %}{{ location.remoteResource.type }}{% endif %}",
+            mediaType: "{% if location %}{{ location.remoteResource.type }}{% endif %}",
+            format: "{% if location and location.remoteResource.metadata.format is defined %}{{ location.remoteResource.metadata.format }}{% endif %}",
+            url: "{% if location %}{{ location.remoteResource.url }}{% endif %}",
+            browse_url: "{% if location %}{{ ngrm_remote_resource_raw_variation(location.remoteResource, [{'crop': 'fit', 'width': 160, 'height': 120}]).url }}{% endif %}",
+            previewUrl: "{% if location %}{{ location.remoteResource.url }}{% endif %}",
+            alternateText: "{% if location %}{{ location.remoteResource.altText }}{% endif %}",
+            tags: [{% if location %}{% for tag in location.remoteResource.tags %}"{{ tag }}"{% if not loop.last %},{% endif %}{% endfor %}{% endif %}],
+            size: {% if location %}{{ location.remoteResource.size }}{% else %}0{% endif %},
+            variations: {% if location %}{{ location.cropSettings|json_encode|raw }}{% else %}[]{% endif %},
+            height: {% if location and location.remoteResource.metadata.width is defined %}{{ location.remoteResource.metadata.width }}{% else %}0{% endif %},
+            width: {% if location and location.remoteResource.metadata.height is defined %}{{ location.remoteResource.metadata.height }}{% else %}0{% endif %}
+        };
+
+        NgRemoteMediaInputFields_{{ field_id }} = {
+            {% for child in form.children %}
+                '{{ child.vars.name }}': '{{ child.vars.full_name }}'{% if not loop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        NgRemoteMediaAvailableVariations_{{ field_id }} = {{ ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format|json_encode|raw }};
+        NgRemoteMediaAvailableEditorVariations_{{ field_id }} = {{ ngrm_available_variations(variation_group)|keys|json_encode|raw }};
+    </script>
+
+    {{ form_widget(form.locationId) }}
+
+    <div class="ngremotemedia-container" data-id="{{ field_id }}" v-init:selected-image="NgRemoteMediaSelectedImage" v-init:config="NgRemoteMediaConfig">
+        <interactions
+            field-id="{{ field_id }}"
+            :config="config"
+            :selected-image="selectedImage"
+        ></interactions>
+    </div>
+{% endblock %}
