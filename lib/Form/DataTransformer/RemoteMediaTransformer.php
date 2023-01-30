@@ -12,6 +12,7 @@ use Symfony\Component\Form\DataTransformerInterface;
 
 use function explode;
 use function implode;
+use function json_decode;
 use function json_encode;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
