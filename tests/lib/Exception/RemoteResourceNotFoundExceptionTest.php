@@ -15,7 +15,7 @@ final class RemoteResourceNotFoundExceptionTest extends TestCase
     public function testException(): void
     {
         $this->expectException(RemoteResourceNotFoundException::class);
-        $this->expectExceptionMessage('Remote resource with ID \'50\' not found.');
+        $this->expectExceptionMessage('Remote resource with ID "50" not found.');
 
         throw new RemoteResourceNotFoundException('50');
     }
