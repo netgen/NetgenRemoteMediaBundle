@@ -31,6 +31,9 @@ interface GatewayInterface
      */
     public function get(CloudinaryRemoteId $remoteId): RemoteResource;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceExistsException
+     */
     public function upload(string $fileUri, array $options): RemoteResource;
 
     /**

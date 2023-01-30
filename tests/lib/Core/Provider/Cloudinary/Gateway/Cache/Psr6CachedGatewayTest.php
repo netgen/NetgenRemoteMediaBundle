@@ -696,6 +696,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -741,6 +742,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -808,6 +810,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -889,6 +892,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $this->apiGatewayMock
@@ -986,6 +990,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $searchResult = new Result(200, '123', [$resource]);
@@ -1041,6 +1046,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $searchResult = new Result(200, '123', [$resource]);
@@ -1113,6 +1119,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $searchResult = new Result(200, '123', [$resource]);

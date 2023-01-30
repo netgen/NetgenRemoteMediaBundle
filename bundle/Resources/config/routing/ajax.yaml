@@ -21,3 +21,9 @@ netgen_remote_media_ajax_resource_browse:
     defaults:
         _controller: netgen_remote_media.controller.resource.browse
     methods: [GET]
+
+netgen_remote_media_ajax_resource_upload:
+    path: /resource/upload
+    defaults:
+        _controller: netgen_remote_media.controller.resource.upload
+    methods: [POST]

@@ -425,6 +425,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -517,7 +518,11 @@ class CloudinaryApiGatewayTest extends AbstractTest
      */
     public function testSearch(): void
     {
-        $expression = '(resource_type:"image" OR resource_type:"video") AND test* AND (folder:"test_folder") AND (tags:"tag1")';
+        $expression = '(resource_type:"image" OR resource_type:"video")'
+            . ' AND (((!format="pdf") AND (!format="doc") AND (!format="docx") AND (!format="ppt") AND (!format="pptx")'
+            . ' AND (!format="txt") AND (!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac")'
+            . ' AND (!format="m4a") AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))'
+            . ' AND test* AND (folder:"test_folder") AND (tags:"tag1")';
         $limit = 25;
 
         $this->cloudinarySearchMock
@@ -561,6 +566,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
                     'type' => 'image',
                     'url' => 'https://cloudinary.com/test/upload/image/test.jpg',
                     'name' => 'test.jpg',
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
             ],
         );
@@ -582,7 +588,11 @@ class CloudinaryApiGatewayTest extends AbstractTest
      */
     public function testSearchWithNextCursor(): void
     {
-        $expression = '(resource_type:"image" OR resource_type:"video") AND test* AND (folder:"test_folder") AND (tags:"tag1")';
+        $expression = '(resource_type:"image" OR resource_type:"video")'
+            . ' AND (((!format="pdf") AND (!format="doc") AND (!format="docx") AND (!format="ppt") AND (!format="pptx")'
+            . ' AND (!format="txt") AND (!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac")'
+            . ' AND (!format="m4a") AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))'
+            . ' AND test* AND (folder:"test_folder") AND (tags:"tag1")';
         $limit = 25;
         $nextCursor = 'gfr566455fdg';
 
@@ -634,6 +644,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
                     'type' => 'image',
                     'url' => 'https://cloudinary.com/test/upload/image/test.jpg',
                     'name' => 'test.jpg',
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
             ],
         );
@@ -655,7 +666,11 @@ class CloudinaryApiGatewayTest extends AbstractTest
      */
     public function testSearchCount(): void
     {
-        $expression = '(resource_type:"image" OR resource_type:"video") AND test* AND (folder:"test_folder") AND (tags:"tag1")';
+        $expression = '(resource_type:"image" OR resource_type:"video")'
+            . ' AND (((!format="pdf") AND (!format="doc") AND (!format="docx") AND (!format="ppt") AND (!format="pptx")'
+            . ' AND (!format="txt") AND (!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac")'
+            . ' AND (!format="m4a") AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))'
+            . ' AND test* AND (folder:"test_folder") AND (tags:"tag1")';
 
         $this->cloudinarySearchMock
             ->expects(self::once())

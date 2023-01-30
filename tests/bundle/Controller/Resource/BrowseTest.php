@@ -72,6 +72,7 @@ final class BrowseTest extends TestCase
                     'folder' => Folder::fromPath('media/images'),
                     'size' => 95,
                     'tags' => ['test', 'image'],
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
                 new RemoteResource([
                     'remoteId' => 'upload|image|media/images/image2.jpg',
@@ -81,6 +82,7 @@ final class BrowseTest extends TestCase
                     'folder' => Folder::fromPath('media/images'),
                     'size' => 75,
                     'tags' => ['test'],
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
                 new RemoteResource([
                     'remoteId' => 'upload|image|media/videos/example.mp4',
@@ -90,6 +92,7 @@ final class BrowseTest extends TestCase
                     'folder' => Folder::fromPath('media/videos'),
                     'size' => 550,
                     'tags' => ['test', 'video'],
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
             ],
         );

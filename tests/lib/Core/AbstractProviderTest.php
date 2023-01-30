@@ -375,6 +375,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->resourceRepository
@@ -422,6 +423,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->resourceRepository
@@ -469,6 +471,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->entityManager
@@ -498,6 +501,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->resourceRepository
@@ -534,6 +538,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $remoteResource = new RemoteResource([
@@ -542,6 +547,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 250,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $dateTime = new DateTimeImmutable('now');
@@ -554,6 +560,7 @@ final class AbstractProviderTest extends AbstractTest
             'type' => 'image',
             'size' => 250,
             'updatedAt' => $dateTime,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->resourceRepository
@@ -595,6 +602,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 250,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->entityManager
@@ -627,6 +635,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 250,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->entityManager
@@ -664,6 +673,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -713,6 +723,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -742,6 +753,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -773,6 +785,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->provider
@@ -815,6 +828,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $cropSettings = [
@@ -874,6 +888,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $cropOptions = [
@@ -916,6 +931,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1000,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $variation = new RemoteResourceVariation(
@@ -948,6 +964,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1000,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -995,6 +1012,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1000,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $transformations = ['fetch_format' => 'jpeg'];
@@ -1030,6 +1048,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $htmlAttributes = [
@@ -1065,6 +1084,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.mp4',
             'type' => 'video',
             'size' => 1200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -1103,6 +1123,52 @@ final class AbstractProviderTest extends AbstractTest
     /**
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateVariationHtmlTag
+     */
+    public function testGenerateVariationHtmlTagThumbnail(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'example.mp4',
+            'url' => 'https://cloudinary.com/upload/video/example.mp4',
+            'name' => 'example.mp4',
+            'type' => 'video',
+            'size' => 1200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
+        ]);
+
+        $location = new RemoteResourceLocation($resource);
+
+        $transformations = [['fetch_format' => 'mp4']];
+
+        $tag = '<video><source src="https://cloudinary.com/upload/video/example.mp4"></video>';
+
+        $this->provider
+            ->expects(self::once())
+            ->method('getIdentifier')
+            ->willReturn('cloudinary');
+
+        $this->formatHandler
+            ->expects(self::once())
+            ->method('process')
+            ->with(['mp4'])
+            ->willReturn(['fetch_format' => 'mp4']);
+
+        $this->provider
+            ->expects(self::once())
+            ->method('generateVideoThumbnailTag')
+            ->with($resource, $transformations, [])
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->provider->generateVariationHtmlTag($location, 'article', 'mp4', [], false, true),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
      */
     public function testGenerateRawVariationHtmlTagAudio(): void
     {
@@ -1113,6 +1179,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.mp3',
             'type' => 'audio',
             'size' => 120,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $transformations = [['fetch_format' => 'mp3']];
@@ -1139,6 +1206,38 @@ final class AbstractProviderTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
      */
+    public function testGenerateRawVariationHtmlTagAudioThumbnail(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'example.mp3',
+            'url' => 'https://cloudinary.com/upload/video/example.mp3',
+            'name' => 'example.mp3',
+            'type' => 'audio',
+            'size' => 120,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
+        ]);
+
+        $transformations = [['fetch_format' => 'mp3']];
+
+        $tag = '<audio><source src="https://cloudinary.com/upload/video/example.mp3"></audio>';
+
+        $this->provider
+            ->expects(self::once())
+            ->method('generateVideoThumbnailTag')
+            ->with($resource, $transformations, [])
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->provider->generateRawVariationHtmlTag($resource, $transformations, [], false, true),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
+     */
     public function testGenerateRawVariationHtmlTagAudioForceVideo(): void
     {
         $resource = new RemoteResource([
@@ -1148,6 +1247,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.mp3',
             'type' => 'audio',
             'size' => 120,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $transformations = [['fetch_format' => 'mp3']];
@@ -1183,6 +1283,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.pdf',
             'type' => 'document',
             'size' => 80,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $tag = '<a href="https://cloudinary.com/upload/raw/example.pdf">example.pdf</a>';
@@ -1212,6 +1313,7 @@ final class AbstractProviderTest extends AbstractTest
             'name' => 'example.zip',
             'type' => 'other',
             'size' => 30,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
         ]);
 
         $htmlAttributes = ['target' => '_blank'];

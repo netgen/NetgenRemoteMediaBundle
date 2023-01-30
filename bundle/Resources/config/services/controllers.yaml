@@ -29,6 +29,7 @@ services:
         public: true
         arguments:
             - '@netgen_remote_media.provider'
+            - '@netgen_remote_media.factory.md5_file_hash'
 
     netgen_remote_media.controller.callback.cloudinary.notify:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify

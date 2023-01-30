@@ -59,6 +59,9 @@ interface ProviderInterface
 
     public function searchCount(Query $query): int;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceExistsException
+     */
     public function upload(ResourceStruct $resourceStruct): RemoteResource;
 
     /**

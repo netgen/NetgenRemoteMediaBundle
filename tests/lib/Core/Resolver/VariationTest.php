@@ -190,6 +190,7 @@ final class VariationTest extends TestCase
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $cropSettings = [
@@ -247,6 +248,7 @@ final class VariationTest extends TestCase
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -275,6 +277,7 @@ final class VariationTest extends TestCase
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $cropSettings = [
@@ -318,6 +321,7 @@ final class VariationTest extends TestCase
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -351,6 +355,7 @@ final class VariationTest extends TestCase
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $cropSettings = [

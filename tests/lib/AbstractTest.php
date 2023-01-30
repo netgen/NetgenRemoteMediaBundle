@@ -91,6 +91,11 @@ abstract class AbstractTest extends TestCase
         );
 
         self::assertSame(
+            $expected->getMd5(),
+            $actual->getMd5(),
+        );
+
+        self::assertSame(
             $expected->getMetadata(),
             $actual->getMetadata(),
         );

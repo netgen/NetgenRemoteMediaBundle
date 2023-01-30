@@ -10,13 +10,11 @@ use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
 
-use function base_convert;
 use function count;
 use function explode;
 use function in_array;
 use function preg_replace;
 use function rtrim;
-use function uniqid;
 
 final class UploadOptions
 {
@@ -41,21 +39,16 @@ final class UploadOptions
         $cleanFileName = preg_replace('#[\\p{Z}]{2,}#u', '_', $clean);
         $fileName = rtrim($cleanFileName, '_');
 
-        // check if overwrite is set, if it is, do not append random string
-        $overwrite = $resourceStruct->doOverwrite() ?? false;
-        $invalidate = $resourceStruct->doInvalidate() ?? $overwrite;
-
-        $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
-        $publicId = $this->appendExtension($publicId, $resourceStruct->getFileStruct());
+        $publicId = $this->appendExtension($fileName, $resourceStruct->getFileStruct());
 
         if ($resourceStruct->getFolder()) {
-            $publicId = $resourceStruct->getFolder() . '/' . $publicId;
+            $publicId = $resourceStruct->getFolder()->getPath() . '/' . $publicId;
         }
 
         return [
             'public_id' => $publicId,
-            'overwrite' => $overwrite,
-            'invalidate' => $invalidate,
+            'overwrite' => $resourceStruct->doOverwrite(),
+            'invalidate' => $resourceStruct->doInvalidate() || $resourceStruct->doOverwrite(),
             'discard_original_filename' => true,
             'context' => [
                 'alt' => $resourceStruct->getAltText() ?? '',
