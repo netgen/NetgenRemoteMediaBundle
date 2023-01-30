@@ -56,6 +56,7 @@ services:
         public: false
         arguments:
             - '@netgen_remote_media.provider.cloudinary.converter.resource_type'
+            - '@netgen_remote_media.factory.md5_file_hash'
 
     netgen_remote_media.provider.cloudinary.factory.search_result:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult
@@ -75,6 +76,10 @@ services:
 
     netgen_remote_media.factory.date_time:
         class: Netgen\RemoteMedia\Core\Factory\DateTime
+        public: false
+
+    netgen_remote_media.factory.md5_file_hash:
+        class: Netgen\RemoteMedia\Core\Factory\Md5FileHash
         public: false
 
     netgen_remote_media.provider.cloudinary.verifier.controller.signature:

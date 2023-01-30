@@ -23,11 +23,17 @@ final class SearchExpressionTest extends TestCase
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolve
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveAudioFormats
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveDocumentFormats
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveFolders
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveFormats
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveImageFormats
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveOtherFormats
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveResourceIds
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveResourceTypes
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveSearchQuery
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveTags
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveVideoFormats
      * @dataProvider dataProvider
      */
     public function testResolve(Query $query, string $expression): void
@@ -79,11 +85,26 @@ final class SearchExpressionTest extends TestCase
             ],
             [
                 new Query([
+                    'types' => ['document'],
+                ]),
+                '(resource_type:"image" OR resource_type:"raw")'
+                . ' AND ((format="pdf" OR format="doc" OR format="docx" OR format="ppt" OR format="pptx" OR format="txt"))',
+            ],
+            [
+                new Query([
+                    'types' => ['document', 'raw'],
+                ]),
+                '(resource_type:"raw" OR resource_type:"image")'
+                . ' AND ((format="pdf" OR format="doc" OR format="docx" OR format="ppt" OR format="pptx" OR format="txt"))',
+            ],
+            [
+                new Query([
                     'types' => ['video', 'image', 'raw'],
                 ]),
-                '(resource_type:"image" OR resource_type:"video" OR resource_type:"raw")'
-                . ' AND (((!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac")'
-                . ' AND (!format="m4a") AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))',
+                '(resource_type:"video" OR resource_type:"image" OR resource_type:"raw")'
+                . ' AND (((!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac") AND (!format="m4a")'
+                . ' AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav") AND (!format="pdf")'
+                . ' AND (!format="doc") AND (!format="docx") AND (!format="ppt") AND (!format="pptx") AND (!format="txt")))',
             ],
             [
                 new Query([
@@ -113,6 +134,18 @@ final class SearchExpressionTest extends TestCase
             ],
             [
                 new Query([
+                    'query' => 'podcast',
+                    'types' => ['audio'],
+                    'folders' => ['root/audio'],
+                ]),
+                '(resource_type:"video")'
+                . ' AND ((format="aac" OR format="aiff" OR format="amr" OR format="flac" OR format="m4a"'
+                . ' OR format="mp3" OR format="ogg" OR format="opus" OR format="wav"))'
+                . ' AND podcast*'
+                . ' AND (folder:"root/audio")',
+            ],
+            [
+                new Query([
                     'query' => 'search term',
                     'types' => ['image', 'video', 'document', 'audio'],
                     'folders' => ['root', 'root/test'],
@@ -122,7 +155,7 @@ final class SearchExpressionTest extends TestCase
                     'nextCursor' => 'ko5mjv8205hupoew3',
                     'sortBy' => ['created_at' => 'asc'],
                 ]),
-                '(resource_type:"video" OR resource_type:"image" OR resource_type:"raw")'
+                '(resource_type:"image" OR resource_type:"video" OR resource_type:"raw")'
                 . ' AND search term*'
                 . ' AND (folder:"root" OR folder:"root/test")'
                 . ' AND (tags:"tech" OR tags:"nature")'

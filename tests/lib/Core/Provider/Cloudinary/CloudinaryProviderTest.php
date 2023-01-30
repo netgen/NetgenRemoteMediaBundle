@@ -184,6 +184,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->gateway
@@ -245,6 +246,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->gateway
@@ -267,6 +269,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->gateway
@@ -301,6 +304,7 @@ final class CloudinaryProviderTest extends AbstractTest
                     'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
                     'name' => 'image.jpg',
                     'size' => 95,
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
                 new RemoteResource([
                     'remoteId' => 'upload|image|media/images/image2.jpg',
@@ -308,6 +312,7 @@ final class CloudinaryProviderTest extends AbstractTest
                     'url' => 'https://cloudinary.com/test/upload/images/image2.jpg',
                     'name' => 'image2.jpg',
                     'size' => 75,
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
                 new RemoteResource([
                     'remoteId' => 'upload|image|media/videos/example.mp4',
@@ -315,6 +320,7 @@ final class CloudinaryProviderTest extends AbstractTest
                     'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
                     'name' => 'example.mp4',
                     'size' => 550,
+                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ]),
             ],
         );
@@ -365,6 +371,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->gateway
@@ -533,6 +540,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $folder = Folder::fromPath('upload/images');
@@ -592,6 +600,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $cropOptions = [
@@ -638,6 +647,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
             'name' => 'example.mp4',
             'size' => 495,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $url = 'https://cloudinary.com/test/upload/videos/example.mp4.jpg';
@@ -680,6 +690,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/songs/example.mp3',
             'name' => 'example.mp3',
             'size' => 105,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $url = 'https://cloudinary.com/test/upload/songs/example.mp3.jpg';
@@ -733,6 +744,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $options = [
@@ -769,6 +781,9 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
             'name' => 'image.jpg',
             'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+            'altText' => 'Alternate text',
+            'caption' => 'Test title',
         ]);
 
         $htmlAttributes = [
@@ -786,13 +801,20 @@ final class CloudinaryProviderTest extends AbstractTest
 
         $transformations = [$cropOptions];
 
+        $attributes = [
+            'width' => 200,
+            'height' => 200,
+            'alt' => 'Alternate text',
+            'title' => 'Test title',
+        ];
+
         $options = [
             'secure' => true,
-            'attributes' => $htmlAttributes,
+            'attributes' => $attributes,
             'transformation' => $transformations,
         ];
 
-        $tag = '<picture><img src="https://cloudinary.com/test/c_5_10_200_100/upload/images/image.jpg" width="200" height="200"></picture>';
+        $tag = '<picture><img alt="Alternate text" title="Test title" src="https://cloudinary.com/test/c_5_10_200_100/upload/images/image.jpg" width="200" height="200"></picture>';
 
         $this->gateway
             ->expects(self::once())
@@ -821,6 +843,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
             'name' => 'example.mp4',
             'size' => 495,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $options = [
@@ -862,6 +885,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/songs/example.mp3',
             'name' => 'example.mp3',
             'size' => 105,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $htmlAttributes = [
@@ -908,6 +932,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
             'name' => 'example.mp4',
             'size' => 495,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $cropOptions = [
@@ -951,6 +976,79 @@ final class CloudinaryProviderTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::buildVideoThumbnailRawVariation
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoThumbnailTag
+     */
+    public function testGenerateVideoTagThumbnailVariation(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'upload|image|media/videos/example.mp4',
+            'type' => 'video',
+            'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
+            'name' => 'example.mp4',
+            'size' => 495,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+            'altText' => 'Alternate text',
+            'caption' => 'Test caption',
+        ]);
+
+        $cropOptions = [
+            'x' => 5,
+            'y' => 10,
+            'width' => 200,
+            'height' => 100,
+            'crop' => 'crop',
+        ];
+
+        $transformations = [$cropOptions];
+
+        $options = [
+            'resource_type' => 'video',
+            'transformation' => $transformations,
+            'start_offset' => 'auto',
+        ];
+
+        $thumbnailUrl = 'https://cloudinary.com/test/c_5_10_200_100/upload/videos/example_thumb.jpg';
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoThumbnail')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+            )
+            ->willReturn($thumbnailUrl);
+
+        $options = [
+            'secure' => true,
+            'attributes' => [
+                'alt' => 'Alternate text',
+                'title' => 'Test caption',
+            ],
+            'transformation' => $transformations,
+        ];
+
+        $tag = '<picture><img alt="Alternate text" title="Test caption" src="https://cloudinary.com/test/c_5_10_200_100/upload/videos/example"></picture>';
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getImageTag')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+            )
+            ->willReturn($tag);
+
+        $tag = '<picture><img alt="Alternate text" title="Test caption" src="https://cloudinary.com/test/c_5_10_200_100/upload/videos/example_thumb.jpg"></picture>';
+
+        self::assertSame(
+            $tag,
+            $this->cloudinaryProvider->generateRawVariationHtmlTag($resource, $transformations, [], false, true),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateAudioTag
      */
     public function testGenerateAudioTag(): void
@@ -961,6 +1059,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/songs/example.mp3',
             'name' => 'example.mp3',
             'size' => 105,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $htmlAttributes = [
@@ -1005,6 +1104,7 @@ final class CloudinaryProviderTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/doc/example.pdf',
             'name' => 'example.pdf',
             'size' => 35,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $htmlAttributes = [

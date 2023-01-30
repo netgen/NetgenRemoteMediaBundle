@@ -24,6 +24,7 @@ final class RemoteResourceVariationTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/image/image/test.jpg',
             'name' => 'test.jpg',
             'folder' => Folder::fromPath('image'),
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $variationUrl = 'https://cloudinary.com/test/upload/image/c_5_10/q_auto/image/test.jpg';
@@ -55,6 +56,7 @@ final class RemoteResourceVariationTest extends AbstractTest
             'url' => 'https://cloudinary.com/test/upload/image/image/test.jpg',
             'name' => 'test.jpg',
             'folder' => Folder::fromPath('image'),
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $variation = RemoteResourceVariation::fromResource($resource);

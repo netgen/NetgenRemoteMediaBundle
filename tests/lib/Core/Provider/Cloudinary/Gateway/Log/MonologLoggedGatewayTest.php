@@ -213,6 +213,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
             'type' => RemoteResource::TYPE_IMAGE,
             'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
             'metadata' => [
                 'format' => 'jpg',
             ],
@@ -251,6 +252,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $this->apiGatewayMock
@@ -361,6 +363,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
             'name' => 'test_image.jpg',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $searchResult = new Result(200, '123', [$resource]);

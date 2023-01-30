@@ -29,6 +29,7 @@ final class CircularReferenceHandlerTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/folder/sample.jpg',
             'name' => 'sample',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         self::assertSame(
@@ -47,6 +48,7 @@ final class CircularReferenceHandlerTest extends AbstractTest
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/folder/sample.jpg',
             'name' => 'sample',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $remoteResourceLocation = new RemoteResourceLocation($remoteResource);

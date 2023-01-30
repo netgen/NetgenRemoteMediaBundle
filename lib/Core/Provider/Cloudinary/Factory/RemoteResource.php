@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
+use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource as RemoteResourceValue;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
@@ -19,9 +20,12 @@ final class RemoteResource implements RemoteResourceFactoryInterface
 {
     private ResourceTypeConverter $resourceTypeConverter;
 
-    public function __construct(ResourceTypeConverter $resourceTypeConverter)
+    private FileHashFactoryInterface $fileHashFactory;
+
+    public function __construct(ResourceTypeConverter $resourceTypeConverter, FileHashFactoryInterface $fileHashFactory)
     {
         $this->resourceTypeConverter = $resourceTypeConverter;
+        $this->fileHashFactory = $fileHashFactory;
     }
 
     public function create($data): RemoteResourceValue
@@ -40,6 +44,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'altText' => $this->resolveAltText($data),
             'caption' => $data['context']['custom']['caption'] ?? null,
             'tags' => $data['tags'] ?? [],
+            'md5' => $this->resolveMd5($data),
             'metadata' => $this->resolveMetaData($data),
         ]);
     }
@@ -54,6 +59,12 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         if (($data['public_id'] ?? null) === null) {
             throw new InvalidDataException('Missing required "public_id" property!');
         }
+
+        if ($data['secure_url'] ?? $data['url'] ?? null) {
+            return;
+        }
+
+        throw new InvalidDataException('Missing required "secure_url" or "url" property!');
     }
 
     private function resolveResourceType(array $data): string
@@ -73,6 +84,17 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         return $data['context']['alt_text'] ?? null;
     }
 
+    private function resolveMd5(array $data): string
+    {
+        if ($data['etag'] ?? null) {
+            return $data['etag'];
+        }
+
+        $url = $data['secure_url'] ?? $data['url'];
+
+        return $this->fileHashFactory->createHash($url);
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -85,7 +107,6 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'format',
             'created_at',
             'signature',
-            'etag',
             'overwritten',
         ];
 

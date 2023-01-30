@@ -12,13 +12,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mime\MimeTypesInterface;
 
-use function pathinfo;
-use function str_replace;
-
-use const PATHINFO_DIRNAME;
-use const PATHINFO_EXTENSION;
-use const PATHINFO_FILENAME;
-
 final class UploadOptionsTest extends TestCase
 {
     protected UploadOptionsResolver $resolver;
@@ -53,24 +46,6 @@ final class UploadOptionsTest extends TestCase
         }
 
         $resolvedOptions = $this->resolver->resolve($resourceStruct);
-
-        if (!$resourceStruct->doOverwrite()) {
-            $extension = pathinfo($options['public_id'], PATHINFO_EXTENSION);
-            $basename = pathinfo($options['public_id'], PATHINFO_FILENAME);
-
-            if (pathinfo($options['public_id'], PATHINFO_DIRNAME) !== '.') {
-                $basename = pathinfo($options['public_id'], PATHINFO_DIRNAME) . '/' . $basename;
-            }
-
-            $extension = $extension ? '.' . $extension : '';
-
-            self::assertMatchesRegularExpression(
-                '/^' . str_replace('/', '\/', $basename) . '_[\w]{10}' . $extension . '$/',
-                $resolvedOptions['public_id'],
-            );
-
-            unset($options['public_id'], $resolvedOptions['public_id']);
-        }
 
         self::assertSame($options, $resolvedOptions);
     }

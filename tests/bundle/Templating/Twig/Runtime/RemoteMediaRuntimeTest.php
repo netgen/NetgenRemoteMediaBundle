@@ -63,6 +63,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $this->providerMock
@@ -107,6 +108,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -153,6 +155,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $this->providerMock
@@ -196,6 +199,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $this->providerMock
@@ -241,6 +245,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -271,6 +276,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_image.jpg',
             'type' => 'image',
             'size' => 200,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $cropOptions = [
@@ -310,6 +316,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $variation = new RemoteResourceVariation($resource, 'https://cloudinary.com/upload/video/test_video.mp4');
@@ -339,6 +346,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -379,6 +387,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $cropOptions = [
@@ -426,6 +435,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $htmlAttributes = ['style' => 'width:100%;'];
@@ -456,6 +466,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $location = new RemoteResourceLocation($resource);
@@ -500,6 +511,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $cropOptions = [
@@ -550,6 +562,7 @@ final class RemoteMediaRuntimeTest extends AbstractTest
             'name' => 'test_video.mp4',
             'type' => 'video',
             'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
 
         $url = 'https://cloudinary.com/upload/video/download/test_video.mp4';

@@ -17,9 +17,9 @@ use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
+use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 
-use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function cl_image_tag;
@@ -183,8 +183,13 @@ final class CloudinaryApiGateway implements GatewayInterface
     public function upload(string $fileUri, array $options): RemoteResource
     {
         $response = $this->cloudinaryUploader->upload($fileUri, $options);
+        $resource = $this->remoteResourceFactory->create((array) $response);
 
-        return $this->remoteResourceFactory->create((array) $response);
+        if ($response['existing'] ?? false) {
+            throw new RemoteResourceExistsException($resource);
+        }
+
+        return $resource;
     }
 
     public function update(CloudinaryRemoteId $remoteId, array $options): void

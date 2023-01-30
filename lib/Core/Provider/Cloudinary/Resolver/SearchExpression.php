@@ -13,11 +13,13 @@ use function array_filter;
 use function array_map;
 use function array_merge;
 use function array_unique;
+use function array_values;
 use function count;
 use function explode;
 use function implode;
 use function in_array;
 use function is_string;
+use function mb_substr;
 use function sprintf;
 
 final class SearchExpression
@@ -57,11 +59,14 @@ final class SearchExpression
         );
 
         foreach ($resourceTypes as $key => $resourceType) {
-            $newResourceTypes = explode('|', $resourceType);
+            $newResourceTypes = array_values(explode('|', $resourceType));
+
+            if (count($newResourceTypes) > 1) {
+                unset($resourceTypes[$key]);
+            }
 
             if (count($newResourceTypes) > 0) {
-                unset($resourceTypes[$key]);
-                $resourceTypes = array_merge($resourceTypes, $newResourceTypes);
+                $resourceTypes = array_merge(array_values($resourceTypes), $newResourceTypes);
             }
         }
 
@@ -80,27 +85,27 @@ final class SearchExpression
         foreach ($query->getTypes() as $type) {
             switch ($type) {
                 case RemoteResource::TYPE_IMAGE:
-                    $formats += $this->resolveImageFormats($query);
+                    $formats = array_merge($formats, $this->resolveImageFormats($query));
 
                     break;
 
                 case RemoteResource::TYPE_DOCUMENT:
-                    $formats += $this->resolveDocumentFormats($query);
+                    $formats = array_merge($formats, $this->resolveDocumentFormats($query));
 
                     break;
 
                 case RemoteResource::TYPE_VIDEO:
-                    $formats += $this->resolveVideoFormats($query);
+                    $formats = array_merge($formats, $this->resolveVideoFormats($query));
 
                     break;
 
                 case RemoteResource::TYPE_AUDIO:
-                    $formats += $this->resolveAudioFormats($query);
+                    $formats = array_merge($formats, $this->resolveAudioFormats($query));
 
                     break;
 
                 default:
-                    $formats += $this->resolveOtherFormats($query);
+                    $formats = array_merge($formats, $this->resolveOtherFormats($query));
             }
         }
 

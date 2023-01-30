@@ -14,9 +14,12 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getAltText
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getCaption
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getFolder
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getId
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMd5
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadata
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadataProperty
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getName
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getRemoteId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getSize
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
@@ -38,6 +41,7 @@ final class RemoteResourceTest extends AbstractTest
             'altText' => 'alt text',
             'caption' => 'caption text',
             'tags' => ['tag1'],
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
             'metadata' => [
                 'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -105,6 +109,11 @@ final class RemoteResourceTest extends AbstractTest
         self::assertFalse($resource->hasTag('tag2'));
 
         self::assertSame(
+            'e522f43cf89aa0afd03387c37e2b6e29',
+            $resource->getMd5(),
+        );
+
+        self::assertSame(
             [
                 'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -132,7 +141,10 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setAltText
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setCaption
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setFolder
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setMd5
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setMetadata
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setName
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setRemoteId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setSize
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setTags
@@ -152,6 +164,7 @@ final class RemoteResourceTest extends AbstractTest
             'altText' => 'alt text',
             'caption' => 'caption text',
             'tags' => ['tag1'],
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
             'metadata' => [
                 'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
@@ -177,6 +190,7 @@ final class RemoteResourceTest extends AbstractTest
             ->setAltText('alt text')
             ->setCaption('caption text')
             ->setTags(['tag1'])
+            ->setMd5('e522f43cf89aa0afd03387c37e2b6e29')
             ->setMetadata([
                 'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',

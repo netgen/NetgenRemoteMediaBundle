@@ -78,6 +78,7 @@ final class ResourceTypeTest extends TestCase
             ['raw', null, RemoteResource::TYPE_OTHER],
             ['raw', 'zip', RemoteResource::TYPE_OTHER],
             ['raw', 'rar', RemoteResource::TYPE_OTHER],
+            ['test', 'rar', RemoteResource::TYPE_OTHER],
             ['raw', 'doc', RemoteResource::TYPE_DOCUMENT],
             ['raw', 'docx', RemoteResource::TYPE_DOCUMENT],
             ['raw', 'ppt', RemoteResource::TYPE_DOCUMENT],

@@ -96,6 +96,13 @@ class RemoteResource
     private array $tags = [];
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=64)
+     */
+    private string $md5;
+
+    /**
      * @var array<string, mixed>
      *
      * @ORM\Column(name="metadata", type="array", nullable=true)
@@ -252,6 +259,18 @@ class RemoteResource
         }
 
         $this->tags = array_diff($this->tags, [$tag]);
+    }
+
+    public function getMd5(): string
+    {
+        return $this->md5;
+    }
+
+    public function setMd5(string $md5): self
+    {
+        $this->md5 = $md5;
+
+        return $this;
     }
 
     /**
