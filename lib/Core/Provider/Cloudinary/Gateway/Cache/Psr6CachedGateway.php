@@ -199,6 +199,7 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
+        $this->invalidateResourceCache(CloudinaryRemoteId::fromRemoteId($uploadResult->getRemoteId()));
         $this->invalidateResourceListCache();
         $this->invalidateFoldersCache();
         $this->invalidateTagsCache();
