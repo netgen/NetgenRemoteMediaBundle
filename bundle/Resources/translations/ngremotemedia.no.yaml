@@ -69,8 +69,13 @@ ngrm:
                     select: 'Select'
                     create: 'Create'
                     save: 'Save'
+                    use_existing_resource: 'use existing resource'
+                checkbox:
+                    overwrite: 'Overwrite'
                 placeholder:
                     new_folder: 'New folder name'
+                error:
+                    existing_resource: 'Different resource with same name already exists in this folder! Change folder, filename, use overwrite or '
             editor_insert:
                 title: 'Insert remote media'
                 caption:
