@@ -32,7 +32,7 @@ final class Upload extends AbstractController
             throw new InvalidArgumentException();
         }
 
-        $folder = $request->request->has('folder')
+        $folder = $request->request->get('folder')
             ? Folder::fromPath($request->request->get('folder'))
             : null;
 
