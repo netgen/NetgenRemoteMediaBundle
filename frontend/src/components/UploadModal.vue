@@ -7,12 +7,12 @@
         <div v-if="this.error" class="error">
           {{ this.error }}
           <a v-if="this.existingResourceButton" href="#" @click="$emit('uploaded', existingResource)">
-            use existing resource
+            {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_use_existing_resource }}
           </a>
         </div>
         <input type="text" :class="error ? 'error' : ''" v-model="filename"/>
         <input type="checkbox" v-model="overwrite" id="ngrm-upload-overwrite">
-        <label for="ngrm-upload-overwrite">Overwrite</label>
+        <label for="ngrm-upload-overwrite">{{ this.$root.$data.NgRemoteMediaTranslations.upload_checkbox_overwrite }}</label>
         <button type="button" class="btn btn-blue" :disabled="filename === ''" @click="upload">
           {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_save }}
         </button>
@@ -64,7 +64,7 @@ export default {
           this.loading = false;
           this.$emit("uploaded", response.data);
         }).catch(error => {
-          this.error = 'Different resource with same name already exists in this folder! Change folder, filename, use overwrite or ';
+          this.error = this.$root.$data.NgRemoteMediaTranslations.upload_error_existing_resource;
           this.existingResourceButton = true;
           this.existingResource = error.response.data;
           this.loading = false;
