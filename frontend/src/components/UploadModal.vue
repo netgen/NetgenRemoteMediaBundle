@@ -1,29 +1,44 @@
 <template>
   <modal title="Upload media" @close="$emit('close')">
-    <div>
+    <div :class="loading ? 'loading' : ''">
       <select-folder :selected-folder="selectedFolder" @change="handleFolderChange"></select-folder>
 
       <div class="input-file-name-wrapper">
-        <input type="text" v-model="newName"/>
-        <button type="button" class="btn btn-blue" :disabled="newName === ''" @click="handleSaveClick">
+        <div v-if="this.error" class="error">
+          {{ this.error }}
+          <a v-if="this.existingResourceButton" href="#" @click="$emit('uploaded', existingResource)">
+            use existing resource
+          </a>
+        </div>
+        <input type="text" :class="error ? 'error' : ''" v-model="filename"/>
+        <input type="checkbox" v-model="overwrite" id="ngrm-upload-overwrite">
+        <label for="ngrm-upload-overwrite">Overwrite</label>
+        <button type="button" class="btn btn-blue" :disabled="filename === ''" @click="upload">
           {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_save }}
         </button>
       </div>
     </div>
+    <i v-if="loading" class="ng-icon ng-spinner" />
   </modal>
 </template>
 
 <script>
 import SelectFolder from "./SelectFolder";
 import Modal from "./Modal";
+import axios from "axios";
 
 export default {
   name: "UploadModal",
-  props: ["name"],
+  props: ["file"],
   data() {
     return {
+      loading: false,
       selectedFolder: "",
-      newName: this.name
+      filename: this.file.name,
+      overwrite: false,
+      error: "",
+      existingResourceButton: false,
+      existingResource: null,
     };
   },
   components: {
@@ -34,12 +49,26 @@ export default {
     handleFolderChange(folder) {
       this.selectedFolder = folder;
     },
-    handleSaveClick() {
-      let newName = this.newName;
-      if (this.selectedFolder){
-        newName = `${this.selectedFolder}/${this.newName}`;
-      }
-      this.$emit("save", newName);
+    async upload() {
+      this.loading = true;
+
+      var data = new FormData();
+
+      data.append('file', this.file);
+      data.append('filename', this.filename);
+      data.append('folder', this.selectedFolder);
+      data.append('overwrite', this.overwrite);
+
+      await axios.post(this.$root.$data.config.paths.upload_resources, data)
+        .then(response => {
+          this.loading = false;
+          this.$emit("uploaded", response.data);
+        }).catch(error => {
+          this.error = 'Different resource with same name already exists in this folder! Change folder, filename, use overwrite or ';
+          this.existingResourceButton = true;
+          this.existingResource = error.response.data;
+          this.loading = false;
+        });
     }
   }
 };
@@ -48,6 +77,10 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "../scss/variables";
+
+.loading {
+  opacity: 0.5;
+}
 
 .input-file-name-wrapper {
   padding: 8px 15px;
@@ -58,15 +91,38 @@ export default {
   left: 0;
   right: 0;
 
-  input {
+  input[type=text] {
     width: 40%;
     border: 1px solid $mercury;
     padding: 5px 10px;
     flex-grow: 1;
+    margin-right: 10px;
+
+    &.error {
+      border: 1px solid red;
+    }
   }
 
   button {
     float: right;
+  }
+
+  div.error {
+    color: red;
+    margin-bottom: 5px;
+  }
+}
+
+.ng-spinner {
+  position: fixed;
+  vertical-align: middle;
+  margin-top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  &:before {
+    display: inline-block;
+    animation: spinning 1500ms linear infinite;
   }
 }
 </style>

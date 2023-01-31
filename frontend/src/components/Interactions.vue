@@ -28,7 +28,7 @@
     <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="this.$root.$data.NgRemoteMediaAvailableVariations"></crop-modal>
     <media-modal :tags="tags" :types="types" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-    <upload-modal v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :name="selectedImage.name" ></upload-modal>
+    <upload-modal v-if="uploadModalOpen" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
   </div>
 </template>
 
@@ -68,7 +68,8 @@ export default {
       types: [],
       folders: [],
       tags: [],
-      facetsLoading: true
+      facetsLoading: true,
+      newFile: null,
     };
   },
   methods: {
@@ -125,12 +126,22 @@ export default {
         }
       };
     },
-    handleUploadModalSave(name){
+    handleResourceUploaded(item){
       this.selectedImage = {
-        ...this.selectedImage,
-        name,
-        id: name
+        id: item.remoteId,
+        name: item.filename,
+        type: item.type,
+        format: item.format,
+        url: item.url,
+        previewUrl: item.previewUrl,
+        alternateText: item.alt_text,
+        tags: item.tags,
+        size: item.size,
+        variations: {},
+        height: item.height,
+        width: item.width
       };
+
       this.uploadModalOpen = false;
     },
     handleCropClicked() {
@@ -181,43 +192,7 @@ export default {
     handleFileInputChange(e) {
       this.uploadModalOpen = true;
 
-      const file = e.target.files.item(0);
-
-      if (file) {
-        this.selectedImage = {
-          id: file.name,
-          name: file.name,
-          type: this.getFileType(file),
-          format: this.getFileFormat(file),
-          url: '',
-          previewUrl: '',
-          alternateText: '',
-          tags: [],
-          size: file.size,
-          variations: {},
-          height: 0,
-          width: 0
-        };
-
-        if (this.selectedImage.type === "image"){
-          const reader = new FileReader();
-          reader.addEventListener(
-            'load',
-            function() {
-              this.$refs.preview.$refs.image.onload = function() {
-                this.selectedImage.width = this.$refs.preview.$refs.image.naturalWidth,
-                    this.selectedImage.height = this.$refs.preview.$refs.image.naturalHeight;
-              }.bind(this);
-
-              this.selectedImage.url = reader.result;
-              this.selectedImage.previewUrl = reader.result;
-            }.bind(this),
-            false
-          );
-
-          reader.readAsDataURL(file);
-        }
-      }
+      this.newFile = e.target.files.item(0);
     }
   },
   watch: {
