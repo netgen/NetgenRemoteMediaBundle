@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\Form\DataTransformer;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
+use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Symfony\Component\Form\DataTransformerInterface;
 
@@ -37,13 +38,17 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             'altText' => $value->getRemoteResource()->getAltText(),
             'caption' => $value->getRemoteResource()->getCaption(),
             'tags' => implode(',', $value->getRemoteResource()->getTags()),
-            'cropSettings' => json_encode($value->getCropSettings()),
+            'cropSettings' => $this->resolveCropSettingsString($value),
         ];
     }
 
     public function reverseTransform($value)
     {
-        $remoteResourceLocation = $value['locationId'] ? $this->provider->loadLocation((int) $value['locationId']) : null;
+        try {
+            $remoteResourceLocation = $value['locationId'] ? $this->provider->loadLocation((int) $value['locationId']) : null;
+        } catch (RemoteResourceLocationNotFoundException $e) {
+            $remoteResourceLocation = null;
+        }
 
         if (!$value['remoteId']) {
             if ($remoteResourceLocation instanceof RemoteResourceLocation) {
@@ -56,7 +61,15 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         try {
             $remoteResource = $this->provider->loadByRemoteId((string) $value['remoteId']);
         } catch (RemoteResourceNotFoundException $e) {
-            $remoteResource = $this->provider->loadFromRemote((string) $value['remoteId']);
+            try {
+                $remoteResource = $this->provider->loadFromRemote((string) $value['remoteId']);
+            } catch (RemoteResourceNotFoundException $e) {
+                if ($remoteResourceLocation instanceof RemoteResourceLocation) {
+                    $this->provider->removeLocation($remoteResourceLocation);
+                }
+
+                return null;
+            }
         }
 
         $remoteResource->setAltText($value['altText'] ?? null);
@@ -81,6 +94,21 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         $this->provider->storeLocation($remoteResourceLocation);
 
         return $remoteResourceLocation;
+    }
+
+    public function resolveCropSettingsString(RemoteResourceLocation $location): string
+    {
+        $cropSettings = [];
+        foreach ($location->getCropSettings() as $cropSetting) {
+            $cropSettings[$cropSetting->getVariationName()] = [
+                'x' => $cropSetting->getX(),
+                'y' => $cropSetting->getY(),
+                'width' => $cropSetting->getWidth(),
+                'height' => $cropSetting->getHeight(),
+            ];
+        }
+
+        return json_encode($cropSettings);
     }
 
     /**
