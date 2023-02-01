@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Form\Type;
 
-use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -15,7 +14,7 @@ final class RemoteMediaType extends AbstractType
 {
     private DataTransformerInterface $transformer;
 
-    public function __construct(RemoteMediaTransformer $transformer)
+    public function __construct(DataTransformerInterface $transformer)
     {
         $this->transformer = $transformer;
     }
