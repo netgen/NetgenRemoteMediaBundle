@@ -77,6 +77,11 @@ interface ProviderInterface
     public function upload(ResourceStruct $resourceStruct): RemoteResource;
 
     /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
+    public function updateOnRemote(RemoteResource $resource): void;
+
+    /**
      * Gets the remote media Variation from configuration.
      * If the remote media does not support variations, this method should return the Variation
      * with the url set to original resource.
