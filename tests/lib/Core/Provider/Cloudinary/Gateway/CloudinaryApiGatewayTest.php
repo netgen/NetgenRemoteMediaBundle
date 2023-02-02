@@ -20,6 +20,7 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
+use Netgen\RemoteMedia\Exception\FolderNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -379,6 +380,23 @@ class CloudinaryApiGatewayTest extends AbstractTest
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::listSubFolders
+     */
+    public function testListSubFoldersInNonExistingParent(): void
+    {
+        $this->cloudinaryApiMock
+            ->expects(self::once())
+            ->method('subfolders')
+            ->with('non_existing_folder/non_existing_subfolder')
+            ->willThrowException(new Api\NotFound());
+
+        self::expectException(FolderNotFoundException::class);
+        self::expectExceptionMessage('Folder with path "non_existing_folder/non_existing_subfolder" was not found on remote.');
+
+        $this->apiGateway->listSubFolders('non_existing_folder/non_existing_subfolder');
+    }
+
+    /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::createFolder
      */
     public function testCreateFolder(): void
@@ -489,6 +507,35 @@ class CloudinaryApiGatewayTest extends AbstractTest
             ->expects(self::once())
             ->method('update')
             ->with('test.jpg', $expectedOptions);
+
+        $this->apiGateway->update($cloudinaryId, $options);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::update
+     */
+    public function testUpdateNonExistingResource(): void
+    {
+        $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|image|test_not_found.jpg');
+
+        $options = [
+            'tags' => ['new_tag'],
+        ];
+
+        $expectedOptions = [
+            'tags' => ['new_tag'],
+            'type' => 'upload',
+            'resource_type' => 'image',
+        ];
+
+        $this->cloudinaryApiMock
+            ->expects(self::once())
+            ->method('update')
+            ->with('test_not_found.jpg', $expectedOptions)
+            ->willThrowException(new Api\NotFound());
+
+        self::expectException(RemoteResourceNotFoundException::class);
+        self::expectExceptionMessage('Remote resource with ID "upload|image|test_not_found.jpg" not found.');
 
         $this->apiGateway->update($cloudinaryId, $options);
     }
