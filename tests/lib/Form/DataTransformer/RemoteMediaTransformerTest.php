@@ -59,8 +59,8 @@ class RemoteMediaTransformerTest extends AbstractTest
             'type' => 'image',
             'altText' => 'Test alt text',
             'caption' => 'Test caption',
-            'tags' => 'tag1,tag2',
-            'cropSettings' => '{"hero_image":{"x":10,"y":20,"width":1920,"height":1080}}',
+            'tags' => ['tag1', 'tag2'],
+            'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
         ];
 
         $location = new RemoteResourceLocation(
@@ -132,8 +132,8 @@ class RemoteMediaTransformerTest extends AbstractTest
             'type' => 'image',
             'altText' => 'Test alt text',
             'caption' => 'Test caption',
-            'tags' => 'tag1,tag2',
-            'cropSettings' => '{"hero_image":{"x":10,"y":20,"width":1920,"height":1080}, "thumbnail": {"x":0,"y":0,"width":800,"height":600}}',
+            'tags' => ['tag1', 'tag2'],
+            'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}, "thumbnail": {"x":0,"y":0,"w":800,"h":600}}',
         ];
 
         $location = new RemoteResourceLocation(
@@ -201,7 +201,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'locationId' => 5,
             'remoteId' => 'upload|image|media/images/example.jpg',
             'type' => 'image',
-            'tags' => 'tag2',
+            'tags' => ['tag2'],
             'cropSettings' => null,
         ];
 
@@ -273,7 +273,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'locationId' => 5,
             'remoteId' => 'upload|image|media/images/example.jpg',
             'type' => 'image',
-            'tags' => 'tag2',
+            'tags' => ['tag2'],
             'cropSettings' => null,
         ];
 
@@ -385,7 +385,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'locationId' => 5,
             'remoteId' => 'upload|image|media/images/new_image.jpg',
             'type' => 'image',
-            'tags' => 'tag2',
+            'tags' => ['tag2'],
             'cropSettings' => null,
         ];
 
@@ -461,7 +461,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'locationId' => null,
             'remoteId' => 'upload|image|media/images/new_image.jpg',
             'type' => 'image',
-            'tags' => 'tag2',
+            'tags' => ['tag2'],
             'cropSettings' => null,
         ];
 
@@ -491,7 +491,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'locationId' => 5,
             'remoteId' => 'upload|image|media/images/new_image.jpg',
             'type' => 'image',
-            'tags' => 'tag2',
+            'tags' => ['tag2'],
             'cropSettings' => null,
         ];
 
@@ -572,8 +572,8 @@ class RemoteMediaTransformerTest extends AbstractTest
                     'type' => 'image',
                     'altText' => 'Test alt text',
                     'caption' => 'Test caption',
-                    'tags' => 'tag1,tag2',
-                    'cropSettings' => '{"hero_image":{"x":10,"y":20,"width":1920,"height":1080}}',
+                    'tags' => ['tag1', 'tag2'],
+                    'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
                 ],
             ],
             [
@@ -592,7 +592,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                     'type' => 'image',
                     'altText' => null,
                     'caption' => null,
-                    'tags' => '',
+                    'tags' => [],
                     'cropSettings' => '[]',
                 ],
             ],

@@ -11,8 +11,6 @@ use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Symfony\Component\Form\DataTransformerInterface;
 
-use function explode;
-use function implode;
 use function json_decode;
 use function json_encode;
 
@@ -37,7 +35,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             'type' => $value->getRemoteResource()->getType(),
             'altText' => $value->getRemoteResource()->getAltText(),
             'caption' => $value->getRemoteResource()->getCaption(),
-            'tags' => implode(',', $value->getRemoteResource()->getTags()),
+            'tags' => $value->getRemoteResource()->getTags(),
             'cropSettings' => $this->resolveCropSettingsString($value),
         ];
     }
@@ -74,7 +72,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
         $remoteResource->setAltText($value['altText'] ?? null);
         $remoteResource->setCaption($value['caption'] ?? null);
-        $remoteResource->setTags(explode(',', $value['tags'] ?? ''));
+        $remoteResource->setTags($value['tags']);
 
         if (!$remoteResourceLocation instanceof RemoteResourceLocation) {
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
@@ -103,8 +101,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             $cropSettings[$cropSetting->getVariationName()] = [
                 'x' => $cropSetting->getX(),
                 'y' => $cropSetting->getY(),
-                'width' => $cropSetting->getWidth(),
-                'height' => $cropSetting->getHeight(),
+                'w' => $cropSetting->getWidth(),
+                'h' => $cropSetting->getHeight(),
             ];
         }
 

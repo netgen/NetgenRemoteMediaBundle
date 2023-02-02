@@ -91,8 +91,8 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => 'Test alt text',
                     'caption' => 'Test caption',
-                    'tags' => 'example,image, test',
-                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "width": 1920, "height": 1080}}',
+                    'tags' => ['example', 'image', 'test'],
+                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
                 ],
                 [
                     'locationId' => '',
@@ -100,8 +100,8 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => 'Test alt text',
                     'caption' => 'Test caption',
-                    'tags' => 'example,image, test',
-                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "width": 1920, "height": 1080}}',
+                    'tags' => ['example', 'image', 'test'],
+                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
                 ],
                 new RemoteResourceLocation(
                     new RemoteResource([
@@ -122,8 +122,8 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => 'Test alt text',
                     'caption' => 'Test caption',
-                    'tags' => 'example,image, test',
-                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "width": 1920, "height": 1080}}',
+                    'tags' => ['example', 'image', 'test'],
+                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
                 ],
             ],
             [
@@ -137,7 +137,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => null,
                     'caption' => null,
-                    'tags' => null,
+                    'tags' => [],
                     'cropSettings' => null,
                 ],
                 new RemoteResourceLocation(
@@ -155,7 +155,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => null,
                     'caption' => null,
-                    'tags' => null,
+                    'tags' => [],
                     'cropSettings' => null,
                 ],
             ],

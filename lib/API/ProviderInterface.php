@@ -37,10 +37,19 @@ interface ProviderInterface
 
     public function listTags(): array;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
     public function load(int $id): RemoteResource;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
     public function loadByRemoteId(string $remoteId): RemoteResource;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
     public function loadFromRemote(string $remoteId): RemoteResource;
 
     public function store(RemoteResource $resource): RemoteResource;
@@ -49,6 +58,9 @@ interface ProviderInterface
 
     public function deleteFromRemote(RemoteResource $resource): void;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException
+     */
     public function loadLocation(int $id): RemoteResourceLocation;
 
     public function storeLocation(RemoteResourceLocation $location): RemoteResourceLocation;

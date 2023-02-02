@@ -23,14 +23,18 @@
             alternateText: "{% if location %}{{ location.remoteResource.altText }}{% endif %}",
             tags: [{% if location %}{% for tag in location.remoteResource.tags %}"{{ tag }}"{% if not loop.last %},{% endif %}{% endfor %}{% endif %}],
             size: {% if location %}{{ location.remoteResource.size }}{% else %}0{% endif %},
-            variations: {% if location %}{{ location.cropSettings|json_encode|raw }}{% else %}[]{% endif %},
+            variations: {% if location %}{{ form.vars.value.cropSettings|raw }}{% else %}[]{% endif %},
             height: {% if location and location.remoteResource.metadata.width is defined %}{{ location.remoteResource.metadata.width }}{% else %}0{% endif %},
             width: {% if location and location.remoteResource.metadata.height is defined %}{{ location.remoteResource.metadata.height }}{% else %}0{% endif %}
         };
 
         NgRemoteMediaInputFields_{{ field_id }} = {
             {% for child in form.children %}
-                '{{ child.vars.name }}': '{{ child.vars.full_name }}'{% if not loop.last %},{% endif %}
+                {% if child.vars.name == 'tags' %}
+                    '{{ child.vars.name }}': '{{ child.vars.full_name }}[]'{% if not loop.last %},{% endif %}
+                {% else %}
+                    '{{ child.vars.name }}': '{{ child.vars.full_name }}'{% if not loop.last %},{% endif %}
+                {% endif %}
             {% endfor %}
         };
 
