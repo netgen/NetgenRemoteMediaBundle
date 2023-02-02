@@ -36,8 +36,8 @@ final class CropSettings
             $transformationName,
             $coords['x'] ?? 0,
             $coords['y'] ?? 0,
-            $coords['width'] ?? 0,
-            $coords['height'] ?? 0,
+            $coords['width'] ?? $coords['w'] ?? 0,
+            $coords['height'] ?? $coords['h'] ?? 0,
         );
     }
 

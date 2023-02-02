@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -34,7 +35,16 @@ final class RemoteMediaType extends AbstractType
             ->add('type', HiddenType::class)
             ->add('altText', HiddenType::class, ['required' => false])
             ->add('caption', HiddenType::class, ['required' => false])
-            ->add('tags', HiddenType::class, ['required' => false])
+            ->add(
+                'tags',
+                CollectionType::class,
+                [
+                    'required' => false,
+                    'entry_type' => HiddenType::class,
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                ],
+            )
             ->add('cropSettings', HiddenType::class);
 
         $builder->addModelTransformer($this->transformer);
