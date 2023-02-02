@@ -12,11 +12,13 @@ use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterf
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
+use Netgen\RemoteMedia\Exception\FolderNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 
@@ -154,12 +156,16 @@ final class CloudinaryApiGateway implements GatewayInterface
 
     public function listSubFolders(string $parentFolder): array
     {
-        return array_map(
-            static fn ($value) => $value['path'],
-            $this->cloudinaryApi
-                ->subfolders($parentFolder)
-                ->getArrayCopy()['folders'],
-        );
+        try {
+            return array_map(
+                static fn ($value) => $value['path'],
+                $this->cloudinaryApi
+                    ->subfolders($parentFolder)
+                    ->getArrayCopy()['folders'],
+            );
+        } catch(CloudinaryApi\NotFound $e) {
+            throw new FolderNotFoundException(Folder::fromPath($parentFolder));
+        }
     }
 
     public function createFolder(string $path): void
@@ -201,7 +207,11 @@ final class CloudinaryApiGateway implements GatewayInterface
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
 
-        $this->cloudinaryApi->update($remoteId->getResourceId(), $options);
+        try {
+            $this->cloudinaryApi->update($remoteId->getResourceId(), $options);
+        } catch (CloudinaryApi\NotFound $e) {
+            throw new RemoteResourceNotFoundException($remoteId->getRemoteId());
+        }
     }
 
     public function delete(CloudinaryRemoteId $remoteId): void

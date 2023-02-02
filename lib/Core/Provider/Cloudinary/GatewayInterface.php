@@ -20,8 +20,16 @@ interface GatewayInterface
 
     public function countResourcesInFolder(string $folder): int;
 
+    /**
+     * @return string[]
+     */
     public function listFolders(): array;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\FolderNotFoundException
+     *
+     * @return string[]
+     */
     public function listSubFolders(string $parentFolder): array;
 
     public function createFolder(string $path): void;
@@ -41,39 +49,24 @@ interface GatewayInterface
      */
     public function update(CloudinaryRemoteId $remoteId, array $options): void;
 
-    /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
-     */
     public function delete(CloudinaryRemoteId $remoteId): void;
 
-    /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
-     */
     public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string;
 
     public function search(Query $query): Result;
 
     public function searchCount(Query $query): int;
 
+    /**
+     * @return string[]
+     */
     public function listTags(): array;
 
-    /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
-     */
     public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = []): string;
 
-    /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
-     */
     public function getImageTag(CloudinaryRemoteId $remoteId, array $options = []): string;
 
-    /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
-     */
     public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = []): string;
 
-    /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
-     */
     public function getDownloadLink(CloudinaryRemoteId $remoteId): string;
 }
