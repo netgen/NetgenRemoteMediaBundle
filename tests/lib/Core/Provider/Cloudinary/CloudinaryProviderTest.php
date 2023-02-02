@@ -361,6 +361,78 @@ final class CloudinaryProviderTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateOnRemote
+     */
+    public function testUpdateOnRemote(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'upload|image|media/images/image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
+            'name' => 'image.jpg',
+            'size' => 95,
+            'tags' => ['tag1', 'tag2'],
+            'altText' => 'Test alt text',
+            'caption' => 'Test caption',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $expectedOptions = [
+            'context' => [
+                'alt_text' => $resource->getAltText(),
+                'caption' => $resource->getCaption(),
+            ],
+            'tags' => $resource->getTags(),
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('update')
+            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $expectedOptions);
+
+        $this->cloudinaryProvider->updateOnRemote($resource);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateOnRemote
+     */
+    public function testUpdateOnRemoteNotFound(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'upload|image|media/images/image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
+            'name' => 'image.jpg',
+            'size' => 95,
+            'tags' => ['tag1', 'tag2'],
+            'altText' => 'Test alt text',
+            'caption' => 'Test caption',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $expectedOptions = [
+            'context' => [
+                'alt_text' => $resource->getAltText(),
+                'caption' => $resource->getCaption(),
+            ],
+            'tags' => $resource->getTags(),
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('update')
+            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $expectedOptions)
+            ->willThrowException(new RemoteResourceNotFoundException($resource->getRemoteId()));
+
+        self::expectException(RemoteResourceNotFoundException::class);
+        self::expectExceptionMessage('Remote resource with ID "upload|image|media/images/image.jpg" not found.');
+
+        $this->cloudinaryProvider->updateOnRemote($resource);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateDownloadLink
      */
     public function testGenerateDownloadLink(): void

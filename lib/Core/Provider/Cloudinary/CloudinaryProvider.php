@@ -131,6 +131,22 @@ final class CloudinaryProvider extends AbstractProvider
         return $this->gateway->searchCount($query);
     }
 
+    public function updateOnRemote(RemoteResource $resource): void
+    {
+        $options = [
+            'context' => [
+                'alt_text' => $resource->getAltText(),
+                'caption' => $resource->getCaption(),
+            ],
+            'tags' => $resource->getTags(),
+        ];
+
+        $this->gateway->update(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
+    }
+
     public function generateDownloadLink(RemoteResource $resource): string
     {
         return $this->gateway->getDownloadLink(
