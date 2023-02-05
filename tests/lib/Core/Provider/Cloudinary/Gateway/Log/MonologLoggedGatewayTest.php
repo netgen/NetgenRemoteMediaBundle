@@ -290,9 +290,29 @@ final class MonologLoggedGatewayTest extends AbstractTest
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[API][LIMITED] update(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Api::update(\"{$remoteId->getRemoteId()}\")");
+            ->with("[API][FREE] update(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Api::update(\"{$remoteId->getRemoteId()}\")");
 
         $this->gateway->update($remoteId, $options);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::removeAllTagsFromResource
+     */
+    public function testRemoveAllTagsFromResource(): void
+    {
+        $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
+
+        $this->apiGatewayMock
+            ->expects(self::once())
+            ->method('removeAllTagsFromResource')
+            ->with($remoteId);
+
+        $this->loggerMock
+            ->expects(self::once())
+            ->method('info')
+            ->with("[API][FREE] removeAllTagsFromResource(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Api::remove_all_tags(\"{$remoteId->getRemoteId()}\")");
+
+        $this->gateway->removeAllTagsFromResource($remoteId);
     }
 
     /**
