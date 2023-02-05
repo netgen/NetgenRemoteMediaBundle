@@ -159,7 +159,7 @@ final class CloudinaryApiGateway implements GatewayInterface
                     ->subfolders($parentFolder)
                     ->getArrayCopy()['folders'],
             );
-        } catch(CloudinaryApi\NotFound $e) {
+        } catch (CloudinaryApi\NotFound $e) {
             throw new FolderNotFoundException(Folder::fromPath($parentFolder));
         }
     }
@@ -205,6 +205,18 @@ final class CloudinaryApiGateway implements GatewayInterface
 
         try {
             $this->cloudinaryApi->update($remoteId->getResourceId(), $options);
+        } catch (CloudinaryApi\NotFound $e) {
+            throw new RemoteResourceNotFoundException($remoteId->getRemoteId());
+        }
+    }
+
+    public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void
+    {
+        $options['type'] = $remoteId->getType();
+        $options['resource_type'] = $remoteId->getResourceType();
+
+        try {
+            $this->cloudinaryUploader->remove_all_tags([$remoteId->getResourceId()], $options);
         } catch (CloudinaryApi\NotFound $e) {
             throw new RemoteResourceNotFoundException($remoteId->getRemoteId());
         }
