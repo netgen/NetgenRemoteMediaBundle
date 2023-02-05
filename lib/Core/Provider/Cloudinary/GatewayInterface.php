@@ -26,9 +26,9 @@ interface GatewayInterface
     public function listFolders(): array;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\FolderNotFoundException
-     *
      * @return string[]
+     *
+     * @throws \Netgen\RemoteMedia\Exception\FolderNotFoundException
      */
     public function listSubFolders(string $parentFolder): array;
 
@@ -48,6 +48,11 @@ interface GatewayInterface
      * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
      */
     public function update(CloudinaryRemoteId $remoteId, array $options): void;
+
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
+    public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void;
 
     public function delete(CloudinaryRemoteId $remoteId): void;
 
