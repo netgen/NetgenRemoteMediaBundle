@@ -141,6 +141,12 @@ final class CloudinaryProvider extends AbstractProvider
             'tags' => $resource->getTags(),
         ];
 
+        if (count($resource->getTags()) === 0) {
+            $this->gateway->removeAllTagsFromResource(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            );
+        }
+
         $this->gateway->update(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
