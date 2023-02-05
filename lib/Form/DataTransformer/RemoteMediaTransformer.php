@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Form\DataTransformer;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\CropSettings;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
@@ -70,6 +71,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             }
         }
 
+        $needsUpdateOnRemote = $this->needsUpdateOnRemote($remoteResource, $value);
+
         $remoteResource->setAltText($value['altText'] ?? null);
         $remoteResource->setCaption($value['caption'] ?? null);
         $remoteResource->setTags($value['tags']);
@@ -88,13 +91,25 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             $this->resolveCropSettings($value),
         );
 
+        if ($needsUpdateOnRemote) {
+            try {
+                $this->provider->updateOnRemote($remoteResource);
+            } catch (RemoteResourceNotFoundException $e) {
+                if ($remoteResourceLocation instanceof RemoteResourceLocation && $value['locationId']) {
+                    $this->provider->removeLocation($remoteResourceLocation);
+                }
+
+                return null;
+            }
+        }
+
         $this->provider->store($remoteResource);
         $this->provider->storeLocation($remoteResourceLocation);
 
         return $remoteResourceLocation;
     }
 
-    public function resolveCropSettingsString(RemoteResourceLocation $location): string
+    private function resolveCropSettingsString(RemoteResourceLocation $location): string
     {
         $cropSettings = [];
         foreach ($location->getCropSettings() as $cropSetting) {
@@ -112,7 +127,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
     /**
      * @return \Netgen\RemoteMedia\API\Values\CropSettings[]
      */
-    public function resolveCropSettings(array $data): array
+    private function resolveCropSettings(array $data): array
     {
         $cropSettingsString = $data['cropSettings'] ?? null;
 
@@ -128,5 +143,22 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         }
 
         return $cropSettings;
+    }
+
+    private function needsUpdateOnRemote(RemoteResource $remoteResource, array $data): bool
+    {
+        if ($remoteResource->getAltText() !== ($data['altText'] ?? null)) {
+            return true;
+        }
+
+        if ($remoteResource->getCaption() !== ($data['caption'] ?? null)) {
+            return true;
+        }
+
+        if ($remoteResource->getTags() !== ($data['tags'] ?? [])) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -34,6 +34,7 @@ class RemoteMediaTransformerTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettingsString
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::transform
+     *
      * @dataProvider transformDataProvider
      *
      * @param mixed $value
@@ -48,6 +49,7 @@ class RemoteMediaTransformerTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
      */
@@ -63,16 +65,14 @@ class RemoteMediaTransformerTest extends AbstractTest
             'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
         ];
 
-        $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-            ]),
-        );
+        $resource = new RemoteResource([
+            'remoteId' => 'upload|image|media/images/example.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+            'name' => 'example.jpg',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+            'folder' => Folder::fromPath('media/images'),
+        ]);
 
         $this->providerMock
             ->expects(self::once())
@@ -84,7 +84,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->expects(self::once())
             ->method('loadFromRemote')
             ->with('upload|image|media/images/example.jpg')
-            ->willReturn($location->getRemoteResource());
+            ->willReturn($resource);
 
         $expectedLocation = new RemoteResourceLocation(
             new RemoteResource([
@@ -105,6 +105,11 @@ class RemoteMediaTransformerTest extends AbstractTest
 
         $this->providerMock
             ->expects(self::once())
+            ->method('updateOnRemote')
+            ->with($expectedLocation->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
             ->method('store')
             ->with($expectedLocation->getRemoteResource());
 
@@ -121,6 +126,7 @@ class RemoteMediaTransformerTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
      */
@@ -142,6 +148,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'type' => 'image',
                 'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
                 'name' => 'example.jpg',
+                'altText' => 'Test alt text',
                 'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 'folder' => Folder::fromPath('media/images'),
             ]),
@@ -176,6 +183,11 @@ class RemoteMediaTransformerTest extends AbstractTest
 
         $this->providerMock
             ->expects(self::once())
+            ->method('updateOnRemote')
+            ->with($expectedLocation->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
             ->method('store')
             ->with($expectedLocation->getRemoteResource());
 
@@ -192,6 +204,7 @@ class RemoteMediaTransformerTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
      */
@@ -211,8 +224,6 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'type' => 'image',
                 'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
                 'name' => 'example.jpg',
-                'altText' => 'Test alt text',
-                'caption' => 'Test caption',
                 'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag1', 'tag2', 'tag3'],
@@ -248,6 +259,11 @@ class RemoteMediaTransformerTest extends AbstractTest
 
         $this->providerMock
             ->expects(self::once())
+            ->method('updateOnRemote')
+            ->with($expectedLocation->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
             ->method('store')
             ->with($expectedLocation->getRemoteResource());
 
@@ -264,6 +280,113 @@ class RemoteMediaTransformerTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
+     */
+    public function testReverseTransformWithResourceNotExistingOnRemoteAnymore(): void
+    {
+        $data = [
+            'locationId' => 5,
+            'remoteId' => 'upload|image|media/images/example.jpg',
+            'type' => 'image',
+            'tags' => ['tag2'],
+            'cropSettings' => null,
+        ];
+
+        $location = new RemoteResourceLocation(
+            new RemoteResource([
+                'remoteId' => 'upload|image|media/images/example.jpg',
+                'type' => 'image',
+                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                'name' => 'example.jpg',
+                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+                'folder' => Folder::fromPath('media/images'),
+                'tags' => ['tag1', 'tag2', 'tag3'],
+            ]),
+            [
+                new CropSettings('hero_image', 10, 20, 1920, 1080),
+            ],
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadLocation')
+            ->with(5)
+            ->willReturn($location);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadByRemoteId')
+            ->with('upload|image|media/images/example.jpg')
+            ->willReturn($location->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('updateOnRemote')
+            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('removeLocation')
+            ->with($location);
+
+        self::assertNull($this->dataTransformer->reverseTransform($data));
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
+     */
+    public function testReverseTransformWithResourceNotExistingOnRemoteAnymoreWithoutLocation(): void
+    {
+        $data = [
+            'locationId' => '',
+            'remoteId' => 'upload|image|media/images/example.jpg',
+            'type' => 'image',
+            'tags' => ['tag2'],
+            'cropSettings' => null,
+        ];
+
+        $location = new RemoteResourceLocation(
+            new RemoteResource([
+                'remoteId' => 'upload|image|media/images/example.jpg',
+                'type' => 'image',
+                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                'name' => 'example.jpg',
+                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+                'folder' => Folder::fromPath('media/images'),
+                'tags' => ['tag1', 'tag2', 'tag3'],
+            ]),
+            [
+                new CropSettings('hero_image', 10, 20, 1920, 1080),
+            ],
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadByRemoteId')
+            ->with('upload|image|media/images/example.jpg')
+            ->willReturn($location->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('updateOnRemote')
+            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('removeLocation')
+            ->with($location);
+
+        self::assertNull($this->dataTransformer->reverseTransform($data));
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
      */
@@ -274,6 +397,8 @@ class RemoteMediaTransformerTest extends AbstractTest
             'remoteId' => 'upload|image|media/images/example.jpg',
             'type' => 'image',
             'tags' => ['tag2'],
+            'altText' => 'Test alt text',
+            'caption' => 'Test caption',
             'cropSettings' => null,
         ];
 
@@ -292,7 +417,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'caption' => 'Test caption',
             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
             'folder' => Folder::fromPath('media/images'),
-            'tags' => ['tag1', 'tag2', 'tag3'],
+            'tags' => ['tag2'],
         ]);
 
         $this->providerMock
@@ -307,11 +432,18 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'type' => 'image',
                 'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
                 'name' => 'example.jpg',
+                'altText' => 'Test alt text',
+                'caption' => 'Test caption',
                 'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag2'],
             ]),
         );
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('updateOnRemote')
+            ->with($expectedLocation->getRemoteResource());
 
         $this->providerMock
             ->expects(self::once())
@@ -376,6 +508,7 @@ class RemoteMediaTransformerTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
+     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
      * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
      */
@@ -434,6 +567,11 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->with($location);
 
         $expectedLocation = new RemoteResourceLocation($newResource);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('updateOnRemote')
+            ->with($newResource);
 
         $this->providerMock
             ->expects(self::once())
