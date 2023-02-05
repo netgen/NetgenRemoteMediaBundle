@@ -926,6 +926,21 @@ final class Psr6CachedGatewayTest extends AbstractTest
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::removeAllTagsFromResource
+     */
+    public function testRemoveAllTagsFromResource(): void
+    {
+        $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
+
+        $this->apiGatewayMock
+            ->expects(self::once())
+            ->method('removeAllTagsFromResource')
+            ->with($remoteId);
+
+        $this->nonTaggableCachedGateway->removeAllTagsFromResource($remoteId);
+    }
+
+    /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::delete
      */
     public function testDelete(): void

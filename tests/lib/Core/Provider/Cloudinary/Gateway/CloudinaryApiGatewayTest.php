@@ -514,6 +514,31 @@ class CloudinaryApiGatewayTest extends AbstractTest
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::update
      */
+    public function testUpdateWithException(): void
+    {
+        $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|image|test.jpg');
+
+        $options = [
+            'tags' => ['new_tag'],
+        ];
+
+        $expectedOptions = [
+            'tags' => ['new_tag'],
+            'type' => 'upload',
+            'resource_type' => 'image',
+        ];
+
+        $this->cloudinaryApiMock
+            ->expects(self::once())
+            ->method('update')
+            ->with('test.jpg', $expectedOptions);
+
+        $this->apiGateway->update($cloudinaryId, $options);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::update
+     */
     public function testUpdateNonExistingResource(): void
     {
         $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|image|test_not_found.jpg');
