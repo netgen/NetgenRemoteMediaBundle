@@ -13,7 +13,9 @@ use function property_exists;
 
 /**
  * @ORM\Entity()
+ *
  * @ORM\Table(name="ngrm_remote_resource")
+ *
  * @ORM\HasLifecycleCallbacks()
  */
 class RemoteResource
@@ -26,12 +28,22 @@ class RemoteResource
     public const TYPE_DOCUMENT = 'document';
     public const TYPE_OTHER = 'other';
 
+    public const VISIBILITY_PUBLIC = 'public';
+    public const VISIBILITY_PRIVATE = 'private';
+    public const VISIBILITY_PROTECTED = 'protected';
+
     public const SUPPORTED_TYPES = [
         self::TYPE_IMAGE,
         self::TYPE_VIDEO,
         self::TYPE_AUDIO,
         self::TYPE_DOCUMENT,
         self::TYPE_OTHER,
+    ];
+
+    public const SUPPORTED_VISIBILITIES = [
+        self::VISIBILITY_PUBLIC,
+        self::VISIBILITY_PRIVATE,
+        self::VISIBILITY_PROTECTED,
     ];
 
     /**
@@ -43,7 +55,9 @@ class RemoteResource
 
     /**
      * @ORM\Id()
+     *
      * @ORM\GeneratedValue()
+     *
      * @ORM\Column(type="integer")
      */
     private ?int $id = null;
@@ -72,6 +86,11 @@ class RemoteResource
      * @ORM\Column(type="object", nullable=true)
      */
     private ?Folder $folder = null;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private string $visibility = self::VISIBILITY_PUBLIC;
 
     /**
      * @ORM\Column(type="integer")
@@ -184,6 +203,33 @@ class RemoteResource
     public function setFolder(?Folder $folder): self
     {
         $this->folder = $folder;
+
+        return $this;
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->visibility === self::VISIBILITY_PUBLIC;
+    }
+
+    public function isPrivate(): bool
+    {
+        return $this->visibility === self::VISIBILITY_PRIVATE;
+    }
+
+    public function isProtected(): bool
+    {
+        return $this->visibility === self::VISIBILITY_PROTECTED;
+    }
+
+    public function getVisibility(): string
+    {
+        return $this->visibility;
+    }
+
+    public function setVisibility(string $visibility): self
+    {
+        $this->visibility = $visibility;
 
         return $this;
     }

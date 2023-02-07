@@ -25,8 +25,12 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getType
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getUrl
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getVisibility
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetadataProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::isPrivate
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::isProtected
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::isPublic
      */
     public function testConstruct(): void
     {
@@ -83,6 +87,15 @@ final class RemoteResourceTest extends AbstractTest
         self::assertFolderSame(
             Folder::fromPath('media'),
             $resource->getFolder(),
+        );
+
+        self::assertTrue($resource->isPublic());
+        self::assertFalse($resource->isPrivate());
+        self::assertFalse($resource->isProtected());
+
+        self::assertSame(
+            'public',
+            $resource->getVisibility(),
         );
 
         self::assertSame(
@@ -150,6 +163,7 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setTags
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setType
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setUrl
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setVisibility
      */
     public function testSetters(): void
     {
@@ -160,6 +174,7 @@ final class RemoteResourceTest extends AbstractTest
             'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg',
             'name' => 'c87hg9xfxrd4itiim3t0',
             'folder' => Folder::fromPath('media/image'),
+            'visibility' => 'protected',
             'size' => 120253,
             'altText' => 'alt text',
             'caption' => 'caption text',
@@ -186,6 +201,7 @@ final class RemoteResourceTest extends AbstractTest
             ->setUrl('https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg')
             ->setName('c87hg9xfxrd4itiim3t0')
             ->setFolder(Folder::fromPath('media/image'))
+            ->setVisibility('protected')
             ->setSize(120253)
             ->setAltText('alt text')
             ->setCaption('caption text')

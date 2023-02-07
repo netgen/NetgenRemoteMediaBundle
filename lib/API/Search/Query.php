@@ -20,6 +20,9 @@ final class Query
     private array $folders = [];
 
     /** @var string[] */
+    private array $visibilities = [];
+
+    /** @var string[] */
     private array $tags = [];
 
     /** @var string[] */
@@ -49,6 +52,7 @@ final class Query
         $vars = get_object_vars($this);
         $types = implode(',', $this->types);
         $folders = implode(',', $this->folders);
+        $visibilities = implode(',', $this->visibilities);
         $tags = implode(',', $this->tags);
         $remoteIds = implode(',', $this->remoteIds);
         $sort = http_build_query($vars['sortBy'], '', ',');
@@ -56,12 +60,13 @@ final class Query
         unset(
             $vars['types'],
             $vars['folders'],
+            $vars['visibilities'],
             $vars['tags'],
             $vars['remoteIds'],
             $vars['sortBy'],
         );
 
-        return implode('|', $vars) . '|' . $types . '|' . $folders . '|' . $tags . '|' . $remoteIds . '|' . $sort;
+        return implode('|', $vars) . '|' . $types . '|' . $folders . '|' . $visibilities . '|' . $tags . '|' . $remoteIds . '|' . $sort;
     }
 
     /**
@@ -101,6 +106,14 @@ final class Query
     public function getFolders(): array
     {
         return $this->folders;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getVisibilities(): array
+    {
+        return $this->visibilities;
     }
 
     /**

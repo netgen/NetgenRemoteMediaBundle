@@ -71,6 +71,26 @@ abstract class AbstractTest extends TestCase
         );
 
         self::assertSame(
+            $expected->isPublic(),
+            $actual->isPublic(),
+        );
+
+        self::assertSame(
+            $expected->isPrivate(),
+            $actual->isPrivate(),
+        );
+
+        self::assertSame(
+            $expected->isProtected(),
+            $actual->isProtected(),
+        );
+
+        self::assertSame(
+            $expected->getVisibility(),
+            $actual->getVisibility(),
+        );
+
+        self::assertSame(
             $expected->getSize(),
             $actual->getSize(),
         );

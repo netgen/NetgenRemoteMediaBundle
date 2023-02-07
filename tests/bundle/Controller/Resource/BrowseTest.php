@@ -38,6 +38,7 @@ final class BrowseTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__invoke
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResource
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResources
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::getArrayFromInputBag
      */
     public function test(): void
     {
@@ -46,6 +47,7 @@ final class BrowseTest extends TestCase
             'query' => 'image',
             'type' => 'image',
             'folder' => 'media',
+            'visibility' => 'public',
             'tag' => 'test',
             'limit' => 20,
             'next_cursor' => 'ewdewr43r43r43',
@@ -55,6 +57,7 @@ final class BrowseTest extends TestCase
             'query' => 'image',
             'types' => ['image'],
             'folders' => ['media'],
+            'visibilities' => ['public'],
             'tags' => ['test'],
             'limit' => 20,
             'nextCursor' => 'ewdewr43r43r43',
@@ -166,6 +169,7 @@ final class BrowseTest extends TestCase
                     'folder' => 'media/images',
                     'tags' => ['test', 'image'],
                     'type' => 'image',
+                    'visibility' => 'public',
                     'size' => 95,
                     'width' => null,
                     'height' => null,
@@ -181,6 +185,7 @@ final class BrowseTest extends TestCase
                     'folder' => 'media/images',
                     'tags' => ['test'],
                     'type' => 'image',
+                    'visibility' => 'public',
                     'size' => 75,
                     'width' => null,
                     'height' => null,
@@ -196,6 +201,7 @@ final class BrowseTest extends TestCase
                     'folder' => 'media/videos',
                     'tags' => ['test', 'video'],
                     'type' => 'video',
+                    'visibility' => 'public',
                     'size' => 550,
                     'width' => null,
                     'height' => null,
@@ -209,6 +215,64 @@ final class BrowseTest extends TestCase
             ],
             'load_more' => true,
             'next_cursor' => 'i4gtgoijf94fef43dss',
+        ]);
+
+        $response = $this->controller->__invoke($request);
+
+        self::assertInstanceOf(
+            JsonResponse::class,
+            $response,
+        );
+
+        self::assertSame(
+            $expectedResponseContent,
+            $response->getContent(),
+        );
+
+        self::assertSame(
+            Response::HTTP_OK,
+            $response->getStatusCode(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__invoke
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResource
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResources
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::getArrayFromInputBag
+     */
+    public function testWithoutResults(): void
+    {
+        $request = new Request();
+        $request->query->add([
+            'query' => 'image',
+            'type' => ['image', 'video'],
+            'folder' => ['media', 'other'],
+            'visibility' => ['private', 'protected'],
+            'tags' => 'test',
+        ]);
+
+        $query = new Query([
+            'query' => 'image',
+            'types' => ['image', 'video'],
+            'folders' => ['media', 'other'],
+            'visibilities' => ['private', 'protected'],
+            'tags' => [],
+        ]);
+
+        $result = new Result(0, null, []);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('search')
+            ->with($query)
+            ->willReturn($result);
+
+        $expectedResponseContent = json_encode([
+            'hits' => [],
+            'load_more' => false,
+            'next_cursor' => null,
         ]);
 
         $response = $this->controller->__invoke($request);

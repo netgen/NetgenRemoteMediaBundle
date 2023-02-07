@@ -1,6 +1,6 @@
 <template>
   <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :tags="tags" :types="types" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
+    <media-facets :tags="tags" :types="types" :visibilities="visibilities" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
     <media-galery
         :media="media"
         :canLoadMore="canLoadMore"
@@ -25,7 +25,7 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["tags", "types", "facetsLoading", "selectedMediaId", "paths"],
+  props: ["tags", "types", "visibilities", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGallery,
@@ -41,7 +41,8 @@ export default {
         folder: "",
         type: "",
         query: "",
-        tag: ""
+        tag: "",
+        visibility: ""
       }
     };
   },
@@ -54,7 +55,7 @@ export default {
       this.abortController && this.abortController.abort();
       this.abortController = new AbortController();
 
-      const query = {
+      let query = {
         limit: NUMBER_OF_ITEMS,
         offset: patch ? this.media.length : 0,
       };
@@ -77,11 +78,33 @@ export default {
         query['tag'] = this.facets.tag;
       }
 
+      if (this.$root.$data.NgRemoteMediaOptions.allowedVisibility.length > 0) {
+        query['visibility'] = this.$root.$data.NgRemoteMediaOptions.allowedVisibility;
+      }
+
+      if (this.facets.visibility) {
+        query['visibility'] = this.facets.visibility;
+      }
+
       if (patch && this.nextCursor) {
         query['next_cursor'] = this.nextCursor;
       }
 
-      const url = `${this.paths.browse_resources}?${encodeQueryData(query)}`;
+      let queryString = '';
+      for (const [key, value] of Object.entries(query)) {
+        if (queryString !== '') {
+          queryString += '&';
+        }
+
+        if (value.constructor === Array) {
+          queryString += (key + '[]=');
+          queryString += value.join('&' + key + '[]=');
+        } else {
+          queryString += (key + '=' + value);
+        }
+      }
+
+      const url = `${this.paths.browse_resources}?${encodeURI(queryString)}`;
 
       try {
         const response = await fetch(url, {

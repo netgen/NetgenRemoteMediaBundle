@@ -1,10 +1,14 @@
 ngrm:
-    provider:
-        cloudinary:
-            supported_types:
-                image: 'Images and documents'
-                video: 'Video and audio'
-                raw: 'Other'
+    supported_types:
+        image: 'Image'
+        video: 'Video'
+        audio: 'Audio'
+        document: 'Document'
+        other: 'Other'
+    supported_visibilities:
+        public: 'Public'
+        private: 'Private'
+        protected: 'Protected'
     edit:
         form:
             field:
@@ -40,6 +44,9 @@ ngrm:
                     select_tag: 'Select tag'
                     loading_tags: 'Loading tags...'
                     all_tags: 'All tags'
+                    select_visibility: 'Select visibility'
+                    loading_visibilities: 'Loading visibilities...'
+                    all_visibilities: 'All visibilities'
                     search: 'Search (by name, tag, folder, alternate text etc.)'
                     search_placeholder: 'Enter your search term'
                 empty_folder: 'Folder is empty'

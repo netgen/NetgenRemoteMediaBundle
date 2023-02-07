@@ -27,8 +27,8 @@
 
     <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="this.$root.$data.NgRemoteMediaAvailableVariations"></crop-modal>
-    <media-modal :tags="tags" :types="types" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-    <upload-modal v-if="uploadModalOpen" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
+    <media-modal :tags="tags" :types="types" :visibilities="visibilities" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <upload-modal v-if="uploadModalOpen" :visibilities="visibilities" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
   </div>
 </template>
 
@@ -68,6 +68,7 @@ export default {
       types: [],
       folders: [],
       tags: [],
+      visibilities: [],
       facetsLoading: true,
       newFile: null,
     };
@@ -170,6 +171,14 @@ export default {
       const data = await response.json();
       this.types = data.types;
       this.tags = data.tags;
+      this.visibilities = [];
+
+      data.visibilities.forEach((visibility) => {
+        if(this.$root.$data.NgRemoteMediaOptions.allowedVisibility.indexOf(visibility.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedVisibility.length === 0) {
+          this.visibilities.push(visibility);
+        }
+      });
+
       this.facetsLoading = false;
     },
     async handleBrowseMediaClicked() {
@@ -190,6 +199,7 @@ export default {
       return file.type.split("/")[1];
     },
     handleFileInputChange(e) {
+      this.fetchFacets();
       this.uploadModalOpen = true;
 
       this.newFile = e.target.files.item(0);

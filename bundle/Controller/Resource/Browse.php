@@ -15,9 +15,10 @@ final class Browse extends AbstractController
     {
         $query = new Query([
             'query' => $request->query->get('query'),
-            'types' => $request->query->get('type') ? [$request->query->get('type')] : [],
-            'folders' => $request->query->get('folder') !== null ? [$request->query->get('folder')] : [],
-            'tags' => $request->query->get('tag') ? [$request->query->get('tag')] : [],
+            'types' => $this->getArrayFromInputBag($request->query, 'type'),
+            'folders' => $this->getArrayFromInputBag($request->query, 'folder'),
+            'visibilities' => $this->getArrayFromInputBag($request->query, 'visibility'),
+            'tags' => $this->getArrayFromInputBag($request->query, 'tag'),
             'limit' => $request->query->get('limit') ? (int) $request->query->get('limit') : 25,
             'nextCursor' => $request->query->get('next_cursor'),
         ]);

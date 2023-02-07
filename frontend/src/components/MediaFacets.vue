@@ -38,6 +38,19 @@
         />
       </div>
 
+      <div v-if="visibilities.length > 1" class="form-field">
+        <label for="visibilities">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_visibility }}</label>
+        <v-select
+          :options="visibilities"
+          label="name"
+          v-model="visibility"
+          @input="handleVisibilityChange"
+          :reduce="option => option.id"
+          :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_visibilities : this.$root.$data.NgRemoteMediaTranslations.browse_all_visibilities"
+          :disabled="facetsLoading"
+        />
+      </div>
+
       <div class="search-wrapper">
         <span class="search-label">{{ this.$root.$data.NgRemoteMediaTranslations.search }}</span>
         <div class="search">
@@ -72,7 +85,7 @@ import {encodeQueryData} from "@/utility/utility";
 
 export default {
   name: "MediaFacets",
-  props: ["tags", "types", "facets", "facetsLoading"],
+  props: ["tags", "types", "visibilities", "facets", "facetsLoading"],
   data() {
     return {
       TYPE_ALL,
@@ -90,7 +103,8 @@ export default {
       selectedFolder: this.facets.folder,
       selectedType: this.facets.type,
       query: this.facets.query,
-      tag: this.facets.tag
+      tag: this.facets.tag,
+      visibility: this.facets.visibility
     };
   },
   methods: {
@@ -106,6 +120,9 @@ export default {
     },
     handleTagChange() {
       this.$emit("change", { tag: this.tag });
+    },
+    handleVisibilityChange() {
+      this.$emit("change", { visibility: this.visibility });
     },
     async loadSubFolders(data) {
       const node = data.parentNode;

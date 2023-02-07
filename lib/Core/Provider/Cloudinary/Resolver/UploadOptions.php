@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver;
 
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
@@ -18,12 +19,18 @@ use function rtrim;
 
 final class UploadOptions
 {
+    private VisibilityTypeConverter $visibilityTypeConverter;
+
     private array $noExtensionMimeTypes;
 
     private MimeTypesInterface $mimeTypes;
 
-    public function __construct(array $noExtensionMimeTypes = ['image', 'video'], ?MimeTypesInterface $mimeTypes = null)
-    {
+    public function __construct(
+        VisibilityTypeConverter $visibilityTypeConverter,
+        array $noExtensionMimeTypes = ['image', 'video'],
+        ?MimeTypesInterface $mimeTypes = null
+    ) {
+        $this->visibilityTypeConverter = $visibilityTypeConverter;
         $this->noExtensionMimeTypes = $noExtensionMimeTypes;
         $this->mimeTypes = $mimeTypes ?? MimeTypes::getDefault();
     }
@@ -54,7 +61,10 @@ final class UploadOptions
                 'alt' => $resourceStruct->getAltText() ?? '',
                 'caption' => $resourceStruct->getCaption() ?? '',
             ],
+            'type' => $this->visibilityTypeConverter->toCloudinaryType($resourceStruct->getVisibility()),
             'resource_type' => $resourceStruct->getResourceType(),
+            'access_mode' => $this->visibilityTypeConverter->toCloudinaryAccessMode($resourceStruct->getVisibility()),
+            'access_control' => $this->visibilityTypeConverter->toCloudinaryAccessControl($resourceStruct->getVisibility()),
             'tags' => $resourceStruct->getTags(),
         ];
     }

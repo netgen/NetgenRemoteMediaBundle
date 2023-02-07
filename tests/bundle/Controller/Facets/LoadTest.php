@@ -38,6 +38,7 @@ final class LoadTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__construct
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__invoke
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveTypeName
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveVisibilityName
      */
     public function test(): void
     {
@@ -57,7 +58,15 @@ final class LoadTest extends TestCase
         $supportedTypes = [
             'image',
             'video',
-            'raw',
+            'audio',
+            'document',
+            'other',
+        ];
+
+        $supportedVisibilities = [
+            'public',
+            'private',
+            'protected',
         ];
 
         $this->providerMock
@@ -76,37 +85,55 @@ final class LoadTest extends TestCase
             ->willReturn($supportedTypes);
 
         $this->providerMock
-            ->expects(self::exactly(3))
-            ->method('getIdentifier')
-            ->willReturn('cloudinary');
+            ->expects(self::once())
+            ->method('getSupportedVisibilities')
+            ->willReturn($supportedVisibilities);
 
         $this->translatorMock
-            ->expects(self::exactly(3))
+            ->expects(self::exactly(8))
             ->method('trans')
             ->withConsecutive(
-                ['ngrm.provider.cloudinary.supported_types.image', [], 'ngremotemedia'],
-                ['ngrm.provider.cloudinary.supported_types.video', [], 'ngremotemedia'],
-                ['ngrm.provider.cloudinary.supported_types.raw', [], 'ngremotemedia'],
+                ['ngrm.supported_types.image', [], 'ngremotemedia'],
+                ['ngrm.supported_types.video', [], 'ngremotemedia'],
+                ['ngrm.supported_types.audio', [], 'ngremotemedia'],
+                ['ngrm.supported_types.document', [], 'ngremotemedia'],
+                ['ngrm.supported_types.other', [], 'ngremotemedia'],
+                ['ngrm.supported_visibilities.public', [], 'ngremotemedia'],
+                ['ngrm.supported_visibilities.private', [], 'ngremotemedia'],
+                ['ngrm.supported_visibilities.protected', [], 'ngremotemedia'],
             )
             ->willReturnOnConsecutiveCalls(
-                'Images and documents',
-                'Video and audio',
+                'Image',
+                'Video',
+                'Audio',
+                'Document',
                 'Other',
+                'Public',
+                'Private',
+                'Protected',
             );
 
         $expectedResponseContent = json_encode([
             'types' => [
                 [
-                    'name' => 'Images and documents',
+                    'name' => 'Image',
                     'id' => 'image',
                 ],
                 [
-                    'name' => 'Video and audio',
+                    'name' => 'Video',
                     'id' => 'video',
                 ],
                 [
+                    'name' => 'Audio',
+                    'id' => 'audio',
+                ],
+                [
+                    'name' => 'Document',
+                    'id' => 'document',
+                ],
+                [
                     'name' => 'Other',
-                    'id' => 'raw',
+                    'id' => 'other',
                 ],
             ],
             'folders' => [
@@ -145,6 +172,20 @@ final class LoadTest extends TestCase
                     'id' => 'media',
                 ],
             ],
+            'visibilities' => [
+                [
+                    'name' => 'Public',
+                    'id' => 'public',
+                ],
+                [
+                    'name' => 'Private',
+                    'id' => 'private',
+                ],
+                [
+                    'name' => 'Protected',
+                    'id' => 'protected',
+                ],
+            ],
         ]);
 
         $response = $this->controller->__invoke();
@@ -169,13 +210,22 @@ final class LoadTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__construct
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__invoke
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveTypeName
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveVisibilityName
      */
     public function testNotSupportedFoldersAndTagsMissingTrans(): void
     {
         $supportedTypes = [
             'image',
             'video',
-            'raw',
+            'audio',
+            'document',
+            'other',
+        ];
+
+        $supportedVisibilities = [
+            'public',
+            'private',
+            'protected',
         ];
 
         $this->providerMock
@@ -194,41 +244,73 @@ final class LoadTest extends TestCase
             ->willReturn($supportedTypes);
 
         $this->providerMock
-            ->expects(self::exactly(3))
-            ->method('getIdentifier')
-            ->willReturn('cloudinary');
+            ->expects(self::once())
+            ->method('getSupportedVisibilities')
+            ->willReturn($supportedVisibilities);
 
         $this->translatorMock
-            ->expects(self::exactly(3))
+            ->expects(self::exactly(8))
             ->method('trans')
             ->withConsecutive(
-                ['ngrm.provider.cloudinary.supported_types.image', [], 'ngremotemedia'],
-                ['ngrm.provider.cloudinary.supported_types.video', [], 'ngremotemedia'],
-                ['ngrm.provider.cloudinary.supported_types.raw', [], 'ngremotemedia'],
+                ['ngrm.supported_types.image', [], 'ngremotemedia'],
+                ['ngrm.supported_types.video', [], 'ngremotemedia'],
+                ['ngrm.supported_types.audio', [], 'ngremotemedia'],
+                ['ngrm.supported_types.document', [], 'ngremotemedia'],
+                ['ngrm.supported_types.other', [], 'ngremotemedia'],
+                ['ngrm.supported_visibilities.public', [], 'ngremotemedia'],
+                ['ngrm.supported_visibilities.private', [], 'ngremotemedia'],
+                ['ngrm.supported_visibilities.protected', [], 'ngremotemedia'],
             )
             ->willReturnOnConsecutiveCalls(
-                'Images and documents',
-                'Video and audio',
-                'ngrm.provider.cloudinary.supported_types.raw',
+                'Image',
+                'Video',
+                'Audio',
+                'Document',
+                'Other',
+                'Public',
+                'Private',
+                'Protected',
             );
 
         $expectedResponseContent = json_encode([
             'types' => [
                 [
-                    'name' => 'Images and documents',
+                    'name' => 'Image',
                     'id' => 'image',
                 ],
                 [
-                    'name' => 'Video and audio',
+                    'name' => 'Video',
                     'id' => 'video',
                 ],
                 [
-                    'name' => 'raw',
-                    'id' => 'raw',
+                    'name' => 'Audio',
+                    'id' => 'audio',
+                ],
+                [
+                    'name' => 'Document',
+                    'id' => 'document',
+                ],
+                [
+                    'name' => 'Other',
+                    'id' => 'other',
                 ],
             ],
             'folders' => [],
             'tags' => [],
+            'visibilities' => [
+                [
+                    'name' => 'Public',
+                    'id' => 'public',
+                ],
+                [
+                    'name' => 'Private',
+                    'id' => 'private',
+                ],
+                [
+                    'name' => 'Protected',
+                    'id' => 'protected',
+                ],
+            ],
         ]);
 
         $response = $this->controller->__invoke();

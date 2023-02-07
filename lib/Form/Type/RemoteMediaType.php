@@ -9,6 +9,8 @@ use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class RemoteMediaType extends AbstractType
@@ -24,6 +26,7 @@ final class RemoteMediaType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => null,
+            'allowed_visibility' => [],
         ]);
     }
 
@@ -48,5 +51,12 @@ final class RemoteMediaType extends AbstractType
             ->add('cropSettings', HiddenType::class);
 
         $builder->addModelTransformer($this->transformer);
+    }
+
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
+        $view->vars = array_replace($view->vars, array(
+            'allowed_visibility' => $options['allowed_visibility'],
+        ));
     }
 }

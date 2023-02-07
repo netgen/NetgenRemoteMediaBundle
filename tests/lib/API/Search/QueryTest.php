@@ -20,6 +20,8 @@ final class QueryTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Search\Query::getSortBy
      * @covers \Netgen\RemoteMedia\API\Search\Query::getTags
      * @covers \Netgen\RemoteMedia\API\Search\Query::getTypes
+     * @covers \Netgen\RemoteMedia\API\Search\Query::getVisibilities
+     *
      * @dataProvider constructorPropsProvider
      */
     public function testConstructor(
@@ -27,6 +29,7 @@ final class QueryTest extends TestCase
         ?string $searchQuery,
         array $types,
         array $folders,
+        array $visibilities,
         array $tags,
         array $remoteIds,
         int $limit,
@@ -49,6 +52,11 @@ final class QueryTest extends TestCase
         self::assertSame(
             $folders,
             $query->getFolders(),
+        );
+
+        self::assertSame(
+            $visibilities,
+            $query->getVisibilities(),
         );
 
         self::assertSame(
@@ -94,6 +102,8 @@ final class QueryTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Search\Query::getSortBy
      * @covers \Netgen\RemoteMedia\API\Search\Query::getTags
      * @covers \Netgen\RemoteMedia\API\Search\Query::getTypes
+     * @covers \Netgen\RemoteMedia\API\Search\Query::getVisibilities
+     *
      * @dataProvider remoteIdsProvider
      */
     public function testFromRemoteIds(
@@ -113,6 +123,7 @@ final class QueryTest extends TestCase
         self::assertNull($query->getQuery());
         self::assertEmpty($query->getTypes());
         self::assertEmpty($query->getFolders());
+        self::assertEmpty($query->getVisibilities());
         self::assertEmpty($query->getTags());
 
         self::assertSame(
@@ -152,6 +163,7 @@ final class QueryTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Search\Query::getSortBy
      * @covers \Netgen\RemoteMedia\API\Search\Query::getTags
      * @covers \Netgen\RemoteMedia\API\Search\Query::getTypes
+     * @covers \Netgen\RemoteMedia\API\Search\Query::getVisibilities
      */
     public function testSimpleFromRemoteIds(): void
     {
@@ -160,6 +172,7 @@ final class QueryTest extends TestCase
         self::assertNull($query->getQuery());
         self::assertEmpty($query->getTypes());
         self::assertEmpty($query->getFolders());
+        self::assertEmpty($query->getVisibilities());
         self::assertEmpty($query->getTags());
 
         self::assertSame(
@@ -180,7 +193,7 @@ final class QueryTest extends TestCase
         );
 
         self::assertSame(
-            '|25|||||test/image.jpg|created_at=desc',
+            '|25||||||test/image.jpg|created_at=desc',
             (string) $query,
         );
     }
@@ -216,15 +229,17 @@ final class QueryTest extends TestCase
                 [],
                 [],
                 [],
+                [],
                 25,
                 null,
                 ['created_at' => 'desc'],
-                'test search|25||||||created_at=desc',
+                'test search|25|||||||created_at=desc',
             ],
             [
                 [
                     'types' => ['audio', 'video'],
                     'folders' => ['root/images', 'root/videos'],
+                    'visibilities' => ['public', 'private'],
                     'tags' => ['tag1', 'tag2', 'tag3'],
                     'limit' => 30,
                     'sortBy' => ['updated_at' => 'asc'],
@@ -232,12 +247,13 @@ final class QueryTest extends TestCase
                 null,
                 ['audio', 'video'],
                 ['root/images', 'root/videos'],
+                ['public', 'private'],
                 ['tag1', 'tag2', 'tag3'],
                 [],
                 30,
                 null,
                 ['updated_at' => 'asc'],
-                '|30||audio,video|root/images,root/videos|tag1,tag2,tag3||updated_at=asc',
+                '|30||audio,video|root/images,root/videos|public,private|tag1,tag2,tag3||updated_at=asc',
             ],
             [
                 [
@@ -247,17 +263,19 @@ final class QueryTest extends TestCase
                 [],
                 [],
                 [],
+                [],
                 ['root/images/image1.jpg', 'root/videos/example.mp4'],
                 25,
                 null,
                 ['created_at' => 'desc'],
-                '|25|||||root/images/image1.jpg,root/videos/example.mp4|created_at=desc',
+                '|25||||||root/images/image1.jpg,root/videos/example.mp4|created_at=desc',
             ],
             [
                 [
                     'query' => 'unix',
                     'types' => ['image'],
                     'folders' => ['root/images'],
+                    'visibilities' => ['protected'],
                     'tags' => ['tech'],
                     'nextCursor' => 'd395jdgew45nd73kjsijfh',
                     'sortBy' => ['created_at' => 'asc'],
@@ -265,12 +283,13 @@ final class QueryTest extends TestCase
                 'unix',
                 ['image'],
                 ['root/images'],
+                ['protected'],
                 ['tech'],
                 [],
                 25,
                 'd395jdgew45nd73kjsijfh',
                 ['created_at' => 'asc'],
-                'unix|25|d395jdgew45nd73kjsijfh|image|root/images|tech||created_at=asc',
+                'unix|25|d395jdgew45nd73kjsijfh|image|root/images|protected|tech||created_at=asc',
             ],
         ];
     }
@@ -283,14 +302,14 @@ final class QueryTest extends TestCase
                 100,
                 null,
                 ['created_at' => 'asc'],
-                '|100|||||image.jpg,test/subfolder/document.pdf,videos/example.mp4,media/audio/song.mp3|created_at=asc',
+                '|100||||||image.jpg,test/subfolder/document.pdf,videos/example.mp4,media/audio/song.mp3|created_at=asc',
             ],
             [
                 ['image.jpg'],
                 25,
                 'ewdsofu439oirejfoi3',
                 ['updated_at' => 'desc'],
-                '|25|ewdsofu439oirejfoi3||||image.jpg|updated_at=desc',
+                '|25|ewdsofu439oirejfoi3|||||image.jpg|updated_at=desc',
             ],
         ];
     }

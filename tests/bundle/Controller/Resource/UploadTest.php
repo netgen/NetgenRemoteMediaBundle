@@ -27,6 +27,7 @@ final class UploadTest extends TestCase
 {
     /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\FileHash */
     protected MockObject $fileHashFactoryMock;
+
     private UploadController $controller;
 
     /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
@@ -85,9 +86,8 @@ final class UploadTest extends TestCase
             $fileStruct,
             'auto',
             Folder::fromPath('media/image'),
+            'public',
             $request->request->get('filename'),
-            $request->request->getBoolean('overwrite', false),
-            $request->request->getBoolean('invalidate', false),
         );
 
         $resource = new RemoteResource([
@@ -127,6 +127,7 @@ final class UploadTest extends TestCase
             'folder' => 'media/image',
             'tags' => [],
             'type' => 'image',
+            'visibility' => 'public',
             'size' => 123,
             'width' => null,
             'height' => null,
@@ -154,6 +155,150 @@ final class UploadTest extends TestCase
             Response::HTTP_OK,
             $response->getStatusCode(),
         );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::formatResource
+     */
+    public function testUploadProtected(): void
+    {
+        $request = new Request();
+        $request->request->add([
+            'folder' => 'media/image',
+            'visibility' => 'protected',
+        ]);
+
+        $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::exactly(3))
+            ->method('getRealPath')
+            ->willReturn('/var/www/project/media/images/sample_image.jpg');
+
+        $uploadedFileMock
+            ->expects(self::exactly(2))
+            ->method('getClientOriginalName')
+            ->willReturn('sample_image');
+
+        $uploadedFileMock
+            ->expects(self::exactly(2))
+            ->method('getClientOriginalExtension')
+            ->willReturn('jpg');
+
+        $request->files->add([
+            'file' => $uploadedFileMock,
+        ]);
+
+        $this->fileHashFactoryMock
+            ->expects(self::once())
+            ->method('createHash')
+            ->with('/var/www/project/media/images/sample_image.jpg')
+            ->willReturn('a522f23sf81aa0afd03387c37e2b6eax');
+
+        $fileStruct = FileStruct::fromUploadedFile($uploadedFileMock);
+
+        $resourceStruct = new ResourceStruct(
+            $fileStruct,
+            'auto',
+            Folder::fromPath('media/image'),
+            'protected',
+            $request->request->get('filename'),
+            false,
+            false,
+        );
+
+        $resource = new RemoteResource([
+            'remoteId' => 'authenticated|image|media/image/sample_image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
+            'folder' => Folder::fromPath('media/image'),
+            'visibility' => 'protected',
+            'size' => 123,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
+        ]);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($resourceStruct)
+            ->willReturn($resource);
+
+        $transformation = [
+            'crop' => 'fit',
+            'width' => 160,
+            'height' => 120,
+        ];
+
+        $variation = new RemoteResourceVariation(
+            $resource,
+            'https://cloudinary.com/test/c_fit_160_120/authenticated/image/media/image/sample_image.jpg',
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('buildRawVariation')
+            ->with($resource, [$transformation])
+            ->willReturn($variation);
+
+        $expectedResponseContent = json_encode([
+            'remoteId' => 'authenticated|image|media/image/sample_image.jpg',
+            'folder' => 'media/image',
+            'tags' => [],
+            'type' => 'image',
+            'visibility' => 'protected',
+            'size' => 123,
+            'width' => null,
+            'height' => null,
+            'filename' => 'sample_image.jpg',
+            'format' => null,
+            'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/authenticated/image/media/image/sample_image.jpg',
+            'previewUrl' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
+            'url' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
+            'altText' => null,
+        ]);
+
+        $response = $this->controller->__invoke($request);
+
+        self::assertInstanceOf(
+            JsonResponse::class,
+            $response,
+        );
+
+        self::assertSame(
+            $expectedResponseContent,
+            $response->getContent(),
+        );
+
+        self::assertSame(
+            Response::HTTP_OK,
+            $response->getStatusCode(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
+     */
+    public function testUploadInvalidVisibility(): void
+    {
+        $request = new Request();
+        $request->request->add([
+            'folder' => 'media/image',
+            'visibility' => 'test',
+        ]);
+
+        $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $request->files->add([
+            'file' => $uploadedFileMock,
+        ]);
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Invalid visibility option "test", supported options: "public", "private", "protected".');
+
+        $this->controller->__invoke($request);
     }
 
     /**
@@ -201,9 +346,8 @@ final class UploadTest extends TestCase
             $fileStruct,
             'auto',
             Folder::fromPath('media/image'),
+            'public',
             $request->request->get('filename'),
-            $request->request->getBoolean('overwrite', false),
-            $request->request->getBoolean('invalidate', false),
         );
 
         $resource = new RemoteResource([
@@ -243,6 +387,7 @@ final class UploadTest extends TestCase
             'folder' => 'media/image',
             'tags' => [],
             'type' => 'image',
+            'visibility' => 'public',
             'size' => 123,
             'width' => null,
             'height' => null,
@@ -317,9 +462,8 @@ final class UploadTest extends TestCase
             $fileStruct,
             'auto',
             Folder::fromPath('media/image'),
+            'public',
             $request->request->get('filename'),
-            $request->request->getBoolean('overwrite', false),
-            $request->request->getBoolean('invalidate', false),
         );
 
         $resource = new RemoteResource([
@@ -359,6 +503,7 @@ final class UploadTest extends TestCase
             'folder' => 'media/image',
             'tags' => [],
             'type' => 'image',
+            'visibility' => 'public',
             'size' => 123,
             'width' => null,
             'height' => null,
