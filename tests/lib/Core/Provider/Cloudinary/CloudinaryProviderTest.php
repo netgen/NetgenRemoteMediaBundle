@@ -695,6 +695,7 @@ final class CloudinaryProviderTest extends AbstractTest
                 'caption' => '',
             ],
             'resource_type' => 'image',
+            'access_mode' => 'public',
             'tags' => [],
         ];
 
@@ -702,6 +703,7 @@ final class CloudinaryProviderTest extends AbstractTest
             FileStruct::fromUri('image.jpg'),
             'image',
             $folder,
+            'public',
             'image_new.jpg',
             true,
             true,

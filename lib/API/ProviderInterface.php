@@ -27,14 +27,25 @@ interface ProviderInterface
 
     public function getSupportedTypes(): array;
 
+    public function getSupportedVisibilities(): array;
+
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     */
     public function listFolders(?Folder $parent = null): array;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     */
     public function createFolder(string $name, ?Folder $parent = null): Folder;
 
     public function count(): int;
 
     public function countInFolder(Folder $folder): int;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     */
     public function listTags(): array;
 
     /**

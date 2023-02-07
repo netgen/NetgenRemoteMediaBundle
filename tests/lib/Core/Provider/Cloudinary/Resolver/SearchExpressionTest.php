@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Resolver;
 
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use PHPUnit\Framework\TestCase;
 
@@ -17,6 +18,7 @@ final class SearchExpressionTest extends TestCase
     {
         $this->resolver = new SearchExpressionResolver(
             new ResourceTypeConverter(),
+            new VisibilityTypeConverter(),
         );
     }
 
@@ -33,7 +35,9 @@ final class SearchExpressionTest extends TestCase
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveResourceTypes
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveSearchQuery
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveTags
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveTypes
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression::resolveVideoFormats
+     *
      * @dataProvider dataProvider
      */
     public function testResolve(Query $query, string $expression): void
@@ -108,6 +112,24 @@ final class SearchExpressionTest extends TestCase
             ],
             [
                 new Query([
+                    'visibilities' => ['public'],
+                ]),
+                '(type:"upload")',
+            ],
+            [
+                new Query([
+                    'visibilities' => ['private'],
+                ]),
+                '(type:"private")',
+            ],
+            [
+                new Query([
+                    'visibilities' => ['protected'],
+                ]),
+                '(type:"authenticated")',
+            ],
+            [
+                new Query([
                     'tags' => ['tech'],
                 ]),
                 '(tags:"tech")',
@@ -123,6 +145,7 @@ final class SearchExpressionTest extends TestCase
                     'query' => 'android',
                     'types' => ['video'],
                     'folders' => ['root/videos'],
+                    'visibilities' => ['private', 'public'],
                     'tags' => ['tech'],
                 ]),
                 '(resource_type:"video")'
@@ -130,6 +153,7 @@ final class SearchExpressionTest extends TestCase
                 . ' AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))'
                 . ' AND android*'
                 . ' AND (folder:"root/videos")'
+                . ' AND (type:"private" OR type:"upload")'
                 . ' AND (tags:"tech")',
             ],
             [
@@ -137,12 +161,14 @@ final class SearchExpressionTest extends TestCase
                     'query' => 'podcast',
                     'types' => ['audio'],
                     'folders' => ['root/audio'],
+                    'visibilities' => ['protected'],
                 ]),
                 '(resource_type:"video")'
                 . ' AND ((format="aac" OR format="aiff" OR format="amr" OR format="flac" OR format="m4a"'
                 . ' OR format="mp3" OR format="ogg" OR format="opus" OR format="wav"))'
                 . ' AND podcast*'
-                . ' AND (folder:"root/audio")',
+                . ' AND (folder:"root/audio")'
+                . ' AND (type:"authenticated")',
             ],
             [
                 new Query([

@@ -6,7 +6,7 @@
         <span><strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_empty_folder }}</strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_upload_media }}</span>
       </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.remoteId === selectedMediaId}">
-        <div v-if="item.type==='image' || (item.type==='video' && item.browseUrl!=='')" class="media-container">
+        <div v-if="item.type === 'image' || (item.type==='video' && item.browseUrl!=='')" class="media-container">
           <img :src="item.browseUrl" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description"><span class="format">{{item.format}}</span> - {{item.width}} x {{item.height}} - {{showFilesize(item)}}</div>
@@ -26,7 +26,12 @@
             </span>
           </span>
           <Label class="filename">{{item.filename}}</Label>
-          <div class="size-description"><span class="format">{{item.format}}</span> - {{showFilesize(item)}}</div>
+          <div class="size-description">
+            <i v-if="item.visibility === 'public'" class="fa-solid fa-globe"></i>
+            <i v-if="item.visibility === 'private'" class="fa fa-eye-slash"></i>
+            <i v-if="item.visibility === 'protected'" class="fa fa-lock"></i>
+            <span class="format">{{item.format}}</span> - {{showFilesize(item)}}
+          </div>
         </div>
         <button type="button" @click="$emit('media-selected', item)" class="btn btn-blue select-btn">{{ _self.$root.$data.NgRemoteMediaTranslations.media_galery_select }}</button>
       </div>

@@ -8,6 +8,7 @@ use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 
 use function array_filter;
 use function array_map;
@@ -26,9 +27,12 @@ final class SearchExpression
 {
     private ResourceTypeConverter $resourceTypeConverter;
 
-    public function __construct(ResourceTypeConverter $resourceTypeConverter)
+    private VisibilityTypeConverter $visibilityTypeConverter;
+
+    public function __construct(ResourceTypeConverter $resourceTypeConverter, VisibilityTypeConverter $visibilityTypeConverter)
     {
         $this->resourceTypeConverter = $resourceTypeConverter;
+        $this->visibilityTypeConverter = $visibilityTypeConverter;
     }
 
     public function resolve(Query $query): string
@@ -39,10 +43,29 @@ final class SearchExpression
         $expressions[] = $this->resolveFormats($query);
         $expressions[] = $this->resolveSearchQuery($query);
         $expressions[] = $this->resolveFolders($query);
+        $expressions[] = $this->resolveTypes($query);
         $expressions[] = $this->resolveTags($query);
         $expressions[] = $this->resolveResourceIds($query);
 
         return implode(' AND ', array_filter($expressions));
+    }
+
+    private function resolveTypes(Query $query): ?string
+    {
+        if (count($query->getVisibilities()) === 0) {
+            return null;
+        }
+
+        $types = array_unique(
+            array_map(
+                fn ($visibility) => $this->visibilityTypeConverter->toCloudinaryType($visibility),
+                $query->getVisibilities(),
+            ),
+        );
+
+        $types = array_map(static fn ($value) => sprintf('type:"%s"', $value), array_unique($types));
+
+        return '(' . implode(' OR ', $types) . ')';
     }
 
     private function resolveResourceTypes(Query $query): ?string

@@ -38,6 +38,10 @@
             {% endfor %}
         };
 
+        NgRemoteMediaOptions_{{ field_id }} = {
+            allowedVisibility: [{% for visibility in form.vars.allowed_visibility|default([]) %}"{{ visibility }}"{% if not loop.last %},{% endif %}{% endfor %}]
+        };
+
         NgRemoteMediaAvailableVariations_{{ field_id }} = {{ ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format|json_encode|raw }};
         NgRemoteMediaAvailableEditorVariations_{{ field_id }} = {{ ngrm_available_variations(variation_group)|keys|json_encode|raw }};
     </script>

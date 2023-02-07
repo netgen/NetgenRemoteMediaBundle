@@ -7,10 +7,12 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller\Resource;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as SymfonyAbstractController;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function basename;
+use function is_array;
 
 abstract class AbstractController extends SymfonyAbstractController
 {
@@ -49,6 +51,7 @@ abstract class AbstractController extends SymfonyAbstractController
             'folder' => $resource->getFolder() ? $resource->getFolder()->getPath() : null,
             'tags' => $resource->getTags(),
             'type' => $resource->getType(),
+            'visibility' => $resource->getVisibility(),
             'size' => $resource->getSize(),
             'width' => $resource->getMetadataProperty('width'),
             'height' => $resource->getMetadataProperty('height'),
@@ -72,5 +75,16 @@ abstract class AbstractController extends SymfonyAbstractController
         }
 
         return $list;
+    }
+
+    protected function getArrayFromInputBag(InputBag $inputBag, string $key): array
+    {
+        if (!$inputBag->has($key)) {
+            return [];
+        }
+
+        $value = $inputBag->get($key);
+
+        return is_array($value) ? $value : [$value];
     }
 }

@@ -86,11 +86,12 @@ final class CloudinaryProvider extends AbstractProvider
 
     public function getSupportedTypes(): array
     {
-        return [
-            'image',
-            'video',
-            'raw',
-        ];
+        return RemoteResource::SUPPORTED_TYPES;
+    }
+
+    public function getSupportedVisibilities(): array
+    {
+        return RemoteResource::SUPPORTED_VISIBILITIES;
     }
 
     public function count(): int

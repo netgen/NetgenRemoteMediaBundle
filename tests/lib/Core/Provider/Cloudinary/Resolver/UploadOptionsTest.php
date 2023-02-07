@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Resolver;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as UploadOptionsResolver;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,6 +24,7 @@ final class UploadOptionsTest extends TestCase
         $this->mimeTypes = $this->createMock(MimeTypesInterface::class);
 
         $this->resolver = new UploadOptionsResolver(
+            new VisibilityTypeConverter(),
             ['image', 'video'],
             $this->mimeTypes,
         );
@@ -33,6 +35,7 @@ final class UploadOptionsTest extends TestCase
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::appendExtension
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::parseMimeCategory
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::resolve
+     *
      * @dataProvider dataProvider
      */
     public function testResolve(ResourceStruct $resourceStruct, string $mimeType, array $options, bool $hasExtension = true): void
@@ -67,7 +70,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => '',
                         'caption' => '',
                     ],
+                    'type' => 'upload',
                     'resource_type' => 'auto',
+                    'access_mode' => 'public',
+                    'access_control' => ['access_type' => 'anonymous'],
                     'tags' => [],
                 ],
             ],
@@ -85,7 +91,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => '',
                         'caption' => '',
                     ],
+                    'type' => 'upload',
                     'resource_type' => 'auto',
+                    'access_mode' => 'public',
+                    'access_control' => ['access_type' => 'anonymous'],
                     'tags' => [],
                 ],
             ],
@@ -94,6 +103,7 @@ final class UploadOptionsTest extends TestCase
                     FileStruct::fromUri('/var/storage/backup.zip'),
                     'raw',
                     Folder::fromPath('files/backups'),
+                    'private',
                     'latest_backup.zip',
                     false,
                     false,
@@ -111,7 +121,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => '',
                         'caption' => '',
                     ],
+                    'type' => 'private',
                     'resource_type' => 'raw',
+                    'access_mode' => 'public',
+                    'access_control' => ['access_type' => 'token'],
                     'tags' => ['backup'],
                 ],
             ],
@@ -120,6 +133,7 @@ final class UploadOptionsTest extends TestCase
                     FileStruct::fromUri('/var/storage/backup.zip'),
                     'raw',
                     Folder::fromPath('files/backups'),
+                    'protected',
                     'latest_backup.zip',
                     true,
                     true,
@@ -137,7 +151,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => '',
                         'caption' => '',
                     ],
+                    'type' => 'authenticated',
                     'resource_type' => 'raw',
+                    'access_mode' => 'authenticated',
+                    'access_control' => ['access_type' => 'token'],
                     'tags' => ['backup', 'archive'],
                 ],
             ],
@@ -155,7 +172,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => '',
                         'caption' => '',
                     ],
+                    'type' => 'upload',
                     'resource_type' => 'auto',
+                    'access_mode' => 'public',
+                    'access_control' => ['access_type' => 'anonymous'],
                     'tags' => [],
                 ],
             ],
@@ -164,6 +184,7 @@ final class UploadOptionsTest extends TestCase
                     FileStruct::fromUri('/var/storage/media/example.mp4'),
                     'video',
                     Folder::fromPath('videos'),
+                    'test',
                     null,
                     true,
                     true,
@@ -180,7 +201,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => 'This video shows an example',
                         'caption' => 'Example video',
                     ],
+                    'type' => 'upload',
                     'resource_type' => 'video',
+                    'access_mode' => 'public',
+                    'access_control' => ['access_type' => 'anonymous'],
                     'tags' => [],
                 ],
             ],
@@ -189,6 +213,7 @@ final class UploadOptionsTest extends TestCase
                     FileStruct::fromUri('/var/storage/media/example.mp4'),
                     'auto',
                     Folder::fromPath('videos'),
+                    'protected',
                     'my video $%&/',
                     true,
                     true,
@@ -203,7 +228,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => '',
                         'caption' => '',
                     ],
+                    'type' => 'authenticated',
                     'resource_type' => 'auto',
+                    'access_mode' => 'authenticated',
+                    'access_control' => ['access_type' => 'token'],
                     'tags' => [],
                 ],
             ],
@@ -223,7 +251,10 @@ final class UploadOptionsTest extends TestCase
                         'alt' => '',
                         'caption' => '',
                     ],
+                    'type' => 'upload',
                     'resource_type' => 'auto',
+                    'access_mode' => 'public',
+                    'access_control' => ['access_type' => 'anonymous'],
                     'tags' => [],
                 ],
                 false,

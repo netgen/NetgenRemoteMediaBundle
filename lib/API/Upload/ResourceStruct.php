@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\API\Upload;
 
 use Netgen\RemoteMedia\API\Values\Folder;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
 
 final class ResourceStruct
 {
@@ -13,6 +14,8 @@ final class ResourceStruct
     private string $resourceType = 'auto';
 
     private ?Folder $folder;
+
+    private string $visibility = RemoteResource::VISIBILITY_PUBLIC;
 
     private ?string $filenameOverride;
 
@@ -33,6 +36,7 @@ final class ResourceStruct
         FileStruct $fileStruct,
         string $resourceType = 'auto',
         ?Folder $folder = null,
+        string $visibility = RemoteResource::VISIBILITY_PUBLIC,
         ?string $filenameOverride = null,
         bool $overwrite = false,
         bool $invalidate = false,
@@ -43,6 +47,7 @@ final class ResourceStruct
         $this->fileStruct = $fileStruct;
         $this->resourceType = $resourceType;
         $this->folder = $folder;
+        $this->visibility = $visibility;
         $this->filenameOverride = $filenameOverride;
         $this->overwrite = $overwrite;
         $this->invalidate = $invalidate;
@@ -79,6 +84,11 @@ final class ResourceStruct
     public function doInvalidate(): bool
     {
         return $this->invalidate;
+    }
+
+    public function getVisibility(): string
+    {
+        return $this->visibility;
     }
 
     public function getAltText(): ?string

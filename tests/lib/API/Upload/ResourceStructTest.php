@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\Tests\API\Upload;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
 use PHPUnit\Framework\TestCase;
 
 final class ResourceStructTest extends TestCase
@@ -22,6 +23,7 @@ final class ResourceStructTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFolder
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getResourceType
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getTags
+     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getVisibility
      */
     public function testSimpleCreate(): void
     {
@@ -36,6 +38,11 @@ final class ResourceStructTest extends TestCase
         self::assertSame(
             'auto',
             $resourceStruct->getResourceType(),
+        );
+
+        self::assertSame(
+            'public',
+            $resourceStruct->getVisibility(),
         );
 
         self::assertNull($resourceStruct->getFolder());
@@ -58,12 +65,15 @@ final class ResourceStructTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFolder
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getResourceType
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getTags
+     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getVisibility
+     *
      * @dataProvider dataProvider
      */
     public function testCreate(
         FileStruct $fileStruct,
         string $resourceType = 'auto',
         ?Folder $folder = null,
+        string $visibility = RemoteResource::VISIBILITY_PUBLIC,
         ?string $filenameOverride = null,
         bool $overwrite = false,
         bool $invalidate = false,
@@ -75,6 +85,7 @@ final class ResourceStructTest extends TestCase
             $fileStruct,
             $resourceType,
             $folder,
+            $visibility,
             $filenameOverride,
             $overwrite,
             $invalidate,
@@ -114,6 +125,11 @@ final class ResourceStructTest extends TestCase
         );
 
         self::assertSame(
+            $visibility,
+            $resourceStruct->getVisibility(),
+        );
+
+        self::assertSame(
             $altText,
             $resourceStruct->getAltText(),
         );
@@ -137,6 +153,7 @@ final class ResourceStructTest extends TestCase
                 'image',
                 Folder::fromPath('root/images'),
                 'my_new_image.jpg',
+                'public',
                 true,
                 false,
                 'This is some alt text',
@@ -147,6 +164,7 @@ final class ResourceStructTest extends TestCase
                 FileStruct::fromUri('var/images/test2.jpg'),
                 'image',
                 Folder::fromPath('root'),
+                'private',
                 null,
                 true,
                 true,
@@ -158,6 +176,7 @@ final class ResourceStructTest extends TestCase
                 FileStruct::fromUri('var/videos/example.mp4'),
                 'video',
                 null,
+                'protected',
                 null,
                 false,
                 false,

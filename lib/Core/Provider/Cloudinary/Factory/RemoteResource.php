@@ -9,6 +9,7 @@ use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterf
 use Netgen\RemoteMedia\API\Values\RemoteResource as RemoteResourceValue;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
 use function in_array;
@@ -20,11 +21,18 @@ final class RemoteResource implements RemoteResourceFactoryInterface
 {
     private ResourceTypeConverter $resourceTypeConverter;
 
+    private VisibilityTypeConverter $visibilityTypeConverter;
+
     private FileHashFactoryInterface $fileHashFactory;
 
-    public function __construct(ResourceTypeConverter $resourceTypeConverter, FileHashFactoryInterface $fileHashFactory)
-    {
+    public function __construct
+    (
+        ResourceTypeConverter $resourceTypeConverter,
+        VisibilityTypeConverter $visibilityTypeConverter,
+        FileHashFactoryInterface $fileHashFactory
+    ) {
         $this->resourceTypeConverter = $resourceTypeConverter;
+        $this->visibilityTypeConverter = $visibilityTypeConverter;
         $this->fileHashFactory = $fileHashFactory;
     }
 
@@ -40,6 +48,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'url' => $data['secure_url'] ?? $data['url'],
             'name' => pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
             'folder' => $cloudinaryRemoteId->getFolder(),
+            'visibility' => $this->resolveVisibility($data),
             'size' => $data['bytes'] ?? 0,
             'altText' => $this->resolveAltText($data),
             'caption' => $data['context']['custom']['caption'] ?? null,
@@ -73,6 +82,13 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         $format = $data['format'] ?? null;
 
         return $this->resourceTypeConverter->fromCloudinaryData($type, $format);
+    }
+
+    private function resolveVisibility(array $data): string
+    {
+        $type = $data['type'] ?? 'upload';
+
+        return $this->visibilityTypeConverter->fromCloudinaryType($type);
     }
 
     private function resolveAltText(array $data): ?string

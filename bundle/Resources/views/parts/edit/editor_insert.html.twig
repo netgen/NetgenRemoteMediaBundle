@@ -25,6 +25,10 @@
         'tags': 'tags_{{ field_id }}[]',
     };
 
+    NgRemoteMediaOptions_{{ field_id }} = {
+        allowedVisibility: []
+    };
+
     {% set available_variations = ngrm_available_variations('embedded', true) %}
     {% set available_editor_variations = ngrm_available_variations('embedded') %}
 

@@ -11,6 +11,15 @@
           </a>
         </div>
         <input type="text" :class="error ? 'error' : ''" v-model="filename"/>
+
+        <v-select
+          v-if="visibilities.length > 1"
+          :options="visibilities"
+          label="name"
+          v-model="visibility"
+          :reduce="option => option.id"
+        />
+
         <input type="checkbox" v-model="overwrite" id="ngrm-upload-overwrite">
         <label for="ngrm-upload-overwrite">{{ this.$root.$data.NgRemoteMediaTranslations.upload_checkbox_overwrite }}</label>
         <button type="button" class="btn btn-blue" :disabled="filename === ''" @click="upload">
@@ -25,16 +34,18 @@
 <script>
 import SelectFolder from "./SelectFolder";
 import Modal from "./Modal";
+import vSelect from "vue-select";
 import axios from "axios";
 
 export default {
   name: "UploadModal",
-  props: ["file"],
+  props: ["file", "visibilities"],
   data() {
     return {
       loading: false,
       selectedFolder: "",
       filename: this.file.name,
+      visibility: this.visibilities.length > 0 ? this.visibilities[0].id : '',
       overwrite: false,
       error: "",
       existingResourceButton: false,
@@ -43,7 +54,8 @@ export default {
   },
   components: {
     "select-folder": SelectFolder,
-    'modal': Modal
+    'modal': Modal,
+    "v-select": vSelect
   },
   methods: {
     handleFolderChange(folder) {
@@ -58,6 +70,7 @@ export default {
       data.append('filename', this.filename);
       data.append('folder', this.selectedFolder);
       data.append('overwrite', this.overwrite);
+      data.append('visibility', this.visibility);
 
       await axios.post(this.$root.$data.config.paths.upload_resources, data)
         .then(response => {
@@ -93,14 +106,20 @@ export default {
 
   input[type=text] {
     width: 40%;
+    min-width: 300px;
     border: 1px solid $mercury;
-    padding: 5px 10px;
+    padding: 10px 10px;
     flex-grow: 1;
     margin-right: 10px;
 
     &.error {
       border: 1px solid red;
     }
+  }
+
+  .v-select {
+    width: 15%;
+    min-width: 150px;
   }
 
   button {
