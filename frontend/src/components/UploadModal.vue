@@ -72,16 +72,30 @@ export default {
       data.append('overwrite', this.overwrite);
       data.append('visibility', this.visibility);
 
+      for (let key in this.$root.$data.NgRemoteMediaOptions.uploadContext) {
+        data.append(`upload_context[${key}]`, this.$root.$data.NgRemoteMediaOptions.uploadContext[key]);
+      }
+
       await axios.post(this.$root.$data.config.paths.upload_resources, data)
         .then(response => {
           this.loading = false;
           this.$emit("uploaded", response.data);
         }).catch(error => {
-          this.error = this.$root.$data.NgRemoteMediaTranslations.upload_error_existing_resource;
-          this.existingResourceButton = true;
-          this.existingResource = error.response.data;
-          this.loading = false;
+          if (error.response.status === 409) {
+            this.error = this.$root.$data.NgRemoteMediaTranslations.upload_error_existing_resource;
+            this.existingResourceButton = true;
+            this.existingResource = error.response.data;
+            this.loading = false;
+          } else {
+            this.error = 'Error ' + error.response.status + ' - ' + error.response.statusText;
+            this.loading = false;
+          }
         });
+    }
+  },
+  watch: {
+    visibilities: function() {
+      this.visibility = this.visibilities.length > 0 ? this.visibilities[0].id : '';
     }
   }
 };

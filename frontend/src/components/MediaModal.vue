@@ -32,13 +32,23 @@ export default {
     modal: Modal
   },
   data() {
+    let folder = null;
+
+    if (this.$root.$data.NgRemoteMediaOptions.parentFolder) {
+      folder = this.$root.$data.NgRemoteMediaOptions.parentFolder.id;
+    }
+
+    if (this.$root.$data.NgRemoteMediaOptions.folder) {
+      folder = this.$root.$data.NgRemoteMediaOptions.folder.id;
+    }
+
     return {
       media: [],
       canLoadMore: false,
       nextCursor: null,
       loading: true,
       facets: {
-        folder: "",
+        folder: folder,
         type: "",
         query: "",
         tag: "",
@@ -64,6 +74,10 @@ export default {
         query['query'] = this.facets.query;
       }
 
+      if (this.$root.$data.NgRemoteMediaOptions.allowedTypes.length > 0) {
+        query['type'] = this.$root.$data.NgRemoteMediaOptions.allowedTypes;
+      }
+
       if (this.facets.type) {
         query['type'] = this.facets.type;
       }
@@ -74,12 +88,16 @@ export default {
           : this.facets.folder;
       }
 
+      if (this.$root.$data.NgRemoteMediaOptions.allowedTags.length > 0) {
+        query['tag'] = this.$root.$data.NgRemoteMediaOptions.allowedTags;
+      }
+
       if (this.facets.tag) {
         query['tag'] = this.facets.tag;
       }
 
-      if (this.$root.$data.NgRemoteMediaOptions.allowedVisibility.length > 0) {
-        query['visibility'] = this.$root.$data.NgRemoteMediaOptions.allowedVisibility;
+      if (this.$root.$data.NgRemoteMediaOptions.allowedVisibilities.length > 0) {
+        query['visibility'] = this.$root.$data.NgRemoteMediaOptions.allowedVisibilities;
       }
 
       if (this.facets.visibility) {

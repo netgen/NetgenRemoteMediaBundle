@@ -70,6 +70,77 @@ class MyFormType extends AbstractType
 }
 ```
 
+### Form options
+
+There are a few options available on form type that you can use to eg. limit browse/upload to specific types or folders:
+
+#### `allowed_visibilities`
+
+You can specify an array of allowed visibilities (eg. `public`, `private` or `protected` etc.) which will limit the available resources only to those types when browsing. Also, you will be able to select only those visibilities in the visibility filter. If only one visibility is provided, the filter won't show at all.
+
+This will also affect the upload functionality. You will be able to select only specified visibilities when uploading, and if only one is provided, the selector won't be shown at all.
+
+#### `allowed_types`
+
+You can specify an array of allowed types (eg. `image`, `video`, `document` etc.) which will limit the available resources only to those types when browsing. Also, you will be able to select only those types in the type filter. If only one type is provided, the filter won't show at all. You will still be able to upload different types, but they won't show, and you won't be able to use them in the form.
+
+#### `allowed_tags`
+
+You can specify an array of allowed tags which will limit the available resources only to those that contain those specific tags when browsing. Also, you will be able to select only those tags in the tag filter. If only one tag is provided, the filter won't show at all. You also won't be able to add any other tags to a resource.
+
+#### `parent_folder`
+
+You can specify a parent folder to limit the available resources and upload only to a specific subtree. You will be able to see only this specified folder and all folders below it, create folders below it and upload files to this one folder or any folder below it. You won't be able to see any folders above it, or it's siblings.
+
+It accepts either `Netgen\RemoteMedia\API\Values\Folder` object or path to a folder (eg. `media/images`).
+
+#### `folder`
+
+You can specify a single folder to limit the available resources and upload only to this one specific folder. You will be able to see only resources inside this folder and upload new resources to this folder, but you won't see it's subfolders or be able to create a new subfolder inside it.
+
+It accepts either `Netgen\RemoteMedia\API\Values\Folder` object or path to a folder (eg. `media/images`).
+
+#### `upload_context`
+
+You can specify an array of (key, value) pairs that will be added to the file as a context during upload. This context can be later used for search/filtering. See the example below. 
+
+### Example
+
+Let's say that you have a form for digital products in a webshop and you want to limit editors to be able to upload only protected files inside a specific folder. You want to also add some context.
+
+```php
+<?php
+
+namespace App\Form\Type;
+
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Netgen\RemoteMedia\Form\Type\RemoteMediaType;
+
+class MyFormType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add(
+            'remote_resource_location',
+            RemoteMediaType::class,
+            [
+                'allowed_visibilities' => ['protected'],
+                'folder' => ['media/products/files'],
+                'upload_context' => [
+                    'sylius_type' => 'product',
+                    'sylius_code' => $this->getProductCode(),
+                    'sylius_form_field_name' => 'remote_resource_location',
+                    'source' => 'user_upload',
+                ],
+            ],
+        );
+    }
+}
+```
+
+This will show only protected files in folder `media/products/files` and you will be able to upload only to this folder.
+
 ## Add CSS and JS files for the interface
 
 Form field uses a custom interface implemented in Vue.js, so we need to include Javascript and CSS files needed for the interface. Ideally you want to include this only when you need it (eg. on create/edit pages for the entity where you have Remote Resource field).

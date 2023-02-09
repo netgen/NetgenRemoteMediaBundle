@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function implode;
 use function in_array;
+use function is_array;
 
 final class Upload extends AbstractController
 {
@@ -36,7 +37,12 @@ final class Upload extends AbstractController
             throw new InvalidArgumentException('Missing file to upload');
         }
 
-        $folder = $request->request->get('folder')
+        $uploadContext = $request->request->get('upload_context', []);
+        if (!is_array($uploadContext)) {
+            $uploadContext = [];
+        }
+
+        $folder = $request->request->get('folder') && $request->request->get('folder') !== 'null'
             ? Folder::fromPath($request->request->get('folder'))
             : null;
 
@@ -58,8 +64,12 @@ final class Upload extends AbstractController
             $folder,
             $visibility,
             $request->request->get('filename'),
-            $request->request->getBoolean('invalidate'),
-            $request->request->getBoolean('protected'),
+            $request->request->getBoolean('overwrite'),
+            false,
+            null,
+            null,
+            [],
+            $uploadContext,
         );
 
         try {

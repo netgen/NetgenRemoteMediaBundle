@@ -39,7 +39,12 @@
         };
 
         NgRemoteMediaOptions_{{ field_id }} = {
-            allowedVisibility: [{% for visibility in form.vars.allowed_visibility|default([]) %}"{{ visibility }}"{% if not loop.last %},{% endif %}{% endfor %}]
+            allowedVisibilities: [{% for visibility in form.vars.allowed_visibilities|default([]) %}"{{ visibility }}"{% if not loop.last %},{% endif %}{% endfor %}],
+            allowedTypes: [{% for type in form.vars.allowed_types|default([]) %}"{{ type }}"{% if not loop.last %},{% endif %}{% endfor %}],
+            allowedTags: [{% for tag in form.vars.allowed_tags|default([]) %}"{{ tag }}"{% if not loop.last %},{% endif %}{% endfor %}],
+            parentFolder: {% if form.vars.parent_folder %}{id: "{{ form.vars.parent_folder.id }}", label: "{{ form.vars.parent_folder.label }}", children: []}{% else %}null{% endif %},
+            folder: {% if form.vars.folder %}{id: "{{ form.vars.folder.id }}", label: "{{ form.vars.folder.label }}", children: []}{% else %}null{% endif %},
+            uploadContext: { {% for key,value in form.vars.upload_context|default([]) %}{{ key }}: "{{ value }}"{% if not loop.last %},{% endif %}{% endfor %} }
         };
 
         NgRemoteMediaAvailableVariations_{{ field_id }} = {{ ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format|json_encode|raw }};

@@ -57,10 +57,7 @@ final class UploadOptions
             'overwrite' => $resourceStruct->doOverwrite(),
             'invalidate' => $resourceStruct->doInvalidate() || $resourceStruct->doOverwrite(),
             'discard_original_filename' => true,
-            'context' => [
-                'alt' => $resourceStruct->getAltText() ?? '',
-                'caption' => $resourceStruct->getCaption() ?? '',
-            ],
+            'context' => $this->resolveContext($resourceStruct),
             'type' => $this->visibilityTypeConverter->toCloudinaryType($resourceStruct->getVisibility()),
             'resource_type' => $resourceStruct->getResourceType(),
             'access_mode' => $this->visibilityTypeConverter->toCloudinaryAccessMode($resourceStruct->getVisibility()),
@@ -104,5 +101,27 @@ final class UploadOptions
         }
 
         return $parsedMime[0];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function resolveContext(ResourceStruct $resourceStruct): array
+    {
+        $context = [
+            'alt' => $resourceStruct->getAltText() ?? '',
+            'caption' => $resourceStruct->getCaption() ?? '',
+            'original_filename' => $resourceStruct->getFilename(),
+        ];
+
+        foreach ($resourceStruct->getContext() as $key => $value) {
+            if (!is_string($key) || in_array($key, ['alt', 'caption', 'original_filename'])) {
+                continue;
+            }
+
+            $context[$key] = $value;
+        }
+
+        return $context;
     }
 }

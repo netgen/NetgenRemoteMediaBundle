@@ -26,7 +26,12 @@
     };
 
     NgRemoteMediaOptions_{{ field_id }} = {
-        allowedVisibility: []
+        allowedVisibilities: [],
+        allowedTypes: [],
+        allowedTags: [],
+        parentFolder: "",
+        folder: "",
+        uploadContext: {}
     };
 
     {% set available_variations = ngrm_available_variations('embedded', true) %}

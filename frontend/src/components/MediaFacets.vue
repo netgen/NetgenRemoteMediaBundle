@@ -1,7 +1,7 @@
 <template>
   <div class="mediaFacets">
     <div class="body">
-      <div class="form-field">
+      <div v-if="types.length > 1" class="form-field">
         <label for="type">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_type }}</label>
         <v-select
             :options="types"
@@ -19,13 +19,16 @@
           :multiple="false"
           :options="folders"
           :load-options="loadSubFolders"
+          v-model="selectedFolder"
+          :value="this.$root.$data.NgRemoteMediaOptions.parentFolder ? this.$root.$data.NgRemoteMediaOptions.parentFolder.id : ''"
           @input="handleFolderChange"
           :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_folders : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
           :disabled="facetsLoading"
+          :beforeClearAll="clearFolderField"
         />
       </div>
 
-      <div v-if="tags" class="form-field">
+      <div v-if="tags.length > 1" class="form-field">
         <label for="tag">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_tag }}</label>
         <v-select
             :options="tags"
@@ -96,8 +99,8 @@ export default {
       FOLDER_ROOT,
       TAG_ALL,
       folders: [{
-        id: FOLDER_ROOT,
-        label: FOLDER_ROOT,
+        id: this.$root.$data.NgRemoteMediaOptions.parentFolder ? this.$root.$data.NgRemoteMediaOptions.parentFolder.id : FOLDER_ROOT,
+        label: this.$root.$data.NgRemoteMediaOptions.parentFolder ? this.$root.$data.NgRemoteMediaOptions.parentFolder.label : FOLDER_ROOT,
         children: null
       }],
       selectedFolder: this.facets.folder,
@@ -108,11 +111,25 @@ export default {
     };
   },
   methods: {
+    clearFolderField() {
+      if (this.$root.$data.NgRemoteMediaOptions.parentFolder) {
+        this.selectedFolder = this.$root.$data.NgRemoteMediaOptions.parentFolder.id;
+
+        return false;
+      }
+
+      return true;
+    },
     handleTypeChange(type) {
       this.$emit("change", { type });
     },
     handleFolderChange(value) {
       this.selectedFolder = value;
+      if (typeof value === 'undefined' || !value) {
+        this.selectedFolder = this.$root.$data.NgRemoteMediaOptions.parentFolder
+          ? this.$root.$data.NgRemoteMediaOptions.parentFolder.id
+          : value;
+      }
       this.$emit("change", { folder: this.selectedFolder });
     },
     handleQueryChange() {
