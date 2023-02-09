@@ -34,6 +34,7 @@ final class SearchResultTest extends AbstractTest
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult::create
+     *
      * @dataProvider createDataProvider
      */
     public function testCreate(array $data, SearchResult $expectedResult): void

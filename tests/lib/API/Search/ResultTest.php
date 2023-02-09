@@ -15,6 +15,7 @@ final class ResultTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Search\Result::getNextCursor
      * @covers \Netgen\RemoteMedia\API\Search\Result::getResources
      * @covers \Netgen\RemoteMedia\API\Search\Result::getTotalCount
+     *
      * @dataProvider dataProvider
      */
     public function testConstructor(

@@ -18,6 +18,7 @@ use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Factory\DateTime as DateTimeFactory;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as UploadOptionsResolver;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
@@ -67,6 +68,7 @@ final class CloudinaryProviderTest extends AbstractTest
             $this->gateway,
             new DateTimeFactory(),
             new UploadOptionsResolver(
+                new VisibilityTypeConverter(),
                 ['image', 'video'],
                 $this->mimeTypes,
             ),
@@ -153,6 +155,18 @@ final class CloudinaryProviderTest extends AbstractTest
 
         self::assertIsArray($supportedTypes);
         self::assertNotEmpty($supportedTypes);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getSupportedVisibilities
+     */
+    public function testGetSupportedVisibilities(): void
+    {
+        $supportedVisibilities = $this->cloudinaryProvider->getSupportedVisibilities();
+
+        self::assertIsArray($supportedVisibilities);
+        self::assertNotEmpty($supportedVisibilities);
     }
 
     /**
@@ -693,9 +707,12 @@ final class CloudinaryProviderTest extends AbstractTest
             'context' => [
                 'alt' => '',
                 'caption' => '',
+                'original_filename' => 'image_new.jpg',
             ],
+            'type' => 'upload',
             'resource_type' => 'image',
             'access_mode' => 'public',
+            'access_control' => ['access_type' => 'anonymous'],
             'tags' => [],
         ];
 

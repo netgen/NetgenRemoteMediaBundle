@@ -9,7 +9,9 @@ use Netgen\RemoteMedia\Exception\CropSettingsNotFoundException;
 
 /**
  * @ORM\Entity
+ *
  * @ORM\Table(name="ngrm_remote_resource_location")
+ *
  * @ORM\HasLifecycleCallbacks()
  */
 class RemoteResourceLocation
@@ -18,7 +20,9 @@ class RemoteResourceLocation
 
     /**
      * @ORM\Id()
+     *
      * @ORM\GeneratedValue()
+     *
      * @ORM\Column(type="integer")
      */
     private ?int $id = null;

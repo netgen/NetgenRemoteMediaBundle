@@ -29,6 +29,7 @@ final class MpadTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mpad::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

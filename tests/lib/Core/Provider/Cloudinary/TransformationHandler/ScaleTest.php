@@ -29,6 +29,7 @@ final class ScaleTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Scale::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

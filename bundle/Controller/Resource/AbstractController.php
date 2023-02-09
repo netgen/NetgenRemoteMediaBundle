@@ -55,7 +55,7 @@ abstract class AbstractController extends SymfonyAbstractController
             'size' => $resource->getSize(),
             'width' => $resource->getMetadataProperty('width'),
             'height' => $resource->getMetadataProperty('height'),
-            'filename' => basename($resource->getRemoteId()),
+            'filename' => basename($resource->getName()),
             'format' => $resource->getMetadataProperty('format'),
             'browseUrl' => $browseUrl,
             'previewUrl' => $previewUrl,

@@ -25,8 +25,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
 
     private FileHashFactoryInterface $fileHashFactory;
 
-    public function __construct
-    (
+    public function __construct(
         ResourceTypeConverter $resourceTypeConverter,
         VisibilityTypeConverter $visibilityTypeConverter,
         FileHashFactoryInterface $fileHashFactory

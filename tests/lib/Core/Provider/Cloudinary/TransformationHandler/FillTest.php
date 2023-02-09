@@ -29,6 +29,7 @@ final class FillTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fill::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

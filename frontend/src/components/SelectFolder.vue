@@ -12,7 +12,7 @@
         </span>
       </div>
 
-      <div class="info">
+      <div v-if="folders.length > 0 || allowCreate" class="info">
         <i class="fa fa-info-circle"></i>
         {{ this.$root.$data.NgRemoteMediaTranslations.upload_info_text }}
       </div>
@@ -30,7 +30,7 @@
           {{ _self.$root.$data.NgRemoteMediaTranslations.upload_button_select }}
         </button>
       </div>
-      <div class="media new-folder">
+      <div v-if="allowCreate" class="media new-folder">
         <div class="media-container">
           <span class="file-placeholder">
             <span class="icon-doc">
@@ -59,6 +59,7 @@ export default {
   props: ["selectedFolder"],
   data() {
     return {
+      folders: [],
       newFolder: null,
       breadcrumbs: [],
       loading: false,
@@ -91,17 +92,19 @@ export default {
     generateBreadcrumbs(folderPath) {
       this.breadcrumbs = [];
 
+      let rootFolder = {
+        'id': null,
+        'label': this.$root.$data.NgRemoteMediaTranslations.upload_root_folder
+      };
+
       if (folderPath === null) {
+        this.breadcrumbs.push(rootFolder);
+
         return;
       }
 
       const folders = folderPath.split('/');
       var pathArray = [];
-
-      let rootFolder = {
-        'id': null,
-        'label': this.$root.$data.NgRemoteMediaTranslations.upload_root_folder
-      };
 
       let parentFolders = [];
       if (this.$root.$data.NgRemoteMediaOptions.parentFolder) {

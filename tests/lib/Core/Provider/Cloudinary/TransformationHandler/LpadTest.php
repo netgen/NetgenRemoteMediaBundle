@@ -29,6 +29,7 @@ final class LpadTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

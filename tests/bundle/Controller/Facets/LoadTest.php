@@ -11,6 +11,7 @@ use Netgen\RemoteMedia\Exception\NotSupportedException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -42,6 +43,8 @@ final class LoadTest extends TestCase
      */
     public function test(): void
     {
+        $request = new Request();
+
         $folders = [
             Folder::fromPath('media'),
             Folder::fromPath('media/images'),
@@ -188,7 +191,7 @@ final class LoadTest extends TestCase
             ],
         ]);
 
-        $response = $this->controller->__invoke();
+        $response = $this->controller->__invoke($request);
 
         self::assertInstanceOf(
             JsonResponse::class,
@@ -214,6 +217,10 @@ final class LoadTest extends TestCase
      */
     public function testNotSupportedFoldersAndTagsMissingTrans(): void
     {
+        $folderPath = 'media/images/new';
+        $request = new Request();
+        $request->query->add(['parentFolder' => $folderPath]);
+
         $supportedTypes = [
             'image',
             'video',
@@ -231,6 +238,7 @@ final class LoadTest extends TestCase
         $this->providerMock
             ->expects(self::once())
             ->method('listFolders')
+            ->with(Folder::fromPath($folderPath))
             ->willThrowException(new NotSupportedException('cloudinary', 'folders'));
 
         $this->providerMock
@@ -263,11 +271,11 @@ final class LoadTest extends TestCase
             )
             ->willReturnOnConsecutiveCalls(
                 'Image',
-                'Video',
+                'ngrm.supported_types.video',
                 'Audio',
                 'Document',
                 'Other',
-                'Public',
+                'ngrm.supported_visibilities.public',
                 'Private',
                 'Protected',
             );
@@ -279,7 +287,7 @@ final class LoadTest extends TestCase
                     'id' => 'image',
                 ],
                 [
-                    'name' => 'Video',
+                    'name' => 'video',
                     'id' => 'video',
                 ],
                 [
@@ -299,7 +307,7 @@ final class LoadTest extends TestCase
             'tags' => [],
             'visibilities' => [
                 [
-                    'name' => 'Public',
+                    'name' => 'public',
                     'id' => 'public',
                 ],
                 [
@@ -313,7 +321,7 @@ final class LoadTest extends TestCase
             ],
         ]);
 
-        $response = $this->controller->__invoke();
+        $response = $this->controller->__invoke($request);
 
         self::assertInstanceOf(
             JsonResponse::class,

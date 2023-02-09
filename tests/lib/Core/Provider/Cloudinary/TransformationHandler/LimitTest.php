@@ -29,6 +29,7 @@ final class LimitTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Limit::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

@@ -29,6 +29,7 @@ final class MfitTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mfit::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

@@ -27,7 +27,7 @@
 
         <div class="ngremotemedia-tags">
           <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_tags}}</span>
-          <v-select :options="allTags" v-model="selectedImage.tags" multiple taggable @input="handleTagsInput"></v-select>
+          <v-select :options="$root.$data.NgRemoteMediaOptions.allowedTags.length > 0 ? $root.$data.NgRemoteMediaOptions.allowedTags : allTags" v-model="selectedImage.tags" multiple :taggable="$root.$data.NgRemoteMediaOptions.allowedTags.length === 0" @input="handleTagsInput"></v-select>
           <select hidden v-model="selectedImage.tags" :name="this.$root.$data.NgRemoteMediaInputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
             <option v-for="tag in allTags" :key = "tag">{{tag}}</option>
           </select>

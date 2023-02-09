@@ -29,6 +29,7 @@ final class PadTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Pad::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

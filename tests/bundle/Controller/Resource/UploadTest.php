@@ -94,6 +94,7 @@ final class UploadTest extends TestCase
             'remoteId' => 'upload|image|media/image/sample_image.jpg',
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            'name' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
             'folder' => Folder::fromPath('media/image'),
             'size' => 123,
             'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
@@ -162,12 +163,18 @@ final class UploadTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
      * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::formatResource
      */
-    public function testUploadProtected(): void
+    public function testUploadProtectedWithContext(): void
     {
+        $uploadContext = [
+            'type' => 'product_image',
+            'test' => 'test_value',
+        ];
+
         $request = new Request();
         $request->request->add([
             'folder' => 'media/image',
             'visibility' => 'protected',
+            'upload_context' => $uploadContext,
         ]);
 
         $uploadedFileMock = $this->createMock(UploadedFile::class);
@@ -207,12 +214,17 @@ final class UploadTest extends TestCase
             $request->request->get('filename'),
             false,
             false,
+            null,
+            null,
+            [],
+            $uploadContext,
         );
 
         $resource = new RemoteResource([
             'remoteId' => 'authenticated|image|media/image/sample_image.jpg',
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
+            'name' => 'sample_image.jpg',
             'folder' => Folder::fromPath('media/image'),
             'visibility' => 'protected',
             'size' => 123,
@@ -310,7 +322,8 @@ final class UploadTest extends TestCase
     {
         $request = new Request();
         $request->request->add([
-            'folder' => 'media/image',
+            'folder' => 'null',
+            'upload_context' => 4,
         ]);
 
         $uploadedFileMock = $this->createMock(UploadedFile::class);
@@ -318,7 +331,7 @@ final class UploadTest extends TestCase
         $uploadedFileMock
             ->expects(self::exactly(3))
             ->method('getRealPath')
-            ->willReturn('/var/www/project/media/images/sample_image.jpg');
+            ->willReturn('/var/www/project/sample_image.jpg');
 
         $uploadedFileMock
             ->expects(self::exactly(2))
@@ -337,7 +350,7 @@ final class UploadTest extends TestCase
         $this->fileHashFactoryMock
             ->expects(self::once())
             ->method('createHash')
-            ->with('/var/www/project/media/images/sample_image.jpg')
+            ->with('/var/www/project/sample_image.jpg')
             ->willReturn('a522f23sf81aa0afd03387c37e2b6eax');
 
         $fileStruct = FileStruct::fromUploadedFile($uploadedFileMock);
@@ -345,16 +358,17 @@ final class UploadTest extends TestCase
         $resourceStruct = new ResourceStruct(
             $fileStruct,
             'auto',
-            Folder::fromPath('media/image'),
+            null,
             'public',
             $request->request->get('filename'),
         );
 
         $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/image/sample_image.jpg',
+            'remoteId' => 'upload|image|sample_image.jpg',
             'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
-            'folder' => Folder::fromPath('media/image'),
+            'url' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
+            'name' => 'sample_image.jpg',
+            'folder' => null,
             'size' => 123,
             'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
         ]);
@@ -373,7 +387,7 @@ final class UploadTest extends TestCase
 
         $variation = new RemoteResourceVariation(
             $resource,
-            'https://cloudinary.com/test/c_fit_160_120/upload/image/media/image/sample_image.jpg',
+            'https://cloudinary.com/test/c_fit_160_120/upload/image/sample_image.jpg',
         );
 
         $this->providerMock
@@ -383,8 +397,8 @@ final class UploadTest extends TestCase
             ->willReturn($variation);
 
         $expectedResponseContent = json_encode([
-            'remoteId' => 'upload|image|media/image/sample_image.jpg',
-            'folder' => 'media/image',
+            'remoteId' => 'upload|image|sample_image.jpg',
+            'folder' => null,
             'tags' => [],
             'type' => 'image',
             'visibility' => 'public',
@@ -393,9 +407,9 @@ final class UploadTest extends TestCase
             'height' => null,
             'filename' => 'sample_image.jpg',
             'format' => null,
-            'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/image/media/image/sample_image.jpg',
-            'previewUrl' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
-            'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/image/sample_image.jpg',
+            'previewUrl' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
+            'url' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
             'altText' => null,
         ]);
 
@@ -427,6 +441,7 @@ final class UploadTest extends TestCase
         $request = new Request();
         $request->request->add([
             'folder' => 'media/image',
+            'upload_context' => 'test',
         ]);
 
         $uploadedFileMock = $this->createMock(UploadedFile::class);
@@ -470,6 +485,7 @@ final class UploadTest extends TestCase
             'remoteId' => 'upload|image|media/image/sample_image.jpg',
             'type' => 'image',
             'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            'name' => 'sample_image.jpg',
             'folder' => Folder::fromPath('media/image'),
             'size' => 123,
             'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
