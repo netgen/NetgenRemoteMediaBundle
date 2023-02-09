@@ -8,5 +8,6 @@ services:
         class: Netgen\RemoteMedia\Form\Type\RemoteMediaType
         arguments:
             - "@netgen_remote_media.form.data_transformer.remote_media"
+            - "@netgen_remote_media.provider"
         tags:
             - { name: form.type }

@@ -20,7 +20,7 @@
           <Label for="new_file">
             {{ this.$root.$data.NgRemoteMediaTranslations.interactions_quick_upload }}
           </Label>
-          <input hidden id="new_file" :name="this.$root.$data.NgRemoteMediaInputFields.new_file" type="file" @change="handleFileInputChange" ref="fileInput">
+          <input hidden id="new_file" :name="this.$root.$data.NgRemoteMediaInputFields.new_file" type="file" v-on:change="handleFileInputChange" ref="fileInput">
         </button>
       </div>
     </div>
@@ -169,12 +169,24 @@ export default {
     async fetchFacets() {
       const response = await fetch(this.config.paths.load_facets);
       const data = await response.json();
-      this.types = data.types;
-      this.tags = data.tags;
+      this.types = [];
+      this.tags = [];
       this.visibilities = [];
 
+      data.types.forEach((type) => {
+        if(this.$root.$data.NgRemoteMediaOptions.allowedTypes.indexOf(type.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedTypes.length === 0) {
+          this.types.push(type);
+        }
+      });
+
+      data.tags.forEach((tag) => {
+        if(this.$root.$data.NgRemoteMediaOptions.allowedTags.indexOf(tag.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedTags.length === 0) {
+          this.tags.push(tag);
+        }
+      });
+
       data.visibilities.forEach((visibility) => {
-        if(this.$root.$data.NgRemoteMediaOptions.allowedVisibility.indexOf(visibility.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedVisibility.length === 0) {
+        if(this.$root.$data.NgRemoteMediaOptions.allowedVisibilities.indexOf(visibility.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedVisibilities.length === 0) {
           this.visibilities.push(visibility);
         }
       });
@@ -185,18 +197,6 @@ export default {
       this.mediaModalOpen = true;
       this.prepareDomForModal();
       this.fetchFacets();
-    },
-    getFileType(file){
-      const type = file.type.split("/")[0];
-
-      if (type !== "video" && type !== "image"){
-        return "other";
-      }
-
-      return type;
-    },
-    getFileFormat(file){
-      return file.type.split("/")[1];
     },
     handleFileInputChange(e) {
       this.fetchFacets();

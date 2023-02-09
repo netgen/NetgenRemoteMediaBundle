@@ -32,6 +32,11 @@ final class ResourceStruct
      */
     private array $tags = [];
 
+    /**
+     * @var array<string, string>
+     */
+    private array $context = [];
+
     public function __construct(
         FileStruct $fileStruct,
         string $resourceType = 'auto',
@@ -42,7 +47,8 @@ final class ResourceStruct
         bool $invalidate = false,
         ?string $altText = null,
         ?string $caption = null,
-        array $tags = []
+        array $tags = [],
+        array $context = []
     ) {
         $this->fileStruct = $fileStruct;
         $this->resourceType = $resourceType;
@@ -54,6 +60,7 @@ final class ResourceStruct
         $this->altText = $altText;
         $this->caption = $caption;
         $this->tags = $tags;
+        $this->context = $context;
     }
 
     public function getFileStruct(): FileStruct
@@ -74,6 +81,11 @@ final class ResourceStruct
     public function getFilenameOverride(): ?string
     {
         return $this->filenameOverride;
+    }
+
+    public function getFilename(): ?string
+    {
+        return $this->filenameOverride ?: $this->fileStruct->getOriginalFilename();
     }
 
     public function doOverwrite(): bool
@@ -107,5 +119,13 @@ final class ResourceStruct
     public function getTags(): array
     {
         return $this->tags;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getContext(): array
+    {
+        return $this->context;
     }
 }

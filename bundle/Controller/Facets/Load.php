@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\Facets;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Exception\NotSupportedException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -22,10 +24,13 @@ final class Load
         $this->translator = $translator;
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
+        $parentFolder = $request->query->get('parentFolder', null);
+        $parentFolder = $parentFolder ? Folder::fromPath($parentFolder) : null;
+
         try {
-            $folders = $this->provider->listFolders();
+            $folders = $this->provider->listFolders($parentFolder);
         } catch (NotSupportedException $e) {
             $folders = [];
         }
