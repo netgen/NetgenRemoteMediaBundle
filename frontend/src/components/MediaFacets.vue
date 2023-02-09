@@ -13,7 +13,7 @@
         />
       </div>
 
-      <div v-if="folders" class="form-field">
+      <div v-if="folders && !this.$root.$data.NgRemoteMediaOptions.folder" class="form-field">
         <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_folder }}</label>
         <treeselect
           :multiple="false"

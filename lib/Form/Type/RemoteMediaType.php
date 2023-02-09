@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use function array_intersect;
+use function array_replace;
 use function is_string;
 
 final class RemoteMediaType extends AbstractType
@@ -89,7 +90,7 @@ final class RemoteMediaType extends AbstractType
             }
         }
 
-        $view->vars = array_replace($view->vars, array(
+        $view->vars = array_replace($view->vars, [
             'allowed_visibilities' => array_intersect($options['allowed_visibilities'], $this->provider->getSupportedVisibilities()),
             'allowed_types' => array_intersect($options['allowed_types'], $this->provider->getSupportedTypes()),
             'allowed_tags' => array_intersect($options['allowed_tags'], $this->provider->listTags()),
@@ -100,6 +101,6 @@ final class RemoteMediaType extends AbstractType
                 ? ['id' => $folder->getPath(), 'label' => $folder->getName()]
                 : null,
             'upload_context' => $uploadContext,
-        ));
+        ]);
     }
 }

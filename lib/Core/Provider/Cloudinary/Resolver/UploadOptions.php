@@ -14,6 +14,7 @@ use Symfony\Component\Mime\MimeTypesInterface;
 use function count;
 use function explode;
 use function in_array;
+use function is_string;
 use function preg_replace;
 use function rtrim;
 
@@ -115,7 +116,7 @@ final class UploadOptions
         ];
 
         foreach ($resourceStruct->getContext() as $key => $value) {
-            if (!is_string($key) || in_array($key, ['alt', 'caption', 'original_filename'])) {
+            if (!is_string($key) || in_array($key, ['alt', 'caption', 'original_filename'], true)) {
                 continue;
             }
 

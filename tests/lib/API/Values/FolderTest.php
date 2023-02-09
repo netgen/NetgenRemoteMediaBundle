@@ -16,6 +16,7 @@ final class FolderTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Values\Folder::getParent
      * @covers \Netgen\RemoteMedia\API\Values\Folder::getPath
      * @covers \Netgen\RemoteMedia\API\Values\Folder::isRoot
+     *
      * @dataProvider dataProvider
      */
     public function testCreate(string $name, ?Folder $parent, bool $isRoot, string $path): void
@@ -66,6 +67,7 @@ final class FolderTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Values\Folder::getParent
      * @covers \Netgen\RemoteMedia\API\Values\Folder::getPath
      * @covers \Netgen\RemoteMedia\API\Values\Folder::isRoot
+     *
      * @dataProvider dataProvider
      */
     public function testCreateFromPath(string $name, ?Folder $parent, bool $isRoot, string $path): void

@@ -10,7 +10,7 @@ Vue.config.productionTip = false;
 
 const handleDOMContentLoaded = function() {
     document.querySelectorAll('.ngremotemedia-container').forEach((el, i) => {
-        window[`remoteMedia${el.dataset.id}`] = new Vue({
+        window[`ngrm_app_${el.dataset.id}`] = new Vue({
             el,
             directives: {
                 init: initDirective

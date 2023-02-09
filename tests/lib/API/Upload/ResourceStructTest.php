@@ -7,8 +7,9 @@ namespace Netgen\RemoteMedia\Tests\API\Upload;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use PHPUnit\Framework\TestCase;
+
+use function basename;
 
 final class ResourceStructTest extends TestCase
 {
@@ -18,6 +19,8 @@ final class ResourceStructTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::doOverwrite
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getAltText
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getCaption
+     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getContext
+     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFilename
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFilenameOverride
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFileStruct
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFolder
@@ -45,6 +48,11 @@ final class ResourceStructTest extends TestCase
             $resourceStruct->getVisibility(),
         );
 
+        self::assertSame(
+            'test.jpg',
+            $resourceStruct->getFilename(),
+        );
+
         self::assertNull($resourceStruct->getFolder());
         self::assertNull($resourceStruct->getFilenameOverride());
         self::assertFalse($resourceStruct->doOverwrite());
@@ -52,6 +60,7 @@ final class ResourceStructTest extends TestCase
         self::assertNull($resourceStruct->getAltText());
         self::assertNull($resourceStruct->getCaption());
         self::assertEmpty($resourceStruct->getTags());
+        self::assertEmpty($resourceStruct->getContext());
     }
 
     /**
@@ -60,6 +69,7 @@ final class ResourceStructTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::doOverwrite
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getAltText
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getCaption
+     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getContext
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFilenameOverride
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFileStruct
      * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFolder
@@ -71,15 +81,16 @@ final class ResourceStructTest extends TestCase
      */
     public function testCreate(
         FileStruct $fileStruct,
-        string $resourceType = 'auto',
-        ?Folder $folder = null,
-        string $visibility = RemoteResource::VISIBILITY_PUBLIC,
-        ?string $filenameOverride = null,
-        bool $overwrite = false,
-        bool $invalidate = false,
-        ?string $altText = null,
-        ?string $caption = null,
-        array $tags = []
+        string $resourceType,
+        ?Folder $folder,
+        string $visibility,
+        ?string $filenameOverride,
+        bool $overwrite,
+        bool $invalidate,
+        ?string $altText,
+        ?string $caption,
+        array $tags,
+        array $context
     ): void {
         $resourceStruct = new ResourceStruct(
             $fileStruct,
@@ -92,6 +103,7 @@ final class ResourceStructTest extends TestCase
             $altText,
             $caption,
             $tags,
+            $context,
         );
 
         self::assertSame(
@@ -112,6 +124,11 @@ final class ResourceStructTest extends TestCase
         self::assertSame(
             $filenameOverride,
             $resourceStruct->getFilenameOverride(),
+        );
+
+        self::assertSame(
+            $filenameOverride ?: basename($fileStruct->getUri()),
+            $resourceStruct->getFilename(),
         );
 
         self::assertSame(
@@ -143,6 +160,11 @@ final class ResourceStructTest extends TestCase
             $tags,
             $resourceStruct->getTags(),
         );
+
+        self::assertSame(
+            $context,
+            $resourceStruct->getContext(),
+        );
     }
 
     public function dataProvider(): array
@@ -159,6 +181,7 @@ final class ResourceStructTest extends TestCase
                 'This is some alt text',
                 'This is some caption',
                 ['tag1', 'tag2'],
+                [],
             ],
             [
                 FileStruct::fromUri('var/images/test2.jpg'),
@@ -171,6 +194,9 @@ final class ResourceStructTest extends TestCase
                 null,
                 null,
                 [],
+                [
+                    'type' => 'product_image',
+                ],
             ],
             [
                 FileStruct::fromUri('var/videos/example.mp4'),
@@ -183,6 +209,7 @@ final class ResourceStructTest extends TestCase
                 null,
                 null,
                 ['example'],
+                [],
             ],
         ];
     }

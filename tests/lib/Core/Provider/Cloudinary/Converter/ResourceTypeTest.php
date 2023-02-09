@@ -21,6 +21,7 @@ final class ResourceTypeTest extends TestCase
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::fromCloudinaryData
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::isAudioFormat
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::isDocumentFormat
+     *
      * @dataProvider fromCloudinaryDataProvider
      */
     public function testFromCloudinaryData(string $type, ?string $format, string $expectedFormat): void
@@ -33,6 +34,7 @@ final class ResourceTypeTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::toCloudinaryType
+     *
      * @dataProvider toCloudinaryTypeProvider
      */
     public function testToCloudinaryType(string $type, string $expectedType): void

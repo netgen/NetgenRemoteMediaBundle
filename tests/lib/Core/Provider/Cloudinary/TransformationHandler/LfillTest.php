@@ -29,6 +29,7 @@ final class LfillTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lfill::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

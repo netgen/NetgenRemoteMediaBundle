@@ -17,10 +17,10 @@
 
       <div class="ngremotemedia-local-file-container">
         <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">
-          <Label for="new_file">
+          <Label :for="fieldId + '_file_upload'">
             {{ this.$root.$data.NgRemoteMediaTranslations.interactions_quick_upload }}
           </Label>
-          <input hidden id="new_file" :name="this.$root.$data.NgRemoteMediaInputFields.new_file" type="file" v-on:change="handleFileInputChange" ref="fileInput">
+          <input hidden :id="fieldId + '_file_upload'" :name="this.$root.$data.NgRemoteMediaInputFields.new_file" type="file" @change="handleFileInputChange" ref="fileUploadInput">
         </button>
       </div>
     </div>
@@ -198,11 +198,11 @@ export default {
       this.prepareDomForModal();
       this.fetchFacets();
     },
-    handleFileInputChange(e) {
+    handleFileInputChange() {
       this.fetchFacets();
       this.uploadModalOpen = true;
 
-      this.newFile = e.target.files.item(0);
+      this.newFile = this.$refs.fileUploadInput.files.item(0);
     }
   },
   watch: {

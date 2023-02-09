@@ -29,6 +29,7 @@ final class FitTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit::process
+     *
      * @dataProvider dataProvider
      */
     public function test(array $config, array $result): void

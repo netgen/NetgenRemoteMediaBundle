@@ -19,6 +19,7 @@ final class CropTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop::process
+     *
      * @dataProvider validDataProvider
      */
     public function test(array $config, array $result): void
@@ -31,6 +32,7 @@ final class CropTest extends TestCase
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop::process
+     *
      * @dataProvider invalidDataProvider
      */
     public function testWithException(array $config): void

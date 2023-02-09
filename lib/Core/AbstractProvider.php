@@ -59,9 +59,9 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
-     *
      * @return \Netgen\RemoteMedia\API\Values\Folder[]
+     *
+     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
      */
     public function listFolders(?Folder $parent = null): array
     {
@@ -97,9 +97,9 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
-     *
      * @return string[]
+     *
+     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
      */
     public function listTags(): array
     {

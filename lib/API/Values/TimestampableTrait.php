@@ -36,6 +36,7 @@ trait TimestampableTrait
 
     /**
      * @ORM\PrePersist()
+     *
      * @ORM\PreUpdate()
      */
     public function updateTimestamps(): void

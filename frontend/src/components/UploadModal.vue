@@ -22,7 +22,7 @@
 
         <input type="checkbox" v-model="overwrite" id="ngrm-upload-overwrite">
         <label for="ngrm-upload-overwrite">{{ this.$root.$data.NgRemoteMediaTranslations.upload_checkbox_overwrite }}</label>
-        <button type="button" class="btn btn-blue" :disabled="filename === ''" @click="upload">
+        <button type="button" class="btn btn-blue" :disabled="filename === '' || visibility === ''" @click="upload">
           {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_save }}
         </button>
       </div>
@@ -78,8 +78,12 @@ export default {
 
       await axios.post(this.$root.$data.config.paths.upload_resources, data)
         .then(response => {
-          this.loading = false;
-          this.$emit("uploaded", response.data);
+          if (this.$root.$data.NgRemoteMediaOptions.allowedTypes.length > 0 && this.$root.$data.NgRemoteMediaOptions.allowedTypes.indexOf(response.data.type) === -1) {
+            this.error = this.$root.$data.NgRemoteMediaTranslations.upload_error_unsupported_resource_type + this.$root.$data.NgRemoteMediaOptions.allowedTypes.join(', ');
+            this.loading = false;
+          } else {
+            this.$emit("uploaded", response.data);
+          }
         }).catch(error => {
           if (error.response.status === 409) {
             this.error = this.$root.$data.NgRemoteMediaTranslations.upload_error_existing_resource;

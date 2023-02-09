@@ -35,6 +35,7 @@ final class UploadOptionsTest extends TestCase
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::appendExtension
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::parseMimeCategory
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::resolve
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::resolveContext
      *
      * @dataProvider dataProvider
      */
@@ -69,6 +70,7 @@ final class UploadOptionsTest extends TestCase
                     'context' => [
                         'alt' => '',
                         'caption' => '',
+                        'original_filename' => 'test_image_.jpg',
                     ],
                     'type' => 'upload',
                     'resource_type' => 'auto',
@@ -90,6 +92,7 @@ final class UploadOptionsTest extends TestCase
                     'context' => [
                         'alt' => '',
                         'caption' => '',
+                        'original_filename' => '_test_!"#$%&()=?*image_.jpg',
                     ],
                     'type' => 'upload',
                     'resource_type' => 'auto',
@@ -110,6 +113,12 @@ final class UploadOptionsTest extends TestCase
                     null,
                     null,
                     ['backup'],
+                    [
+                        'alt' => 'test',
+                        'original_filename' => 'something.jpg',
+                        'type' => 'product_image',
+                        'test' => 'test_value',
+                    ],
                 ),
                 'application/zip',
                 [
@@ -120,6 +129,9 @@ final class UploadOptionsTest extends TestCase
                     'context' => [
                         'alt' => '',
                         'caption' => '',
+                        'original_filename' => 'latest_backup.zip',
+                        'type' => 'product_image',
+                        'test' => 'test_value',
                     ],
                     'type' => 'private',
                     'resource_type' => 'raw',
@@ -140,6 +152,7 @@ final class UploadOptionsTest extends TestCase
                     null,
                     null,
                     ['backup', 'archive'],
+                    ['test', 'something'],
                 ),
                 'application/zip',
                 [
@@ -150,6 +163,7 @@ final class UploadOptionsTest extends TestCase
                     'context' => [
                         'alt' => '',
                         'caption' => '',
+                        'original_filename' => 'latest_backup.zip',
                     ],
                     'type' => 'authenticated',
                     'resource_type' => 'raw',
@@ -170,7 +184,7 @@ final class UploadOptionsTest extends TestCase
                     'discard_original_filename' => true,
                     'context' => [
                         'alt' => '',
-                        'caption' => '',
+                        'caption' => '', 'original_filename' => 'backup.zip',
                     ],
                     'type' => 'upload',
                     'resource_type' => 'auto',
@@ -200,6 +214,7 @@ final class UploadOptionsTest extends TestCase
                     'context' => [
                         'alt' => 'This video shows an example',
                         'caption' => 'Example video',
+                        'original_filename' => 'example.mp4',
                     ],
                     'type' => 'upload',
                     'resource_type' => 'video',
@@ -227,6 +242,7 @@ final class UploadOptionsTest extends TestCase
                     'context' => [
                         'alt' => '',
                         'caption' => '',
+                        'original_filename' => 'my video $%&/',
                     ],
                     'type' => 'authenticated',
                     'resource_type' => 'auto',
@@ -250,6 +266,7 @@ final class UploadOptionsTest extends TestCase
                     'context' => [
                         'alt' => '',
                         'caption' => '',
+                        'original_filename' => 'no_extension_example',
                     ],
                     'type' => 'upload',
                     'resource_type' => 'auto',
