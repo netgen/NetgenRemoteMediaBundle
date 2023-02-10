@@ -19,3 +19,4 @@ cache:
 cloudinary:
     cache_requests: true
     log_requests: false
+    encryption_key: ~

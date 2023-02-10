@@ -73,6 +73,7 @@ final class CloudinaryProviderTest extends AbstractTest
                 $this->mimeTypes,
             ),
             $this->logger,
+            '4ddsf32r43zun32',
             false,
         );
     }
@@ -119,6 +120,48 @@ final class CloudinaryProviderTest extends AbstractTest
     {
         self::assertTrue(
             $this->cloudinaryProvider->supportsTags(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsProtectedResources
+     */
+    public function testSupportsProtectedResources(): void
+    {
+        self::assertTrue(
+            $this->cloudinaryProvider->supportsProtectedResources(),
+        );
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+
+        $entityManager
+            ->expects(self::exactly(2))
+            ->method('getRepository')
+            ->withConsecutive([RemoteResource::class], [RemoteResourceLocation::class])
+            ->willReturnOnConsecutiveCalls(
+                $this->createMock(ObjectRepository::class),
+                $this->createMock(ObjectRepository::class),
+            );
+
+        $cloudinaryProvider = new CloudinaryProvider(
+            new Registry(),
+            new VariationResolver(),
+            $entityManager,
+            $this->gateway,
+            new DateTimeFactory(),
+            new UploadOptionsResolver(
+                new VisibilityTypeConverter(),
+                ['image', 'video'],
+                $this->mimeTypes,
+            ),
+            $this->logger,
+            null,
+            false,
+        );
+
+        self::assertFalse(
+            $cloudinaryProvider->supportsProtectedResources(),
         );
     }
 

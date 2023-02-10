@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log;
 
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
@@ -100,6 +101,13 @@ final class MonologLoggedGateway implements GatewayInterface
         $this->logger->info("[API][FREE] delete(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Uploader::destroy(\"{$remoteId->getRemoteId()}\")");
 
         $this->gateway->delete($remoteId);
+    }
+
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string
+    {
+        $this->logger->info("[INTERNAL][FREE] getAuthenticatedUrl(\"{$remoteId->getRemoteId()}\") -> cloudinary_url_internal(\"{$remoteId->getRemoteId()}\")");
+
+        return $this->gateway->getAuthenticatedUrl($remoteId, $token, $transformations);
     }
 
     public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string

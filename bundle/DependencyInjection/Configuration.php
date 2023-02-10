@@ -146,6 +146,8 @@ final class Configuration implements ConfigurationInterface
                         ->booleanNode('log_requests')
                             ->defaultValue(false)
                         ->end()
+                        ->scalarNode('encryption_key')
+                        ->end()
                     ->end()
                 ->end()
             ->end();

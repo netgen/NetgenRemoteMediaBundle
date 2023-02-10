@@ -17,6 +17,7 @@ services:
             - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
             - '@netgen_remote_media.provider.cloudinary.factory.search_result'
             - '@netgen_remote_media.provider.cloudinary.resolver.search_expression'
+            - '@netgen_remote_media.provider.cloudinary.resolver.auth_token'
         calls:
             - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%"]]
 
@@ -46,6 +47,7 @@ services:
             - "@netgen_remote_media.factory.date_time"
             - "@netgen_remote_media.provider.cloudinary.resolver.upload_options"
             - "@?logger"
+            - "%netgen_remote_media.encryption_key%"
 
     netgen_remote_media.provider.cloudinary.converter.resource_type:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType
@@ -68,6 +70,12 @@ services:
         public: false
         arguments:
             - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
+
+    netgen_remote_media.provider.cloudinary.resolver.auth_token:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken
+        public: false
+        arguments:
+            - '%netgen_remote_media.encryption_key%'
 
     netgen_remote_media.provider.cloudinary.resolver.upload_options:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions

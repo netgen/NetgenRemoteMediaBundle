@@ -17,7 +17,9 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenResolver;
 use Netgen\RemoteMedia\Exception\FolderNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
@@ -57,14 +59,18 @@ final class CloudinaryApiGateway implements GatewayInterface
 
     private SearchExpressionResolver $searchExpressionResolver;
 
+    private AuthTokenResolver $authTokenResolver;
+
     public function __construct(
         RemoteResourceFactoryInterface $remoteResourceFactory,
         SearchResultFactoryInterface $searchResultFactory,
-        SearchExpressionResolver $searchExpressionResolver
+        SearchExpressionResolver $searchExpressionResolver,
+        AuthTokenResolver $authTokenResolver
     ) {
         $this->remoteResourceFactory = $remoteResourceFactory;
         $this->searchResultFactory = $searchResultFactory;
         $this->searchExpressionResolver = $searchExpressionResolver;
+        $this->authTokenResolver = $authTokenResolver;
     }
 
     public function initCloudinary(
@@ -235,6 +241,21 @@ final class CloudinaryApiGateway implements GatewayInterface
         ];
 
         $this->cloudinaryUploader->destroy($remoteId->getResourceId(), $options);
+    }
+
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string
+    {
+        $options = array_merge(
+            [
+                'type' => $remoteId->getType(),
+                'resource_type' => $remoteId->getResourceType(),
+                'transformation' => $transformations,
+                'secure' => true,
+            ],
+            $this->authTokenResolver->resolve($token),
+        );
+
+        return cloudinary_url_internal($remoteId->getResourceId(), $options);
     }
 
     public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string

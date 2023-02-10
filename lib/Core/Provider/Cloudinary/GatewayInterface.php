@@ -8,6 +8,7 @@ use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 
 /**
  * @internal
@@ -55,6 +56,8 @@ interface GatewayInterface
     public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void;
 
     public function delete(CloudinaryRemoteId $remoteId): void;
+
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string;
 
     public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string;
 

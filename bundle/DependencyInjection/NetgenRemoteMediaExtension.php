@@ -71,6 +71,10 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             'netgen_remote_media.cache.ttl',
             $config['cache']['ttl'],
         );
+        $container->setParameter(
+            'netgen_remote_media.encryption_key',
+            $config['cloudinary']['encryption_key'],
+        );
 
         $cloudinaryInnerGatewayAlias = $config['cloudinary']['log_requests']
             ? 'netgen_remote_media.provider.cloudinary.gateway.logged'
