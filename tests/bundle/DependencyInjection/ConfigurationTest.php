@@ -57,6 +57,7 @@ final class ConfigurationTest extends TestCase
                     'cloudinary' => [
                         'cache_requests' => true,
                         'log_requests' => false,
+                        'encryption_key' => null,
                     ],
                     'image_variations' => [
                         'default' => [

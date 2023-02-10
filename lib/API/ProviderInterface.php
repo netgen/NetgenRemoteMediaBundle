@@ -7,6 +7,8 @@ namespace Netgen\RemoteMedia\API;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
@@ -22,6 +24,8 @@ interface ProviderInterface
     public function supportsDelete(): bool;
 
     public function supportsTags(): bool;
+
+    public function supportsProtectedResources(): bool;
 
     public function status(): StatusData;
 
@@ -147,4 +151,8 @@ interface ProviderInterface
     ): string;
 
     public function generateDownloadLink(RemoteResource $resource): string;
+
+    public function authenticateRemoteResource(RemoteResource $resource, AuthToken $token): AuthenticatedRemoteResource;
+
+    public function authenticateRemoteResourceVariation(RemoteResourceVariation $variation, AuthToken $token): AuthenticatedRemoteResource;
 }

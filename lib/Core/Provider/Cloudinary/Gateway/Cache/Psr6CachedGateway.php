@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache;
 
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CacheableGatewayInterface;
@@ -229,6 +230,11 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
 
         $this->invalidateResourceCache($remoteId);
         $this->invalidateResourceListCache();
+    }
+
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string
+    {
+        return $this->gateway->getAuthenticatedUrl($remoteId, $token, $transformations);
     }
 
     public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string

@@ -1,7 +1,7 @@
 # Installation instructions for Netgen Remote Media Bundle
 
 ## Installation steps
-  
+
 ### Configure the bundle
 
 In `config.yml` add basic configuration:
@@ -58,6 +58,18 @@ Cached gateway -> Logger gateway -> API gateway
 So that logger logs only direct requests towards the API.
 
 **Note:** for caching to work, cache has to be configured (see [Cache configuration](#cache-configuration)) .
+
+#### Auth token for protected resources (Cloudinary Premium)
+
+This bundle also supports and implements Cloudinary's functionality to have private/protected resources, which are not publicly available by default, but you need to authenticate first and get a signed URL with a token that is valid for a specific amount of time. Read more about this on the Cloudinary site: [Media Access Control and Authentication](https://cloudinary.com/documentation/control_access_to_media).
+
+For this to work, you need Cloudinary premium account since we use token based authentication for that which is a premium feature (read more: [Token ]()). For this you need an encryption key from Cloudinary (read more on the above link how to get it) which will automatically enable this feature. The key can be configured here:
+
+```yaml
+netgen_remote_media:
+    cloudinary:
+        encryption_key: [YOUR_CLOUDINARY_ENCRYPTION_KEY]
+```
 
 ### Require the bundle
 

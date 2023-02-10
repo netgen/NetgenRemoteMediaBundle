@@ -9,21 +9,26 @@ use Netgen\RemoteMedia\API\Factory\DateTime as DateTimeFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\AbstractProvider;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as UploadOptionsResolver;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\Registry as TransformationRegistry;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Psr\Log\LoggerInterface;
+use DateTimeImmutable;
+use DateInterval;
 
 use function array_map;
 use function basename;
 use function count;
+use function default_poster_options;
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -36,6 +41,8 @@ final class CloudinaryProvider extends AbstractProvider
 
     private UploadOptionsResolver $uploadOptionsResolver;
 
+    private ?string $encryptionKey;
+
     public function __construct(
         TransformationRegistry $registry,
         VariationResolver $variationsResolver,
@@ -44,6 +51,7 @@ final class CloudinaryProvider extends AbstractProvider
         DateTimeFactoryInterface $datetimeFactory,
         UploadOptionsResolver $uploadOptionsResolver,
         ?LoggerInterface $logger = null,
+        ?string $encryptionKey = null,
         bool $shouldDeleteFromRemote = false
     ) {
         parent::__construct(
@@ -57,6 +65,7 @@ final class CloudinaryProvider extends AbstractProvider
 
         $this->gateway = $gateway;
         $this->uploadOptionsResolver = $uploadOptionsResolver;
+        $this->encryptionKey = $encryptionKey;
     }
 
     public function getIdentifier(): string
@@ -77,6 +86,15 @@ final class CloudinaryProvider extends AbstractProvider
     public function supportsTags(): bool
     {
         return true;
+    }
+
+    public function supportsProtectedResources(): bool
+    {
+        if ($this->encryptionKey) {
+            return true;
+        }
+
+        return false;
     }
 
     public function status(): StatusData
@@ -161,6 +179,24 @@ final class CloudinaryProvider extends AbstractProvider
         );
     }
 
+    public function authenticateRemoteResource(RemoteResource $resource, AuthToken $token): AuthenticatedRemoteResource
+    {
+        $url = $this->gateway->getAuthenticatedUrl(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token);
+
+        return new AuthenticatedRemoteResource($resource, $url, $token);
+    }
+
+    public function authenticateRemoteResourceVariation(RemoteResourceVariation $variation, AuthToken $token): AuthenticatedRemoteResource
+    {
+        $url = $this->gateway->getAuthenticatedUrl(
+            CloudinaryRemoteId::fromRemoteId($variation->getRemoteResource()->getRemoteId()),
+            $token,
+            $variation->getTransformations(),
+        );
+
+        return new AuthenticatedRemoteResource($variation->getRemoteResource(), $url, $token);
+    }
+
     protected function internalListFolders(?Folder $parent = null): array
     {
         return array_map(
@@ -208,7 +244,7 @@ final class CloudinaryProvider extends AbstractProvider
             $transformations,
         );
 
-        return new RemoteResourceVariation($resource, $variationUrl);
+        return new RemoteResourceVariation($resource, $variationUrl, $transformations);
     }
 
     protected function internalBuildVideoThumbnail(RemoteResource $resource, array $transformations = [], ?int $startOffset = null): RemoteResourceVariation
@@ -229,7 +265,7 @@ final class CloudinaryProvider extends AbstractProvider
             $options,
         );
 
-        return new RemoteResourceVariation($resource, $thumbnailUrl);
+        return new RemoteResourceVariation($resource, $thumbnailUrl, array_merge(default_poster_options(), $options));
     }
 
     protected function generatePictureTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
