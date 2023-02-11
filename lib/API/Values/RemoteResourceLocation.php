@@ -39,10 +39,19 @@ class RemoteResourceLocation
      */
     private array $cropSettings = [];
 
-    public function __construct(RemoteResource $remoteResource, array $cropSettings = [])
-    {
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $watermarkText = null;
+
+    public function __construct(
+        RemoteResource $remoteResource,
+        array $cropSettings = [],
+        ?string $watermarkText = null
+    ) {
         $this->remoteResource = $remoteResource;
         $this->cropSettings = $cropSettings;
+        $this->watermarkText = $watermarkText;
     }
 
     public function getId(): ?int
@@ -85,5 +94,17 @@ class RemoteResourceLocation
         }
 
         throw new CropSettingsNotFoundException($variationName);
+    }
+
+    public function getWatermarkText(): ?string
+    {
+        return $this->watermarkText;
+    }
+
+    public function setWatermarkText(?string $waterMarkText): self
+    {
+        $this->watermarkText = $waterMarkText;
+
+        return $this;
     }
 }

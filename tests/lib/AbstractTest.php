@@ -161,6 +161,11 @@ abstract class AbstractTest extends TestCase
                 $actual->getCropSettings()[$key],
             );
         }
+
+        self::assertSame(
+            $expected->getWatermarkText(),
+            $actual->getWatermarkText(),
+        );
     }
 
     public static function assertRemoteResourceVariationSame(RemoteResourceVariation $expected, RemoteResourceVariation $actual): void

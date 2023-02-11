@@ -26,6 +26,9 @@ final class VariationTest extends TestCase
     /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Transformation\HandlerInterface */
     private MockObject $formatHandler;
 
+    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Transformation\HandlerInterface */
+    private MockObject $watermarkTextHandler;
+
     /** @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Log\LoggerInterface */
     private MockObject $logger;
 
@@ -33,11 +36,13 @@ final class VariationTest extends TestCase
     {
         $this->cropHandler = $this->createMock(HandlerInterface::class);
         $this->formatHandler = $this->createMock(HandlerInterface::class);
+        $this->watermarkTextHandler = $this->createMock(HandlerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $registry = new Registry();
         $registry->addHandler('cloudinary', 'crop', $this->cropHandler);
         $registry->addHandler('cloudinary', 'format', $this->formatHandler);
+        $registry->addHandler('cloudinary', 'watermark_text', $this->watermarkTextHandler);
 
         $this->variationResolver = new VariationResolver();
         $this->variationResolver->setServices($registry, $this->logger);
@@ -96,6 +101,19 @@ final class VariationTest extends TestCase
                 'non_croppable_article' => [
                     'transformations' => [
                         'resize' => [100, 100],
+                    ],
+                ],
+                'watermarked' => [
+                    'transformations' => [
+                        'watermark_text' => [
+                            'font_family' => 'Helvetica',
+                            'font_size' => 18,
+                            'color' => 'red',
+                            'density' => 400,
+                            'opacity' => 50,
+                            'align' => 'top',
+                            'y' => 20,
+                        ],
                     ],
                 ],
             ],
@@ -392,6 +410,65 @@ final class VariationTest extends TestCase
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::processConfiguredVariation
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
+     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
+     */
+    public function testProcessConfiguredVariationWithWatermarkText(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
+            'name' => 'test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $location = new RemoteResourceLocation($resource, [], 'Test text');
+
+        $transformations = [
+            'overlay' => [
+                'text' => 'Some sample text',
+                'font_family' => 'Helvetica',
+                'font_size' => 18,
+            ],
+            'gravity' => 'north',
+            'color' => 'red',
+            'density' => 400,
+            'opacity' => 50,
+            'align' => 'top',
+            'y' => 20,
+        ];
+
+        $this->watermarkTextHandler
+            ->expects(self::once())
+            ->method('process')
+            ->with([
+                'font_family' => 'Helvetica',
+                'font_size' => 18,
+                'color' => 'red',
+                'density' => 400,
+                'opacity' => 50,
+                'align' => 'top',
+                'y' => 20,
+                'text' => 'Test text',
+            ])
+            ->willReturn($transformations);
+
+        self::assertSame(
+            [$transformations],
+            $this->variationResolver->processConfiguredVariation(
+                $location,
+                'cloudinary',
+                'article',
+                'watermarked',
+            ),
+        );
+    }
+
+    /**
      * @return array<string, array>
      */
     protected function getVariationSet(): array
@@ -424,6 +501,19 @@ final class VariationTest extends TestCase
                 'non_croppable_article' => [
                     'transformations' => [
                         'resize' => [100, 100],
+                    ],
+                ],
+                'watermarked' => [
+                    'transformations' => [
+                        'watermark_text' => [
+                            'font_family' => 'Helvetica',
+                            'font_size' => 18,
+                            'color' => 'red',
+                            'density' => 400,
+                            'opacity' => 50,
+                            'align' => 'top',
+                            'y' => 20,
+                        ],
                     ],
                 ],
             ],
