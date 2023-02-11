@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
@@ -159,5 +161,19 @@ final class RemoteMediaRuntime extends AbstractExtension
         }
 
         return $availableVariations;
+    }
+
+    public function authenticateRemoteResource(RemoteResource $remoteResource, int $duration): AuthenticatedRemoteResource
+    {
+        $token = AuthToken::fromDuration($duration);
+
+        return $this->provider->authenticateRemoteResource($remoteResource, $token);
+    }
+
+    public function authenticateRemoteResourceVariation(RemoteResourceVariation $remoteResourceVariation, int $duration): AuthenticatedRemoteResource
+    {
+        $token = AuthToken::fromDuration($duration);
+
+        return $this->provider->authenticateRemoteResourceVariation($remoteResourceVariation, $token);
     }
 }
