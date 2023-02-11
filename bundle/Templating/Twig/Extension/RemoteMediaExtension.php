@@ -77,6 +77,14 @@ final class RemoteMediaExtension extends AbstractExtension
                 'ngrm_available_croppable_variations',
                 [RemoteMediaRuntime::class, 'getAvailableCroppableVariations'],
             ),
+            new TwigFunction(
+                'ngrm_authenticate_remote_resource',
+                [RemoteMediaRuntime::class, 'authenticateRemoteResource'],
+            ),
+            new TwigFunction(
+                'ngrm_authenticate_remote_resource_variation',
+                [RemoteMediaRuntime::class, 'authenticateRemoteResourceVariation'],
+            ),
         ];
     }
 

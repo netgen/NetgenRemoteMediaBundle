@@ -73,6 +73,27 @@ if ($authenticatedResource->isValid()) {
 }
 ```
 
+### Usage in Twig
+
+There are two Twig functions available to authenticate a resource or variation:
+
+* `ngrm_authenticate_remote_resource` (receives resource and duration in seconds)
+* `ngrm_authenticate_remote_resource_variation` (receives variation and duration in seconds)
+
+Both methods are returning `Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource` object.
+
+#### Example
+
+```html
+{% set location = entity.remoteResourceLocation %}
+{% set variation = ngrm_remote_resource_variation(location, 'product', 'cover') %}
+{% set authenticated_resource = ngrm_authenticate_remote_resource_variation(variation, 60) %}
+
+<img src="{{ authenticated_resource.url }}" alt="location.remoteResource.altText"/>
+```
+
+This will generate a link available for the next 60 seconds.
+
 ## Symfony Form Type
 
 By default, Symfony form type will use all visibilities supported by the current provider. If there's more than one, during upload you will be able to select the desired one (with first one being preselected automatically). If there's only one, you won't see a selector and this one will be used automatically. Also, by default it will show all available resources with all visibilities.

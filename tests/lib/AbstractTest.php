@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests;
 
+use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
@@ -174,6 +176,32 @@ abstract class AbstractTest extends TestCase
         );
     }
 
+    public static function authTokenSame(AuthToken $expected, AuthToken $actual): void
+    {
+        if (!($expected->getExpiresAt() instanceof DateTimeImmutable && $actual->getExpiresAt() instanceof DateTimeImmutable)) {
+            self::assertSame(
+                $expected->getExpiresAt(),
+                $actual->getExpiresAt(),
+            );
+        }
+
+        if ($expected->getExpiresAt() instanceof DateTimeImmutable && $actual->getExpiresAt() instanceof DateTimeImmutable) {
+            $diff = $expected->getExpiresAt()->getTimestamp() - $actual->getExpiresAt()->getTimestamp();
+
+            self::assertLessThan(20, $diff);
+        }
+
+        self::assertSame(
+            $expected->getStartsAt(),
+            $actual->getStartsAt(),
+        );
+
+        self::assertSame(
+            $expected->getIpAddress(),
+            $actual->getIpAddress(),
+        );
+    }
+
     public static function assertAuthenticatedRemoteResourceSame(AuthenticatedRemoteResource $expected, AuthenticatedRemoteResource $actual): void
     {
         self::assertRemoteResourceSame(
@@ -186,7 +214,7 @@ abstract class AbstractTest extends TestCase
             $actual->getUrl(),
         );
 
-        self::assertSame(
+        self::authTokenSame(
             $expected->getToken(),
             $actual->getToken(),
         );

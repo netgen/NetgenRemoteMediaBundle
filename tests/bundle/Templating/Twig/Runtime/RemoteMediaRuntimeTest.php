@@ -6,6 +6,8 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Templating\Twig\Runtime;
 
 use Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime;
 use Netgen\RemoteMedia\API\ProviderInterface;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
@@ -665,6 +667,96 @@ final class RemoteMediaRuntimeTest extends AbstractTest
         self::assertSame(
             $expectedVariations,
             $this->runtime->applyScalingFormat($variations),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::authenticateRemoteResource
+     */
+    public function testAuthenticateRemoteResource(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/video/test_video.mp4',
+            'name' => 'test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
+        ]);
+
+        $duration = 500;
+        $token = AuthToken::fromDuration($duration);
+
+        $authenticatedRemoteResource = new AuthenticatedRemoteResource(
+            $resource,
+            'https://cloudinary.com/upload/video/test_video.mp4?_token=f4t45tgtrig043jtoreigf',
+            $token,
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('authenticateRemoteResource')
+            ->willReturn($authenticatedRemoteResource);
+
+        self::assertAuthenticatedRemoteResourceSame(
+            $authenticatedRemoteResource,
+            $this->runtime->authenticateRemoteResource($resource, 500),
+        );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::__construct
+     * @covers \Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime::authenticateRemoteResourceVariation
+     */
+    public function testAuthenticateRemoteResourceVariation(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'test_video.mp4',
+            'url' => 'https://cloudinary.com/upload/image/image.jpg',
+            'name' => 'test_video.mp4',
+            'type' => 'video',
+            'size' => 1500,
+            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
+        ]);
+
+        $cropOptions = [
+            'x' => 5,
+            'y' => 10,
+            'width' => 200,
+            'height' => 100,
+            'crop' => 'crop',
+        ];
+
+        $transformations = [$cropOptions];
+
+        $url = 'https://cloudinary.com/test/c_5_10_200_100/upload/image/image.jpg';
+
+        $variation = new RemoteResourceVariation(
+            $resource,
+            $url,
+            $transformations,
+        );
+
+        $duration = 500;
+        $token = AuthToken::fromDuration($duration);
+
+        $authenticatedRemoteResource = new AuthenticatedRemoteResource(
+            $resource,
+            'https://cloudinary.com/upload/video/test_video.mp4?_token=f4t45tgtrig043jtoreigf',
+            $token,
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('authenticateRemoteResourceVariation')
+            ->willReturn($authenticatedRemoteResource);
+
+        self::assertAuthenticatedRemoteResourceSame(
+            $authenticatedRemoteResource,
+            $this->runtime->authenticateRemoteResourceVariation($variation, 500),
         );
     }
 }
