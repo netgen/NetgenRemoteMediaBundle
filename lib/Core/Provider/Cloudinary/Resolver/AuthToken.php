@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver;
 
-use Netgen\RemoteMedia\API\Values\AuthToken as AuthTokenEntity;
 use DateTimeImmutable;
+use Netgen\RemoteMedia\API\Values\AuthToken as AuthTokenEntity;
 
 final class AuthToken
 {
@@ -18,12 +18,12 @@ final class AuthToken
 
     public function resolve(AuthTokenEntity $token): array
     {
-        $options = [];
-
-        $options['secure'] = true;
-        $options['sign_url'] = true;
-        $options['auth_token'] = [
-            'key' => $this->encryptionKey,
+        $options = [
+            'secure' => true,
+            'sign_url' => true,
+            'auth_token' => [
+                'key' => $this->encryptionKey,
+            ],
         ];
 
         if ($token->getStartsAt() instanceof DateTimeImmutable) {
@@ -39,5 +39,10 @@ final class AuthToken
         }
 
         return $options;
+    }
+
+    public function hasEncryptionKey(): bool
+    {
+        return $this->encryptionKey !== null;
     }
 }

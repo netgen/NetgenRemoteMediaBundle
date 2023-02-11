@@ -10,6 +10,8 @@ use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
@@ -73,7 +75,6 @@ final class CloudinaryProviderTest extends AbstractTest
                 $this->mimeTypes,
             ),
             $this->logger,
-            '4ddsf32r43zun32',
             false,
         );
     }
@@ -129,40 +130,13 @@ final class CloudinaryProviderTest extends AbstractTest
      */
     public function testSupportsProtectedResources(): void
     {
-        self::assertTrue(
-            $this->cloudinaryProvider->supportsProtectedResources(),
-        );
-
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-
-        $entityManager
+        $this->gateway
             ->expects(self::exactly(2))
-            ->method('getRepository')
-            ->withConsecutive([RemoteResource::class], [RemoteResourceLocation::class])
-            ->willReturnOnConsecutiveCalls(
-                $this->createMock(ObjectRepository::class),
-                $this->createMock(ObjectRepository::class),
-            );
+            ->method('isEncryptionEnabled')
+            ->willReturnOnConsecutiveCalls(true, false);
 
-        $cloudinaryProvider = new CloudinaryProvider(
-            new Registry(),
-            new VariationResolver(),
-            $entityManager,
-            $this->gateway,
-            new DateTimeFactory(),
-            new UploadOptionsResolver(
-                new VisibilityTypeConverter(),
-                ['image', 'video'],
-                $this->mimeTypes,
-            ),
-            $this->logger,
-            null,
-            false,
-        );
-
-        self::assertFalse(
-            $cloudinaryProvider->supportsProtectedResources(),
-        );
+        self::assertTrue($this->cloudinaryProvider->supportsProtectedResources());
+        self::assertFalse($this->cloudinaryProvider->supportsProtectedResources());
     }
 
     /**
@@ -194,22 +168,33 @@ final class CloudinaryProviderTest extends AbstractTest
      */
     public function testGetSupportedTypes(): void
     {
-        $supportedTypes = $this->cloudinaryProvider->getSupportedTypes();
-
-        self::assertIsArray($supportedTypes);
-        self::assertNotEmpty($supportedTypes);
+        self::assertSame(
+            RemoteResource::SUPPORTED_TYPES,
+            $this->cloudinaryProvider->getSupportedTypes(),
+        );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getSupportedVisibilities
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsProtectedResources
      */
     public function testGetSupportedVisibilities(): void
     {
-        $supportedVisibilities = $this->cloudinaryProvider->getSupportedVisibilities();
+        $this->gateway
+            ->expects(self::exactly(2))
+            ->method('isEncryptionEnabled')
+            ->willReturnOnConsecutiveCalls(true, false);
 
-        self::assertIsArray($supportedVisibilities);
-        self::assertNotEmpty($supportedVisibilities);
+        self::assertSame(
+            RemoteResource::SUPPORTED_VISIBILITIES,
+            $this->cloudinaryProvider->getSupportedVisibilities(),
+        );
+
+        self::assertSame(
+            [RemoteResource::VISIBILITY_PUBLIC],
+            $this->cloudinaryProvider->getSupportedVisibilities(),
+        );
     }
 
     /**
@@ -580,6 +565,84 @@ final class CloudinaryProviderTest extends AbstractTest
         self::assertSame(
             'https://cloudinary.com/test/upload/images/image.jpg',
             $this->cloudinaryProvider->generateDownloadLink($resource),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::authenticateRemoteResource
+     */
+    public function testAuthenticateRemoteResource(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'authenticated|image|media/images/image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/authenticated/images/image.jpg',
+            'visibility' => 'protected',
+            'name' => 'image.jpg',
+            'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $token = AuthToken::fromDuration(50);
+
+        $url = 'https://cloudinary.com/test/authenticated/images/image.jpg?_token=dwejtri43t98u0vfdjf9420jre9f';
+
+        $expectedAuthenticatedResource = new AuthenticatedRemoteResource($resource, $url, $token);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getAuthenticatedUrl')
+            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token)
+            ->willReturn($url);
+
+        self::assertAuthenticatedRemoteResourceSame(
+            $expectedAuthenticatedResource,
+            $this->cloudinaryProvider->authenticateRemoteResource($resource, $token),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::authenticateRemoteResourceVariation
+     */
+    public function testAuthenticateRemoteResourceVariation(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'authenticated|image|media/images/image.jpg',
+            'type' => 'image',
+            'url' => 'https://cloudinary.com/test/authenticated/image/images/image.jpg',
+            'visibility' => 'protected',
+            'name' => 'image.jpg',
+            'size' => 95,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $variationUrl = 'https://cloudinary.com/test/authenticated/image/c_120_160/q_auto/images/image.jpg';
+
+        $transformations = [
+            'crop' => 'fit',
+            'width' => 160,
+            'height' => 120,
+        ];
+
+        $variation = new RemoteResourceVariation($resource, $variationUrl, $transformations);
+
+        $token = AuthToken::fromDuration(50);
+
+        $url = 'https://cloudinary.com/test/authenticated/image/c_120_160/images/image.jpg?_token=dwejtri43t98u0vfdjf9420jre9f';
+
+        $expectedAuthenticatedResource = new AuthenticatedRemoteResource($resource, $url, $token);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getAuthenticatedUrl')
+            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token, $transformations)
+            ->willReturn($url);
+
+        self::assertAuthenticatedRemoteResourceSame(
+            $expectedAuthenticatedResource,
+            $this->cloudinaryProvider->authenticateRemoteResourceVariation($variation, $token),
         );
     }
 

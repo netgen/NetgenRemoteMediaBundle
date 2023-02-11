@@ -14,6 +14,7 @@ final class RemoteResourceVariationTest extends AbstractTest
     /**
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getRemoteResource
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getTransformations
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getUrl
      */
     public function testConstruction(): void
@@ -27,9 +28,15 @@ final class RemoteResourceVariationTest extends AbstractTest
             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
-        $variationUrl = 'https://cloudinary.com/test/upload/image/c_5_10/q_auto/image/test.jpg';
+        $variationUrl = 'https://cloudinary.com/test/upload/image/c_120_160/q_auto/image/test.jpg';
 
-        $variation = new RemoteResourceVariation($resource, $variationUrl);
+        $transformations = [
+            'crop' => 'fit',
+            'width' => 160,
+            'height' => 120,
+        ];
+
+        $variation = new RemoteResourceVariation($resource, $variationUrl, $transformations);
 
         self::assertRemoteResourceSame(
             $resource,
@@ -40,12 +47,18 @@ final class RemoteResourceVariationTest extends AbstractTest
             $variationUrl,
             $variation->getUrl(),
         );
+
+        self::assertSame(
+            $transformations,
+            $variation->getTransformations(),
+        );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::fromResource
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getRemoteResource
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getTransformations
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getUrl
      */
     public function testConstructionFromRemoteResource(): void
@@ -70,5 +83,7 @@ final class RemoteResourceVariationTest extends AbstractTest
             'https://cloudinary.com/test/upload/image/image/test.jpg',
             $variation->getUrl(),
         );
+
+        self::assertEmpty($variation->getTransformations());
     }
 }

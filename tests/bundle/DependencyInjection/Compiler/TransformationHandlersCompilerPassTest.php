@@ -52,6 +52,14 @@ final class TransformationHandlersCompilerPassTest extends AbstractCompilerPassT
     /**
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass::process
      */
+    public function testCompilerPassFailsMissingDefinition(): void
+    {
+        self::assertNull($this->compile());
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass::process
+     */
     public function testCompilerPassFailsMissingAlias(): void
     {
         $registry = new Definition();

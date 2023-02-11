@@ -6,9 +6,9 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
-use Netgen\RemoteMedia\API\Values\AuthToken;
 
 /**
  * @internal
@@ -16,6 +16,8 @@ use Netgen\RemoteMedia\API\Values\AuthToken;
 interface GatewayInterface
 {
     public function usage(): StatusData;
+
+    public function isEncryptionEnabled(): bool;
 
     public function countResources(): int;
 

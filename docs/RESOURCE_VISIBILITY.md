@@ -10,7 +10,7 @@ There's a method to check if your provider supports this: `Netgen\RemoteMedia\AP
 
 ### Cloudinary support
 
-Cloudinary has a support for this but token based authentication, which this bundle uses, is a premium feature! You need to have a premium plan and request this feature manually from Cloudinary. They should provide an encryption token which you should properly [configure](INSTALL.md#auth-token-for-protected-resources--cloudinary-premium-).
+Cloudinary has a support for this but token based authentication, which this bundle uses, is a premium feature! You need to have a premium plan and request this feature manually from Cloudinary. They should provide an encryption token which you should properly [configure](INSTALL.md##auth-token-for-protected-resources-cloudinary-premium).
 
 ## Upload
 
@@ -77,4 +77,4 @@ if ($authenticatedResource->isValid()) {
 
 By default, Symfony form type will use all visibilities supported by the current provider. If there's more than one, during upload you will be able to select the desired one (with first one being preselected automatically). If there's only one, you won't see a selector and this one will be used automatically. Also, by default it will show all available resources with all visibilities.
 
-It's possible to configure available visibilities through [form options](FORM.md#allowedvisibilities).
+It's possible to configure available visibilities through [form options](FORM.md#allowed_visibilities).

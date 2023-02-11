@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Gateway\Cache;
 
+use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
@@ -92,6 +94,21 @@ final class Psr6CachedGatewayTest extends AbstractTest
             count($usageData->all()),
             count($result->all()),
         );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isEncryptionEnabled
+     */
+    public function testIsEncryptionEnabled(): void
+    {
+        $this->apiGatewayMock
+            ->expects(self::exactly(2))
+            ->method('isEncryptionEnabled')
+            ->willReturnOnConsecutiveCalls(true, false);
+
+        self::assertTrue($this->taggableCachedGateway->isEncryptionEnabled());
+        self::assertFalse($this->taggableCachedGateway->isEncryptionEnabled());
     }
 
     /**
@@ -953,6 +970,27 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->with($remoteId);
 
         $this->nonTaggableCachedGateway->delete($remoteId);
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getAuthenticatedUrl
+     */
+    public function testGetAuthenticatedUrl(): void
+    {
+        $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
+        $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
+        $url = 'https://res.cloudinary.com/testcloud/image/upload/v1/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=81c6ab1a5bde49cdc3a1fe73bf504d7daf23b23b699cb386f551a0c2d4bd9ac8';
+
+        $this->apiGatewayMock
+            ->expects(self::once())
+            ->method('getAuthenticatedUrl')
+            ->with($remoteId, $token)
+            ->willReturn($url);
+
+        self::assertSame(
+            $url,
+            $this->taggableCachedGateway->getAuthenticatedUrl($remoteId, $token),
+        );
     }
 
     /**

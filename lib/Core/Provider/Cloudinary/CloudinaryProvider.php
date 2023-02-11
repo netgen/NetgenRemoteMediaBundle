@@ -10,22 +10,21 @@ use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\AbstractProvider;
-use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as UploadOptionsResolver;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\Registry as TransformationRegistry;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Psr\Log\LoggerInterface;
-use DateTimeImmutable;
-use DateInterval;
 
 use function array_map;
+use function array_merge;
 use function basename;
 use function count;
 use function default_poster_options;
@@ -41,8 +40,6 @@ final class CloudinaryProvider extends AbstractProvider
 
     private UploadOptionsResolver $uploadOptionsResolver;
 
-    private ?string $encryptionKey;
-
     public function __construct(
         TransformationRegistry $registry,
         VariationResolver $variationsResolver,
@@ -51,7 +48,6 @@ final class CloudinaryProvider extends AbstractProvider
         DateTimeFactoryInterface $datetimeFactory,
         UploadOptionsResolver $uploadOptionsResolver,
         ?LoggerInterface $logger = null,
-        ?string $encryptionKey = null,
         bool $shouldDeleteFromRemote = false
     ) {
         parent::__construct(
@@ -65,7 +61,6 @@ final class CloudinaryProvider extends AbstractProvider
 
         $this->gateway = $gateway;
         $this->uploadOptionsResolver = $uploadOptionsResolver;
-        $this->encryptionKey = $encryptionKey;
     }
 
     public function getIdentifier(): string
@@ -90,11 +85,7 @@ final class CloudinaryProvider extends AbstractProvider
 
     public function supportsProtectedResources(): bool
     {
-        if ($this->encryptionKey) {
-            return true;
-        }
-
-        return false;
+        return $this->gateway->isEncryptionEnabled();
     }
 
     public function status(): StatusData
@@ -109,6 +100,10 @@ final class CloudinaryProvider extends AbstractProvider
 
     public function getSupportedVisibilities(): array
     {
+        if (!$this->gateway->isEncryptionEnabled()) {
+            return [RemoteResource::VISIBILITY_PUBLIC];
+        }
+
         return RemoteResource::SUPPORTED_VISIBILITIES;
     }
 
