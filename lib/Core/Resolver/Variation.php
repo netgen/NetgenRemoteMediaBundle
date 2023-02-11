@@ -95,6 +95,10 @@ final class Variation
                 }
             }
 
+            if ($transformationIdentifier === 'watermark_text') {
+                $config['text'] = $location->getWatermarkText();
+            }
+
             try {
                 $transformationHandler = $this->registry->getHandler(
                     $transformationIdentifier,

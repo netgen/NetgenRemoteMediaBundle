@@ -18,6 +18,7 @@ final class RemoteResourceLocationTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettingsForVariation
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getRemoteResource
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getWatermarkText
      */
     public function test(): void
     {
@@ -36,6 +37,7 @@ final class RemoteResourceLocationTest extends AbstractTest
                 new CropSettings('medium', 30, 50, 1200, 600),
                 new CropSettings('large', 10, 25, 2000, 1000),
             ],
+            'Test text',
         );
 
         self::assertNull($location->getId());
@@ -69,6 +71,11 @@ final class RemoteResourceLocationTest extends AbstractTest
             new CropSettings('large', 10, 25, 2000, 1000),
             $location->getCropSettingsForVariation('large'),
         );
+
+        self::assertSame(
+            'Test text',
+            $location->getWatermarkText(),
+        );
     }
 
     /**
@@ -101,6 +108,39 @@ final class RemoteResourceLocationTest extends AbstractTest
             new CropSettings('medium', 30, 50, 1200, 600),
             new CropSettings('large', 10, 25, 2000, 1000),
         ]);
+
+        self::assertRemoteResourceLocationSame(
+            $expected,
+            $location,
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getWatermarkText
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::setWatermarkText
+     */
+    public function testSetWatermarkText(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'test_remote_id',
+            'type' => 'raw',
+            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            'name' => 'test_remote_id',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $expected = new RemoteResourceLocation(
+            $resource,
+            [],
+            'Some watermark',
+        );
+
+        $location = new RemoteResourceLocation($resource);
+
+        self::assertNull($location->getWatermarkText());
+
+        $location->setWatermarkText('Some watermark');
 
         self::assertRemoteResourceLocationSame(
             $expected,
