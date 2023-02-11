@@ -33,6 +33,13 @@ final class MonologLoggedGateway implements GatewayInterface
         return $this->gateway->usage();
     }
 
+    public function isEncryptionEnabled(): bool
+    {
+        $this->logger->info('[INTERNAL][FREE] isEncryptionEnabled()');
+
+        return $this->gateway->isEncryptionEnabled();
+    }
+
     public function countResources(): int
     {
         $this->logger->info('[API][LIMITED] countResources() -> Cloudinary\Api::usage()');

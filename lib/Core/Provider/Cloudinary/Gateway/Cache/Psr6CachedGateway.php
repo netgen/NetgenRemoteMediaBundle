@@ -54,6 +54,11 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         return $this->gateway->usage();
     }
 
+    public function isEncryptionEnabled(): bool
+    {
+        return $this->gateway->isEncryptionEnabled();
+    }
+
     public function countResources(): int
     {
         $cacheKey = $this->washKey(

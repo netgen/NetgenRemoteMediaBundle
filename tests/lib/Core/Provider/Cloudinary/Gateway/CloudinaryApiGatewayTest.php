@@ -10,16 +10,19 @@ use Cloudinary\Api;
 use Cloudinary\Api\Response as CloudinaryApiResponse;
 use Cloudinary\Search;
 use Cloudinary\Uploader;
+use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenResolver;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use Netgen\RemoteMedia\Exception\FolderNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
@@ -85,6 +88,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
                 new ResourceTypeConverter(),
                 new VisibilityTypeConverter(),
             ),
+            new AuthTokenResolver('38128319a3a49e1d589a31a217e1a3f8'),
         );
 
         $this->apiGateway->initCloudinary(
@@ -264,6 +268,27 @@ class CloudinaryApiGatewayTest extends AbstractTest
 
         self::assertFalse($usage->has('random_key'));
         self::assertNull($usage->get('random_key'));
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::__construct
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::isEncryptionEnabled
+     */
+    public function testIsEncryptionEnabled(): void
+    {
+        self::assertTrue($this->apiGateway->isEncryptionEnabled());
+
+        $apiGateway = new CloudinaryApiGateway(
+            $this->remoteResourceFactoryMock,
+            $this->searchResultFactoryMock,
+            new SearchExpressionResolver(
+                new ResourceTypeConverter(),
+                new VisibilityTypeConverter(),
+            ),
+            new AuthTokenResolver(),
+        );
+
+        self::assertFalse($apiGateway->isEncryptionEnabled());
     }
 
     /**
@@ -568,9 +593,23 @@ class CloudinaryApiGatewayTest extends AbstractTest
     }
 
     /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getAuthenticatedUrl
+     */
+    public function testGetAuthenticatedUrl(): void
+    {
+        $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
+        $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
+
+        self::assertSame(
+            'https://res.cloudinary.com/testcloud/image/upload/v1/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=81c6ab1a5bde49cdc3a1fe73bf504d7daf23b23b699cb386f551a0c2d4bd9ac8',
+            $this->apiGateway->getAuthenticatedUrl($remoteId, $token),
+        );
+    }
+
+    /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getVariationUrl
      */
-    public function testGetVariationUrl()
+    public function testGetVariationUrl(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
         $transformations = [
@@ -834,6 +873,48 @@ class CloudinaryApiGatewayTest extends AbstractTest
                 'tag7',
             ],
             $this->apiGateway->listTags(),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getVideoThumbnail
+     */
+    public function testGetVideoThumbnail(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
+
+        self::assertSame(
+            'https://res.cloudinary.com/testcloud/video/upload/v1/media/example.jpg',
+            $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getImageTag
+     */
+    public function testGetImageTag(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/example');
+
+        self::assertSame(
+            "<img src='https://res.cloudinary.com/testcloud/image/upload/v1/media/example' />",
+            $this->apiGateway->getImageTag($cloudinaryRemoteId),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getVideoTag
+     */
+    public function testGetVideoTag(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
+
+        self::assertSame(
+            "<video poster='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.jpg'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.webm' type='video/webm'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.mp4' type='video/mp4'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.ogv' type='video/ogg'></video>",
+            $this->apiGateway->getVideoTag($cloudinaryRemoteId),
         );
     }
 

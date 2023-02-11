@@ -12,14 +12,14 @@ use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterf
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
-use Netgen\RemoteMedia\API\Values\AuthToken;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenResolver;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use Netgen\RemoteMedia\Exception\FolderNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
@@ -128,6 +128,11 @@ final class CloudinaryApiGateway implements GatewayInterface
             'credits_limit' => $usage['credits']['limit'] ?? null,
             'credits_usage_percent' => $usage['credits']['used_percent'] ?? null,
         ]);
+    }
+
+    public function isEncryptionEnabled(): bool
+    {
+        return $this->authTokenResolver->hasEncryptionKey();
     }
 
     public function countResources(): int

@@ -4,24 +4,33 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
-use DateTimeImmutable;
-use DateTime;
 use DateInterval;
+use DateTimeImmutable;
 
 final class AuthToken
 {
-    private ?DateTimeImmutable $startsAt = null;
+    private ?DateTimeImmutable $startsAt;
 
-    private ?DateTimeImmutable $expiresAt = null;
+    private DateTimeImmutable $expiresAt;
 
-    private ?string $ipAddress = null;
+    private ?string $ipAddress;
+
+    private function __construct(
+        ?DateTimeImmutable $startsAt = null,
+        ?DateTimeImmutable $expiresAt = null,
+        ?string $ipAddress = null
+    ) {
+        $this->startsAt = $startsAt;
+        $this->expiresAt = $expiresAt;
+        $this->ipAddress = $ipAddress;
+    }
 
     public static function fromDuration(int $duration): self
     {
-        $expiresAt = new DateTime();
-        $expiresAt->add(new DateInterval('PT' . $duration . 'S'));
+        $expiresAt = new DateTimeImmutable();
+        $expiresAt = $expiresAt->add(new DateInterval('PT' . $duration . 'S'));
 
-        return new self(null, DateTimeImmutable::createFromMutable($expiresAt));
+        return new self(null, $expiresAt);
     }
 
     public static function fromExpiresAt(DateTimeImmutable $expiresAt): self
@@ -32,16 +41,6 @@ final class AuthToken
     public static function fromPeriod(DateTimeImmutable $startsAt, DateTimeImmutable $expiresAt): self
     {
         return new self($startsAt, $expiresAt);
-    }
-
-    public function __construct(
-        ?DateTimeImmutable $startsAt = null,
-        ?DateTimeImmutable $expiresAt = null,
-        ?string $ipAddress = null
-    ) {
-        $this->startsAt = $startsAt;
-        $this->expiresAt = $expiresAt;
-        $this->ipAddress = $ipAddress;
     }
 
     public function getStartsAt(): ?DateTimeImmutable
@@ -59,13 +58,6 @@ final class AuthToken
     public function getExpiresAt(): ?DateTimeImmutable
     {
         return $this->expiresAt;
-    }
-
-    public function setExpiresAt(?DateTimeImmutable $expiresAt): self
-    {
-        $this->expiresAt = $expiresAt;
-
-        return $this;
     }
 
     public function getIpAddress(): ?string
@@ -88,7 +80,7 @@ final class AuthToken
             return false;
         }
 
-        if ($this->expiresAt instanceof DateTimeImmutable && $this->expiresAt <= $now) {
+        if ($this->expiresAt <= $now) {
             return false;
         }
 

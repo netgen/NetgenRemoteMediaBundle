@@ -34,8 +34,8 @@ class AuthenticatedRemoteResource
         return $this->token;
     }
 
-    public function isValid(): bool
+    public function isValid(?string $ipAddress = null): bool
     {
-        return $this->token->isValid();
+        return $this->token->isValid($ipAddress);
     }
 }

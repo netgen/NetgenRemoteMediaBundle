@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests;
 
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
 use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
@@ -170,6 +171,24 @@ abstract class AbstractTest extends TestCase
         self::assertSame(
             $expected->getUrl(),
             $actual->getUrl(),
+        );
+    }
+
+    public static function assertAuthenticatedRemoteResourceSame(AuthenticatedRemoteResource $expected, AuthenticatedRemoteResource $actual): void
+    {
+        self::assertRemoteResourceSame(
+            $expected->getRemoteResource(),
+            $actual->getRemoteResource(),
+        );
+
+        self::assertSame(
+            $expected->getUrl(),
+            $actual->getUrl(),
+        );
+
+        self::assertSame(
+            $expected->getToken(),
+            $actual->getToken(),
         );
     }
 
