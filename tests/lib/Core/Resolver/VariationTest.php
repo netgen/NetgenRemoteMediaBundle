@@ -215,7 +215,7 @@ final class VariationTest extends TestCase
             new CropSettings('small', 5, 10, 200, 200),
         ];
 
-        $location = new RemoteResourceLocation($resource, $cropSettings);
+        $location = new RemoteResourceLocation($resource, null, $cropSettings);
 
         $cropOptions = [
             'x' => 5,
@@ -302,7 +302,7 @@ final class VariationTest extends TestCase
             new CropSettings('large', 5, 10, 800, 800),
         ];
 
-        $location = new RemoteResourceLocation($resource, $cropSettings);
+        $location = new RemoteResourceLocation($resource, null, $cropSettings);
 
         $formatOptions = ['fetch_format' => 'jpeg'];
 
@@ -380,7 +380,7 @@ final class VariationTest extends TestCase
             new CropSettings('small', 5, 10, 200, 200),
         ];
 
-        $location = new RemoteResourceLocation($resource, $cropSettings);
+        $location = new RemoteResourceLocation($resource, null, $cropSettings);
 
         $formatOptions = ['fetch_format' => 'jpeg'];
 
@@ -426,7 +426,7 @@ final class VariationTest extends TestCase
             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
-        $location = new RemoteResourceLocation($resource, [], 'Test text');
+        $location = new RemoteResourceLocation($resource, null, [], 'Test text');
 
         $transformations = [
             'overlay' => [

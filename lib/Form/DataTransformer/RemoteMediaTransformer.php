@@ -38,6 +38,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             'caption' => $value->getRemoteResource()->getCaption(),
             'tags' => $value->getRemoteResource()->getTags(),
             'cropSettings' => $this->resolveCropSettingsString($value),
+            'source' => $value->getSource(),
         ];
     }
 
@@ -86,6 +87,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
         }
+
+        $remoteResourceLocation->setSource($value['source'] ?? null);
 
         $remoteResourceLocation->setCropSettings(
             $this->resolveCropSettings($value),

@@ -41,6 +41,7 @@ final class RemoteMediaType extends AbstractType
             'parent_folder' => null,
             'folder' => null,
             'upload_context' => [],
+            'location_source' => null,
         ]);
     }
 
@@ -62,7 +63,14 @@ final class RemoteMediaType extends AbstractType
                     'allow_delete' => true,
                 ],
             )
-            ->add('cropSettings', HiddenType::class);
+            ->add('cropSettings', HiddenType::class)
+            ->add(
+                'source',
+                HiddenType::class,
+                [
+                    'data' => $options['location_source'] ?? 'form_' . $builder->getName(),
+                ],
+            );
 
         $builder->addModelTransformer($this->transformer);
     }

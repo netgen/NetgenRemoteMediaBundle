@@ -124,6 +124,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'caption' => 'Test caption',
                     'tags' => ['example', 'image', 'test'],
                     'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
+                    'source' => null,
                 ],
                 [],
                 [
@@ -134,6 +135,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'caption' => 'Test caption',
                     'tags' => ['example', 'image', 'test'],
                     'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
+                    'source' => null,
                 ],
                 new RemoteResourceLocation(
                     new RemoteResource([
@@ -144,6 +146,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                         'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                         'folder' => Folder::fromPath('media/images'),
                     ]),
+                    null,
                     [
                         new CropSettings('hero_image', 10, 20, 1920, 1080),
                     ],
@@ -156,6 +159,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'caption' => 'Test caption',
                     'tags' => ['example', 'image', 'test'],
                     'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
+                    'source' => null,
                 ],
                 [
                     'allowed_visibilities' => [],
@@ -170,6 +174,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                 [
                     'remoteId' => 'upload|image|media/images/example.jpg',
                     'type' => 'image',
+                    'source' => 'Test source',
                 ],
                 [
                     'allowed_visibilities' => ['public', 'private', 'other'],
@@ -187,6 +192,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'caption' => null,
                     'tags' => [],
                     'cropSettings' => null,
+                    'source' => 'Test source',
                 ],
                 new RemoteResourceLocation(
                     new RemoteResource([
@@ -196,6 +202,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                         'name' => 'example.jpg',
                         'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     ]),
+                    'Test source',
                 ),
                 [
                     'locationId' => null,
@@ -205,6 +212,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'caption' => null,
                     'tags' => [],
                     'cropSettings' => null,
+                    'source' => 'Test source',
                 ],
                 [
                     'allowed_visibilities' => ['public', 'private'],
@@ -225,6 +233,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                 [
                     'remoteId' => 'upload|image|media/images/example.jpg',
                     'type' => 'image',
+                    'source' => 'Test source',
                 ],
                 [
                     'allowed_visibilities' => ['protected'],
@@ -245,6 +254,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'caption' => null,
                     'tags' => [],
                     'cropSettings' => null,
+                    'source' => 'Test source',
                 ],
                 new RemoteResourceLocation(
                     new RemoteResource([
@@ -254,6 +264,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                         'name' => 'example.jpg',
                         'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     ]),
+                    'Test source',
                 ),
                 [
                     'locationId' => null,
@@ -263,6 +274,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'caption' => null,
                     'tags' => [],
                     'cropSettings' => null,
+                    'source' => 'Test source',
                 ],
                 [
                     'allowed_visibilities' => ['protected'],

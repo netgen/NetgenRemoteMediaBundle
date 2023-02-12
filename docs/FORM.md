@@ -104,6 +104,12 @@ It accepts either `Netgen\RemoteMedia\API\Values\Folder` object or path to a fol
 
 You can specify an array of (key, value) pairs that will be added to the file as a context during upload. This context can be later used for search/filtering. See the example below. 
 
+#### `location_source`
+
+Every location has a string where you can put a descriptive info where this location will be used (eg. `product_image`). When adding resources through this form, by default it will use `form_[FORM_NAME]` so if you have eg. this code: `$builder->add('remote_resource_location' RemoteMediaType::class);`, all locations added through this form will have source `form_remote_resource_location`.
+
+This parameter enables you to override the source text.
+
 ### Example
 
 Let's say that you have a form for digital products in a webshop and you want to limit editors to be able to upload only protected files inside a specific folder. You want to also add some context.
