@@ -18,6 +18,7 @@ final class RemoteResourceLocationTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettingsForVariation
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getRemoteResource
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getSource
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getWatermarkText
      */
     public function test(): void
@@ -32,6 +33,7 @@ final class RemoteResourceLocationTest extends AbstractTest
 
         $location = new RemoteResourceLocation(
             $resource,
+            'my_source',
             [
                 new CropSettings('small', 50, 80, 800, 400),
                 new CropSettings('medium', 30, 50, 1200, 600),
@@ -45,6 +47,11 @@ final class RemoteResourceLocationTest extends AbstractTest
         self::assertRemoteResourceSame(
             $resource,
             $location->getRemoteResource(),
+        );
+
+        self::assertSame(
+            'my_source',
+            $location->getSource(),
         );
 
         self::assertCount(
@@ -94,6 +101,7 @@ final class RemoteResourceLocationTest extends AbstractTest
 
         $expected = new RemoteResourceLocation(
             $resource,
+            null,
             [
                 new CropSettings('small', 50, 80, 800, 400),
                 new CropSettings('medium', 30, 50, 1200, 600),
@@ -132,6 +140,7 @@ final class RemoteResourceLocationTest extends AbstractTest
 
         $expected = new RemoteResourceLocation(
             $resource,
+            null,
             [],
             'Some watermark',
         );
@@ -141,6 +150,38 @@ final class RemoteResourceLocationTest extends AbstractTest
         self::assertNull($location->getWatermarkText());
 
         $location->setWatermarkText('Some watermark');
+
+        self::assertRemoteResourceLocationSame(
+            $expected,
+            $location,
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getSource
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::setSource
+     */
+    public function testSetSource(): void
+    {
+        $resource = new RemoteResource([
+            'remoteId' => 'test_remote_id',
+            'type' => 'raw',
+            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            'name' => 'test_remote_id',
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $expected = new RemoteResourceLocation(
+            $resource,
+            'my_source',
+        );
+
+        $location = new RemoteResourceLocation($resource);
+
+        self::assertNull($location->getSource());
+
+        $location->setSource('my_source');
 
         self::assertRemoteResourceLocationSame(
             $expected,
@@ -160,6 +201,7 @@ final class RemoteResourceLocationTest extends AbstractTest
 
         $location = new RemoteResourceLocation(
             $resource,
+            null,
             [
                 new CropSettings('small', 50, 80, 800, 400),
             ],

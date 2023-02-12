@@ -835,7 +835,7 @@ final class AbstractProviderTest extends AbstractTest
             new CropSettings('small', 5, 10, 200, 100),
         ];
 
-        $location = new RemoteResourceLocation($resource, $cropSettings);
+        $location = new RemoteResourceLocation($resource, null, $cropSettings);
 
         $cropOptions = [
             'x' => 5,

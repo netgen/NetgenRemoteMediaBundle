@@ -63,6 +63,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'caption' => 'Test caption',
             'tags' => ['tag1', 'tag2'],
             'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
+            'source' => null,
         ];
 
         $resource = new RemoteResource([
@@ -98,6 +99,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'caption' => 'Test caption',
                 'tags' => ['tag1', 'tag2'],
             ]),
+            null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -140,6 +142,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'caption' => 'Test caption',
             'tags' => ['tag1', 'tag2'],
             'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}, "thumbnail": {"x":0,"y":0,"w":800,"h":600}}',
+            'source' => 'product_image',
         ];
 
         $location = new RemoteResourceLocation(
@@ -152,6 +155,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 'folder' => Folder::fromPath('media/images'),
             ]),
+            null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -175,6 +179,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'caption' => 'Test caption',
                 'tags' => ['tag1', 'tag2'],
             ]),
+            'product_image',
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
                 new CropSettings('thumbnail', 0, 0, 800, 600),
@@ -228,6 +233,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag1', 'tag2', 'tag3'],
             ]),
+            null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -292,6 +298,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'type' => 'image',
             'tags' => ['tag2'],
             'cropSettings' => null,
+            'source' => 'test',
         ];
 
         $location = new RemoteResourceLocation(
@@ -304,6 +311,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag1', 'tag2', 'tag3'],
             ]),
+            'test',
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -360,6 +368,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag1', 'tag2', 'tag3'],
             ]),
+            null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -400,6 +409,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'altText' => 'Test alt text',
             'caption' => 'Test caption',
             'cropSettings' => null,
+            'source' => 'test',
         ];
 
         $this->providerMock
@@ -438,6 +448,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag2'],
             ]),
+            'test',
         );
 
         $this->providerMock
@@ -473,6 +484,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'type' => null,
             'tags' => null,
             'cropSettings' => null,
+            'source' => null,
         ];
 
         $location = new RemoteResourceLocation(
@@ -487,6 +499,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag1', 'tag2', 'tag3'],
             ]),
+            null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -520,6 +533,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'type' => 'image',
             'tags' => ['tag2'],
             'cropSettings' => null,
+            'source' => 'some source',
         ];
 
         $location = new RemoteResourceLocation(
@@ -534,6 +548,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag1', 'tag2', 'tag3'],
             ]),
+            null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -566,7 +581,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->method('removeLocation')
             ->with($location);
 
-        $expectedLocation = new RemoteResourceLocation($newResource);
+        $expectedLocation = new RemoteResourceLocation($newResource, 'some source');
 
         $this->providerMock
             ->expects(self::once())
@@ -601,6 +616,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'type' => 'image',
             'tags' => ['tag2'],
             'cropSettings' => null,
+            'source' => null,
         ];
 
         $this->providerMock
@@ -631,6 +647,7 @@ class RemoteMediaTransformerTest extends AbstractTest
             'type' => 'image',
             'tags' => ['tag2'],
             'cropSettings' => null,
+            'source' => null,
         ];
 
         $location = new RemoteResourceLocation(
@@ -645,6 +662,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                 'folder' => Folder::fromPath('media/images'),
                 'tags' => ['tag1', 'tag2', 'tag3'],
             ]),
+            null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
@@ -700,6 +718,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                         'caption' => 'Test caption',
                         'tags' => ['tag1', 'tag2'],
                     ]),
+                    null,
                     [
                         new CropSettings('hero_image', 10, 20, 1920, 1080),
                     ],
@@ -712,6 +731,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                     'caption' => 'Test caption',
                     'tags' => ['tag1', 'tag2'],
                     'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
+                    'source' => null,
                 ],
             ],
             [
@@ -723,6 +743,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                         'name' => 'example.jpg',
                         'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     ]),
+                    'my_source',
                 ),
                 [
                     'locationId' => null,
@@ -732,6 +753,7 @@ class RemoteMediaTransformerTest extends AbstractTest
                     'caption' => null,
                     'tags' => [],
                     'cropSettings' => '[]',
+                    'source' => 'my_source',
                 ],
             ],
         ];

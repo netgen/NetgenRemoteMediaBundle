@@ -33,6 +33,11 @@ class RemoteResourceLocation
     private RemoteResource $remoteResource;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $source = null;
+
+    /**
      * @var \Netgen\RemoteMedia\API\Values\CropSettings[]
      *
      * @ORM\Column(name="crop_settings", type="array")
@@ -46,10 +51,12 @@ class RemoteResourceLocation
 
     public function __construct(
         RemoteResource $remoteResource,
+        ?string $source = null,
         array $cropSettings = [],
         ?string $watermarkText = null
     ) {
         $this->remoteResource = $remoteResource;
+        $this->source = $source;
         $this->cropSettings = $cropSettings;
         $this->watermarkText = $watermarkText;
     }
@@ -62,6 +69,18 @@ class RemoteResourceLocation
     public function getRemoteResource(): RemoteResource
     {
         return $this->remoteResource;
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(?string $source): self
+    {
+        $this->source = $source;
+
+        return $this;
     }
 
     /**

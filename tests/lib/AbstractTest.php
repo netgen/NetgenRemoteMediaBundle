@@ -155,6 +155,11 @@ abstract class AbstractTest extends TestCase
             $actual->getRemoteResource(),
         );
 
+        self::assertSame(
+            $expected->getSource(),
+            $actual->getSource(),
+        );
+
         foreach ($expected->getCropSettings() as $key => $cropSettings) {
             self::assertCropSettingsSame(
                 $expected->getCropSettings()[$key],
