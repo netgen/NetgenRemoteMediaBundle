@@ -8,8 +8,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use function pathinfo;
 
+use const PATHINFO_BASENAME;
 use const PATHINFO_EXTENSION;
-use const PATHINFO_FILENAME;
 
 final class FileStruct
 {
@@ -24,7 +24,7 @@ final class FileStruct
         $uploadFile = new self();
 
         $uploadFile->uri = $uri;
-        $uploadFile->originalFilename = pathinfo($uri, PATHINFO_FILENAME);
+        $uploadFile->originalFilename = pathinfo($uri, PATHINFO_BASENAME);
         $uploadFile->originalExtension = pathinfo($uri, PATHINFO_EXTENSION);
 
         return $uploadFile;
