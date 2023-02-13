@@ -26,7 +26,7 @@ final class FileStructTest extends TestCase
         );
 
         self::assertSame(
-            'sample_image',
+            'sample_image.jpg',
             $fileStruct->getOriginalFilename(),
         );
 

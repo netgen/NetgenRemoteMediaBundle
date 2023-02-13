@@ -7,8 +7,6 @@ namespace Netgen\RemoteMedia\API\Upload;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 
-use function basename;
-
 final class ResourceStruct
 {
     private FileStruct $fileStruct;
@@ -87,7 +85,7 @@ final class ResourceStruct
 
     public function getFilename(): ?string
     {
-        return $this->filenameOverride ?: basename($this->fileStruct->getUri());
+        return $this->filenameOverride ?: $this->fileStruct->getOriginalFilename();
     }
 
     public function doOverwrite(): bool

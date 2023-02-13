@@ -63,7 +63,7 @@ final class UploadOptionsTest extends TestCase
                 ),
                 'image/jpg',
                 [
-                    'public_id' => 'test_image',
+                    'public_id' => 'test_image_jpg',
                     'overwrite' => false,
                     'invalidate' => false,
                     'discard_original_filename' => true,
@@ -85,7 +85,7 @@ final class UploadOptionsTest extends TestCase
                 ),
                 'image/jpg',
                 [
-                    'public_id' => '_test_image',
+                    'public_id' => '_test_image_jpg',
                     'overwrite' => false,
                     'invalidate' => false,
                     'discard_original_filename' => true,
@@ -178,7 +178,7 @@ final class UploadOptionsTest extends TestCase
                 ),
                 'raw',
                 [
-                    'public_id' => 'backup',
+                    'public_id' => 'backup_zip',
                     'overwrite' => false,
                     'invalidate' => false,
                     'discard_original_filename' => true,
@@ -207,7 +207,7 @@ final class UploadOptionsTest extends TestCase
                 ),
                 'video/mp4',
                 [
-                    'public_id' => 'videos/example',
+                    'public_id' => 'videos/example_mp4',
                     'overwrite' => true,
                     'invalidate' => true,
                     'discard_original_filename' => true,
