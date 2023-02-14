@@ -61,6 +61,7 @@ class CloudinaryApiGateway extends Gateway
      * @param $apiKey
      * @param $apiSecret
      * @param bool $useSubdomains
+     * @param mixed $uploadPrefix
      */
     public function initCloudinary($cloudName, $apiKey, $apiSecret, $uploadPrefix, $useSubdomains = false)
     {
