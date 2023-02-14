@@ -416,13 +416,19 @@ final class CloudinaryProviderTest extends AbstractTest
             'tags' => ['tag1', 'tag2'],
             'altText' => 'Test alt text',
             'caption' => 'Test caption',
+            'context' => [
+                'source' => 'user_upload',
+                'type' => 'product_image',
+            ],
             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
         $expectedOptions = [
             'context' => [
-                'alt_text' => $resource->getAltText(),
+                'alt' => $resource->getAltText(),
                 'caption' => $resource->getCaption(),
+                'source' => 'user_upload',
+                'type' => 'product_image',
             ],
             'tags' => $resource->getTags(),
         ];
@@ -454,7 +460,7 @@ final class CloudinaryProviderTest extends AbstractTest
 
         $expectedOptions = [
             'context' => [
-                'alt_text' => $resource->getAltText(),
+                'alt' => $resource->getAltText(),
                 'caption' => $resource->getCaption(),
             ],
             'tags' => $resource->getTags(),
@@ -493,7 +499,7 @@ final class CloudinaryProviderTest extends AbstractTest
 
         $expectedOptions = [
             'context' => [
-                'alt_text' => $resource->getAltText(),
+                'alt' => $resource->getAltText(),
                 'caption' => $resource->getCaption(),
             ],
             'tags' => $resource->getTags(),

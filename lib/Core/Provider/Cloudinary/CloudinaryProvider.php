@@ -148,10 +148,13 @@ final class CloudinaryProvider extends AbstractProvider
     public function updateOnRemote(RemoteResource $resource): void
     {
         $options = [
-            'context' => [
-                'alt_text' => $resource->getAltText(),
-                'caption' => $resource->getCaption(),
-            ],
+            'context' => array_merge(
+                $resource->getContext(),
+                [
+                    'alt' => $resource->getAltText(),
+                    'caption' => $resource->getCaption(),
+                ],
+            ),
             'tags' => $resource->getTags(),
         ];
 
