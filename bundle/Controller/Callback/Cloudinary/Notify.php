@@ -13,8 +13,10 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\CacheableGatewayInterface;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Core\RequestVerifierInterface;
+use Netgen\RemoteMedia\Event\Cloudinary\NotificationReceivedEvent;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,16 +44,20 @@ final class Notify extends AbstractController
 
     private EntityManagerInterface $entityManager;
 
+    private EventDispatcherInterface $eventDispatcher;
+
     public function __construct(
         GatewayInterface $gateway,
         ProviderInterface $provider,
         RequestVerifierInterface $signatureVerifier,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->gateway = $gateway;
         $this->provider = $provider;
         $this->signatureVerifier = $signatureVerifier;
         $this->entityManager = $entityManager;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function __invoke(Request $request): Response
@@ -59,6 +65,9 @@ final class Notify extends AbstractController
         if (!$this->signatureVerifier->verify($request)) {
             return $this->returnUnverified();
         }
+
+        $event = new NotificationReceivedEvent($request);
+        $this->eventDispatcher->dispatch($event, NotificationReceivedEvent::NAME);
 
         $requestContent = json_decode($request->getContent(), true);
         $notificationType = $requestContent['notification_type'] ?? null;

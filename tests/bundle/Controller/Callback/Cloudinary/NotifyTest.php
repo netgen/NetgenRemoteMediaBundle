@@ -11,9 +11,11 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CacheableGatewayInterface;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\RequestVerifierInterface;
+use Netgen\RemoteMedia\Event\Cloudinary\NotificationReceivedEvent;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -37,18 +39,23 @@ final class NotifyTest extends TestCase
     /** @var \PHPUnit\Framework\MockObject\MockObject|\Doctrine\ORM\EntityManagerInterface */
     private MockObject $entityManagerMock;
 
+    /** @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\EventDispatcher\EventDispatcherInterface */
+    private MockObject $eventDispatcherMock;
+
     protected function setUp(): void
     {
         $this->gatewayMock = $this->createMock(CacheableGatewayInterface::class);
         $this->providerMock = $this->createMock(ProviderInterface::class);
         $this->signatureVerifierMock = $this->createMock(RequestVerifierInterface::class);
         $this->entityManagerMock = $this->createMock(EntityManagerInterface::class);
+        $this->eventDispatcherMock = $this->createMock(EventDispatcherInterface::class);
 
         $this->controller = new NotifyController(
             $this->gatewayMock,
             $this->providerMock,
             $this->signatureVerifierMock,
             $this->entityManagerMock,
+            $this->eventDispatcherMock,
         );
     }
 
@@ -140,6 +147,13 @@ final class NotifyTest extends TestCase
             ->method('verify')
             ->with($request)
             ->willReturn(true);
+
+        $event = new NotificationReceivedEvent($request);
+
+        $this->eventDispatcherMock
+            ->expects(self::once())
+            ->method('dispatch')
+            ->with($event, $event::NAME);
 
         $this->gatewayMock
             ->expects(self::once())
@@ -246,6 +260,13 @@ final class NotifyTest extends TestCase
             ->method('verify')
             ->with($request)
             ->willReturn(true);
+
+        $event = new NotificationReceivedEvent($request);
+
+        $this->eventDispatcherMock
+            ->expects(self::once())
+            ->method('dispatch')
+            ->with($event, $event::NAME);
 
         $this->gatewayMock
             ->expects(self::once())
@@ -359,6 +380,13 @@ final class NotifyTest extends TestCase
             ->with($request)
             ->willReturn(true);
 
+        $event = new NotificationReceivedEvent($request);
+
+        $this->eventDispatcherMock
+            ->expects(self::once())
+            ->method('dispatch')
+            ->with($event, $event::NAME);
+
         $this->gatewayMock
             ->expects(self::once())
             ->method('invalidateResourceListCache');
@@ -452,6 +480,13 @@ final class NotifyTest extends TestCase
             ->method('verify')
             ->with($request)
             ->willReturn(true);
+
+        $event = new NotificationReceivedEvent($request);
+
+        $this->eventDispatcherMock
+            ->expects(self::once())
+            ->method('dispatch')
+            ->with($event, $event::NAME);
 
         $this->gatewayMock
             ->expects(self::once())
