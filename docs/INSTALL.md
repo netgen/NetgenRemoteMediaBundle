@@ -83,6 +83,16 @@ php app/console doctrine:schema:update --force
 
 This bundle has a few parameters that can be overridden through YAML configuration in your own site, if needed.
 
+
+#### Upoad prefix
+
+If you need to change Cloudinary API url (to use eg. GEO specific URLs), there's a parameter `upload_prefix` (set to `https://api.cloudinary.com` by default):
+
+```yaml
+netgen_remote_media:
+    upload_prefix: 'https://api.cloudinary.com'
+```
+
 #### Audio waveform image
 
 If you set the following parameter `netgen_remote_media.default.parameters.audio.enable_waveform` to `true` (default: `false`), audio files will be rendered with `<video>` tag instead and their waveform image will be shown instead of video.
