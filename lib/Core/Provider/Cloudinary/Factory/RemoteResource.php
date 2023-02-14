@@ -54,6 +54,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'tags' => $data['tags'] ?? [],
             'md5' => $this->resolveMd5($data),
             'metadata' => $this->resolveMetaData($data),
+            'context' => $this->resolveContext($data),
         ]);
     }
 
@@ -133,5 +134,18 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         }
 
         return $metadata;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function resolveContext(array $data): array
+    {
+        $context = $data['context'] ?? [];
+        $context = $context['custom'] ?? [];
+
+        unset($context['alt'], $context['caption']);
+
+        return $context;
     }
 }

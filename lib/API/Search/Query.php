@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\API\Search;
 use function get_object_vars;
 use function http_build_query;
 use function implode;
+use function is_array;
 use function property_exists;
 
 final class Query
@@ -27,6 +28,9 @@ final class Query
 
     /** @var string[] */
     private array $remoteIds = [];
+
+    /** @var array<string,string|string[]> */
+    private array $context = [];
 
     private int $limit = 25;
 
@@ -57,16 +61,30 @@ final class Query
         $remoteIds = implode(',', $this->remoteIds);
         $sort = http_build_query($vars['sortBy'], '', ',');
 
+        $context = [];
+        foreach ($this->context as $key => $value) {
+            if (!is_array($value)) {
+                $value = [$value];
+            }
+
+            foreach ($value as $val) {
+                $context[] = ($key . '=' . $val);
+            }
+        }
+
+        $context = implode(',', $context);
+
         unset(
             $vars['types'],
             $vars['folders'],
             $vars['visibilities'],
             $vars['tags'],
             $vars['remoteIds'],
+            $vars['context'],
             $vars['sortBy'],
         );
 
-        return implode('|', $vars) . '|' . $types . '|' . $folders . '|' . $visibilities . '|' . $tags . '|' . $remoteIds . '|' . $sort;
+        return implode('|', $vars) . '|' . $types . '|' . $folders . '|' . $visibilities . '|' . $tags . '|' . $remoteIds . '|' . $context . '|' . $sort;
     }
 
     /**
@@ -130,6 +148,14 @@ final class Query
     public function getRemoteIds(): array
     {
         return $this->remoteIds;
+    }
+
+    /**
+     * @return array<string, string|string[]>
+     */
+    public function getContext(): array
+    {
+        return $this->context;
     }
 
     public function getLimit(): int

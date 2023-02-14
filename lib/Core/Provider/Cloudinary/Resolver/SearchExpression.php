@@ -15,10 +15,12 @@ use function array_map;
 use function array_merge;
 use function array_unique;
 use function array_values;
+use function array_walk;
 use function count;
 use function explode;
 use function implode;
 use function in_array;
+use function is_array;
 use function is_string;
 use function mb_substr;
 use function sprintf;
@@ -46,6 +48,7 @@ final class SearchExpression
         $expressions[] = $this->resolveTypes($query);
         $expressions[] = $this->resolveTags($query);
         $expressions[] = $this->resolveResourceIds($query);
+        $expressions[] = $this->resolveContext($query);
 
         return implode(' AND ', array_filter($expressions));
     }
@@ -262,5 +265,26 @@ final class SearchExpression
         $resourceIds = array_map(static fn ($value) => sprintf('public_id:"%s"', $value), $resourceIds);
 
         return '(' . implode(' OR ', $resourceIds) . ')';
+    }
+
+    private function resolveContext(Query $query): ?string
+    {
+        if (count($query->getContext()) === 0) {
+            return null;
+        }
+
+        $context = $query->getContext();
+
+        array_walk(
+            $context,
+            static function (&$value, $key) { $value = is_array($value) ? $value : [$value]; },
+        );
+
+        $newContext = [];
+        foreach ($context as $key => $values) {
+            $newContext[] = ('(context.' . $key . ':"' . implode('" OR context.' . $key . ':"', $values) . '")');
+        }
+
+        return '(' . implode(' AND ', $newContext) . ')';
     }
 }

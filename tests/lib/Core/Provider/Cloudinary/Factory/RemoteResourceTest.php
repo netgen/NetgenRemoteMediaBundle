@@ -36,6 +36,7 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveAltText
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveContext
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveMd5
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveMetaData
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveResourceType
@@ -111,6 +112,8 @@ final class RemoteResourceTest extends AbstractTest
                             'alt' => 'alt text',
                             'alt_text' => 'alt text',
                             'caption' => 'caption text',
+                            'type' => 'product_image',
+                            'source' => 'user_upload',
                         ],
                     ],
                     'variations' => [
@@ -136,6 +139,10 @@ final class RemoteResourceTest extends AbstractTest
                         'format' => 'jpg',
                         'created_at' => '2013-06-23T13:59:18Z',
                         'overwritten' => 'true',
+                    ],
+                    'context' => [
+                        'type' => 'product_image',
+                        'source' => 'user_upload',
                     ],
                 ]),
             ],
@@ -272,7 +279,9 @@ final class RemoteResourceTest extends AbstractTest
                     'secure_url' => 'https://res.cloudinary.com/demo/private/video/v1371995958/c87hg9xfxrd4itiim3t0.mp3',
                     'etag' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     'overwritten' => 'false',
-                    'context' => [],
+                    'context' => [
+                        'test' => 'test',
+                    ],
                     'variations' => [
                         'variation1',
                         'variation2',
@@ -293,6 +302,9 @@ final class RemoteResourceTest extends AbstractTest
                         'format' => 'mp3',
                         'created_at' => '2013-06-23T13:59:18Z',
                         'overwritten' => 'false',
+                    ],
+                    'context' => [
+                        'test' => 'test',
                     ],
                 ]),
             ],

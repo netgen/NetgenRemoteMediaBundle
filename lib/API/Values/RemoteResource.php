@@ -129,6 +129,13 @@ class RemoteResource
     private array $metadata = [];
 
     /**
+     * @var array<string, mixed>
+     *
+     * @ORM\Column(name="context", type="array", nullable=true)
+     */
+    private array $context = [];
+
+    /**
      * @param array<string,mixed> $properties
      */
     public function __construct(array $properties = [])
@@ -352,5 +359,40 @@ class RemoteResource
         }
 
         return $this->metadata[$name];
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getContext(): array
+    {
+        return $this->context;
+    }
+
+    /**
+     * @param array<string,mixed> $context
+     */
+    public function setContext(array $context): self
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    public function hasContextProperty(string $name): bool
+    {
+        return array_key_exists($name, $this->context);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContextProperty(string $name)
+    {
+        if (!$this->hasContextProperty($name)) {
+            return null;
+        }
+
+        return $this->context[$name];
     }
 }

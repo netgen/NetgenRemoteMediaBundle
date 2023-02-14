@@ -1030,7 +1030,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->taggableCacheMock
             ->expects(self::once())
             ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||created_at=desc')
+            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')
             ->willReturn($cacheItem);
 
         $cacheItem
@@ -1079,7 +1079,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->taggableCacheMock
             ->expects(self::once())
             ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||created_at=desc')
+            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')
             ->willReturn($cacheItem);
 
         $cacheItem
@@ -1152,7 +1152,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->nonTaggableCacheMock
             ->expects(self::once())
             ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||created_at=desc')
+            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')
             ->willReturn($cacheItem);
 
         $cacheItem
@@ -1215,7 +1215,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->taggableCacheMock
             ->expects(self::once())
             ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||created_at=desc')
+            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')
             ->willReturn($cacheItem);
 
         $cacheItem
@@ -1254,7 +1254,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->taggableCacheMock
             ->expects(self::once())
             ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||created_at=desc')
+            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||type=product_image,type=category_image|created_at=desc')
             ->willReturn($cacheItem);
 
         $cacheItem
@@ -1267,6 +1267,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'types' => ['image', 'video'],
             'tags' => ['tag1'],
             'folders' => ['test_folder'],
+            'context' => ['type' => ['product_image', 'category_image']],
         ]);
 
         $this->apiGatewayMock
@@ -1317,7 +1318,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->nonTaggableCacheMock
             ->expects(self::once())
             ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||created_at=desc')
+            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')
             ->willReturn($cacheItem);
 
         $cacheItem
