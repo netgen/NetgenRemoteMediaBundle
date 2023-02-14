@@ -14,6 +14,8 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getAltText
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getCaption
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContext
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContextProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getFolder
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getId
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMd5
@@ -26,6 +28,7 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getType
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getUrl
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getVisibility
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasContextProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetadataProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::isPrivate
@@ -55,6 +58,10 @@ final class RemoteResourceTest extends AbstractTest
                 'created_at' => '2013-06-23T13:59:18Z',
                 'etag' => 'test_tag',
                 'overwritten' => 'true',
+            ],
+            'context' => [
+                'original_filename' => 'c87hg9xfxrd4itiim3t0.jpg',
+                'type' => 'shop_product',
             ],
             'test' => 'test',
         ]);
@@ -148,12 +155,30 @@ final class RemoteResourceTest extends AbstractTest
         self::assertTrue($resource->hasMetaDataProperty('version'));
         self::assertFalse($resource->hasMetaDataProperty('non_existing_parameter'));
         self::assertNull($resource->getMetaDataProperty('non_existing_parameter'));
+
+        self::assertSame(
+            [
+                'original_filename' => 'c87hg9xfxrd4itiim3t0.jpg',
+                'type' => 'shop_product',
+            ],
+            $resource->getContext(),
+        );
+
+        self::assertSame(
+            'c87hg9xfxrd4itiim3t0.jpg',
+            $resource->getContextProperty('original_filename'),
+        );
+
+        self::assertTrue($resource->hasContextProperty('type'));
+        self::assertFalse($resource->hasContextProperty('source'));
+        self::assertNull($resource->getContextProperty('source'));
     }
 
     /**
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setAltText
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setCaption
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setContext
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setFolder
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setMd5
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setMetadata
@@ -190,6 +215,10 @@ final class RemoteResourceTest extends AbstractTest
                 'etag' => 'test_tag',
                 'overwritten' => 'true',
             ],
+            'context' => [
+                'original_filename' => 'c87hg9xfxrd4itiim3t0.jpg',
+                'type' => 'shop_product',
+            ],
             'test' => 'test',
         ]);
 
@@ -216,6 +245,10 @@ final class RemoteResourceTest extends AbstractTest
                 'created_at' => '2013-06-23T13:59:18Z',
                 'etag' => 'test_tag',
                 'overwritten' => 'true',
+            ])
+            ->setContext([
+                'original_filename' => 'c87hg9xfxrd4itiim3t0.jpg',
+                'type' => 'shop_product',
             ]);
 
         self::assertRemoteResourceSame(

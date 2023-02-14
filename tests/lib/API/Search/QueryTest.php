@@ -12,6 +12,7 @@ final class QueryTest extends TestCase
     /**
      * @covers \Netgen\RemoteMedia\API\Search\Query::__construct
      * @covers \Netgen\RemoteMedia\API\Search\Query::__toString
+     * @covers \Netgen\RemoteMedia\API\Search\Query::getContext
      * @covers \Netgen\RemoteMedia\API\Search\Query::getFolders
      * @covers \Netgen\RemoteMedia\API\Search\Query::getLimit
      * @covers \Netgen\RemoteMedia\API\Search\Query::getNextCursor
@@ -32,6 +33,7 @@ final class QueryTest extends TestCase
         array $visibilities,
         array $tags,
         array $remoteIds,
+        array $context,
         int $limit,
         ?string $nextCursor,
         array $sortBy,
@@ -70,6 +72,11 @@ final class QueryTest extends TestCase
         );
 
         self::assertSame(
+            $context,
+            $query->getContext(),
+        );
+
+        self::assertSame(
             $limit,
             $query->getLimit(),
         );
@@ -94,6 +101,7 @@ final class QueryTest extends TestCase
      * @covers \Netgen\RemoteMedia\API\Search\Query::__construct
      * @covers \Netgen\RemoteMedia\API\Search\Query::__toString
      * @covers \Netgen\RemoteMedia\API\Search\Query::fromRemoteIds
+     * @covers \Netgen\RemoteMedia\API\Search\Query::getContext
      * @covers \Netgen\RemoteMedia\API\Search\Query::getFolders
      * @covers \Netgen\RemoteMedia\API\Search\Query::getLimit
      * @covers \Netgen\RemoteMedia\API\Search\Query::getNextCursor
@@ -125,6 +133,7 @@ final class QueryTest extends TestCase
         self::assertEmpty($query->getFolders());
         self::assertEmpty($query->getVisibilities());
         self::assertEmpty($query->getTags());
+        self::assertEmpty($query->getContext());
 
         self::assertSame(
             $remoteIds,
@@ -155,6 +164,7 @@ final class QueryTest extends TestCase
     /**
      * @covers \Netgen\RemoteMedia\API\Search\Query::__construct
      * @covers \Netgen\RemoteMedia\API\Search\Query::__toString
+     * @covers \Netgen\RemoteMedia\API\Search\Query::getContext
      * @covers \Netgen\RemoteMedia\API\Search\Query::getFolders
      * @covers \Netgen\RemoteMedia\API\Search\Query::getLimit
      * @covers \Netgen\RemoteMedia\API\Search\Query::getNextCursor
@@ -174,6 +184,7 @@ final class QueryTest extends TestCase
         self::assertEmpty($query->getFolders());
         self::assertEmpty($query->getVisibilities());
         self::assertEmpty($query->getTags());
+        self::assertEmpty($query->getContext());
 
         self::assertSame(
             ['test/image.jpg'],
@@ -193,7 +204,7 @@ final class QueryTest extends TestCase
         );
 
         self::assertSame(
-            '|25||||||test/image.jpg|created_at=desc',
+            '|25||||||test/image.jpg||created_at=desc',
             (string) $query,
         );
     }
@@ -230,10 +241,11 @@ final class QueryTest extends TestCase
                 [],
                 [],
                 [],
+                [],
                 25,
                 null,
                 ['created_at' => 'desc'],
-                'test search|25|||||||created_at=desc',
+                'test search|25||||||||created_at=desc',
             ],
             [
                 [
@@ -243,6 +255,7 @@ final class QueryTest extends TestCase
                     'tags' => ['tag1', 'tag2', 'tag3'],
                     'limit' => 30,
                     'sortBy' => ['updated_at' => 'asc'],
+                    'context' => ['type' => ['product_image', 'product_category'], 'source' => 'webshop'],
                 ],
                 null,
                 ['audio', 'video'],
@@ -250,10 +263,14 @@ final class QueryTest extends TestCase
                 ['public', 'private'],
                 ['tag1', 'tag2', 'tag3'],
                 [],
+                [
+                    'type' => ['product_image', 'product_category'],
+                    'source' => 'webshop',
+                ],
                 30,
                 null,
                 ['updated_at' => 'asc'],
-                '|30||audio,video|root/images,root/videos|public,private|tag1,tag2,tag3||updated_at=asc',
+                '|30||audio,video|root/images,root/videos|public,private|tag1,tag2,tag3||type=product_image,type=product_category,source=webshop|updated_at=asc',
             ],
             [
                 [
@@ -265,10 +282,11 @@ final class QueryTest extends TestCase
                 [],
                 [],
                 ['root/images/image1.jpg', 'root/videos/example.mp4'],
+                [],
                 25,
                 null,
                 ['created_at' => 'desc'],
-                '|25||||||root/images/image1.jpg,root/videos/example.mp4|created_at=desc',
+                '|25||||||root/images/image1.jpg,root/videos/example.mp4||created_at=desc',
             ],
             [
                 [
@@ -286,10 +304,11 @@ final class QueryTest extends TestCase
                 ['protected'],
                 ['tech'],
                 [],
+                [],
                 25,
                 'd395jdgew45nd73kjsijfh',
                 ['created_at' => 'asc'],
-                'unix|25|d395jdgew45nd73kjsijfh|image|root/images|protected|tech||created_at=asc',
+                'unix|25|d395jdgew45nd73kjsijfh|image|root/images|protected|tech|||created_at=asc',
             ],
         ];
     }
@@ -302,14 +321,14 @@ final class QueryTest extends TestCase
                 100,
                 null,
                 ['created_at' => 'asc'],
-                '|100||||||image.jpg,test/subfolder/document.pdf,videos/example.mp4,media/audio/song.mp3|created_at=asc',
+                '|100||||||image.jpg,test/subfolder/document.pdf,videos/example.mp4,media/audio/song.mp3||created_at=asc',
             ],
             [
                 ['image.jpg'],
                 25,
                 'ewdsofu439oirejfoi3',
                 ['updated_at' => 'desc'],
-                '|25|ewdsofu439oirejfoi3|||||image.jpg|updated_at=desc',
+                '|25|ewdsofu439oirejfoi3|||||image.jpg||updated_at=desc',
             ],
         ];
     }
