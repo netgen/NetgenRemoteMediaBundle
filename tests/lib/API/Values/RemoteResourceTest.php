@@ -301,4 +301,74 @@ final class RemoteResourceTest extends AbstractTest
         self::assertEmpty($resource->getTags());
         self::assertFalse($resource->hasTag('tag1'));
     }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::addContextProperty
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContext
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContextProperty
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasContextProperty
+     */
+    public function testAddContextProperty(): void
+    {
+        $resource = new RemoteResource([
+            'context' => [
+                'source' => 'test_source',
+            ],
+        ]);
+
+        self::assertSame(
+            ['source' => 'test_source'],
+            $resource->getContext(),
+        );
+
+        self::assertFalse($resource->hasContextProperty('type'));
+        self::assertNull($resource->getContextProperty('type'));
+
+        $resource->addContextProperty('type', 'product_image');
+
+        self::assertSame(
+            ['source' => 'test_source', 'type' => 'product_image'],
+            $resource->getContext(),
+        );
+
+        self::assertTrue($resource->hasContextProperty('type'));
+
+        self::assertSame(
+            'product_image',
+            $resource->getContextProperty('type'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContext
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContextProperty
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasContextProperty
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::removeContextProperty
+     */
+    public function testRemoveContextProperty(): void
+    {
+        $resource = new RemoteResource([
+            'context' => [
+                'source' => 'test_source',
+            ],
+        ]);
+
+        self::assertSame(
+            ['source' => 'test_source'],
+            $resource->getContext(),
+        );
+
+        self::assertTrue($resource->hasContextProperty('source'));
+
+        self::assertSame(
+            'test_source',
+            $resource->getContextProperty('source'),
+        );
+
+        $resource->removeContextProperty('source');
+
+        self::assertEmpty($resource->getContext());
+        self::assertFalse($resource->hasContextProperty('type'));
+        self::assertNull($resource->getContextProperty('type'));
+    }
 }

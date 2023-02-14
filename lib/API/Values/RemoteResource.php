@@ -395,4 +395,18 @@ class RemoteResource
 
         return $this->context[$name];
     }
+
+    public function addContextProperty(string $name, string $value): self
+    {
+        $this->context[$name] = $value;
+
+        return $this;
+    }
+
+    public function removeContextProperty(string $name): self
+    {
+        unset($this->context[$name]);
+
+        return $this;
+    }
 }
