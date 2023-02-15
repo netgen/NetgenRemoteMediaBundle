@@ -6,5 +6,5 @@ orm:
                 netgen_remote_media:
                     type: annotation
                     prefix: Netgen\RemoteMedia\API\Values
-                    dir: "%kernel.root_dir%/../vendor/netgen/remote-media-bundle/lib/API/Values"
+                    dir: "%kernel.project_dir%/vendor/netgen/remote-media-bundle/lib/API/Values"
                     is_bundle: false
