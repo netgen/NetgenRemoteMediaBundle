@@ -27,7 +27,7 @@
           </span>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description">
-            <i v-if="item.visibility === 'public'" class="fa-solid fa-globe"></i>
+            <i v-if="item.visibility === 'public'" class="fa fa-solid fa-globe"></i>
             <i v-if="item.visibility === 'private'" class="fa fa-eye-slash"></i>
             <i v-if="item.visibility === 'protected'" class="fa fa-lock"></i>
             <span class="format">{{item.format}}</span> - {{showFilesize(item)}}
