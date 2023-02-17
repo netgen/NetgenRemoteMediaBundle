@@ -75,6 +75,7 @@ export default {
 </style>
 
 <style lang="scss">
+@import "../scss/variables";
 // Specific targeted styles for Sylius admin version
 .sidebar + div.menu + .pusher {
   #wrapper {
@@ -115,5 +116,22 @@ export default {
 
 .ngremotemedia-container .v-select .vs__dropdown-toggle {
   padding: 0;
+}
+
+#form {
+  label.required {
+    display: block;
+    margin: 0.5rem 0 0.5rem 0;
+    font-weight: 400;
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 0.92rem;
+    color: rgba(0, 0, 0, 0.8);
+
+    &::after {
+      margin: -0.2em 0em 0em 0.2em;
+      content: '*';
+      color: $crimson;
+    }
+  }
 }
 </style>
