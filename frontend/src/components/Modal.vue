@@ -26,6 +26,8 @@ export default {
 };
 </script>
 
+>
+
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "../scss/variables";
@@ -69,5 +71,49 @@ export default {
       height: calc(100% - 50px);
     }
   }
+}
+</style>
+
+<style lang="scss">
+// Specific targeted styles for Sylius admin version
+.sidebar + div.menu + .pusher {
+  #wrapper {
+    .ngrm-overlay {
+      top: 48px;
+      width: 100%;
+      padding: 32px;
+      top: 48px;
+      transition: all .5s ease;
+    }
+  }
+}
+
+.sidebar.visible + div.menu + .pusher {
+  #wrapper {
+    .ngrm-overlay {
+      width: calc(100% - 260px);
+    }
+  }
+}
+
+.sidebar.uncover.visible + div.menu + .pusher {
+  #wrapper {
+    .ngrm-overlay {
+      width: calc(100% - 260px);
+    }
+  }
+}
+
+.vue-treeselect__input-container input,
+.vs__selected-options input {
+  border: none!important;
+}
+
+.search-wrapper .search .input {
+  border-radius: 0!important;
+}
+
+.ngremotemedia-container .v-select .vs__dropdown-toggle {
+  padding: 0;
 }
 </style>
