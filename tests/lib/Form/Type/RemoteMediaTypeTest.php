@@ -162,6 +162,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => null,
                 ],
                 [
+                    'variation_group' => 'default',
                     'allowed_visibilities' => [],
                     'allowed_types' => [],
                     'allowed_tags' => [],
@@ -177,6 +178,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => 'Test source',
                 ],
                 [
+                    'variation_group' => null,
                     'allowed_visibilities' => ['public', 'private', 'other'],
                     'allowed_types' => ['image', 'video', 'pdf'],
                     'allowed_tags' => ['tag1', 'tag2'],
@@ -215,6 +217,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => 'Test source',
                 ],
                 [
+                    'variation_group' => 'default',
                     'allowed_visibilities' => ['public', 'private'],
                     'allowed_types' => ['image', 'video'],
                     'allowed_tags' => ['tag1'],
@@ -236,6 +239,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => 'Test source',
                 ],
                 [
+                    'variation_group' => 'product_image',
                     'allowed_visibilities' => ['protected'],
                     'allowed_types' => ['other'],
                     'parent_folder' => Folder::fromPath('media/test'),
@@ -277,6 +281,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => 'Test source',
                 ],
                 [
+                    'variation_group' => 'product_image',
                     'allowed_visibilities' => ['protected'],
                     'allowed_types' => ['other'],
                     'allowed_tags' => [],

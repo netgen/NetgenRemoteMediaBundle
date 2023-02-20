@@ -35,6 +35,7 @@ final class RemoteMediaType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => null,
+            'variation_group' => 'default',
             'allowed_visibilities' => [],
             'allowed_types' => [],
             'allowed_tags' => [],
@@ -99,6 +100,7 @@ final class RemoteMediaType extends AbstractType
         }
 
         $view->vars = array_replace($view->vars, [
+            'variation_group' => $options['variation_group'] ?? 'default',
             'allowed_visibilities' => array_intersect($options['allowed_visibilities'], $this->provider->getSupportedVisibilities()),
             'allowed_types' => array_intersect($options['allowed_types'], $this->provider->getSupportedTypes()),
             'allowed_tags' => array_intersect($options['allowed_tags'], $this->provider->listTags()),

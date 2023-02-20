@@ -74,6 +74,10 @@ class MyFormType extends AbstractType
 
 There are a few options available on form type that you can use to eg. limit browse/upload to specific types or folders:
 
+#### `variation_group`
+
+If provided, only variations from this group + default variations will be available in the cropping interface. By default, it's set to `default` variation group.
+
 #### `allowed_visibilities`
 
 You can specify an array of allowed visibilities (eg. `public`, `private` or `protected` etc.) which will limit the available resources only to those types when browsing. Also, you will be able to select only those visibilities in the visibility filter. If only one visibility is provided, the filter won't show at all.
