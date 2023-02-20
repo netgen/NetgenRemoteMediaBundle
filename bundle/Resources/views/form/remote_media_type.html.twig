@@ -2,7 +2,11 @@
     {% include '@NetgenRemoteMedia/js_config.html.twig' %}
 
     {% set field_id = id %}
-    {% set variation_group = variation_group|default('default') %}
+    {% set variation_group = 'default' %}
+
+    {% if form.vars.variation_group %}
+        {% set variation_group = form.vars.variation_group %}
+    {% endif %}
 
     {% set location = null %}
     {% set location_id = form.children.locationId.vars.value %}
