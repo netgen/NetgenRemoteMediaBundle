@@ -45,7 +45,11 @@ export default {
     background-color: $wild-sand;
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
     margin: 32px;
-    height: calc(100% - 64px);
+    height: calc(100vh - 174px);
+
+    .ng-spinner {
+      top: 30%;
+    }
 
     .title {
       padding: 15px;
@@ -111,6 +115,12 @@ export default {
           position: relative;
           top: 7px;
         }
+      }
+    }
+
+    .input-file-name-wrapper {
+      input[type="checkbox"] {
+        margin-right: 4px;
       }
     }
   }
@@ -254,13 +264,21 @@ export default {
   align-items: center;
 
   input[type=text], .v-select {
-    margin-right: 32px;
+    margin-right: 16px;
+  }
+
+  .v-select.vs--single.vs--searchable {
+    margin-right: 10px;
   }
 
   button.btn {
-    margin-left: 12px;
+    margin-left: 50%;
     font-size: 14px!important;
     font-family: Arial;
+  }
+
+  .vs__dropdown-toggle {
+    height: 37px;
   }
 }
 
