@@ -71,6 +71,12 @@ export default {
       height: calc(100% - 50px);
     }
   }
+
+  .img-placeholder {
+    img {
+      height: 100%;
+    }
+  }
 }
 </style>
 
@@ -85,6 +91,27 @@ export default {
       padding: 32px;
       top: 48px;
       transition: all .5s ease;
+
+      .mediaFacets {
+        input.vue-treeselect__input {
+          padding: 0 1em;
+        }
+
+        input.vs__search {
+          height: 34px;
+          padding: 0 .5em;
+        }
+      }
+
+      .media.new-folder {
+        position: relative;
+        bottom: 7px;
+
+        .btn.select-btn {
+          position: relative;
+          top: 7px;
+        }
+      }
     }
   }
 }
@@ -132,6 +159,20 @@ export default {
       font-family: Arial;
     }
   }
+
+  .ui.form input[type="text"] {
+    padding: 0 0 0 0.6rem!important;
+    height: 36px;
+    background: green!important;
+  }
+
+  input {
+    cursor: pointer;
+  }
+
+  .search input {
+    cursor: initial;
+  }
 }
 
 .media .btn.select-btn,
@@ -139,12 +180,6 @@ export default {
 .upload-from-disk label {
     font-size: 14px!important;
     font-family: Arial;
-}
-
-.vs__dropdown-toggle .vs__selected-options {
-  input[type="search"] {
-    padding: 3px 7px;
-  }
 }
 
 .ngremotemedia-image {
@@ -206,6 +241,14 @@ export default {
   }
 }
 
+.mediaFacets {
+  .form-field {
+    input {
+      height: 30px;
+    }
+  }
+}
+
 .input-file-name-wrapper {
   display: flex;
   align-items: center;
@@ -216,6 +259,18 @@ export default {
 
   button.btn {
     margin-left: 12px;
+    font-size: 14px!important;
+    font-family: Arial;
+  }
+}
+
+.folderGalery .items .media.new-folder {
+  input {
+    padding: 3px 6px;
+    margin-top: 0!important;
+    font-size: 12px;
+    position: relative;
+    top: 3px;
   }
 }
 </style>
