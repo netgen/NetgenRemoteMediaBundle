@@ -16,7 +16,7 @@
       <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.$root.$data.NgRemoteMediaTranslations.interactions_manage_media : this.$root.$data.NgRemoteMediaTranslations.interactions_select_media" />
 
       <div class="ngremotemedia-local-file-container">
-        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">
+        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk"  @click="handleScrollTop">
           <Label :for="fieldId + '_file_upload'">
             {{ this.$root.$data.NgRemoteMediaTranslations.interactions_quick_upload }}
           </Label>
@@ -148,6 +148,11 @@ export default {
     handleCropClicked() {
       this.cropModalOpen = true;
       this.prepareDomForModal();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     },
     handleRemoveMediaClicked() {
       this.selectedImage = {
@@ -209,6 +214,12 @@ export default {
       this.uploadModalOpen = true;
 
       this.newFile = this.$refs.fileUploadInput.files.item(0);
+    },
+    handleScrollTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
   },
   watch: {
