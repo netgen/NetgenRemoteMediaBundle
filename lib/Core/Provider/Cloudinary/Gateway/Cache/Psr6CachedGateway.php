@@ -341,9 +341,9 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         return $this->gateway->getVideoTag($remoteId, $options);
     }
 
-    public function getDownloadLink(CloudinaryRemoteId $remoteId): string
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        return $this->gateway->getDownloadLink($remoteId);
+        return $this->gateway->getDownloadLink($remoteId, $options);
     }
 
     public function invalidateResourceListCache(): void

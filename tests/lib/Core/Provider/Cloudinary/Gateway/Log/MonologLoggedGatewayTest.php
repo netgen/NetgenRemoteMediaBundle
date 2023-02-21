@@ -583,10 +583,14 @@ final class MonologLoggedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|raw|test.zip');
 
+        $options = [
+            'transformations' => [],
+        ];
+
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('getDownloadLink')
-            ->with($remoteId)
+            ->with($remoteId, $options)
             ->willReturn('https://cloudinary.com/test.zip');
 
         $this->loggerMock
@@ -596,7 +600,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
 
         self::assertSame(
             'https://cloudinary.com/test.zip',
-            $this->gateway->getDownloadLink($remoteId),
+            $this->gateway->getDownloadLink($remoteId, $options),
         );
     }
 }

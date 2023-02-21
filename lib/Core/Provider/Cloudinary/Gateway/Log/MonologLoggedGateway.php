@@ -166,10 +166,10 @@ final class MonologLoggedGateway implements GatewayInterface
         return $this->gateway->getVideoTag($remoteId, $options);
     }
 
-    public function getDownloadLink(CloudinaryRemoteId $remoteId): string
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string
     {
         $this->logger->info("[INTERNAL][FREE] getDownloadLink(\"{$remoteId->getRemoteId()}\") -> Cloudinary::cloudinary_url(\"{$remoteId->getRemoteId()}\")");
 
-        return $this->gateway->getDownloadLink($remoteId);
+        return $this->gateway->getDownloadLink($remoteId, $options);
     }
 }
