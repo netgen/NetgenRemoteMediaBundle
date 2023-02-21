@@ -9,7 +9,12 @@
         <div v-if="item.type === 'image' || (item.type==='video' && item.browseUrl!=='')" class="media-container">
           <img :src="item.browseUrl" :alt="item.filename" class="img"/>
           <Label class="filename">{{item.filename}}</Label>
-          <div class="size-description"><span class="format">{{item.format}}</span> - {{item.width}} x {{item.height}} - {{showFilesize(item)}}</div>
+          <div class="size-description">
+            <i v-if="item.visibility === 'public'" class="fa fa-solid fa-globe">&nbsp;&nbsp;</i>
+            <i v-if="item.visibility === 'private'" class="fa fa-eye-slash">&nbsp;&nbsp;</i>
+            <i v-if="item.visibility === 'protected'" class="fa fa-lock">&nbsp;&nbsp;</i>
+            <span class="format">{{item.format}}</span> - {{item.width}} x {{item.height}} - {{showFilesize(item)}}
+          </div>
         </div>
         <div v-else class="media-container">
           <span class="file-placeholder">
@@ -27,9 +32,9 @@
           </span>
           <Label class="filename">{{item.filename}}</Label>
           <div class="size-description">
-            <i v-if="item.visibility === 'public'" class="fa fa-solid fa-globe"></i>
-            <i v-if="item.visibility === 'private'" class="fa fa-eye-slash"></i>
-            <i v-if="item.visibility === 'protected'" class="fa fa-lock"></i>
+            <i v-if="item.visibility === 'public'" class="fa fa-solid fa-globe">&nbsp;&nbsp;</i>
+            <i v-if="item.visibility === 'private'" class="fa fa-eye-slash">&nbsp;&nbsp;</i>
+            <i v-if="item.visibility === 'protected'" class="fa fa-lock">&nbsp;&nbsp;</i>
             <span class="format">{{item.format}}</span> - {{showFilesize(item)}}
           </div>
         </div>
@@ -75,7 +80,7 @@ export default {
     }
 
     .media {
-      width: 177px;
+      width: 190px;
       min-height: 182px;
       max-height: 190px;
       padding: 8px;
@@ -92,7 +97,7 @@ export default {
         display: block;
         margin-bottom: 4px;
         object-fit: cover;
-        height: 92px;
+        height: 100px;
         width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -100,7 +105,7 @@ export default {
 
       .file-placeholder {
         position: relative;
-        height: 92px;
+        height: 95px;
         display: block;
         margin-bottom: 4px;
 

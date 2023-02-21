@@ -92,7 +92,37 @@
     }
   }
 
-  .image-wrap{
+  .image-wrap:has(.icon-doc) {
+    position: relative;
+    height: 200px;
+    max-width: 400px;
+    display: block;
+    margin-bottom: 4px;
+
+    &:before {
+      position: absolute;
+      content: '';
+    }
+
+    &:before {
+      background-color: rgba(0, 0, 0, .7);
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+  }
+
+  .image-wrap {
+    .icon-doc {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: $white;
+      font-size: 70px;
+    }
+
     img {
       max-width: 100%;
     }

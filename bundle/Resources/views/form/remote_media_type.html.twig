@@ -17,13 +17,12 @@
     <script type="text/javascript">
         NgRemoteMediaSelectedImage_{{ field_id }} = {
             id: "{% if location %}{{ location.remoteResource.remoteId }}{% endif %}",
-            name: "{% if location %}{{ location.remoteResource.remoteId }}{% endif %}",
+            name: "{% if location %}{{ location.remoteResource.name }}{% endif %}",
             type: "{% if location %}{{ location.remoteResource.type }}{% endif %}",
-            mediaType: "{% if location %}{{ location.remoteResource.type }}{% endif %}",
             format: "{% if location and location.remoteResource.metadata.format is defined %}{{ location.remoteResource.metadata.format }}{% endif %}",
             url: "{% if location %}{{ location.remoteResource.url }}{% endif %}",
-            browse_url: "{% if location %}{{ ngrm_remote_resource_raw_variation(location.remoteResource, [{'crop': 'fit', 'width': 160, 'height': 120}]).url }}{% endif %}",
-            previewUrl: "{% if location %}{{ location.remoteResource.url }}{% endif %}",
+            browseUrl: "{% if location %}{{ ngrm_remote_resource_variation(location, 'ngrm_interface', 'browse').url }}{% endif %}",
+            previewUrl: "{% if location %}{{ ngrm_remote_resource_variation(location, 'ngrm_interface', 'preview').url }}{% endif %}",
             alternateText: "{% if location %}{{ location.remoteResource.altText }}{% endif %}",
             tags: [{% if location %}{% for tag in location.remoteResource.tags %}"{{ tag }}"{% if not loop.last %},{% endif %}{% endfor %}{% endif %}],
             size: {% if location %}{{ location.remoteResource.size }}{% else %}0{% endif %},
