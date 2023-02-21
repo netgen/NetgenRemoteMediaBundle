@@ -274,6 +274,10 @@ export default {
 
   .v-select.vs--single.vs--searchable {
     margin-right: 10px;
+
+    input.vs__search {
+      background: transparent;
+    }
   }
 
   button.btn {
