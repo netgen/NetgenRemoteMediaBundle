@@ -145,6 +145,7 @@ const observerCallback = () => {
     }
 };
 
+const targetNode = document.body ? document.body : document;
 const config = { attributes: true, childList: true, subtree: true };
 const observer = new MutationObserver(observerCallback);
 
@@ -152,8 +153,8 @@ if (
   document.readyState === 'complete' ||
   (document.readyState !== 'loading' && !document.documentElement.doScroll)
 ) {
-  observer.observe(document.body, config);
+  observer.observe(targetNode, config);
 
 } else {
-  observer.observe(document.body, config);
+  observer.observe(targetNode, config);
 }
