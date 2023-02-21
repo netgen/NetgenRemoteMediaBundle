@@ -75,7 +75,7 @@ ngrm:
                 button:
                     select: 'Select'
                     create: 'Create'
-                    save: 'Save'
+                    upload: 'Upload'
                     use_existing_resource: 'use existing resource'
                 checkbox:
                     overwrite: 'Overwrite'
