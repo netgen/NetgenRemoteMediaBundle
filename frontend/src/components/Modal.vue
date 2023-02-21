@@ -48,7 +48,7 @@ export default {
     height: calc(100vh - 174px);
 
     .ng-spinner {
-      top: 30%;
+      position: absolute;
     }
 
     .title {
@@ -182,6 +182,11 @@ export default {
 
   .search input {
     cursor: initial;
+  }
+
+  .vs--single .vs__selected {
+    position: absolute;
+    top: 3px;
   }
 }
 
