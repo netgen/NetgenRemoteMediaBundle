@@ -6,6 +6,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller\Resource;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as SymfonyAbstractController;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,20 +31,16 @@ abstract class AbstractController extends SymfonyAbstractController
      */
     protected function formatResource(RemoteResource $resource): array
     {
-        $transformation = [
-            'crop' => 'fit',
-            'width' => 160,
-            'height' => 120,
-        ];
+        $location = new RemoteResourceLocation($resource);
 
         $browseUrl = '';
         $previewUrl = '';
         if ($resource->getType() === RemoteResource::TYPE_IMAGE) {
-            $browseUrl = $this->provider->buildRawVariation($resource, [$transformation])->getUrl();
-            $previewUrl = $resource->getUrl();
+            $browseUrl = $this->provider->buildVariation($location, 'ngrm_interface', 'browse')->getUrl();
+            $previewUrl = $this->provider->buildVariation($location, 'ngrm_interface', 'preview')->getUrl();
         } elseif ($resource->getType() === RemoteResource::TYPE_VIDEO) {
-            $browseUrl = $this->provider->buildVideoThumbnailRawVariation($resource, [$transformation])->getUrl();
-            $previewUrl = $this->provider->buildVideoThumbnail($resource)->getUrl();
+            $browseUrl = $this->provider->buildVideoThumbnailVariation($location, 'ngrm_interface', 'browse')->getUrl();
+            $previewUrl = $this->provider->buildVideoThumbnailVariation($location, 'ngrm_interface', 'preview')->getUrl();
         }
 
         return [

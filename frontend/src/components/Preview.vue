@@ -1,8 +1,18 @@
 <template>
   <div v-if="selectedImage.id" class="ngremotemedia-image">
     <div class="image-wrap">
-      <img v-if="selectedImage.type!=='raw'" :src="selectedImage.previewUrl" ref="image" />
-      <i v-else :class="nonImagePreviewClass" class="ng-icon big"></i>
+      <img v-if="selectedImage.type==='image' || selectedImage.type==='video'" :src="selectedImage.previewUrl" ref="image" />
+      <span v-else class="icon-doc">
+        <i v-if="selectedImage.format==='pdf'" class="fa fa-file-pdf-o"></i>
+        <i v-else-if="selectedImage.format==='zip' || selectedImage.format==='rar'" class="fa fa-file-archive-o"></i>
+        <i v-else-if="selectedImage.format==='ppt' || selectedImage.format==='pptx'" class="fa fa-file-powerpoint-o"></i>
+        <i v-else-if="selectedImage.format==='doc' || selectedImage.format==='docx'" class="fa fa-file-word-o"></i>
+        <i v-else-if="selectedImage.format==='xls' || selectedImage.format==='xlsx'" class="fa fa-file-excel-o"></i>
+        <i v-else-if="selectedImage.format==='aac' || selectedImage.format==='aiff' || selectedImage.format==='amr' || selectedImage.format==='flac'|| selectedImage.format==='m4a'
+                  || selectedImage.format==='mp3' || selectedImage.format==='ogg' || selectedImage.format==='opus' || selectedImage.format==='wav'" class="fa fa-file-audio-o"></i>
+        <i v-else-if="selectedImage.format==='txt'" class="fa fa-lg fa-file-text"></i>
+        <i v-else class="fa fa-file"></i>
+      </span>
     </div>
 
     <div class="image-meta">
