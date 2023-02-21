@@ -18,12 +18,13 @@
           label="name"
           v-model="visibility"
           :reduce="option => option.id"
+          :clearable=false
         />
 
         <input type="checkbox" v-model="overwrite" id="ngrm-upload-overwrite">
         <label for="ngrm-upload-overwrite">{{ this.$root.$data.NgRemoteMediaTranslations.upload_checkbox_overwrite }}</label>
         <button type="button" class="btn btn-blue" :disabled="filename === '' || visibility === ''" @click="upload">
-          {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_save }}
+          {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_upload }}
         </button>
       </div>
     </div>
