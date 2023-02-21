@@ -197,6 +197,12 @@ export default {
       this.mediaModalOpen = true;
       this.prepareDomForModal();
       this.fetchFacets();
+
+      // Scroll to top to avoid modal being not visible when the Select Media button has been clicked on a long page
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     },
     handleFileInputChange() {
       this.fetchFacets();
