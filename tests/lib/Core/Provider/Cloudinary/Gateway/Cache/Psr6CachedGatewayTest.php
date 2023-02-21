@@ -1561,15 +1561,19 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|raw|test.zip');
 
+        $options = [
+            'transformations' => [],
+        ];
+
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('getDownloadLink')
-            ->with($cloudinaryId)
+            ->with($cloudinaryId, $options)
             ->willReturn('https://cloudinary.com/test.zip');
 
         self::assertSame(
             'https://cloudinary.com/test.zip',
-            $this->taggableCachedGateway->getDownloadLink($cloudinaryId),
+            $this->taggableCachedGateway->getDownloadLink($cloudinaryId, $options),
         );
     }
 

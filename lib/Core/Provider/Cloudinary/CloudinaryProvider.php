@@ -170,10 +170,16 @@ final class CloudinaryProvider extends AbstractProvider
         );
     }
 
-    public function generateDownloadLink(RemoteResource $resource): string
+    public function generateDownloadLink(RemoteResource $resource, array $transformations = []): string
     {
+        $options = [];
+        if (count($transformations) > 0) {
+            $options['transformation'] = $transformations;
+        }
+
         return $this->gateway->getDownloadLink(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
         );
     }
 
@@ -374,12 +380,12 @@ final class CloudinaryProvider extends AbstractProvider
 
     protected function generateDocumentTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
-        return $this->generateDownloadTag($resource, $htmlAttributes);
+        return $this->generateDownloadTag($resource, $transformations, $htmlAttributes);
     }
 
-    protected function generateDownloadTag(RemoteResource $resource, array $htmlAttributes = []): string
+    protected function generateDownloadTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
-        $downloadLink = $this->generateDownloadLink($resource);
+        $downloadLink = $this->generateDownloadLink($resource, $transformations);
         $filename = basename($downloadLink);
 
         unset($htmlAttributes['href']);

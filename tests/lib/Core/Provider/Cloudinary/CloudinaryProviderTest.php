@@ -562,15 +562,25 @@ final class CloudinaryProviderTest extends AbstractTest
             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
         ]);
 
+        $transformations = [
+            'crop' => 'fit',
+            'width' => 160,
+            'height' => 120,
+        ];
+
+        $expectedOptions = [
+            'transformation' => $transformations,
+        ];
+
         $this->gateway
             ->expects(self::once())
             ->method('getDownloadLink')
-            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()))
+            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $expectedOptions)
             ->willReturn('https://cloudinary.com/test/upload/images/image.jpg');
 
         self::assertSame(
             'https://cloudinary.com/test/upload/images/image.jpg',
-            $this->cloudinaryProvider->generateDownloadLink($resource),
+            $this->cloudinaryProvider->generateDownloadLink($resource, $transformations),
         );
     }
 

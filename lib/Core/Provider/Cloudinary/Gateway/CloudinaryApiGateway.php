@@ -346,13 +346,11 @@ final class CloudinaryApiGateway implements GatewayInterface
         return cl_video_tag($remoteId->getResourceId(), $options);
     }
 
-    public function getDownloadLink(CloudinaryRemoteId $remoteId): string
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $options = [
-            'type' => $remoteId->getType(),
-            'resource_type' => $remoteId->getResourceType(),
-            'secure' => true,
-        ];
+        $options['type'] = $remoteId->getType();
+        $options['resource_type'] = $remoteId->getResourceType();
+        $options['secure'] = true;
 
         return $this->cloudinary->cloudinary_url($remoteId->getResourceId(), $options);
     }

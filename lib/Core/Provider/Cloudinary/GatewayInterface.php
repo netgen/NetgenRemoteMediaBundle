@@ -78,5 +78,5 @@ interface GatewayInterface
 
     public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = []): string;
 
-    public function getDownloadLink(CloudinaryRemoteId $remoteId): string;
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string;
 }
