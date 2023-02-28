@@ -97,9 +97,6 @@ export default {
     handleUploadModalClose() {
       this.uploadModalOpen = false;
     },
-    handleEditorInsertModalClose() {
-      this.editorInsertModalOpen = false;
-    },
     handleMediaSelected(item) {
       this.selectedImage = {
         id: item.remoteId,
