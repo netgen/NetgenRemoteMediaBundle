@@ -2,33 +2,34 @@
   <div>
     <preview
         :field-id="fieldId"
+        :config="config"
         :selected-image="selectedImage"
         ref="preview"
     ></preview>
 
     <div :id="'ngremotemedia-buttons-'+fieldId" class="ngremotemedia-buttons" :data-id="fieldId">
 
-      <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.remoteId" v-model="selectedImage.id" class="media-id" />
+      <input type="hidden" :name="this.config.inputFields.remoteId" v-model="selectedImage.id" class="media-id" />
 
-      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_scale" >
-      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_remove_media" />
+      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.config.translations.interactions_scale" >
+      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.config.translations.interactions_remove_media" />
 
-      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.$root.$data.NgRemoteMediaTranslations.interactions_manage_media : this.$root.$data.NgRemoteMediaTranslations.interactions_select_media" />
+      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media" />
 
       <div class="ngremotemedia-local-file-container">
-        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk"  @click="handleScrollTop">
+        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" @click="handleScrollTop">
           <Label :for="fieldId + '_file_upload'">
-            {{ this.$root.$data.NgRemoteMediaTranslations.interactions_quick_upload }}
+            {{ this.config.translations.interactions_quick_upload }}
           </Label>
-          <input hidden :id="fieldId + '_file_upload'" :name="this.$root.$data.NgRemoteMediaInputFields.new_file" type="file" @change="handleFileInputChange" ref="fileUploadInput">
+          <input hidden :id="fieldId + '_file_upload'" :name="this.config.inputFields.new_file" type="file" @change="handleFileInputChange" ref="fileUploadInput">
         </button>
       </div>
     </div>
 
-    <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
-    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="this.$root.$data.NgRemoteMediaAvailableVariations"></crop-modal>
-    <media-modal :tags="tags" :types="types" :visibilities="visibilities" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-    <upload-modal v-if="uploadModalOpen" :visibilities="visibilities" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
+    <input type="hidden" :name="this.config.inputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
+    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :translations="config.translations" :selected-image="selectedImage" :available-variations="this.config.availableVariations"></crop-modal>
+    <media-modal :config="config" :tags="tags" :types="types" :visibilities="visibilities" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <upload-modal v-if="uploadModalOpen" :config="config" :visibilities="visibilities" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
   </div>
 </template>
 
@@ -52,7 +53,7 @@ export default {
   },
   computed: {
     isCroppable() {
-      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.$root.$data.NgRemoteMediaAvailableVariations).length > 0;
+      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.config.availableVariations).length > 0;
     },
     stringifiedVariations() {
       return JSON.stringify(
@@ -166,7 +167,7 @@ export default {
         height: 0,
         width: 0
       };
-      this.$refs.fileInput.value = null;
+      this.$refs.fileUploadInput.value = null;
     },
     async fetchFacets() {
       const response = await fetch(this.config.paths.load_facets);
@@ -176,19 +177,19 @@ export default {
       this.visibilities = [];
 
       data.types.forEach((type) => {
-        if(this.$root.$data.NgRemoteMediaOptions.allowedTypes.indexOf(type.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedTypes.length === 0) {
+        if(this.config.allowedTypes.indexOf(type.id) !== -1 || this.config.allowedTypes.length === 0) {
           this.types.push(type);
         }
       });
 
       data.tags.forEach((tag) => {
-        if(this.$root.$data.NgRemoteMediaOptions.allowedTags.indexOf(tag.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedTags.length === 0) {
+        if(this.config.allowedTags.indexOf(tag.id) !== -1 || this.config.allowedTags.length === 0) {
           this.tags.push(tag);
         }
       });
 
       data.visibilities.forEach((visibility) => {
-        if(this.$root.$data.NgRemoteMediaOptions.allowedVisibilities.indexOf(visibility.id) !== -1 || this.$root.$data.NgRemoteMediaOptions.allowedVisibilities.length === 0) {
+        if(this.config.allowedVisibilities.indexOf(visibility.id) !== -1 || this.config.allowedVisibilities.length === 0) {
           this.visibilities.push(visibility);
         }
       });

@@ -1,67 +1,28 @@
 {% block remote_media_widget %}
-    {% include '@NetgenRemoteMedia/js_config.html.twig' %}
-
-    {% set field_id = id %}
-    {% set variation_group = 'default' %}
-
-    {% if form.vars.variation_group %}
-        {% set variation_group = form.vars.variation_group %}
-    {% endif %}
-
-    {% set location = null %}
-    {% set location_id = form.children.locationId.vars.value %}
-    {% if location_id %}
-        {% set location = ngrm_remote_resource_location(location_id) %}
-    {% endif %}
-
-    <script type="text/javascript">
-        NgRemoteMediaSelectedImage_{{ field_id }} = {
-            id: "{% if location %}{{ location.remoteResource.remoteId }}{% endif %}",
-            name: "{% if location %}{{ location.remoteResource.name }}{% endif %}",
-            type: "{% if location %}{{ location.remoteResource.type }}{% endif %}",
-            format: "{% if location and location.remoteResource.metadata.format is defined %}{{ location.remoteResource.metadata.format }}{% endif %}",
-            url: "{% if location %}{{ location.remoteResource.url }}{% endif %}",
-            browseUrl: "{% if location %}{{ ngrm_remote_resource_variation(location, 'ngrm_interface', 'browse').url }}{% endif %}",
-            previewUrl: "{% if location %}{{ ngrm_remote_resource_variation(location, 'ngrm_interface', 'preview').url }}{% endif %}",
-            alternateText: "{% if location %}{{ location.remoteResource.altText }}{% endif %}",
-            tags: [{% if location %}{% for tag in location.remoteResource.tags %}"{{ tag }}"{% if not loop.last %},{% endif %}{% endfor %}{% endif %}],
-            size: {% if location %}{{ location.remoteResource.size }}{% else %}0{% endif %},
-            variations: {% if location %}{{ form.vars.value.cropSettings|raw }}{% else %}[]{% endif %},
-            height: {% if location and location.remoteResource.metadata.width is defined %}{{ location.remoteResource.metadata.width }}{% else %}0{% endif %},
-            width: {% if location and location.remoteResource.metadata.height is defined %}{{ location.remoteResource.metadata.height }}{% else %}0{% endif %}
-        };
-
-        NgRemoteMediaInputFields_{{ field_id }} = {
-            {% for child in form.children %}
-                {% if child.vars.name == 'tags' %}
-                    '{{ child.vars.name }}': '{{ child.vars.full_name }}[]'{% if not loop.last %},{% endif %}
-                {% else %}
-                    '{{ child.vars.name }}': '{{ child.vars.full_name }}'{% if not loop.last %},{% endif %}
-                {% endif %}
-            {% endfor %}
-        };
-
-        NgRemoteMediaOptions_{{ field_id }} = {
-            allowedVisibilities: [{% for visibility in form.vars.allowed_visibilities|default([]) %}"{{ visibility }}"{% if not loop.last %},{% endif %}{% endfor %}],
-            allowedTypes: [{% for type in form.vars.allowed_types|default([]) %}"{{ type }}"{% if not loop.last %},{% endif %}{% endfor %}],
-            allowedTags: [{% for tag in form.vars.allowed_tags|default([]) %}"{{ tag }}"{% if not loop.last %},{% endif %}{% endfor %}],
-            parentFolder: {% if form.vars.parent_folder %}{id: "{{ form.vars.parent_folder.id }}", label: "{{ form.vars.parent_folder.label }}", children: []}{% else %}null{% endif %},
-            folder: {% if form.vars.folder %}{id: "{{ form.vars.folder.id }}", label: "{{ form.vars.folder.label }}", children: []}{% else %}null{% endif %},
-            uploadContext: { {% for key,value in form.vars.upload_context|default([]) %}{{ key }}: "{{ value }}"{% if not loop.last %},{% endif %}{% endfor %} }
-        };
-
-        NgRemoteMediaAvailableVariations_{{ field_id }} = {{ ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format|json_encode|raw }};
-        NgRemoteMediaAvailableEditorVariations_{{ field_id }} = {{ ngrm_available_variations(variation_group)|keys|json_encode|raw }};
-    </script>
+    {% set input_fields = {} %}
+    {% for child in form.children %}
+        {% if child.vars.name == 'tags' %}
+            {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name ~ '[]'}) %}
+        {% else %}
+            {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
+        {% endif %}
+    {% endfor %}
 
     {{ form_widget(form.locationId) }}
     {{ form_widget(form.source) }}
 
-    <div class="ngremotemedia-container" data-id="{{ field_id }}" v-init:selected-image="NgRemoteMediaSelectedImage" v-init:config="NgRemoteMediaConfig">
-        <interactions
-            field-id="{{ field_id }}"
-            :config="config"
-            :selected-image="selectedImage"
-        ></interactions>
-    </div>
+    {% include '@NetgenRemoteMedia/app/interactions.html.twig' with {
+        'field_id': id,
+        'location_id': form.children.locationId.vars.value,
+        'variation_group': form.vars.variation_group ?: 'default',
+        'variation_settings_json': form.vars.value ? form.vars.value.cropSettings : '{}',
+        'input_fields': input_fields,
+        'available_variations': ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format,
+        'allowed_visibilities': form.vars.allowed_visibilities|default([]),
+        'allowed_types': form.vars.allowed_types|default([]),
+        'allowed_tags': form.vars.allowed_tags|default([]),
+        'parent_folder': form.vars.parent_folder,
+        'folder': form.vars.folder,
+        'upload_context': form.vars.upload_context|default([])
+    } %}
 {% endblock %}

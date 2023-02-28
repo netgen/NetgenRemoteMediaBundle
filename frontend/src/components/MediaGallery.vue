@@ -1,9 +1,9 @@
 <template>
-  <div class="mediaGalery">
+  <div class="media-gallery">
     <div :class="loading ? 'items loading' : 'items'">
       <div v-if="!media.length" class="folder-empty">
         <span class="ngrm-icon-folder"></span>
-        <span><strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_empty_folder }}</strong>{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_upload_media }}</span>
+        <span><strong>{{ this.translations.media_gallery_empty_folder }}</strong>{{ this.translations.media_gallery_upload_media }}</span>
       </div>
       <div class="media" v-for="item in media" :key="item.id" :class="{selected: item.remoteId === selectedMediaId}">
         <div v-if="item.type === 'image' || (item.type==='video' && item.browseUrl!=='')" class="media-container">
@@ -38,12 +38,12 @@
             <span class="format">{{item.format}}</span> - {{showFilesize(item)}}
           </div>
         </div>
-        <button type="button" @click="$emit('media-selected', item)" class="btn btn-blue select-btn">{{ _self.$root.$data.NgRemoteMediaTranslations.media_galery_select }}</button>
+        <button type="button" @click="$emit('media-selected', item)" class="btn btn-blue select-btn">{{ _self.translations.media_gallery_select }}</button>
       </div>
     </div>
 
     <div class="load-more-wrapper" v-if="canLoadMore">
-      <button type="button" class="btn btn-blue" @click="$emit('loadMore')">{{ this.$root.$data.NgRemoteMediaTranslations.media_galery_load_more }}</button>
+      <button type="button" class="btn btn-blue" @click="$emit('loadMore')">{{ this.translations.media_gallery_load_more }}</button>
     </div>
   </div>
 </template>
@@ -52,8 +52,8 @@
 import prettyBytes from "pretty-bytes";
 
 export default {
-  name: "MediaGalery",
-  props: ["media", "canLoadMore", "onLoadMore", "selectedMediaId", "loading"],
+  name: "MediaGallery",
+  props: ["translations", "media", "canLoadMore", "onLoadMore", "selectedMediaId", "loading"],
   methods: {
     showFilesize(item) {
       return prettyBytes(item.size);
@@ -66,7 +66,7 @@ export default {
 <style scoped lang="scss">
 @import "../scss/variables";
 
-.mediaGalery {
+.media-gallery {
   position: relative;
   flex-grow: 1;
 

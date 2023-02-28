@@ -2,64 +2,66 @@
   <div class="mediaFacets">
     <div class="body">
       <div v-if="types.length > 1" class="form-field">
-        <label for="type">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_type }}</label>
+        <label for="type">{{ this.config.translations.browse_select_type }}</label>
         <v-select
             :options="types"
             label="name"
             v-model="selectedType"
             @input="handleTypeChange"
             :reduce="option => option.id"
-            :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_types : this.$root.$data.NgRemoteMediaTranslations.browse_all_types"
+            :placeholder="facetsLoading ? this.config.translations.browse_loading_types : this.config.translations.browse_all_types"
         />
       </div>
 
-      <div v-if="folders && !this.$root.$data.NgRemoteMediaOptions.folder" class="form-field">
-        <label for="folder">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_folder }}</label>
+      <div v-if="folders && !this.config.folder" class="form-field">
+        <label for="folder">{{ this.config.translations.browse_select_folder }}</label>
         <treeselect
           :multiple="false"
           :options="folders"
           :load-options="loadSubFolders"
           v-model="selectedFolder"
-          :value="this.$root.$data.NgRemoteMediaOptions.parentFolder ? this.$root.$data.NgRemoteMediaOptions.parentFolder.id : ''"
+          :value="this.config.parentFolder ? this.config.parentFolder.id : ''"
           @input="handleFolderChange"
-          :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_folders : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
+          :placeholder="facetsLoading ? this.config.translations.browse_loading_folders : this.config.translations.browse_all_folders"
           :disabled="facetsLoading"
+          :clearable=true
           :beforeClearAll="clearFolderField"
+          :defaultExpandLevel="1"
         />
       </div>
 
       <div v-if="tags.length > 1" class="form-field">
-        <label for="tag">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_tag }}</label>
+        <label for="tag">{{ this.config.translations.browse_select_tag }}</label>
         <v-select
             :options="tags"
             label="name"
             v-model="tag"
             @input="handleTagChange"
             :reduce="option => option.id"
-            :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_tags : this.$root.$data.NgRemoteMediaTranslations.browse_all_tags"
+            :placeholder="facetsLoading ? this.config.translations.browse_loading_tags : this.config.translations.browse_all_tags"
             :disabled="facetsLoading"
         />
       </div>
 
       <div v-if="visibilities.length > 1" class="form-field">
-        <label for="visibilities">{{ this.$root.$data.NgRemoteMediaTranslations.browse_select_visibility }}</label>
+        <label for="visibilities">{{ this.config.translations.browse_select_visibility }}</label>
         <v-select
           :options="visibilities"
           label="name"
           v-model="visibility"
           @input="handleVisibilityChange"
           :reduce="option => option.id"
-          :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_visibilities : this.$root.$data.NgRemoteMediaTranslations.browse_all_visibilities"
+          :placeholder="facetsLoading ? this.config.translations.browse_loading_visibilities : this.config.translations.browse_all_visibilities"
           :disabled="facetsLoading"
         />
       </div>
 
       <div class="search-wrapper">
-        <span class="search-label">{{ this.$root.$data.NgRemoteMediaTranslations.search }}</span>
+        <span class="search-label">{{ this.config.translations.search }}</span>
         <div class="search">
           <input
             type="text"
-            :placeholder="this.$root.$data.NgRemoteMediaTranslations.search_placeholder"
+            :placeholder="this.config.translations.search_placeholder"
             v-model="query"
             @keyup="handleQueryChange"
             @keydown.enter.prevent="null"
@@ -88,7 +90,7 @@ import {encodeQueryData} from "@/utility/utility";
 
 export default {
   name: "MediaFacets",
-  props: ["tags", "types", "visibilities", "facets", "facetsLoading"],
+  props: ["config", "tags", "types", "visibilities", "facets", "facetsLoading"],
   data() {
     return {
       TYPE_ALL,
@@ -99,8 +101,8 @@ export default {
       FOLDER_ROOT,
       TAG_ALL,
       folders: [{
-        id: this.$root.$data.NgRemoteMediaOptions.parentFolder ? this.$root.$data.NgRemoteMediaOptions.parentFolder.id : FOLDER_ROOT,
-        label: this.$root.$data.NgRemoteMediaOptions.parentFolder ? this.$root.$data.NgRemoteMediaOptions.parentFolder.label : FOLDER_ROOT,
+        id: this.config.parentFolder ? this.config.parentFolder.id : FOLDER_ROOT,
+        label: this.config.parentFolder ? this.config.parentFolder.label : FOLDER_ROOT,
         children: null
       }],
       selectedFolder: this.facets.folder,
@@ -112,8 +114,8 @@ export default {
   },
   methods: {
     clearFolderField() {
-      if (this.$root.$data.NgRemoteMediaOptions.parentFolder) {
-        this.selectedFolder = this.$root.$data.NgRemoteMediaOptions.parentFolder.id;
+      if (this.config.parentFolder) {
+        this.selectedFolder = this.config.parentFolder.id;
 
         return false;
       }
@@ -126,8 +128,8 @@ export default {
     handleFolderChange(value) {
       this.selectedFolder = value;
       if (typeof value === 'undefined' || !value) {
-        this.selectedFolder = this.$root.$data.NgRemoteMediaOptions.parentFolder
-          ? this.$root.$data.NgRemoteMediaOptions.parentFolder.id
+        this.selectedFolder = this.config.parentFolder
+          ? this.config.parentFolder.id
           : value;
       }
       this.$emit("change", { folder: this.selectedFolder });
@@ -147,7 +149,7 @@ export default {
         folder: node.id === '(root)' ? '' : node.id,
       };
 
-      const response = await fetch(this.$root.$data.config.paths.load_folders+'?'+encodeQueryData(query));
+      const response = await fetch(this.config.paths.load_folders+'?'+encodeQueryData(query));
       node.children = await response.json();
       data.callback();
     }

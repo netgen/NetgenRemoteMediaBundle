@@ -14,14 +14,33 @@ const initVue = (el) => {
           init: initDirective
         },
         data: {
-            NgRemoteMediaTranslations,
-            NgRemoteMediaSelectedImage : window[`NgRemoteMediaSelectedImage_${el.dataset.id}`],
-            NgRemoteMediaConfig,
-            NgRemoteMediaInputFields : window[`NgRemoteMediaInputFields_${el.dataset.id}`],
-            NgRemoteMediaOptions : window[`NgRemoteMediaOptions_${el.dataset.id}`],
-            NgRemoteMediaAvailableVariations : window[`NgRemoteMediaAvailableVariations_${el.dataset.id}`],
-            caption: '',
-            cssClass: '',
+            config: {
+                paths: {
+                    browse_resources: '/resource/browse',
+                    upload_resources: '/resource/upload',
+                    load_facets: '/facets/load',
+                    load_folders: '/folder/load',
+                    create_folder: '/folder/create',
+                },
+                translations: {},
+                inputFields: {
+                    'locationId': 'locationId',
+                    'remoteId': 'remoteId',
+                    'type': 'type',
+                    'altText': 'altText',
+                    'caption': 'caption',
+                    'tags': 'tags[]',
+                    'cropSettings': 'cropSettings',
+                    'source': 'source',
+                },
+                availableVariations: [],
+                allowedVisibilities: [],
+                allowedTypes: [],
+                allowedTags: [],
+                parentFolder: null,
+                folder: null,
+                uploadContext: {},
+            },
             selectedImage: {
                 id: '',
                 name: '',
@@ -37,10 +56,6 @@ const initVue = (el) => {
                 height: 0,
                 width: 0
             },
-            config: {
-                paths: {},
-                availableVariations: {}
-            }
         },
         components: {
             'interactions': Interactions

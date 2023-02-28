@@ -1,8 +1,8 @@
 <template>
-  <div class="folderGalery">
+  <div class="folder-gallery">
     <div :class="loading ? 'items loading' : 'items'">
       <div class="breadcrumbs">
-        <span>{{ this.$root.$data.NgRemoteMediaTranslations.upload_breadcrumbs_info }} </span>
+        <span>{{ this.config.translations.upload_breadcrumbs_info }} </span>
         <span v-for="(folder, index) in breadcrumbs" :key="index">
           <span v-if="index !== 0"> / </span>
           <a v-if="index !== breadcrumbs.length - 1" href="#" @click="openFolder(folder.id)">
@@ -14,7 +14,7 @@
 
       <div v-if="folders.length > 0 || allowCreate" class="info">
         <i class="fa fa-info-circle"></i>
-        {{ this.$root.$data.NgRemoteMediaTranslations.upload_info_text }}
+        {{ this.config.translations.upload_info_text }}
       </div>
 
       <div class="media" v-for="folder in folders" :key="folder.id" :class="{selected: folder.id === selectedFolder}">
@@ -27,7 +27,7 @@
           <Label class="filename">{{folder.label}}</Label>
         </div>
         <button type="button" @click="$emit('change', folder.id)" class="btn btn-blue select-btn">
-          {{ _self.$root.$data.NgRemoteMediaTranslations.upload_button_select }}
+          {{ _self.config.translations.upload_button_select }}
         </button>
       </div>
       <div v-if="allowCreate" class="media new-folder">
@@ -37,10 +37,10 @@
               <i class="fa fa-folder"></i>
             </span>
           </span>
-          <input type="text" v-model="newFolder" :placeholder="this.$root.$data.NgRemoteMediaTranslations.upload_placeholder_new_folder"/>
+          <input type="text" v-model="newFolder" :placeholder="this.config.translations.upload_placeholder_new_folder"/>
         </div>
         <button type="button" class="btn btn-blue select-btn" :disabled="newFolder === null" @click="createNewFolder">
-          {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_create }}
+          {{ this.config.translations.upload_button_create }}
         </button>
       </div>
     </div>
@@ -56,7 +56,7 @@ import {FOLDER_ROOT} from "../constants/facets";
 
 export default {
   name: "SelectFolder",
-  props: ["selectedFolder"],
+  props: ["config", "selectedFolder"],
   data() {
     return {
       folders: [],
@@ -73,7 +73,7 @@ export default {
     },
     async loadSubFolders(folderPath) {
       this.loading = true;
-      var ajaxUrl = this.$root.$data.config.paths.load_folders;
+      var ajaxUrl = this.config.paths.load_folders;
       if (folderPath) {
         const query = {
           folder: folderPath === FOLDER_ROOT ? '' : folderPath,
@@ -94,7 +94,7 @@ export default {
 
       let rootFolder = {
         'id': null,
-        'label': this.$root.$data.NgRemoteMediaTranslations.upload_root_folder
+        'label': this.config.translations.upload_root_folder
       };
 
       if (folderPath === null) {
@@ -107,19 +107,19 @@ export default {
       var pathArray = [];
 
       let parentFolders = [];
-      if (this.$root.$data.NgRemoteMediaOptions.parentFolder) {
-        parentFolders = this.$root.$data.NgRemoteMediaOptions.parentFolder.id.split('/');
+      if (this.config.parentFolder) {
+        parentFolders = this.config.parentFolder.id.split('/');
         rootFolder = {
-          'id': this.$root.$data.NgRemoteMediaOptions.parentFolder.id,
-          'label': this.$root.$data.NgRemoteMediaOptions.parentFolder.label
+          'id': this.config.parentFolder.id,
+          'label': this.config.parentFolder.label
         };
       }
 
-      if (this.$root.$data.NgRemoteMediaOptions.folder) {
-        parentFolders = this.$root.$data.NgRemoteMediaOptions.folder.id.split('/');
+      if (this.config.folder) {
+        parentFolders = this.config.folder.id.split('/');
         rootFolder = {
-          'id': this.$root.$data.NgRemoteMediaOptions.folder.id,
-          'label': this.$root.$data.NgRemoteMediaOptions.folder.label
+          'id': this.config.folder.id,
+          'label': this.config.folder.label
         };
       }
 
@@ -145,7 +145,7 @@ export default {
       }
       data.append('folder', this.newFolder);
 
-      await axios.post(this.$root.$data.config.paths.create_folder, data);
+      await axios.post(this.config.paths.create_folder, data);
       this.folders.push({
         'id': this.selectedFolder !== null ? this.selectedFolder + '/' + this.newFolder : this.newFolder,
         'label': this.newFolder
@@ -155,8 +155,8 @@ export default {
     }
   },
   created() {
-    if (this.$root.$data.NgRemoteMediaOptions.folder) {
-      folder = this.$root.$data.NgRemoteMediaOptions.folder.id;
+    if (this.config.folder) {
+      folder = this.config.folder.id;
       this.allowCreate = false;
 
       this.$emit('change', folder);
@@ -166,8 +166,8 @@ export default {
     }
 
     let folder = null;
-    if (this.$root.$data.NgRemoteMediaOptions.parentFolder) {
-      folder = this.$root.$data.NgRemoteMediaOptions.parentFolder.id;
+    if (this.config.parentFolder) {
+      folder = this.config.parentFolder.id;
     }
 
     this.openFolder(folder);
@@ -179,7 +179,7 @@ export default {
 <style scoped lang="scss">
 @import "../scss/variables";
 
-.folderGalery {
+.folder-gallery {
   position: relative;
   flex-grow: 1;
   height: calc(100% - 50px);

@@ -291,7 +291,7 @@ export default {
   }
 }
 
-.folderGalery .items .media.new-folder {
+.folder-gallery .items .media.new-folder {
   input {
     padding: 3px 6px;
     margin-top: 0!important;

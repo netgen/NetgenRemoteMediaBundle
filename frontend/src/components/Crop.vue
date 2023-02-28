@@ -5,16 +5,16 @@
       <div class="buttons" ref="buttons" :style="applyButtonStyle">
         <button type="button" class="btn btn-blue" @click="handleReset">
           <span class="ngrm-icon-ccw"></span>
-          <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_reset }}</span>
+          <span>{{ this.translations.crop_reset }}</span>
         </button>
         <button type="button" class="btn btn-blue" @click="handleApply">
           <span class="ngrm-icon-ok"></span>
-          <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_apply }}</span>
+          <span>{{ this.translations.crop_apply }}</span>
         </button>
       </div>
     </div>
     <div>
-      <h4>{{ this.$root.$data.NgRemoteMediaTranslations.crop_preview }}</h4>
+      <h4>{{ this.translations.crop_preview }}</h4>
       <div class="preview" ref="preview"></div>
     </div>
   </div>
@@ -25,7 +25,7 @@ import Cropper from "cropperjs/src";
 
 export default {
   name: "Crop",
-  props: ["value", "variation", "src", "imageSize"],
+  props: ["translations", "value", "variation", "src", "imageSize"],
   mounted() {
     this.setCropper();
   },
