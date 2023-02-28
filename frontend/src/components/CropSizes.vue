@@ -1,12 +1,12 @@
 <template>
   <div class="sidebar-crop">
     <div class="buttons">
-      <button v-if="!addingVariations" type="button" class="btn" @click="handleAddCropSize">{{ this.$root.$data.NgRemoteMediaTranslations.crop_add_size }}</button>
-      <button v-if="addingVariations" type="button" class="btn" @click="handleCancel">{{ this.$root.$data.NgRemoteMediaTranslations.crop_cancel }}</button>
-      <button v-if="addingVariations" type="button" class="btn crop-btn-add" @click="handleAdd">{{ this.$root.$data.NgRemoteMediaTranslations.crop_add }}</button>
+      <button v-if="!addingVariations" type="button" class="btn" @click="handleAddCropSize">{{ this.translations.crop_add_size }}</button>
+      <button v-if="addingVariations" type="button" class="btn" @click="handleCancel">{{ this.translations.crop_cancel }}</button>
+      <button v-if="addingVariations" type="button" class="btn crop-btn-add" @click="handleAdd">{{ this.translations.crop_add }}</button>
     </div>
     <div class="sidebar-crop-label">
-        <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_added_for_confirmation }}</span>
+        <span>{{ this.translations.crop_added_for_confirmation }}</span>
     </div>
     <div v-show="addingVariations" :class="{ unselectedVariations: addingVariations }">
       <div v-for="name in unselectedVariations" :key="name" :class="{ disabled: !isVariationSelectable(name) }">
@@ -16,7 +16,7 @@
           <span class="formatted-size">{{formattedSize(name)}}</span>
         </label>
         <div v-if="!isVariationSelectable(name)" class="legend-not-selectable">
-          <span>{{ _self.$root.$data.NgRemoteMediaTranslations.crop_media_too_small }}</span>
+          <span>{{ _self.translations.crop_media_too_small }}</span>
         </div>
       </div>
     </div>
@@ -46,6 +46,7 @@
 export default {
   name: "CropSizes",
   props: [
+    "translations",
     "availableVariations",
     "allVariationValues",
     "imageSize",

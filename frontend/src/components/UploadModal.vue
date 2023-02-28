@@ -1,13 +1,13 @@
 <template>
   <modal title="Upload media" @close="$emit('close')">
     <div :class="loading ? 'loading' : ''">
-      <select-folder :selected-folder="selectedFolder" @change="handleFolderChange"></select-folder>
+      <select-folder :config="config" :selected-folder="selectedFolder" @change="handleFolderChange"></select-folder>
 
       <div class="input-file-name-wrapper">
         <div v-if="this.error" class="error">
           {{ this.error }}
           <a v-if="this.existingResourceButton" href="#" @click="$emit('uploaded', existingResource)">
-            {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_use_existing_resource }}
+            {{ this.config.translations.upload_button_use_existing_resource }}
           </a>
         </div>
         <input type="text" :class="error ? 'error' : ''" v-model="filename"/>
@@ -22,9 +22,9 @@
         />
 
         <input type="checkbox" v-model="overwrite" id="ngrm-upload-overwrite">
-        <label for="ngrm-upload-overwrite">{{ this.$root.$data.NgRemoteMediaTranslations.upload_checkbox_overwrite }}</label>
+        <label for="ngrm-upload-overwrite">{{ this.config.translations.upload_checkbox_overwrite }}</label>
         <button type="button" class="btn btn-blue" :disabled="filename === '' || visibility === ''" @click="upload">
-          {{ this.$root.$data.NgRemoteMediaTranslations.upload_button_upload }}
+          {{ this.config.translations.upload_button_upload }}
         </button>
       </div>
     </div>
@@ -40,7 +40,7 @@ import axios from "axios";
 
 export default {
   name: "UploadModal",
-  props: ["file", "visibilities"],
+  props: ["config", "file", "visibilities"],
   data() {
     return {
       loading: false,
@@ -73,21 +73,21 @@ export default {
       data.append('overwrite', this.overwrite);
       data.append('visibility', this.visibility);
 
-      for (let key in this.$root.$data.NgRemoteMediaOptions.uploadContext) {
-        data.append(`upload_context[${key}]`, this.$root.$data.NgRemoteMediaOptions.uploadContext[key]);
+      for (let key in this.config.uploadContext) {
+        data.append(`upload_context[${key}]`, this.config.uploadContext[key]);
       }
 
-      await axios.post(this.$root.$data.config.paths.upload_resources, data)
+      await axios.post(this.config.paths.upload_resources, data)
         .then(response => {
-          if (this.$root.$data.NgRemoteMediaOptions.allowedTypes.length > 0 && this.$root.$data.NgRemoteMediaOptions.allowedTypes.indexOf(response.data.type) === -1) {
-            this.error = this.$root.$data.NgRemoteMediaTranslations.upload_error_unsupported_resource_type + this.$root.$data.NgRemoteMediaOptions.allowedTypes.join(', ');
+          if (this.config.allowedTypes.length > 0 && this.config.allowedTypes.indexOf(response.data.type) === -1) {
+            this.error = this.config.translations.upload_error_unsupported_resource_type + this.config.allowedTypes.join(', ');
             this.loading = false;
           } else {
             this.$emit("uploaded", response.data);
           }
         }).catch(error => {
           if (error.response.status === 409) {
-            this.error = this.$root.$data.NgRemoteMediaTranslations.upload_error_existing_resource;
+            this.error = this.config.translations.upload_error_existing_resource;
             this.existingResourceButton = true;
             this.existingResource = error.response.data;
             this.loading = false;

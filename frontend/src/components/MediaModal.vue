@@ -1,7 +1,8 @@
 <template>
-  <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :tags="tags" :types="types" :visibilities="visibilities" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
-    <media-galery
+  <modal v-bind:title="this.config.translations.browse_title" @close="$emit('close')">
+    <media-facets :config="config" :tags="tags" :types="types" :visibilities="visibilities" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
+    <media-gallery
+        :translations="config.translations"
         :media="media"
         :canLoadMore="canLoadMore"
         :selectedMediaId="selectedMediaId"
@@ -15,8 +16,7 @@
 
 <script>
 import MediaFacets from "./MediaFacets";
-import MediaGallery from "./MediaGalery";
-import { encodeQueryData } from "../utility/utility";
+import MediaGallery from "./MediaGallery";
 import debounce from "debounce";
 import Modal from "./Modal";
 import { FOLDER_ROOT } from "../constants/facets";
@@ -25,21 +25,21 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["tags", "types", "visibilities", "facetsLoading", "selectedMediaId", "paths"],
+  props: ["config", "tags", "types", "visibilities", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
-    "media-galery": MediaGallery,
+    "media-gallery": MediaGallery,
     modal: Modal
   },
   data() {
     let folder = null;
 
-    if (this.$root.$data.NgRemoteMediaOptions.parentFolder) {
-      folder = this.$root.$data.NgRemoteMediaOptions.parentFolder.id;
+    if (this.config.parentFolder) {
+      folder = this.config.parentFolder.id;
     }
 
-    if (this.$root.$data.NgRemoteMediaOptions.folder) {
-      folder = this.$root.$data.NgRemoteMediaOptions.folder.id;
+    if (this.config.folder) {
+      folder = this.config.folder.id;
     }
 
     return {
@@ -74,8 +74,8 @@ export default {
         query['query'] = this.facets.query;
       }
 
-      if (this.$root.$data.NgRemoteMediaOptions.allowedTypes.length > 0) {
-        query['type'] = this.$root.$data.NgRemoteMediaOptions.allowedTypes;
+      if (this.config.allowedTypes.length > 0) {
+        query['type'] = this.config.allowedTypes;
       }
 
       if (this.facets.type) {
@@ -88,16 +88,16 @@ export default {
           : this.facets.folder;
       }
 
-      if (this.$root.$data.NgRemoteMediaOptions.allowedTags.length > 0) {
-        query['tag'] = this.$root.$data.NgRemoteMediaOptions.allowedTags;
+      if (this.config.allowedTags.length > 0) {
+        query['tag'] = this.config.allowedTags;
       }
 
       if (this.facets.tag) {
         query['tag'] = this.facets.tag;
       }
 
-      if (this.$root.$data.NgRemoteMediaOptions.allowedVisibilities.length > 0) {
-        query['visibility'] = this.$root.$data.NgRemoteMediaOptions.allowedVisibilities;
+      if (this.config.allowedVisibilities.length > 0) {
+        query['visibility'] = this.config.allowedVisibilities;
       }
 
       if (this.facets.visibility) {

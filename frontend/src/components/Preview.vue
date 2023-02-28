@@ -17,28 +17,28 @@
 
     <div class="image-meta">
       <input type="hidden"
-         :name="this.$root.$data.NgRemoteMediaInputFields.type"
+         :name="this.config.inputFields.type"
          v-model="selectedImage.type"
       >
 
       <h3 class="title">{{selectedImage.name}}</h3>
-      <p>{{this.$root.$data.NgRemoteMediaTranslations.preview_size}}: {{formattedSize}}</p>
+      <p>{{this.config.translations.preview_size}}: {{formattedSize}}</p>
       <p>{{selectedImage.type}} / {{selectedImage.format}}</p>
 
       <div class="image-meta-data">
         <div class="ngremotemedia-alttext">
-          <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_alternate_text}}</span>
+          <span class="help-block description">{{this.config.translations.preview_alternate_text}}</span>
           <input type="text"
-               :name="this.$root.$data.NgRemoteMediaInputFields.altText"
+               :name="this.config.inputFields.altText"
                v-model="selectedImage.alternateText"
                class="media-alttext data"
           >
         </div>
 
         <div class="ngremotemedia-tags">
-          <span class="help-block description">{{this.$root.$data.NgRemoteMediaTranslations.preview_tags}}</span>
-          <v-select :options="$root.$data.NgRemoteMediaOptions.allowedTags.length > 0 ? $root.$data.NgRemoteMediaOptions.allowedTags : allTags" v-model="selectedImage.tags" multiple :taggable="$root.$data.NgRemoteMediaOptions.allowedTags.length === 0" @input="handleTagsInput"></v-select>
-          <select hidden v-model="selectedImage.tags" :name="this.$root.$data.NgRemoteMediaInputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
+          <span class="help-block description">{{this.config.translations.preview_tags}}</span>
+          <v-select :options="config.allowedTags.length > 0 ? config.allowedTags : allTags" v-model="selectedImage.tags" multiple :taggable="config.allowedTags.length === 0" @input="handleTagsInput"></v-select>
+          <select hidden v-model="selectedImage.tags" :name="this.config.inputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
             <option v-for="tag in allTags" :key = "tag">{{tag}}</option>
           </select>
         </div>
@@ -47,7 +47,7 @@
   </div>
 
   <div v-else>
-    <i>{{this.$root.$data.NgRemoteMediaTranslations.interactions_no_media_selected}}</i>
+    <i>{{this.config.translations.interactions_no_media_selected}}</i>
   </div>
 </template>
 
@@ -57,7 +57,7 @@ import vSelect from "vue-select";
 
 export default {
   name: "Preview",
-  props: ["fieldId", "selectedImage"],
+  props: ["config", "fieldId", "selectedImage"],
   data() {
     return {
       allTags: []

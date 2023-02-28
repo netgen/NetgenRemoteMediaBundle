@@ -1,6 +1,7 @@
 <template>
   <modal title="Crop" @close="$emit('close')">
     <crop-sizes
+      :translations="translations"
       :availableVariations="availableVariations"
       :allVariationValues="allVariationValues"
       :imageSize="imageSize"
@@ -12,6 +13,7 @@
     <div v-for="(variationSize, variation) in availableVariations" :key="variation" class="crop-container">
       <crop
         v-if="variation===selectedVariation"
+        :translations="translations"
         :value="allVariationValues[variation]"
         :src="selectedImage.url"
         :variation="availableVariations[variation]"
@@ -23,10 +25,10 @@
       <img :src="selectedImage.url" />
     </div>
     <div class="action-strip">
-      <button type="button" class="btn" @click="handleCancelClicked">{{ this.$root.$data.NgRemoteMediaTranslations.crop_cancel }}</button>
+      <button type="button" class="btn" @click="handleCancelClicked">{{ this.translations.crop_cancel }}</button>
       <button type="button" class="btn btn-blue" @click="handleSaveClicked">
         <span class="ngrm-icon-floppy"></span>
-        <span>{{ this.$root.$data.NgRemoteMediaTranslations.crop_save_sizes }}</span>
+        <span>{{ this.translations.crop_save_sizes }}</span>
       </button>
     </div>
   </modal>
@@ -42,7 +44,7 @@ import { notUndefined } from "../utility/predicates";
 
 export default {
   name: "CropModal",
-  props: ["availableVariations", "selectedImage"],
+  props: ["translations", "availableVariations", "selectedImage"],
   components: {
     modal: Modal,
     "crop-sizes": CropSizes,
