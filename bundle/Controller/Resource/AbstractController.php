@@ -7,7 +7,6 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller\Resource;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController as SymfonyAbstractController;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use function basename;
 use function is_array;
 
-abstract class AbstractController extends SymfonyAbstractController
+abstract class AbstractController
 {
     protected ProviderInterface $provider;
 
