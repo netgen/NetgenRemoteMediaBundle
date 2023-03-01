@@ -19,6 +19,8 @@ use Netgen\RemoteMedia\Core\AbstractProvider;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Exception\NotSupportedException;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
@@ -100,6 +102,22 @@ final class AbstractProviderTest extends AbstractTest
             ->withConsecutive([RemoteResource::class], [RemoteResourceLocation::class])
             ->willReturnOnConsecutiveCalls($this->resourceRepository, $this->locationRepository);
 
+        $namedRemoteResources = [
+            'test_image' => 'upload|image|media/images/test_image.jpg',
+            'test_image2' => 'upload|image|media/images/test_image2.jpg',
+        ];
+
+        $namedRemoteResourceLocations = [
+            'test_image_location' => [
+                'resource_remote_id' => 'upload|image|media/images/test_image.jpg',
+                'source' => 'test_image_location_source',
+            ],
+            'test_image_location2' => [
+                'resource_remote_id' => 'upload|image|media/images/test_image2.jpg',
+                'watermark_text' => 'This is some watermark',
+            ],
+        ];
+
         $this->provider = $this
             ->getMockForAbstractClass(
                 AbstractProvider::class,
@@ -108,6 +126,8 @@ final class AbstractProviderTest extends AbstractTest
                     $variationResolver,
                     $this->entityManager,
                     $this->dateTimeFactory,
+                    $namedRemoteResources,
+                    $namedRemoteResourceLocations,
                     $this->logger,
                     true,
                 ],
@@ -772,6 +792,301 @@ final class AbstractProviderTest extends AbstractTest
 
     /**
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResource
+     */
+    public function testLoadNamedRemoteResource(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'upload|image|media/images/test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            'name' => 'test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $this->resourceRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['remoteId' => 'upload|image|media/images/test_image.jpg'])
+            ->willReturn($resource);
+
+        self::assertRemoteResourceSame(
+            $resource,
+            $this->provider->loadNamedRemoteResource('test_image'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResource
+     */
+    public function testLoadNamedRemoteResourceFirstTime(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'upload|image|media/images/test_image2.jpg',
+            'url' => 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            'name' => 'test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $this->resourceRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['remoteId' => 'upload|image|media/images/test_image2.jpg'])
+            ->willReturn(null);
+
+        $this->provider
+            ->expects(self::once())
+            ->method('loadFromRemote')
+            ->with('upload|image|media/images/test_image2.jpg')
+            ->willReturn($resource);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('persist')
+            ->with($resource);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('flush');
+
+        self::assertRemoteResourceSame(
+            $resource,
+            $this->provider->loadNamedRemoteResource('test_image2'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResource
+     */
+    public function testLoadNamedRemoteResourceNotFound(): void
+    {
+        self::expectException(NamedRemoteResourceNotFoundException::class);
+        self::expectExceptionMessage('Named remote resource with name "non_existing_image" not found.');
+
+        $this->provider->loadNamedRemoteResource('non_existing_image');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
+     */
+    public function testLoadExistingNamedRemoteResourceLocation(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'upload|image|media/images/test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            'name' => 'test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $location = new RemoteResourceLocation($resource, 'test_image_location_source');
+
+        $this->locationRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['source' => 'test_image_location_source'])
+            ->willReturn($location);
+
+        self::assertRemoteResourceLocationSame(
+            $location,
+            $this->provider->loadNamedRemoteResourceLocation('test_image_location'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
+     */
+    public function testLoadExistingNamedRemoteResourceLocationWithNewWatermark(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'upload|image|media/images/test_image2.jpg',
+            'url' => 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            'name' => 'test_image2.jpg',
+            'type' => 'image',
+            'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $location = new RemoteResourceLocation($resource, 'named_remote_resource_location_test_image_location2', [], 'Old watermark');
+
+        $this->locationRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['source' => 'named_remote_resource_location_test_image_location2'])
+            ->willReturn($location);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('persist')
+            ->with($location);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('flush');
+
+        self::assertRemoteResourceLocationSame(
+            $location,
+            $this->provider->loadNamedRemoteResourceLocation('test_image_location2'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
+     */
+    public function testLoadNewNamedRemoteResourceLocationWithExistingResource(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'upload|image|media/images/test_image2.jpg',
+            'url' => 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            'name' => 'test_image2.jpg',
+            'type' => 'image',
+            'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $this->locationRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['source' => 'named_remote_resource_location_test_image_location2'])
+            ->willReturn(null);
+
+        $this->resourceRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['remoteId' => 'upload|image|media/images/test_image2.jpg'])
+            ->willReturn($resource);
+
+        $location = new RemoteResourceLocation($resource, 'named_remote_resource_location_test_image_location2', [], 'This is some watermark');
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('persist')
+            ->with($location);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('flush');
+
+        self::assertRemoteResourceLocationSame(
+            $location,
+            $this->provider->loadNamedRemoteResourceLocation('test_image_location2'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
+     */
+    public function testLoadNewNamedRemoteResourceLocationWithNewResource(): void
+    {
+        $resource = new RemoteResource([
+            'id' => 30,
+            'remoteId' => 'upload|image|media/images/test_image.jpg',
+            'url' => 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            'name' => 'test_image.jpg',
+            'type' => 'image',
+            'size' => 200,
+            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
+        ]);
+
+        $this->locationRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['source' => 'test_image_location_source'])
+            ->willReturn(null);
+
+        $this->resourceRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['remoteId' => 'upload|image|media/images/test_image.jpg'])
+            ->willReturn(null);
+
+        $this->provider
+            ->expects(self::once())
+            ->method('loadFromRemote')
+            ->with('upload|image|media/images/test_image.jpg')
+            ->willReturn($resource);
+
+        $location = new RemoteResourceLocation($resource, 'test_image_location_source');
+
+        $this->entityManager
+            ->expects(self::exactly(2))
+            ->method('persist')
+            ->withConsecutive([$resource], [$location]);
+
+        $this->entityManager
+            ->expects(self::exactly(2))
+            ->method('flush');
+
+        self::assertRemoteResourceLocationSame(
+            $location,
+            $this->provider->loadNamedRemoteResourceLocation('test_image_location'),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
+     */
+    public function testLoadNewNamedRemoteResourceLocationWithNonExistingResource(): void
+    {
+        $this->locationRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['source' => 'test_image_location_source'])
+            ->willReturn(null);
+
+        $this->resourceRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['remoteId' => 'upload|image|media/images/test_image.jpg'])
+            ->willReturn(null);
+
+        $this->provider
+            ->expects(self::once())
+            ->method('loadFromRemote')
+            ->with('upload|image|media/images/test_image.jpg')
+            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/test_image.jpg'));
+
+        self::expectException(RemoteResourceNotFoundException::class);
+        self::expectExceptionMessage('Remote resource with ID "upload|image|media/images/test_image.jpg" not found.');
+
+        $this->provider->loadNamedRemoteResourceLocation('test_image_location');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
+     */
+    public function testLoadNamedRemoteResourceLocationNotFound(): void
+    {
+        self::expectException(NamedRemoteResourceLocationNotFoundException::class);
+        self::expectExceptionMessage('Named remote resource location with name "non_existing_image_location" not found.');
+
+        $this->provider->loadNamedRemoteResourceLocation('non_existing_image_location');
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::store
      * @covers \Netgen\RemoteMedia\Core\AbstractProvider::upload
      */
@@ -1323,7 +1638,7 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider
             ->expects(self::once())
             ->method('generateDownloadTag')
-            ->with($resource, $htmlAttributes)
+            ->with($resource, [], $htmlAttributes)
             ->willReturn($tag);
 
         self::assertSame(

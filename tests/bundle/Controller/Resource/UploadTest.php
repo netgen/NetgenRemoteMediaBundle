@@ -12,6 +12,7 @@ use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -106,22 +107,26 @@ final class UploadTest extends TestCase
             ->with($resourceStruct)
             ->willReturn($resource);
 
-        $transformation = [
-            'crop' => 'fit',
-            'width' => 160,
-            'height' => 120,
-        ];
+        $location = new RemoteResourceLocation($resource);
 
-        $variation = new RemoteResourceVariation(
+        $browseVariation = new RemoteResourceVariation(
             $resource,
             'https://cloudinary.com/test/c_fit_160_120/upload/image/media/image/sample_image.jpg',
         );
 
+        $previewVariation = new RemoteResourceVariation(
+            $resource,
+            'https://cloudinary.com/test/c_fit_800_600/upload/image/media/image/sample_image.jpg',
+        );
+
         $this->providerMock
-            ->expects(self::once())
-            ->method('buildRawVariation')
-            ->with($resource, [$transformation])
-            ->willReturn($variation);
+            ->expects(self::exactly(2))
+            ->method('buildVariation')
+            ->withConsecutive(
+                [$location, 'ngrm_interface', 'browse'],
+                [$location, 'ngrm_interface', 'preview'],
+            )
+            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'upload|image|media/image/sample_image.jpg',
@@ -135,7 +140,7 @@ final class UploadTest extends TestCase
             'filename' => 'sample_image.jpg',
             'format' => null,
             'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/image/media/image/sample_image.jpg',
-            'previewUrl' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/image/media/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
             'altText' => null,
         ]);
@@ -237,22 +242,26 @@ final class UploadTest extends TestCase
             ->with($resourceStruct)
             ->willReturn($resource);
 
-        $transformation = [
-            'crop' => 'fit',
-            'width' => 160,
-            'height' => 120,
-        ];
+        $location = new RemoteResourceLocation($resource);
 
-        $variation = new RemoteResourceVariation(
+        $browseVariation = new RemoteResourceVariation(
             $resource,
             'https://cloudinary.com/test/c_fit_160_120/authenticated/image/media/image/sample_image.jpg',
         );
 
+        $previewVariation = new RemoteResourceVariation(
+            $resource,
+            'https://cloudinary.com/test/c_fit_800_600/authenticated/image/media/image/sample_image.jpg',
+        );
+
         $this->providerMock
-            ->expects(self::once())
-            ->method('buildRawVariation')
-            ->with($resource, [$transformation])
-            ->willReturn($variation);
+            ->expects(self::exactly(2))
+            ->method('buildVariation')
+            ->withConsecutive(
+                [$location, 'ngrm_interface', 'browse'],
+                [$location, 'ngrm_interface', 'preview'],
+            )
+            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'authenticated|image|media/image/sample_image.jpg',
@@ -266,7 +275,7 @@ final class UploadTest extends TestCase
             'filename' => 'sample_image.jpg',
             'format' => null,
             'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/authenticated/image/media/image/sample_image.jpg',
-            'previewUrl' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
+            'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/authenticated/image/media/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
             'altText' => null,
         ]);
@@ -379,22 +388,26 @@ final class UploadTest extends TestCase
             ->with($resourceStruct)
             ->willThrowException(new RemoteResourceExistsException($resource));
 
-        $transformation = [
-            'crop' => 'fit',
-            'width' => 160,
-            'height' => 120,
-        ];
+        $location = new RemoteResourceLocation($resource);
 
-        $variation = new RemoteResourceVariation(
+        $browseVariation = new RemoteResourceVariation(
             $resource,
             'https://cloudinary.com/test/c_fit_160_120/upload/image/sample_image.jpg',
         );
 
+        $previewVariation = new RemoteResourceVariation(
+            $resource,
+            'https://cloudinary.com/test/c_fit_800_600/upload/image/sample_image.jpg',
+        );
+
         $this->providerMock
-            ->expects(self::once())
-            ->method('buildRawVariation')
-            ->with($resource, [$transformation])
-            ->willReturn($variation);
+            ->expects(self::exactly(2))
+            ->method('buildVariation')
+            ->withConsecutive(
+                [$location, 'ngrm_interface', 'browse'],
+                [$location, 'ngrm_interface', 'preview'],
+            )
+            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'upload|image|sample_image.jpg',
@@ -408,7 +421,7 @@ final class UploadTest extends TestCase
             'filename' => 'sample_image.jpg',
             'format' => null,
             'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/image/sample_image.jpg',
-            'previewUrl' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
+            'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
             'altText' => null,
         ]);
@@ -497,22 +510,26 @@ final class UploadTest extends TestCase
             ->with($resourceStruct)
             ->willThrowException(new RemoteResourceExistsException($resource));
 
-        $transformation = [
-            'crop' => 'fit',
-            'width' => 160,
-            'height' => 120,
-        ];
+        $location = new RemoteResourceLocation($resource);
 
-        $variation = new RemoteResourceVariation(
+        $browseVariation = new RemoteResourceVariation(
             $resource,
             'https://cloudinary.com/test/c_fit_160_120/upload/image/media/image/sample_image.jpg',
         );
 
+        $previewVariation = new RemoteResourceVariation(
+            $resource,
+            'https://cloudinary.com/test/c_fit_800_600/upload/image/media/image/sample_image.jpg',
+        );
+
         $this->providerMock
-            ->expects(self::once())
-            ->method('buildRawVariation')
-            ->with($resource, [$transformation])
-            ->willReturn($variation);
+            ->expects(self::exactly(2))
+            ->method('buildVariation')
+            ->withConsecutive(
+                [$location, 'ngrm_interface', 'browse'],
+                [$location, 'ngrm_interface', 'preview'],
+            )
+            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'upload|image|media/image/sample_image.jpg',
@@ -526,7 +543,7 @@ final class UploadTest extends TestCase
             'filename' => 'sample_image.jpg',
             'format' => null,
             'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/image/media/image/sample_image.jpg',
-            'previewUrl' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/image/media/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
             'altText' => null,
         ]);

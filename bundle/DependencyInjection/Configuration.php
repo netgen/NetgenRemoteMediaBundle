@@ -8,8 +8,11 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+use function array_keys;
 use function count;
 use function is_array;
+use function is_string;
+use function preg_match;
 
 final class Configuration implements ConfigurationInterface
 {
@@ -20,6 +23,7 @@ final class Configuration implements ConfigurationInterface
         $this->addImageConfiguration($treeBuilder->getRootNode());
         $this->addCacheConfiguration($treeBuilder->getRootNode());
         $this->addCloudinaryConfiguration($treeBuilder->getRootNode());
+        $this->addNamedObjectsConfiguration($treeBuilder->getRootNode());
 
         return $treeBuilder;
     }
@@ -147,6 +151,67 @@ final class Configuration implements ConfigurationInterface
                             ->defaultValue(false)
                         ->end()
                         ->scalarNode('encryption_key')
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addNamedObjectsConfiguration(ArrayNodeDefinition $rootNode): void
+    {
+        $keyValidator = static function ($v): bool {
+            foreach (array_keys($v) as $key) {
+                if (!is_string($key) || !preg_match('/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/A', $key)) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+
+        $rootNode
+            ->children()
+                ->arrayNode('named_objects')
+                    ->info('Named objects configuration')
+                    ->children()
+                        ->arrayNode('remote_resource')
+                            ->useAttributeAsKey('name')
+                            ->normalizeKeys(false)
+                            ->validate()
+                                ->ifTrue($keyValidator)
+                                ->thenInvalid('Remote resource name must be a string conforming to a valid Twig variable name.')
+                            ->end()
+                            ->scalarPrototype()
+                                ->info('Remote ID')
+                                ->validate()
+                                    ->ifTrue(static fn ($v) => !is_string($v))
+                                    ->thenInvalid('Remote ID value must be string.')
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('remote_resource_location')
+                            ->useAttributeAsKey('name')
+                            ->normalizeKeys(false)
+                            ->validate()
+                                ->ifTrue($keyValidator)
+                                ->thenInvalid('Remote resource location name must be a string conforming to a valid Twig variable name.')
+                            ->end()
+                            ->arrayPrototype()
+                                ->children()
+                                    ->scalarNode('resource_remote_id')
+                                        ->validate()
+                                            ->ifTrue(static fn ($v) => !is_string($v))
+                                            ->thenInvalid('Remote ID value must be string.')
+                                        ->end()
+                                    ->end()
+                                    ->scalarNode('source')
+                                        ->defaultValue(null)
+                                    ->end()
+                                    ->scalarNode('watermark_text')
+                                        ->defaultValue(null)
+                                    ->end()
+                                ->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()

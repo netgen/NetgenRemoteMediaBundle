@@ -17,6 +17,7 @@ final class ConfigurationTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
      */
@@ -38,6 +39,7 @@ final class ConfigurationTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
      */
@@ -85,6 +87,24 @@ final class ConfigurationTest extends TestCase
                             ],
                         ],
                     ],
+                    'named_objects' => [
+                        'remote_resource' => [
+                            'test_resource' => 'upload|image|folder/test_resource',
+                            'test_resource2' => 'upload|image|folder/test_resource2',
+                        ],
+                        'remote_resource_location' => [
+                            'test_location' => [
+                                'resource_remote_id' => 'upload|image|folder/test_resource',
+                                'source' => 'test_resource',
+                                'watermark_text' => 'Netgen',
+                            ],
+                            'test_location2' => [
+                                'resource_remote_id' => 'upload|image|folder/test_resource2',
+                                'source' => 'test_resource2',
+                                'watermark_text' => 'Remote Media',
+                            ],
+                        ],
+                    ],
                 ],
             ],
         );
@@ -94,6 +114,7 @@ final class ConfigurationTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
      */
@@ -115,6 +136,7 @@ final class ConfigurationTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
      */
@@ -136,6 +158,7 @@ final class ConfigurationTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
      */
@@ -156,6 +179,7 @@ final class ConfigurationTest extends TestCase
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
      * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
      */
@@ -170,6 +194,123 @@ final class ConfigurationTest extends TestCase
                 ],
             ],
         );
+    }
+
+    /**
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
+     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
+     *
+     * @dataProvider invalidNamedObjectsProvider
+     */
+    public function testInvalidNamedObjectsConfiguration(array $configuration): void
+    {
+        $this->assertConfigurationIsInvalid($configuration);
+    }
+
+    public function invalidNamedObjectsProvider(): array
+    {
+        return [
+            [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'named_objects' => [
+                            'resource' => [
+                                'test' => 'test_id',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'named_objects' => [
+                            'location' => [
+                                'test' => 'test_id',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'named_objects' => [
+                            'remote_resource' => [
+                                'test_id',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'named_objects' => [
+                            'remote_resource_location' => [
+                                'test' => 'test_id',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'named_objects' => [
+                            'remote_resource_location' => [
+                                'test' => [
+                                    'id' => 'test',
+                                    'source' => 'test',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'named_objects' => [
+                            'remote_resource_location' => [
+                                'test' => [
+                                    'resource_remote_id' => 'test',
+                                    'crop' => [],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     protected function getConfiguration(): ConfigurationInterface

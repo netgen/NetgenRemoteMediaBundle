@@ -47,6 +47,8 @@ final class CloudinaryProvider extends AbstractProvider
         GatewayInterface $gateway,
         DateTimeFactoryInterface $datetimeFactory,
         UploadOptionsResolver $uploadOptionsResolver,
+        array $namedRemoteResources,
+        array $namedRemoteResourceLocations,
         ?LoggerInterface $logger = null,
         bool $shouldDeleteFromRemote = false
     ) {
@@ -55,6 +57,8 @@ final class CloudinaryProvider extends AbstractProvider
             $variationsResolver,
             $entityManager,
             $datetimeFactory,
+            $namedRemoteResources,
+            $namedRemoteResourceLocations,
             $logger,
             $shouldDeleteFromRemote,
         );

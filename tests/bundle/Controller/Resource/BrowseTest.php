@@ -10,6 +10,7 @@ use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -106,61 +107,76 @@ final class BrowseTest extends TestCase
             ->with($query)
             ->willReturn($result);
 
-        $transformation = [
-            'crop' => 'fit',
-            'width' => 160,
-            'height' => 120,
-        ];
-
-        $image1Variation = new RemoteResourceVariation(
+        $image1BrowseVariation = new RemoteResourceVariation(
             $result->getResources()[0],
             'https://cloudinary.com/test/c_fit_160_120/upload/images/image.jpg',
         );
 
-        $image2Variation = new RemoteResourceVariation(
+        $image1PreviewVariation = new RemoteResourceVariation(
+            $result->getResources()[0],
+            'https://cloudinary.com/test/c_fit_800_600/upload/images/image.jpg',
+        );
+
+        $image2BrowseVariation = new RemoteResourceVariation(
             $result->getResources()[1],
             'https://cloudinary.com/test/c_fit_160_120/upload/images/image2.jpg',
         );
 
-        $videoThumbnailVariation = new RemoteResourceVariation(
+        $image2PreviewVariation = new RemoteResourceVariation(
+            $result->getResources()[1],
+            'https://cloudinary.com/test/c_fit_800_600/upload/images/image2.jpg',
+        );
+
+        $videoThumbnailBrowseVariation = new RemoteResourceVariation(
             $result->getResources()[2],
             'https://cloudinary.com/test/c_fit_160_120/upload/videos/example.mp4.jpg',
         );
 
-        $videoThumbnail = new RemoteResourceVariation(
+        $videoThumbnailPreviewVariation = new RemoteResourceVariation(
             $result->getResources()[2],
-            'https://cloudinary.com/test/upload/videos/example.mp4.jpg',
+            'https://cloudinary.com/test/c_fit_800_600/upload/videos/example.mp4.jpg',
         );
 
         $this->providerMock
-            ->expects(self::exactly(2))
-            ->method('buildRawVariation')
+            ->expects(self::exactly(4))
+            ->method('buildVariation')
             ->withConsecutive(
                 [
-                    $result->getResources()[0],
-                    [$transformation],
+                    new RemoteResourceLocation($result->getResources()[0]),
+                    'ngrm_interface',
+                    'browse',
                 ],
                 [
-                    $result->getResources()[1],
-                    [$transformation],
+                    new RemoteResourceLocation($result->getResources()[0]),
+                    'ngrm_interface',
+                    'preview',
+                ],
+                [
+                    new RemoteResourceLocation($result->getResources()[1]),
+                    'ngrm_interface',
+                    'browse',
+                ],
+                [
+                    new RemoteResourceLocation($result->getResources()[1]),
+                    'ngrm_interface',
+                    'preview',
                 ],
             )
             ->willReturnOnConsecutiveCalls(
-                $image1Variation,
-                $image2Variation,
+                $image1BrowseVariation,
+                $image1PreviewVariation,
+                $image2BrowseVariation,
+                $image2PreviewVariation,
             );
 
         $this->providerMock
-            ->expects(self::once())
-            ->method('buildVideoThumbnailRawVariation')
-            ->with($result->getResources()[2], [$transformation])
-            ->willReturn($videoThumbnailVariation);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('buildVideoThumbnail')
-            ->with($result->getResources()[2])
-            ->willReturn($videoThumbnail);
+            ->expects(self::exactly(2))
+            ->method('buildVideoThumbnailVariation')
+            ->withConsecutive(
+                [new RemoteResourceLocation($result->getResources()[2]), 'ngrm_interface', 'browse'],
+                [new RemoteResourceLocation($result->getResources()[2]), 'ngrm_interface', 'preview'],
+            )
+            ->willReturnOnConsecutiveCalls($videoThumbnailBrowseVariation, $videoThumbnailPreviewVariation);
 
         $expectedResponseContent = json_encode([
             'hits' => [
@@ -176,7 +192,7 @@ final class BrowseTest extends TestCase
                     'filename' => 'image.jpg',
                     'format' => null,
                     'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/images/image.jpg',
-                    'previewUrl' => 'https://cloudinary.com/test/upload/images/image.jpg',
+                    'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/images/image.jpg',
                     'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
                     'altText' => null,
                 ],
@@ -192,7 +208,7 @@ final class BrowseTest extends TestCase
                     'filename' => 'image2.jpg',
                     'format' => null,
                     'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/images/image2.jpg',
-                    'previewUrl' => 'https://cloudinary.com/test/upload/images/image2.jpg',
+                    'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/images/image2.jpg',
                     'url' => 'https://cloudinary.com/test/upload/images/image2.jpg',
                     'altText' => null,
                 ],
@@ -208,7 +224,7 @@ final class BrowseTest extends TestCase
                     'filename' => 'example.mp4',
                     'format' => null,
                     'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/videos/example.mp4.jpg',
-                    'previewUrl' => 'https://cloudinary.com/test/upload/videos/example.mp4.jpg',
+                    'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/videos/example.mp4.jpg',
                     'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
                     'altText' => null,
                 ],
