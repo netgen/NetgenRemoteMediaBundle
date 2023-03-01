@@ -46,6 +46,8 @@ services:
             - "@netgen_remote_media.provider.cloudinary.gateway"
             - "@netgen_remote_media.factory.date_time"
             - "@netgen_remote_media.provider.cloudinary.resolver.upload_options"
+            - "%netgen_remote_media.named_remote_resources%"
+            - "%netgen_remote_media.named_remote_resource_locations%"
             - "@?logger"
 
     netgen_remote_media.provider.cloudinary.converter.resource_type:

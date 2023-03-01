@@ -64,6 +64,14 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['image_variations'],
         );
         $container->setParameter(
+            'netgen_remote_media.named_remote_resources',
+            $config['named_objects']['remote_resource'] ?? [],
+        );
+        $container->setParameter(
+            'netgen_remote_media.named_remote_resource_locations',
+            $config['named_objects']['remote_resource_location'] ?? [],
+        );
+        $container->setParameter(
             'netgen_remote_media.cache.pool_name',
             $config['cache']['pool'],
         );

@@ -15,6 +15,8 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\Registry as TransformationRegistry;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Exception\NotSupportedException;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
@@ -37,6 +39,12 @@ abstract class AbstractProvider implements ProviderInterface
 
     protected ?LoggerInterface $logger;
 
+    /** @var array<string, string> */
+    private array $namedRemoteResources = [];
+
+    /** @var array<string, array> */
+    private array $namedRemoteResourceLocations = [];
+
     private bool $shouldDeleteFromRemote;
 
     public function __construct(
@@ -44,12 +52,16 @@ abstract class AbstractProvider implements ProviderInterface
         VariationResolver $variationsResolver,
         EntityManagerInterface $entityManager,
         DateTimeFactoryInterface $dateTimeFactory,
+        array $namedRemoteResources,
+        array $namedRemoteResourceLocations,
         ?LoggerInterface $logger = null,
         bool $shouldDeleteFromRemote = false
     ) {
         $this->registry = $registry;
         $this->variationResolver = $variationsResolver;
         $this->dateTimeFactory = $dateTimeFactory;
+        $this->namedRemoteResources = $namedRemoteResources;
+        $this->namedRemoteResourceLocations = $namedRemoteResourceLocations;
         $this->logger = $logger ?? new NullLogger();
         $this->shouldDeleteFromRemote = $shouldDeleteFromRemote;
 
@@ -212,6 +224,63 @@ abstract class AbstractProvider implements ProviderInterface
         $this->entityManager->flush();
     }
 
+    public function loadNamedRemoteResource(string $name): RemoteResource
+    {
+        if (($this->namedRemoteResources[$name] ?? null) === null) {
+            throw new NamedRemoteResourceNotFoundException($name);
+        }
+
+        $remoteId = $this->namedRemoteResources[$name];
+
+        try {
+            return $this->loadByRemoteId($remoteId);
+        } catch (RemoteResourceNotFoundException $exception) {
+            $resource = $this->loadFromRemote($remoteId);
+
+            $this->store($resource);
+
+            return $resource;
+        }
+    }
+
+    public function loadNamedRemoteResourceLocation(string $name): RemoteResourceLocation
+    {
+        if (($this->namedRemoteResourceLocations[$name] ?? null) === null) {
+            throw new NamedRemoteResourceLocationNotFoundException($name);
+        }
+
+        $source = $this->namedRemoteResourceLocations[$name]['source'] ?? 'named_remote_resource_location_' . $name;
+        $watermarkText = $this->namedRemoteResourceLocations[$name]['watermark_text'] ?? null;
+
+        try {
+            $location = $this->loadLocationBySource($source);
+
+            if ($location->getWatermarkText() !== $watermarkText) {
+                $location->setWatermarkText($watermarkText);
+
+                $this->storeLocation($location);
+            }
+
+            return $location;
+        } catch (RemoteResourceLocationNotFoundException $e) {
+        }
+
+        $remoteId = $this->namedRemoteResourceLocations[$name]['resource_remote_id'];
+
+        try {
+            $resource = $this->loadByRemoteId($remoteId);
+        } catch (RemoteResourceNotFoundException $exception) {
+            $resource = $this->loadFromRemote($remoteId);
+
+            $this->store($resource);
+        }
+
+        $location = new RemoteResourceLocation($resource, $source, [], $watermarkText);
+        $this->storeLocation($location);
+
+        return $location;
+    }
+
     public function upload(ResourceStruct $resourceStruct): RemoteResource
     {
         $remoteResource = $this->internalUpload($resourceStruct);
@@ -349,4 +418,18 @@ abstract class AbstractProvider implements ProviderInterface
     abstract protected function generateDocumentTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string;
 
     abstract protected function generateDownloadTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string;
+
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException
+     */
+    private function loadLocationBySource(string $source): RemoteResourceLocation
+    {
+        $remoteResourceLocation = $this->locationRepository->findOneBy(['source' => $source]);
+
+        if ($remoteResourceLocation instanceof RemoteResourceLocation) {
+            return $remoteResourceLocation;
+        }
+
+        throw new RemoteResourceLocationNotFoundException(0);
+    }
 }

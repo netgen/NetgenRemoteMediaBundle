@@ -26,6 +26,24 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.ttl', 3600);
         $this->assertContainerBuilderHasParameter('netgen_remote_media.encryption_key', 'dsf45z45hh45f43f43f');
 
+        $this->assertContainerBuilderHasParameter(
+            'netgen_remote_media.named_remote_resources',
+            [
+                'my_resource' => 'my_resource_id',
+            ],
+        );
+
+        $this->assertContainerBuilderHasParameter(
+            'netgen_remote_media.named_remote_resource_locations',
+            [
+                'my_resource_location' => [
+                    'resource_remote_id' => 'my_resource_id',
+                    'source' => 'named_my_resource_location',
+                    'watermark_text' => 'Netgen.io',
+                ],
+            ],
+        );
+
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider.cloudinary.gateway.inner', 'netgen_remote_media.provider.cloudinary.gateway.api');
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider.cloudinary.gateway', 'netgen_remote_media.provider.cloudinary.gateway.cached');
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.testprovider');
@@ -116,6 +134,18 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
                             'name' => ['Crop'],
                             'params' => [200, 200],
                         ],
+                    ],
+                ],
+            ],
+            'named_objects' => [
+                'remote_resource' => [
+                    'my_resource' => 'my_resource_id',
+                ],
+                'remote_resource_location' => [
+                    'my_resource_location' => [
+                        'resource_remote_id' => 'my_resource_id',
+                        'source' => 'named_my_resource_location',
+                        'watermark_text' => 'Netgen.io',
                     ],
                 ],
             ],

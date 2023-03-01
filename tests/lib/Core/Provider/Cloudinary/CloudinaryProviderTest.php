@@ -74,6 +74,8 @@ final class CloudinaryProviderTest extends AbstractTest
                 ['image', 'video'],
                 $this->mimeTypes,
             ),
+            [],
+            [],
             $this->logger,
             false,
         );

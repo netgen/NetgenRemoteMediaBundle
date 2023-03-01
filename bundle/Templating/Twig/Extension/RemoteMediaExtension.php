@@ -85,6 +85,14 @@ final class RemoteMediaExtension extends AbstractExtension
                 'ngrm_authenticate_remote_resource_variation',
                 [RemoteMediaRuntime::class, 'authenticateRemoteResourceVariation'],
             ),
+            new TwigFunction(
+                'ngrm_named_remote_resource',
+                [RemoteMediaRuntime::class, 'getNamedRemoteResource'],
+            ),
+            new TwigFunction(
+                'ngrm_named_remote_resource_location',
+                [RemoteMediaRuntime::class, 'getNamedRemoteResourceLocation'],
+            ),
         ];
     }
 

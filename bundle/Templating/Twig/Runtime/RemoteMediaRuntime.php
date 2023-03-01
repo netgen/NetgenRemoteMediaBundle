@@ -11,6 +11,8 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Twig\Extension\AbstractExtension;
@@ -175,5 +177,27 @@ final class RemoteMediaRuntime extends AbstractExtension
         $token = AuthToken::fromDuration($duration);
 
         return $this->provider->authenticateRemoteResourceVariation($remoteResourceVariation, $token);
+    }
+
+    public function getNamedRemoteResource(string $name): ?RemoteResource
+    {
+        try {
+            return $this->provider->loadNamedRemoteResource($name);
+        } catch (RemoteResourceNotFoundException $e) {
+        } catch (NamedRemoteResourceNotFoundException $e) {
+        }
+
+        return null;
+    }
+
+    public function getNamedRemoteResourceLocation(string $name): ?RemoteResourceLocation
+    {
+        try {
+            return $this->provider->loadNamedRemoteResourceLocation($name);
+        } catch (RemoteResourceNotFoundException $e) {
+        } catch (NamedRemoteResourceLocationNotFoundException $e) {
+        }
+
+        return null;
     }
 }

@@ -82,6 +82,18 @@ interface ProviderInterface
 
     public function removeLocation(RemoteResourceLocation $resourceLocation): void;
 
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
+    public function loadNamedRemoteResource(string $name): RemoteResource;
+
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
+    public function loadNamedRemoteResourceLocation(string $name): RemoteResourceLocation;
+
     public function search(Query $query): Result;
 
     public function searchCount(Query $query): int;
