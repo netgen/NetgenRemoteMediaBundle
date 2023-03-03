@@ -532,7 +532,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
 
         $this->cloudinaryApiMock
             ->expects(self::once())
-            ->method('update')
+            ->method('explicit')
             ->with('test.jpg', $expectedOptions);
 
         $this->apiGateway->update($cloudinaryId, $options);
@@ -557,7 +557,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
 
         $this->cloudinaryApiMock
             ->expects(self::once())
-            ->method('update')
+            ->method('explicit')
             ->with('test.jpg', $expectedOptions);
 
         $this->apiGateway->update($cloudinaryId, $options);
@@ -582,7 +582,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
 
         $this->cloudinaryApiMock
             ->expects(self::once())
-            ->method('update')
+            ->method('explicit')
             ->with('test_not_found.jpg', $expectedOptions)
             ->willThrowException(new Api\NotFound());
 
