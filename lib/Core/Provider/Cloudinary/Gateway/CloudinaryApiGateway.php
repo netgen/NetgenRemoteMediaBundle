@@ -219,7 +219,7 @@ final class CloudinaryApiGateway implements GatewayInterface
         $options['resource_type'] = $remoteId->getResourceType();
 
         try {
-            $this->cloudinaryApi->update($remoteId->getResourceId(), $options);
+            $this->cloudinaryUploader->explicit($remoteId->getResourceId(), $options);
         } catch (CloudinaryApi\NotFound $e) {
             throw new RemoteResourceNotFoundException($remoteId->getRemoteId());
         }

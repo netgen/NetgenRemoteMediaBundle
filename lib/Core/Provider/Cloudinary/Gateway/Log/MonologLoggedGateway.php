@@ -91,7 +91,7 @@ final class MonologLoggedGateway implements GatewayInterface
 
     public function update(CloudinaryRemoteId $remoteId, array $options): void
     {
-        $this->logger->info("[API][FREE] update(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Api::update(\"{$remoteId->getRemoteId()}\")");
+        $this->logger->info("[API][FREE] update(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Uploader::explicit(\"{$remoteId->getRemoteId()}\")");
 
         $this->gateway->update($remoteId, $options);
     }
