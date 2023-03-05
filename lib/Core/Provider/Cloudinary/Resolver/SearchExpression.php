@@ -84,19 +84,20 @@ final class SearchExpression
             ),
         );
 
+        $newResourceTypes = [];
         foreach ($resourceTypes as $key => $resourceType) {
-            $newResourceTypes = array_values(explode('|', $resourceType));
+            $resourceTypeParts = array_values(explode('|', $resourceType));
 
-            if (count($newResourceTypes) > 1) {
-                unset($resourceTypes[$key]);
+            if (count($resourceTypeParts) === 1) {
+                $newResourceTypes[] = $resourceType;
+
+                continue;
             }
 
-            if (count($newResourceTypes) > 0) {
-                $resourceTypes = array_merge(array_values($resourceTypes), $newResourceTypes);
-            }
+            $newResourceTypes = array_merge(array_values($newResourceTypes), array_values($resourceTypeParts));
         }
 
-        $resourceTypes = array_map(static fn ($value) => sprintf('resource_type:"%s"', $value), array_unique($resourceTypes));
+        $resourceTypes = array_map(static fn ($value) => sprintf('resource_type:"%s"', $value), array_unique($newResourceTypes));
 
         return '(' . implode(' OR ', $resourceTypes) . ')';
     }
