@@ -45,7 +45,7 @@ final class RemoteResourceTest extends AbstractTest
      *
      * @dataProvider createDataProvider
      */
-    public function testCreateImage(array $cloudinaryResponse, RemoteResource $expectedResource): void
+    public function testCreate(array $cloudinaryResponse, RemoteResource $expectedResource): void
     {
         if (!($cloudinaryResponse['etag'] ?? null)) {
             $this->fileHashFactoryMock

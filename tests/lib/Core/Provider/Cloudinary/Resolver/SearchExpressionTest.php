@@ -100,7 +100,7 @@ final class SearchExpressionTest extends TestCase
                 new Query([
                     'types' => ['document', 'raw'],
                 ]),
-                '(resource_type:"raw" OR resource_type:"image")'
+                '(resource_type:"image" OR resource_type:"raw")'
                 . ' AND ((format="pdf" OR format="doc" OR format="docx" OR format="ppt" OR format="pptx" OR format="txt"))',
             ],
             [

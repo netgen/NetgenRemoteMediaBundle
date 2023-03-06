@@ -311,7 +311,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[API][FREE] update(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Api::update(\"{$remoteId->getRemoteId()}\")");
+            ->with("[API][FREE] update(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Uploader::explicit(\"{$remoteId->getRemoteId()}\")");
 
         $this->gateway->update($remoteId, $options);
     }
