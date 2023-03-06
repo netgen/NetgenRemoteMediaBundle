@@ -291,31 +291,49 @@ final class Notify extends AbstractController
             foreach ($resourceData['added'] ?? [] as $value) {
                 if ($value['name'] === 'alt') {
                     $resource->setAltText($value['value']);
+
+                    continue;
                 }
 
                 if ($value['name'] === 'caption') {
                     $resource->setCaption($value['value']);
+
+                    continue;
                 }
+
+                $resource->addContextProperty($value['name'], $value['value']);
             }
 
-            foreach ($resourceData['removed'] ?? [] as $key => $value) {
+            foreach ($resourceData['removed'] ?? [] as $value) {
                 if ($value['name'] === 'alt') {
                     $resource->setAltText(null);
+
+                    continue;
                 }
 
                 if ($value['name'] === 'caption') {
                     $resource->setCaption(null);
+
+                    continue;
                 }
+
+                $resource->removeContextProperty($value['name']);
             }
 
-            foreach ($resourceData['updated'] ?? [] as $key => $value) {
+            foreach ($resourceData['updated'] ?? [] as $value) {
                 if ($value['name'] === 'alt') {
                     $resource->setAltText($value['value']);
+
+                    continue;
                 }
 
                 if ($value['name'] === 'caption') {
                     $resource->setCaption($value['value']);
+
+                    continue;
                 }
+
+                $resource->addContextProperty($value['name'], $value['value']);
             }
 
             $this->provider->store($resource);
