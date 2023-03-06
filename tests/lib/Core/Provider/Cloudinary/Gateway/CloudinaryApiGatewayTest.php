@@ -9,7 +9,7 @@ use Cloudinary;
 use Cloudinary\Api;
 use Cloudinary\Api\Response as CloudinaryApiResponse;
 use Cloudinary\Search;
-use Cloudinary\Uploader;
+use Cloudinary\Uploader as CloudinaryUploader;
 use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
@@ -21,6 +21,7 @@ use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenResolver;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
@@ -48,11 +49,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
     protected MockObject $cloudinaryMock;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Cloudinary\Uploader
-     */
-    protected MockObject $cloudinaryUploaderMock;
-
-    /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Cloudinary\Api
      */
     protected MockObject $cloudinaryApiMock;
@@ -75,13 +71,19 @@ class CloudinaryApiGatewayTest extends AbstractTest
     protected function setUp(): void
     {
         $this->cloudinaryMock = $this->createMock(Cloudinary::class);
-        $this->cloudinaryUploaderMock = $this->createMock(Uploader::class);
         $this->cloudinaryApiMock = $this->createMock(Api::class);
         $this->cloudinarySearchMock = $this->createMock(Search::class);
         $this->remoteResourceFactoryMock = $this->createMock(RemoteResourceFactoryInterface::class);
         $this->searchResultFactoryMock = $this->createMock(SearchResultFactoryInterface::class);
 
+        $cloudinaryInstanceFactory = new CloudinaryInstance(
+            self::CLOUD_NAME,
+            self::API_KEY,
+            self::API_SECRET,
+        );
+
         $this->apiGateway = new CloudinaryApiGateway(
+            $cloudinaryInstanceFactory->create(),
             $this->remoteResourceFactoryMock,
             $this->searchResultFactoryMock,
             new SearchExpressionResolver(
@@ -91,15 +93,9 @@ class CloudinaryApiGatewayTest extends AbstractTest
             new AuthTokenResolver('38128319a3a49e1d589a31a217e1a3f8'),
         );
 
-        $this->apiGateway->initCloudinary(
-            self::CLOUD_NAME,
-            self::API_KEY,
-            self::API_SECRET,
-        );
-
         $this->apiGateway->setServices(
             $this->cloudinaryMock,
-            $this->cloudinaryUploaderMock,
+            new CloudinaryUploader(),
             $this->cloudinaryApiMock,
             $this->cloudinarySearchMock,
         );
@@ -108,7 +104,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::__construct
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::formatBytes
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::initCloudinary
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::setServices
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::usage
      */
@@ -278,7 +273,14 @@ class CloudinaryApiGatewayTest extends AbstractTest
     {
         self::assertTrue($this->apiGateway->isEncryptionEnabled());
 
+        $cloudinaryInstanceFactory = new CloudinaryInstance(
+            self::CLOUD_NAME,
+            self::API_KEY,
+            self::API_SECRET,
+        );
+
         $apiGateway = new CloudinaryApiGateway(
+            $cloudinaryInstanceFactory->create(),
             $this->remoteResourceFactoryMock,
             $this->searchResultFactoryMock,
             new SearchExpressionResolver(
@@ -522,7 +524,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/image/upload/v1/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=81c6ab1a5bde49cdc3a1fe73bf504d7daf23b23b699cb386f551a0c2d4bd9ac8',
+            'https://res.cloudinary.com/testcloud/image/upload/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=59c5e3be84f6000c8da6c7a32014390d77dd4def021dd01529cf59b28116713d',
             $this->apiGateway->getAuthenticatedUrl($remoteId, $token),
         );
     }
@@ -542,7 +544,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
         ];
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/v1/folder/test_image.jpg',
+            'https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/folder/test_image.jpg',
             $this->apiGateway->getVariationUrl($remoteId, $transformations),
         );
     }
@@ -805,7 +807,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/video/upload/v1/media/example.jpg',
+            'https://res.cloudinary.com/testcloud/video/upload/media/example.jpg',
             $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId),
         );
     }
@@ -818,7 +820,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/example');
 
         self::assertSame(
-            "<img src='https://res.cloudinary.com/testcloud/image/upload/v1/media/example' />",
+            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example' />",
             $this->apiGateway->getImageTag($cloudinaryRemoteId),
         );
     }
@@ -831,10 +833,10 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
 
         self::assertSame(
-            "<video poster='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.jpg'>"
-            . "<source src='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.webm' type='video/webm'>"
-            . "<source src='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.mp4' type='video/mp4'>"
-            . "<source src='https://res.cloudinary.com/testcloud/video/upload/v1/media/example.ogv' type='video/ogg'></video>",
+            "<video poster='https://res.cloudinary.com/testcloud/video/upload/media/example.jpg'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.webm' type='video/webm'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.mp4' type='video/mp4'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.ogv' type='video/ogg'></video>",
             $this->apiGateway->getVideoTag($cloudinaryRemoteId),
         );
     }

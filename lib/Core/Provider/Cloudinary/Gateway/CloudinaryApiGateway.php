@@ -62,36 +62,20 @@ final class CloudinaryApiGateway implements GatewayInterface
     private AuthTokenResolver $authTokenResolver;
 
     public function __construct(
+        Cloudinary $cloudinary,
         RemoteResourceFactoryInterface $remoteResourceFactory,
         SearchResultFactoryInterface $searchResultFactory,
         SearchExpressionResolver $searchExpressionResolver,
         AuthTokenResolver $authTokenResolver
     ) {
+        $this->cloudinary = $cloudinary;
+        $this->cloudinaryUploader = new CloudinaryUploader();
+        $this->cloudinaryApi = new CloudinaryApi();
+        $this->cloudinarySearch = new CloudinarySearch();
         $this->remoteResourceFactory = $remoteResourceFactory;
         $this->searchResultFactory = $searchResultFactory;
         $this->searchExpressionResolver = $searchExpressionResolver;
         $this->authTokenResolver = $authTokenResolver;
-    }
-
-    public function initCloudinary(
-        string $cloudName,
-        string $apiKey,
-        string $apiSecret,
-        bool $useSubdomains = false
-    ): void {
-        $this->cloudinary = new Cloudinary();
-        $this->cloudinary->config(
-            [
-                'cloud_name' => $cloudName,
-                'api_key' => $apiKey,
-                'api_secret' => $apiSecret,
-                'cdn_subdomain' => $useSubdomains,
-            ],
-        );
-
-        $this->cloudinaryUploader = new CloudinaryUploader();
-        $this->cloudinaryApi = new CloudinaryApi();
-        $this->cloudinarySearch = new CloudinarySearch();
     }
 
     public function setServices(

@@ -12,6 +12,7 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as Resour
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
+use function cloudinary_url_internal;
 use function in_array;
 use function pathinfo;
 
@@ -44,7 +45,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         return new RemoteResourceValue([
             'remoteId' => $cloudinaryRemoteId->getRemoteId(),
             'type' => $this->resolveResourceType($data),
-            'url' => $data['secure_url'] ?? $data['url'],
+            'url' => $this->resolveCorrectUrl($data),
             'name' => pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
             'folder' => $cloudinaryRemoteId->getFolder(),
             'visibility' => $this->resolveVisibility($data),
@@ -74,6 +75,17 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         }
 
         throw new InvalidDataException('Missing required "secure_url" or "url" property!');
+    }
+
+    private function resolveCorrectUrl(array $data): string
+    {
+        $options = [
+            'type' => $data['type'] ?? 'upload',
+            'resource_type' => $data['resource_type'] ?? 'image',
+            'secure' => true,
+        ];
+
+        return cloudinary_url_internal($data['public_id'], $options);
     }
 
     private function resolveResourceType(array $data): string

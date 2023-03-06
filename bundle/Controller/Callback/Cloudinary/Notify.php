@@ -138,7 +138,7 @@ final class Notify extends AbstractController
             $resource = $this->provider->loadByRemoteId($cloudinaryRemoteId->getRemoteId());
 
             $resource
-                ->setUrl($requestContent['secure_url'])
+                ->setUrl($this->gateway->getDownloadLink($cloudinaryRemoteId))
                 ->setName(pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME))
                 ->setSize($requestContent['bytes'])
                 ->setTags($requestContent['tags']);
@@ -215,7 +215,7 @@ final class Notify extends AbstractController
             $resource
                 ->setRemoteId($cloudinaryRemoteId->getRemoteId())
                 ->setName(pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME))
-                ->setUrl($apiResource['secure_url'])
+                ->setUrl($this->gateway->getDownloadLink($cloudinaryRemoteId))
                 ->setFolder($cloudinaryRemoteId->getFolder());
 
             $this->provider->store($resource);

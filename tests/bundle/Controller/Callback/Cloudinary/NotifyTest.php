@@ -15,13 +15,15 @@ use Netgen\RemoteMedia\Event\Cloudinary\NotificationReceivedEvent;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use RuntimeException;
 
+use function in_array;
 use function json_encode;
+use function sprintf;
 use function time;
 
 final class NotifyTest extends TestCase
@@ -602,14 +604,14 @@ final class NotifyTest extends TestCase
         $this->gatewayMock
             ->expects(self::exactly(3))
             ->method('invalidateResourceCache')
-            ->willReturnCallback(function ($cloudinaryRemoteId) {
+            ->willReturnCallback(static function ($cloudinaryRemoteId) {
                 $expectedIds = [
                     CloudinaryRemoteId::fromRemoteId('upload|image|sample'),
                     CloudinaryRemoteId::fromRemoteId('upload|video|video_sample'),
-                    CloudinaryRemoteId::fromRemoteId('upload|raw|non_existing_sample')
+                    CloudinaryRemoteId::fromRemoteId('upload|raw|non_existing_sample'),
                 ];
 
-                if (in_array($cloudinaryRemoteId, $expectedIds)) {
+                if (in_array($cloudinaryRemoteId, $expectedIds, true)) {
                     return null;
                 }
 
@@ -643,7 +645,7 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(3))
             ->method('loadByRemoteId')
-            ->willReturnCallback(function ($remoteId) use ($image, $video) {
+            ->willReturnCallback(static function ($remoteId) use ($image, $video) {
                 if ($remoteId === 'upload|image|sample') {
                     return $image;
                 }
@@ -670,13 +672,13 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('store')
-            ->willReturnCallback(function ($resource) use ($image, $video) {
+            ->willReturnCallback(static function ($resource) use ($image, $video) {
                 $expectedResources = [
                     $image,
                     $video,
                 ];
 
-                if (in_array($resource, $expectedResources)) {
+                if (in_array($resource, $expectedResources, true)) {
                     return $resource;
                 }
 
@@ -828,15 +830,15 @@ final class NotifyTest extends TestCase
         $this->gatewayMock
             ->expects(self::exactly(4))
             ->method('invalidateResourceCache')
-            ->willReturnCallback(function ($cloudinaryRemoteId) {
+            ->willReturnCallback(static function ($cloudinaryRemoteId) {
                 $expectedIds = [
                     CloudinaryRemoteId::fromRemoteId('upload|image|sample'),
                     CloudinaryRemoteId::fromRemoteId('upload|video|video_sample'),
                     CloudinaryRemoteId::fromRemoteId('upload|raw|file_sample'),
-                    CloudinaryRemoteId::fromRemoteId('upload|raw|non_existing_sample')
+                    CloudinaryRemoteId::fromRemoteId('upload|raw|non_existing_sample'),
                 ];
 
-                if (in_array($cloudinaryRemoteId, $expectedIds)) {
+                if (in_array($cloudinaryRemoteId, $expectedIds, true)) {
                     return null;
                 }
 
@@ -884,7 +886,7 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(4))
             ->method('loadByRemoteId')
-            ->willReturnCallback(function ($remoteId) use ($image, $video, $file) {
+            ->willReturnCallback(static function ($remoteId) use ($image, $video, $file) {
                 if ($remoteId === 'upload|image|sample') {
                     return $image;
                 }
@@ -919,14 +921,14 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(3))
             ->method('store')
-            ->willReturnCallback(function ($resource) use ($image, $video, $file) {
+            ->willReturnCallback(static function ($resource) use ($image, $video, $file) {
                 $expectedResources = [
                     $image,
                     $video,
                     $file,
                 ];
 
-                if (in_array($resource, $expectedResources)) {
+                if (in_array($resource, $expectedResources, true)) {
                     return $resource;
                 }
 

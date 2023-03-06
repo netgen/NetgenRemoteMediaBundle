@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 use function array_diff;
 use function array_key_exists;
+use function array_unique;
+use function array_values;
 use function in_array;
 use function property_exists;
 
@@ -147,6 +149,8 @@ class RemoteResource
 
             $this->{$name} = $value;
         }
+
+        $this->tags = array_unique(array_values($this->tags));
     }
 
     public function getId(): ?int
@@ -290,7 +294,7 @@ class RemoteResource
      */
     public function setTags(array $tags): self
     {
-        $this->tags = $tags;
+        $this->tags = array_unique(array_values($tags));
 
         return $this;
     }
@@ -302,7 +306,11 @@ class RemoteResource
 
     public function addTag(string $tag): void
     {
-        $this->tags[] = $tag;
+        if (!$this->hasTag($tag)) {
+            $this->tags[] = $tag;
+        }
+
+        $this->tags = array_unique(array_values($this->tags));
     }
 
     public function removeTag(string $tag): void

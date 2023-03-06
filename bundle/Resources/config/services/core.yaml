@@ -14,12 +14,11 @@ services:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway
         public: false
         arguments:
+            - '@netgen_remote_media.provider.cloudinary.cloudinary_instance'
             - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
             - '@netgen_remote_media.provider.cloudinary.factory.search_result'
             - '@netgen_remote_media.provider.cloudinary.resolver.search_expression'
             - '@netgen_remote_media.provider.cloudinary.resolver.auth_token'
-        calls:
-            - [initCloudinary, ['%netgen_remote_media.parameters.cloudinary.account_name%', '%netgen_remote_media.parameters.cloudinary.account_key%', "%netgen_remote_media.parameters.cloudinary.account_secret%", "%netgen_remote_media.parameters.use_subdomains%"]]
 
     netgen_remote_media.provider.cloudinary.gateway.cached:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway
@@ -57,6 +56,19 @@ services:
     netgen_remote_media.provider.cloudinary.converter.visibility_type:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType
         public: false
+
+    netgen_remote_media.provider.cloudinary.factory.cloudinary_instance:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance
+        public: false
+        arguments:
+            - '%netgen_remote_media.parameters.cloudinary.account_name%'
+            - '%netgen_remote_media.parameters.cloudinary.account_key%'
+            - "%netgen_remote_media.parameters.cloudinary.account_secret%"
+            - "%netgen_remote_media.parameters.use_subdomains%"
+
+    netgen_remote_media.provider.cloudinary.cloudinary_instance:
+        class: Cloudinary
+        factory: ['@netgen_remote_media.provider.cloudinary.factory.cloudinary_instance', 'create']
 
     netgen_remote_media.provider.cloudinary.factory.remote_resource:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource
