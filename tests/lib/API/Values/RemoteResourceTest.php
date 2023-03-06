@@ -27,6 +27,7 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getType
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getUrl
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getVersion
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getVisibility
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasContextProperty
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetadataProperty
@@ -41,8 +42,9 @@ final class RemoteResourceTest extends AbstractTest
             'id' => 56,
             'remoteId' => 'upload|image|media/c87hg9xfxrd4itiim3t0',
             'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/c87hg9xfxrd4itiim3t0.jpg',
+            'url' => 'https://res.cloudinary.com/demo/image/upload/media/c87hg9xfxrd4itiim3t0.jpg',
             'name' => 'c87hg9xfxrd4itiim3t0',
+            'version' => '1371995958',
             'folder' => Folder::fromPath('media'),
             'size' => 120253,
             'altText' => 'alt text',
@@ -50,7 +52,6 @@ final class RemoteResourceTest extends AbstractTest
             'tags' => ['tag1'],
             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
             'metadata' => [
-                'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                 'width' => 864,
                 'height' => 576,
@@ -82,13 +83,18 @@ final class RemoteResourceTest extends AbstractTest
         );
 
         self::assertSame(
-            'https://res.cloudinary.com/demo/image/upload/v1371995958/media/c87hg9xfxrd4itiim3t0.jpg',
+            'https://res.cloudinary.com/demo/image/upload/media/c87hg9xfxrd4itiim3t0.jpg',
             $resource->getUrl(),
         );
 
         self::assertSame(
             'c87hg9xfxrd4itiim3t0',
             $resource->getName(),
+        );
+
+        self::assertSame(
+            '1371995958',
+            $resource->getVersion(),
         );
 
         self::assertFolderSame(
@@ -135,7 +141,6 @@ final class RemoteResourceTest extends AbstractTest
 
         self::assertSame(
             [
-                'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                 'width' => 864,
                 'height' => 576,
@@ -152,7 +157,7 @@ final class RemoteResourceTest extends AbstractTest
             $resource->getMetaDataProperty('width'),
         );
 
-        self::assertTrue($resource->hasMetaDataProperty('version'));
+        self::assertFalse($resource->hasMetaDataProperty('version'));
         self::assertFalse($resource->hasMetaDataProperty('non_existing_parameter'));
         self::assertNull($resource->getMetaDataProperty('non_existing_parameter'));
 
@@ -188,6 +193,7 @@ final class RemoteResourceTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setTags
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setType
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setUrl
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setVersion
      * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setVisibility
      */
     public function testSetters(): void
@@ -196,8 +202,9 @@ final class RemoteResourceTest extends AbstractTest
             'id' => 56,
             'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
             'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg',
+            'url' => 'https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg',
             'name' => 'c87hg9xfxrd4itiim3t0',
+            'version' => '1371995958',
             'folder' => Folder::fromPath('media/image'),
             'visibility' => 'protected',
             'size' => 120253,
@@ -206,7 +213,6 @@ final class RemoteResourceTest extends AbstractTest
             'tags' => ['tag1'],
             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
             'metadata' => [
-                'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                 'width' => 864,
                 'height' => 576,
@@ -227,8 +233,9 @@ final class RemoteResourceTest extends AbstractTest
         $resource
             ->setRemoteId('upload|image|c87hg9xfxrd4itiim3t0')
             ->setType('image')
-            ->setUrl('https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg')
+            ->setUrl('https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg')
             ->setName('c87hg9xfxrd4itiim3t0')
+            ->setVersion('1371995958')
             ->setFolder(Folder::fromPath('media/image'))
             ->setVisibility('protected')
             ->setSize(120253)
@@ -237,7 +244,6 @@ final class RemoteResourceTest extends AbstractTest
             ->setTags(['tag1'])
             ->setMd5('e522f43cf89aa0afd03387c37e2b6e29')
             ->setMetadata([
-                'version' => '1371995958',
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                 'width' => 864,
                 'height' => 576,
@@ -276,6 +282,29 @@ final class RemoteResourceTest extends AbstractTest
             $resource->getTags(),
         );
 
+        self::assertTrue($resource->hasTag('tag1'));
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::addTag
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
+     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
+     */
+    public function testAddExistingTag(): void
+    {
+        $resource = new RemoteResource(['tags' => ['tag1']]);
+
+        self::assertCount(1, $resource->getTags());
+        self::assertTrue($resource->hasTag('tag1'));
+
+        $resource->addTag('tag1');
+
+        self::assertSame(
+            ['tag1'],
+            $resource->getTags(),
+        );
+
+        self::assertCount(1, $resource->getTags());
         self::assertTrue($resource->hasTag('tag1'));
     }
 

@@ -363,7 +363,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
-        $url = 'https://res.cloudinary.com/testcloud/image/upload/v1/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=81c6ab1a5bde49cdc3a1fe73bf504d7daf23b23b699cb386f551a0c2d4bd9ac8';
+        $url = 'https://res.cloudinary.com/testcloud/image/upload/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=81c6ab1a5bde49cdc3a1fe73bf504d7daf23b23b699cb386f551a0c2d4bd9ac8';
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -400,7 +400,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
             ->expects(self::once())
             ->method('getVariationUrl')
             ->with($remoteId, $transformations)
-            ->willReturn('https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/v1/folder/test_image.jpg');
+            ->willReturn('https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/folder/test_image.jpg');
 
         $this->loggerMock
             ->expects(self::once())
@@ -408,7 +408,7 @@ final class MonologLoggedGatewayTest extends AbstractTest
             ->with("[INTERNAL][FREE] getVariationUrl(\"{$remoteId->getRemoteId()}\") -> cloudinary_url_internal(\"{$remoteId->getRemoteId()}\")");
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/v1/folder/test_image.jpg',
+            'https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/folder/test_image.jpg',
             $this->gateway->getVariationUrl($remoteId, $transformations),
         );
     }

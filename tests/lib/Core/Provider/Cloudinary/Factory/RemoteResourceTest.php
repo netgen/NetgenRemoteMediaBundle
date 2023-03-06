@@ -98,7 +98,7 @@ final class RemoteResourceTest extends AbstractTest
             [
                 [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
+                    'version' => 1371995958,
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'width' => 864,
                     'height' => 576,
@@ -131,13 +131,13 @@ final class RemoteResourceTest extends AbstractTest
                     'type' => 'image',
                     'url' => 'https://res.cloudinary.com/myCloud/image/upload/c87hg9xfxrd4itiim3t0',
                     'name' => 'c87hg9xfxrd4itiim3t0',
+                    'version' => '1371995958',
                     'size' => 120253,
                     'altText' => 'alt text',
                     'caption' => 'caption text',
                     'tags' => ['tag1'],
                     'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
                     'metadata' => [
-                        'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
                         'height' => 576,
@@ -154,7 +154,6 @@ final class RemoteResourceTest extends AbstractTest
             [
                 [
                     'public_id' => 'other/c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'format' => 'pdf',
                     'resource_type' => 'image',
@@ -178,7 +177,6 @@ final class RemoteResourceTest extends AbstractTest
                     'tags' => [],
                     'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     'metadata' => [
-                        'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'pdf',
                         'created_at' => '2013-06-23T13:59:18Z',
@@ -188,7 +186,7 @@ final class RemoteResourceTest extends AbstractTest
             [
                 [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
+                    'version' => 13711295958,
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'width' => 864,
                     'height' => 576,
@@ -214,12 +212,12 @@ final class RemoteResourceTest extends AbstractTest
                     'type' => 'video',
                     'url' => 'https://res.cloudinary.com/myCloud/video/upload/c87hg9xfxrd4itiim3t0',
                     'name' => 'c87hg9xfxrd4itiim3t0',
+                    'version' => '13711295958',
                     'size' => 120253,
                     'altText' => 'alt text',
                     'tags' => ['tag1', 'tag2'],
                     'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
                     'metadata' => [
-                        'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
                         'height' => 576,
@@ -232,7 +230,7 @@ final class RemoteResourceTest extends AbstractTest
             [
                 [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
+                    'version' => 1371995958,
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'width' => 864,
                     'height' => 576,
@@ -256,12 +254,12 @@ final class RemoteResourceTest extends AbstractTest
                     'type' => 'video',
                     'url' => 'https://res.cloudinary.com/myCloud/video/authenticated/c87hg9xfxrd4itiim3t0',
                     'name' => 'c87hg9xfxrd4itiim3t0',
+                    'version' => '1371995958',
                     'visibility' => 'protected',
                     'size' => 120253,
                     'tags' => ['tag1', 'tag2'],
                     'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
                     'metadata' => [
-                        'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
                         'height' => 576,
@@ -274,7 +272,7 @@ final class RemoteResourceTest extends AbstractTest
             [
                 [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
+                    'version' => 1371995958,
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'format' => 'mp3',
                     'resource_type' => 'video',
@@ -297,12 +295,12 @@ final class RemoteResourceTest extends AbstractTest
                     'type' => 'audio',
                     'url' => 'https://res.cloudinary.com/myCloud/video/private/c87hg9xfxrd4itiim3t0',
                     'name' => 'c87hg9xfxrd4itiim3t0',
+                    'version' => '1371995958',
                     'visibility' => 'private',
                     'size' => 12025,
                     'tags' => [],
                     'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     'metadata' => [
-                        'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'mp3',
                         'created_at' => '2013-06-23T13:59:18Z',
@@ -316,7 +314,7 @@ final class RemoteResourceTest extends AbstractTest
             [
                 [
                     'public_id' => 'media/raw/new/c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
+                    'version' => 1371995958,
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'format' => 'zip',
                     'resource_type' => 'raw',
@@ -331,13 +329,13 @@ final class RemoteResourceTest extends AbstractTest
                     'type' => 'other',
                     'url' => 'https://res.cloudinary.com/myCloud/raw/test/media/raw/new/c87hg9xfxrd4itiim3t0',
                     'name' => 'c87hg9xfxrd4itiim3t0',
+                    'version' => '1371995958',
                     'folder' => Folder::fromPath('media/raw/new'),
                     'visibility' => 'public',
                     'size' => 12025,
                     'tags' => [],
                     'md5' => 'e522f43cf89aa0afd03387c38e2b6e29',
                     'metadata' => [
-                        'version' => '1371995958',
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'zip',
                         'created_at' => '2011-06-23T13:59:18Z',

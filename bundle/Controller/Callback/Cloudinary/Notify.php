@@ -140,6 +140,7 @@ final class Notify extends AbstractController
             $resource
                 ->setUrl($this->gateway->getDownloadLink($cloudinaryRemoteId))
                 ->setName(pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME))
+                ->setVersion((string) $requestContent['version'])
                 ->setSize($requestContent['bytes'])
                 ->setTags($requestContent['tags']);
 

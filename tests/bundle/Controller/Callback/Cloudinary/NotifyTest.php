@@ -251,8 +251,9 @@ final class NotifyTest extends TestCase
             'id' => 5,
             'remoteId' => 'upload|image|sample',
             'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/v1608120578/sample.jpg',
+            'url' => 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
             'name' => 'sample',
+            'version' => '1608120578',
             'size' => 380250,
         ]);
 
@@ -346,7 +347,7 @@ final class NotifyTest extends TestCase
             'id' => 5,
             'remoteId' => 'upload|image|sample',
             'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/v1608120578/sample.jpg',
+            'url' => 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
             'name' => 'sample',
             'size' => 380250,
         ]);
@@ -355,7 +356,7 @@ final class NotifyTest extends TestCase
             'id' => 5,
             'remoteId' => 'upload|video|sample2',
             'type' => 'video',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/v1608120578/sample2.mp4',
+            'url' => 'https://res.cloudinary.com/demo/image/upload/sample2.mp4',
             'name' => 'sample2',
             'size' => 3802530,
         ]);
@@ -606,12 +607,12 @@ final class NotifyTest extends TestCase
             ->method('invalidateResourceCache')
             ->willReturnCallback(static function ($cloudinaryRemoteId) {
                 $expectedIds = [
-                    CloudinaryRemoteId::fromRemoteId('upload|image|sample'),
-                    CloudinaryRemoteId::fromRemoteId('upload|video|video_sample'),
-                    CloudinaryRemoteId::fromRemoteId('upload|raw|non_existing_sample'),
+                    'upload|image|sample',
+                    'upload|video|video_sample',
+                    'upload|raw|non_existing_sample',
                 ];
 
-                if (in_array($cloudinaryRemoteId, $expectedIds, true)) {
+                if (in_array($cloudinaryRemoteId->getRemoteId(), $expectedIds, true)) {
                     return null;
                 }
 
@@ -832,13 +833,13 @@ final class NotifyTest extends TestCase
             ->method('invalidateResourceCache')
             ->willReturnCallback(static function ($cloudinaryRemoteId) {
                 $expectedIds = [
-                    CloudinaryRemoteId::fromRemoteId('upload|image|sample'),
-                    CloudinaryRemoteId::fromRemoteId('upload|video|video_sample'),
-                    CloudinaryRemoteId::fromRemoteId('upload|raw|file_sample'),
-                    CloudinaryRemoteId::fromRemoteId('upload|raw|non_existing_sample'),
+                    'upload|image|sample',
+                    'upload|video|video_sample',
+                    'upload|raw|file_sample',
+                    'upload|raw|non_existing_sample',
                 ];
 
-                if (in_array($cloudinaryRemoteId, $expectedIds, true)) {
+                if (in_array($cloudinaryRemoteId->getRemoteId(), $expectedIds, true)) {
                     return null;
                 }
 

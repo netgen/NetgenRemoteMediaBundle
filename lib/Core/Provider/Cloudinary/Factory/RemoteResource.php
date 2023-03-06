@@ -47,6 +47,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'type' => $this->resolveResourceType($data),
             'url' => $this->resolveCorrectUrl($data),
             'name' => pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
+            'version' => ($data['version'] ?? null) ? (string) $data['version'] : null,
             'folder' => $cloudinaryRemoteId->getFolder(),
             'visibility' => $this->resolveVisibility($data),
             'size' => $data['bytes'] ?? 0,
@@ -129,7 +130,6 @@ final class RemoteResource implements RemoteResourceFactoryInterface
     private function resolveMetaData(array $data): array
     {
         $supportedMetaData = [
-            'version',
             'width',
             'height',
             'format',

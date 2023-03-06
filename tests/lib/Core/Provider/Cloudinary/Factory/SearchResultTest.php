@@ -60,6 +60,7 @@ final class SearchResultTest extends AbstractTest
                     'resources' => [
                         [
                             'public_id' => 'c87hg9xfxrd4itiim3t0',
+                            'vesrion' => 435464523,
                             'resource_type' => 'image',
                             'type' => 'upload',
                             'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
@@ -67,6 +68,7 @@ final class SearchResultTest extends AbstractTest
                         [
                             'public_id' => 'c87hg9xfxrd4defe3t0',
                             'resource_type' => 'video',
+                            'version' => 547034322,
                             'type' => 'upload',
                             'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4defe3t0.mp4',
                         ],
@@ -79,15 +81,17 @@ final class SearchResultTest extends AbstractTest
                         new RemoteResource([
                             'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
                             'type' => 'image',
-                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                            'url' => 'https://res.cloudinary.com/demo/image/upload/c87hg9xfxrd4itiim3t0.jpg',
                             'name' => 'c87hg9xfxrd4itiim3t0',
+                            'version' => '435464523',
                             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                         ]),
                         new RemoteResource([
                             'remoteId' => 'upload|video|c87hg9xfxrd4defe3t0',
                             'type' => 'video',
-                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/c87hg9xfxrd4defe3t0.mp4',
+                            'url' => 'https://res.cloudinary.com/demo/image/upload/c87hg9xfxrd4defe3t0.mp4',
                             'name' => 'c87hg9xfxrd4defe3t0',
+                            'version' => '547034322',
                             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                         ]),
                     ],
@@ -99,6 +103,7 @@ final class SearchResultTest extends AbstractTest
                     'resources' => [
                         [
                             'public_id' => 'media/image/c87hg9xfxrd4itiim3t0',
+                            'version' => 465788331,
                             'resource_type' => 'image',
                             'type' => 'upload',
                             'secure_url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg',
@@ -112,8 +117,9 @@ final class SearchResultTest extends AbstractTest
                         new RemoteResource([
                             'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
                             'type' => 'image',
-                            'url' => 'https://res.cloudinary.com/demo/image/upload/v1371995958/media/image/c87hg9xfxrd4itiim3t0.jpg',
+                            'url' => 'https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg',
                             'name' => 'c87hg9xfxrd4itiim3t0',
+                            'version' => '465788331',
                             'folder' => Folder::fromPath('media/image'),
                             'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
                         ]),

@@ -85,6 +85,11 @@ class RemoteResource
     private string $name;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private ?string $version = null;
+
+    /**
      * @ORM\Column(type="object", nullable=true)
      */
     private ?Folder $folder = null;
@@ -202,6 +207,18 @@ class RemoteResource
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getVersion(): ?string
+    {
+        return $this->version;
+    }
+
+    public function setVersion(?string $version): self
+    {
+        $this->version = $version;
 
         return $this;
     }
