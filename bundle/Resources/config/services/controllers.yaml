@@ -1,0 +1,42 @@
+services:
+    netgen_remote_media.controller.facets.load:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@translator'
+
+    netgen_remote_media.controller.folder.load:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Load
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+
+    netgen_remote_media.controller.folder.create:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+
+    netgen_remote_media.controller.resource.browse:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+
+    netgen_remote_media.controller.resource.upload:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@netgen_remote_media.factory.md5_file_hash'
+
+    netgen_remote_media.controller.callback.cloudinary.notify:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider.cloudinary.gateway.cached'
+            - '@netgen_remote_media.provider'
+            - '@netgen_remote_media.provider.cloudinary.verifier.controller.signature'
+            - '@doctrine.orm.entity_manager'
+            - '@event_dispatcher'

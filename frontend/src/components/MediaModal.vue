@@ -1,7 +1,8 @@
 <template>
-  <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :tags="tags" :media-types="mediaTypes" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
-    <media-galery
+  <modal v-bind:title="this.config.translations.browse_title" @close="$emit('close')">
+    <media-facets :config="config" :tags="tags" :types="types" :visibilities="visibilities" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
+    <media-gallery
+        :translations="config.translations"
         :media="media"
         :canLoadMore="canLoadMore"
         :selectedMediaId="selectedMediaId"
@@ -15,49 +16,44 @@
 
 <script>
 import MediaFacets from "./MediaFacets";
-import MediaGalery from "./MediaGalery";
-import {FOLDER_ALL, FOLDER_ROOT, TAG_ALL, SEARCH_NAME, TYPE_ALL, TYPE_IMAGE, TYPE_VIDEO, TYPE_RAW} from "../constants/facets";
-import { encodeQueryData } from "../utility/utility";
+import MediaGallery from "./MediaGallery";
 import debounce from "debounce";
 import Modal from "./Modal";
+import { FOLDER_ROOT } from "../constants/facets";
 
 const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["tags", "facetsLoading", "selectedMediaId", "paths"],
+  props: ["config", "tags", "types", "visibilities", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
-    "media-galery": MediaGalery,
+    "media-gallery": MediaGallery,
     modal: Modal
   },
   data() {
+    let folder = null;
+
+    if (this.config.parentFolder) {
+      folder = this.config.parentFolder.id;
+    }
+
+    if (this.config.folder) {
+      folder = this.config.folder.id;
+    }
+
     return {
       media: [],
       canLoadMore: false,
       nextCursor: null,
       loading: true,
       facets: {
-        folder: FOLDER_ALL,
-        searchType: SEARCH_NAME,
-        mediaType: "",
+        folder: folder,
+        type: "",
         query: "",
-        tag: ""
-      },
-      mediaTypes: [
-        {
-          name: this.$root.$data.NgRemoteMediaTranslations.browse_image_and_documents,
-          id: TYPE_IMAGE
-        },
-        {
-          name: this.$root.$data.NgRemoteMediaTranslations.browse_video_and_audio,
-          id: TYPE_VIDEO
-        },
-        {
-          name: this.$root.$data.NgRemoteMediaTranslations.browse_raw,
-          id: TYPE_RAW
-        }
-      ]
+        tag: "",
+        visibility: ""
+      }
     };
   },
   methods: {
@@ -69,18 +65,64 @@ export default {
       this.abortController && this.abortController.abort();
       this.abortController = new AbortController();
 
-      const query = {
+      let query = {
         limit: NUMBER_OF_ITEMS,
         offset: patch ? this.media.length : 0,
-        q: this.facets.query,
-        mediatype: this.facets.mediaType || TYPE_ALL,
-        folder: this.facets.folder || FOLDER_ALL,
-        search_type: this.facets.searchType,
-        next_cursor: patch ? this.nextCursor : null,
-        tag: this.facets.tag || TAG_ALL
       };
 
-      const url = `${this.paths.browse}?${encodeQueryData(query)}`;
+      if (this.facets.query) {
+        query['query'] = this.facets.query;
+      }
+
+      if (this.config.allowedTypes.length > 0) {
+        query['type'] = this.config.allowedTypes;
+      }
+
+      if (this.facets.type) {
+        query['type'] = this.facets.type;
+      }
+
+      if (this.facets.folder) {
+        query['folder'] = this.facets.folder === FOLDER_ROOT
+          ? ''
+          : this.facets.folder;
+      }
+
+      if (this.config.allowedTags.length > 0) {
+        query['tag'] = this.config.allowedTags;
+      }
+
+      if (this.facets.tag) {
+        query['tag'] = this.facets.tag;
+      }
+
+      if (this.config.allowedVisibilities.length > 0) {
+        query['visibility'] = this.config.allowedVisibilities;
+      }
+
+      if (this.facets.visibility) {
+        query['visibility'] = this.facets.visibility;
+      }
+
+      if (patch && this.nextCursor) {
+        query['next_cursor'] = this.nextCursor;
+      }
+
+      let queryString = '';
+      for (const [key, value] of Object.entries(query)) {
+        if (queryString !== '') {
+          queryString += '&';
+        }
+
+        if (value.constructor === Array) {
+          queryString += (key + '[]=');
+          queryString += value.join('&' + key + '[]=');
+        } else {
+          queryString += (key + '=' + value);
+        }
+      }
+
+      const url = `${this.paths.browse_resources}?${encodeURI(queryString)}`;
 
       try {
         const response = await fetch(url, {

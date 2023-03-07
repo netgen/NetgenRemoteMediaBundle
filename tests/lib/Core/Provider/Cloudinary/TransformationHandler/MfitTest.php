@@ -5,40 +5,65 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mfit;
+use PHPUnit\Framework\TestCase;
 
-final class MfitTest extends BaseTest
+final class MfitTest extends TestCase
 {
     protected Mfit $mfit;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->mfit = new Mfit();
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mfit::process
      */
-    public function testMfitSimple(): void
+    public function testWithoutConfig(): void
     {
         self::assertSame(
             ['crop' => 'mfit'],
-            $this->mfit->process($this->resource, 'small'),
+            $this->mfit->process(),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mfit::process
+     *
+     * @dataProvider dataProvider
      */
-    public function testMfitWithDimensions(): void
+    public function test(array $config, array $result): void
     {
         self::assertSame(
-            [
-                'crop' => 'mfit',
-                'width' => 100,
-                'height' => 200,
-            ],
-            $this->mfit->process($this->resource, 'small', [100, 200]),
+            $result,
+            $this->mfit->process($config),
         );
+    }
+
+    public function dataProvider(): array
+    {
+        return [
+            [
+                [],
+                [
+                    'crop' => 'mfit',
+                ],
+            ],
+            [
+                [100],
+                [
+                    'crop' => 'mfit',
+                    'width' => 100,
+                ],
+            ],
+            [
+                [100, 200],
+                [
+                    'crop' => 'mfit',
+                    'width' => 100,
+                    'height' => 200,
+                ],
+            ],
+        ];
     }
 }

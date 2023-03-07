@@ -6,38 +6,51 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\TestCase;
 
-final class ResizeTest extends BaseTest
+final class ResizeTest extends TestCase
 {
     protected Resize $resize;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->resize = new Resize();
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize::process
      */
-    public function testResizeWithDimensions(): void
+    public function testWithWidth(): void
     {
         self::assertSame(
             [
                 'width' => 100,
-                'height' => 200,
             ],
-            $this->resize->process($this->resource, 'small', [100, 200]),
+            $this->resize->process([100]),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize::process
      */
-    public function testMissingResizeConfiguration(): void
+    public function testWithBothDimensions(): void
+    {
+        self::assertSame(
+            [
+                'width' => 100,
+                'height' => 50,
+            ],
+            $this->resize->process([100, 50]),
+        );
+    }
+
+    /**
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize::process
+     */
+    public function testWithoutConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);
 
-        $this->resize->process($this->resource, 'named');
+        $this->resize->process();
     }
 }

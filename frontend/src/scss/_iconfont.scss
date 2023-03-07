@@ -10,6 +10,8 @@
   font-style: normal;
 }
 
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
  [class^="ngrm-icon-"]:before, [class*=" ngrm-icon-"]:before {
   font-family: "fa-ngrm";
   font-style: normal;
@@ -44,3 +46,4 @@
 .ngrm-icon-upload:before { content: '\e805'; } /* '' */
 .ngrm-icon-play:before { content: '\e811'; } /* '' */
 .ngrm-icon-trash:before { content: '\f1f8'; } /* '' */
+.ngrm-icon-file-archive-o:before { content: "\f1c6"; }

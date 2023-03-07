@@ -1,0 +1,28 @@
+{% block remote_media_widget %}
+    {% set input_fields = {} %}
+    {% for child in form.children %}
+        {% if child.vars.name == 'tags' %}
+            {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name ~ '[]'}) %}
+        {% else %}
+            {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
+        {% endif %}
+    {% endfor %}
+
+    {{ form_widget(form.locationId) }}
+    {{ form_widget(form.source) }}
+
+    {% include '@NetgenRemoteMedia/app/interactions.html.twig' with {
+        'field_id': id,
+        'location_id': form.children.locationId.vars.value,
+        'variation_group': form.vars.variation_group ?: 'default',
+        'variation_settings_json': form.vars.value ? form.vars.value.cropSettings : '{}',
+        'input_fields': input_fields,
+        'available_variations': ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format,
+        'allowed_visibilities': form.vars.allowed_visibilities|default([]),
+        'allowed_types': form.vars.allowed_types|default([]),
+        'allowed_tags': form.vars.allowed_tags|default([]),
+        'parent_folder': form.vars.parent_folder,
+        'folder': form.vars.folder,
+        'upload_context': form.vars.upload_context|default([])
+    } %}
+{% endblock %}

@@ -1,4 +1,14 @@
 ngrm:
+    supported_types:
+        image: 'Image'
+        video: 'Video'
+        audio: 'Audio'
+        document: 'Document'
+        other: 'Other'
+    supported_visibilities:
+        public: 'Public'
+        private: 'Private'
+        protected: 'Protected'
     edit:
         form:
             field:
@@ -25,17 +35,18 @@ ngrm:
             browse:
                 title: 'Select media'
                 facets:
-                    image_and_documents: 'Image and documents'
-                    video_and_audio: 'Video and audio'
-                    raw: 'RAW'
-                    select_media_type: 'Select media type'
-                    all_media_types: 'All media types'
+                    select_type: 'Select type'
+                    loading_types: 'Loading types...'
+                    all_types: 'All types'
                     select_folder: 'Select folder'
                     loading_folders: 'Loading folders...'
                     all_folders: 'All folders'
                     select_tag: 'Select tag'
                     loading_tags: 'Loading tags...'
                     all_tags: 'All tags'
+                    select_visibility: 'Select visibility'
+                    loading_visibilities: 'Loading visibilities...'
+                    all_visibilities: 'All visibilities'
                     search: 'Search (by name, tag, folder, alternate text etc.)'
                     search_placeholder: 'Enter your search term'
                 empty_folder: 'Folder is empty'
@@ -64,18 +75,12 @@ ngrm:
                 button:
                     select: 'Select'
                     create: 'Create'
-                    save: 'Save'
+                    upload: 'Upload'
+                    use_existing_resource: 'use existing resource'
+                checkbox:
+                    overwrite: 'Overwrite'
                 placeholder:
                     new_folder: 'New folder name'
-            editor_insert:
-                title: 'Insert remote media'
-                caption:
-                    label: 'Caption'
-                css_class:
-                    label: 'CSS class'
-                variations:
-                    label: 'Variation to insert'
-                    original_image: 'Original image'
-                button:
-                    insert: 'Insert media'
-                    cancel: 'Cancel'
+                error:
+                    existing_resource: 'Different resource with same name already exists in this folder! Change folder, filename, use overwrite or '
+                    unsupported_resource_type: "Resource has been uploaded but it's type is not supported so it can't be used here! Supported types: "

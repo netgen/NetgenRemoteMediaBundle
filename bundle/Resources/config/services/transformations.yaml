@@ -1,90 +1,96 @@
 services:
     netgen_remote_media.handler.cloudinary.resize:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: resize, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.scale:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Scale
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: scale, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.fit:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: fit, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.limit:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Limit
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: limit, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.mfit:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mfit
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: mfit, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.fill:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fill
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: fill, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.lfill:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lfill
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: lfill, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.pad:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Pad
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: pad, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.lpad:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: lpad, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.mpad:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Mpad
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: mpad, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.crop:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: crop, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.quality:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Quality
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: quality, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.effect:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: effect, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.format:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Format
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: format, provider: cloudinary }
 
     netgen_remote_media.handler.cloudinary.named_transformation:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\NamedTransformation
-        lazy: true
+        public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: transformation, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.watermark_text:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\WatermarkText
+        public: false
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: watermark_text, provider: cloudinary }

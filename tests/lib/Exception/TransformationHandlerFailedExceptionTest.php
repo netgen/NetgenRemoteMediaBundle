@@ -15,7 +15,7 @@ final class TransformationHandlerFailedExceptionTest extends TestCase
     public function testException(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);
-        $this->expectExceptionMessage('Transformation handler \'Test\Class\' identifier failed');
+        $this->expectExceptionMessage('Transformation handler "Test\Class" identifier failed');
 
         throw new TransformationHandlerFailedException('Test\\Class');
     }

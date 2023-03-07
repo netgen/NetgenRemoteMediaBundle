@@ -5,56 +5,74 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad;
+use PHPUnit\Framework\TestCase;
 
-final class LpadTest extends BaseTest
+final class LpadTest extends TestCase
 {
     protected Lpad $lpad;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->lpad = new Lpad();
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad::process
      */
-    public function testLpadSimple(): void
+    public function testWithoutConfig(): void
     {
         self::assertSame(
             ['crop' => 'lpad'],
-            $this->lpad->process($this->resource, 'small'),
+            $this->lpad->process(),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad::process
+     *
+     * @dataProvider dataProvider
      */
-    public function testLpadWithDimensions(): void
+    public function test(array $config, array $result): void
     {
         self::assertSame(
-            [
-                'crop' => 'lpad',
-                'width' => 100,
-                'height' => 200,
-            ],
-            $this->lpad->process($this->resource, 'small', [100, 200]),
+            $result,
+            $this->lpad->process($config),
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad::process
-     */
-    public function testLpadWithDimensionsAndColour(): void
+    public function dataProvider(): array
     {
-        self::assertSame(
+        return [
             [
-                'crop' => 'lpad',
-                'width' => 100,
-                'height' => 200,
-                'background' => 'red',
+                [],
+                [
+                    'crop' => 'lpad',
+                ],
             ],
-            $this->lpad->process($this->resource, 'small', [100, 200, 'red']),
-        );
+            [
+                [100],
+                [
+                    'crop' => 'lpad',
+                    'width' => 100,
+                ],
+            ],
+            [
+                [100, 200],
+                [
+                    'crop' => 'lpad',
+                    'width' => 100,
+                    'height' => 200,
+                ],
+            ],
+            [
+                [300, 400, 'red'],
+                [
+                    'crop' => 'lpad',
+                    'width' => 300,
+                    'height' => 400,
+                    'background' => 'red',
+                ],
+            ],
+        ];
     }
 }

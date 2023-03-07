@@ -1,0 +1,9 @@
+netgen_remote_media_ajax:
+    resource: "routing/ajax.yaml"
+    prefix: /ngremotemedia/ajax
+
+netgen_remote_media_callback_cloudinary_notify:
+    path: /ngremotemedia/callback/cloudinary/notify
+    defaults:
+        _controller: netgen_remote_media.controller.callback.cloudinary.notify
+    methods: [POST]

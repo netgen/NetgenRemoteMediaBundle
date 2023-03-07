@@ -2,33 +2,34 @@
   <div>
     <preview
         :field-id="fieldId"
+        :config="config"
         :selected-image="selectedImage"
         ref="preview"
     ></preview>
 
     <div :id="'ngremotemedia-buttons-'+fieldId" class="ngremotemedia-buttons" :data-id="fieldId">
 
-      <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.resource_id" v-model="selectedImage.id" class="media-id" />
+      <input type="hidden" :name="this.config.inputFields.remoteId" v-model="selectedImage.id" class="media-id" />
 
-      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_scale" >
-      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.$root.$data.NgRemoteMediaTranslations.interactions_remove_media" />
+      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.config.translations.interactions_scale" >
+      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.config.translations.interactions_remove_media" />
 
-      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.$root.$data.NgRemoteMediaTranslations.interactions_manage_media : this.$root.$data.NgRemoteMediaTranslations.interactions_select_media" />
+      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media" />
 
       <div class="ngremotemedia-local-file-container">
-        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk">
-          <Label for="new_file">
-            {{ this.$root.$data.NgRemoteMediaTranslations.interactions_quick_upload }}
+        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" @click="handleScrollTop">
+          <Label :for="fieldId + '_file_upload'">
+            {{ this.config.translations.interactions_quick_upload }}
           </Label>
-          <input hidden id="new_file" :name="this.$root.$data.NgRemoteMediaInputFields.new_file" type="file" @change="handleFileInputChange" ref="fileInput">
+          <input hidden :id="fieldId + '_file_upload'" :name="this.config.inputFields.new_file" type="file" @change="handleFileInputChange" ref="fileUploadInput">
         </button>
       </div>
     </div>
 
-    <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.image_variations" v-model="stringifiedVariations" class="media-id"/>
-    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="this.$root.$data.NgRemoteMediaAvailableVariations"></crop-modal>
-    <media-modal :tags="tags" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-    <upload-modal v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :name="selectedImage.name" ></upload-modal>
+    <input type="hidden" :name="this.config.inputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
+    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :translations="config.translations" :selected-image="selectedImage" :available-variations="this.config.availableVariations"></crop-modal>
+    <media-modal :config="config" :tags="tags" :types="types" :visibilities="visibilities" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <upload-modal v-if="uploadModalOpen" :config="config" :visibilities="visibilities" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
   </div>
 </template>
 
@@ -52,7 +53,7 @@ export default {
   },
   computed: {
     isCroppable() {
-      return !!this.selectedImage.id && this.selectedImage.mediaType === "image" && Object.keys(this.$root.$data.NgRemoteMediaAvailableVariations).length > 0;
+      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.config.availableVariations).length > 0;
     },
     stringifiedVariations() {
       return JSON.stringify(
@@ -65,9 +66,12 @@ export default {
       mediaModalOpen: false,
       cropModalOpen: false,
       uploadModalOpen: false,
+      types: [],
       folders: [],
       tags: [],
-      facetsLoading: true
+      visibilities: [],
+      facetsLoading: true,
+      newFile: null,
     };
   },
   methods: {
@@ -94,21 +98,17 @@ export default {
     handleUploadModalClose() {
       this.uploadModalOpen = false;
     },
-    handleEditorInsertModalClose() {
-      this.editorInsertModalOpen = false;
-    },
     handleMediaSelected(item) {
       this.selectedImage = {
-        id: item.resourceId,
+        id: item.remoteId,
         name: item.filename,
         type: item.type,
-        mediaType: item.mediaType,
         format: item.format,
         url: item.url,
-        previewUrl: item.preview_url,
+        previewUrl: item.previewUrl,
         alternateText: item.alt_text,
         tags: item.tags,
-        size: item.filesize,
+        size: item.size,
         variations: {},
         height: item.height,
         width: item.width
@@ -125,24 +125,38 @@ export default {
         }
       };
     },
-    handleUploadModalSave(name){
+    handleResourceUploaded(item){
       this.selectedImage = {
-        ...this.selectedImage,
-        name,
-        id: name
+        id: item.remoteId,
+        name: item.filename,
+        type: item.type,
+        format: item.format,
+        url: item.url,
+        previewUrl: item.previewUrl,
+        alternateText: item.alt_text,
+        tags: item.tags,
+        size: item.size,
+        variations: {},
+        height: item.height,
+        width: item.width
       };
+
       this.uploadModalOpen = false;
     },
     handleCropClicked() {
       this.cropModalOpen = true;
       this.prepareDomForModal();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     },
     handleRemoveMediaClicked() {
       this.selectedImage = {
         id: '',
         name: '',
         type: 'image',
-        mediaType: 'image',
         format: '',
         url: '',
         previewUrl: '',
@@ -153,81 +167,57 @@ export default {
         height: 0,
         width: 0
       };
-      this.$refs.fileInput.value = null;
+      this.$refs.fileUploadInput.value = null;
     },
     async fetchFacets() {
       const response = await fetch(this.config.paths.load_facets);
       const data = await response.json();
-      this.tags = data.tags;
+      this.types = [];
+      this.tags = [];
+      this.visibilities = [];
+
+      data.types.forEach((type) => {
+        if(this.config.allowedTypes.indexOf(type.id) !== -1 || this.config.allowedTypes.length === 0) {
+          this.types.push(type);
+        }
+      });
+
+      data.tags.forEach((tag) => {
+        if(this.config.allowedTags.indexOf(tag.id) !== -1 || this.config.allowedTags.length === 0) {
+          this.tags.push(tag);
+        }
+      });
+
+      data.visibilities.forEach((visibility) => {
+        if(this.config.allowedVisibilities.indexOf(visibility.id) !== -1 || this.config.allowedVisibilities.length === 0) {
+          this.visibilities.push(visibility);
+        }
+      });
+
       this.facetsLoading = false;
     },
     async handleBrowseMediaClicked() {
       this.mediaModalOpen = true;
       this.prepareDomForModal();
       this.fetchFacets();
-    },
-    getFileType(file){
-      const type = file.type.split("/")[0];
 
-      if (type !== "video"){
-        return "image";
-      }
-
-      return type;
+      // Scroll to top to avoid modal being not visible when the Select Media button has been clicked on a long page
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     },
-    getFileMediaType(file){
-      const type = file.type.split("/")[0];
-
-      if (type !== "video" && type !== "image"){
-        return "other";
-      }
-
-      return type;
-    },
-    getFileFormat(file){
-      return file.type.split("/")[1];
-    },
-    handleFileInputChange(e) {
+    handleFileInputChange() {
+      this.fetchFacets();
       this.uploadModalOpen = true;
 
-      const file = e.target.files.item(0);
-
-      if (file) {
-        this.selectedImage = {
-          id: file.name,
-          name: file.name,
-          type: this.getFileType(file),
-          mediaType: this.getFileMediaType(file),
-          format: this.getFileFormat(file),
-          url: '',
-          previewUrl: '',
-          alternateText: '',
-          tags: [],
-          size: file.size,
-          variations: {},
-          height: 0,
-          width: 0
-        };
-
-        if (this.selectedImage.mediaType === "image"){
-          const reader = new FileReader();
-          reader.addEventListener(
-            'load',
-            function() {
-              this.$refs.preview.$refs.image.onload = function() {
-                this.selectedImage.width = this.$refs.preview.$refs.image.naturalWidth,
-                    this.selectedImage.height = this.$refs.preview.$refs.image.naturalHeight;
-              }.bind(this);
-
-              this.selectedImage.url = reader.result;
-              this.selectedImage.previewUrl = reader.result;
-            }.bind(this),
-            false
-          );
-
-          reader.readAsDataURL(file);
-        }
-      }
+      this.newFile = this.$refs.fileUploadInput.files.item(0);
+    },
+    handleScrollTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
   },
   watch: {

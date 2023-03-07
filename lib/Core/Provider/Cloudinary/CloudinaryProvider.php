@@ -4,66 +4,72 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
-use Cloudinary\Api\NotFound;
-use InvalidArgumentException;
+use Doctrine\ORM\EntityManagerInterface;
+use Netgen\RemoteMedia\API\Factory\DateTime as DateTimeFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
+use Netgen\RemoteMedia\API\Upload\ResourceStruct;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\API\Values\Variation;
-use Netgen\RemoteMedia\Core\RemoteMediaProvider;
-use Netgen\RemoteMedia\Core\Transformation\Registry;
-use Netgen\RemoteMedia\Core\UploadFile;
-use Netgen\RemoteMedia\Core\VariationResolver;
-use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
+use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Core\AbstractProvider;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as UploadOptionsResolver;
+use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
+use Netgen\RemoteMedia\Core\Transformation\Registry as TransformationRegistry;
+use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
-use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
-use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\File\File;
-use function array_key_exists;
-use function base_convert;
+
+use function array_map;
+use function array_merge;
+use function basename;
 use function count;
-use function explode;
-use function implode;
-use function in_array;
-use function is_array;
-use function preg_replace;
-use function rtrim;
+use function default_poster_options;
+use function preg_match;
+use function sprintf;
 use function str_replace;
-use function uniqid;
 
-final class CloudinaryProvider extends RemoteMediaProvider
+final class CloudinaryProvider extends AbstractProvider
 {
-    protected Gateway $gateway;
+    private const IDENTIFIER = 'cloudinary';
 
-    protected bool $enableAudioWaveform;
+    private GatewayInterface $gateway;
 
-    /** @var string[] */
-    protected array $noExtensionMimeTypes;
+    private UploadOptionsResolver $uploadOptionsResolver;
 
     public function __construct(
-        Registry $registry,
+        TransformationRegistry $registry,
         VariationResolver $variationsResolver,
-        Gateway $gateway,
-        bool $enableAudioWaveform,
+        EntityManagerInterface $entityManager,
+        GatewayInterface $gateway,
+        DateTimeFactoryInterface $datetimeFactory,
+        UploadOptionsResolver $uploadOptionsResolver,
+        array $namedRemoteResources,
+        array $namedRemoteResourceLocations,
         ?LoggerInterface $logger = null,
-        array $noExtensionMimeTypes = ['image', 'video']
+        bool $shouldDeleteFromRemote = false
     ) {
-        $this->gateway = $gateway;
-        $this->enableAudioWaveform = $enableAudioWaveform;
-        $this->noExtensionMimeTypes = $noExtensionMimeTypes;
+        parent::__construct(
+            $registry,
+            $variationsResolver,
+            $entityManager,
+            $datetimeFactory,
+            $namedRemoteResources,
+            $namedRemoteResourceLocations,
+            $logger,
+            $shouldDeleteFromRemote,
+        );
 
-        parent::__construct($registry, $variationsResolver, $logger);
+        $this->gateway = $gateway;
+        $this->uploadOptionsResolver = $uploadOptionsResolver;
     }
 
     public function getIdentifier(): string
     {
-        return 'cloudinary';
-    }
-
-    public function usage(): array
-    {
-        return $this->gateway->usage();
+        return self::IDENTIFIER;
     }
 
     public function supportsFolders(): bool
@@ -71,333 +77,328 @@ final class CloudinaryProvider extends RemoteMediaProvider
         return true;
     }
 
-    public function listFolders(): array
+    public function supportsDelete(): bool
     {
-        return $this->gateway->listFolders();
+        return true;
     }
 
-    public function listSubFolders(string $parentFolder): array
+    public function supportsTags(): bool
     {
-        return $this->gateway->listSubFolders($parentFolder);
+        return true;
     }
 
-    public function createFolder(string $path): void
+    public function supportsProtectedResources(): bool
     {
-        $this->gateway->createFolder($path);
+        return $this->gateway->isEncryptionEnabled();
     }
 
-    public function countResources(): int
+    public function status(): StatusData
+    {
+        return $this->gateway->usage();
+    }
+
+    public function getSupportedTypes(): array
+    {
+        return RemoteResource::SUPPORTED_TYPES;
+    }
+
+    public function getSupportedVisibilities(): array
+    {
+        if (!$this->gateway->isEncryptionEnabled()) {
+            return [RemoteResource::VISIBILITY_PUBLIC];
+        }
+
+        return RemoteResource::SUPPORTED_VISIBILITIES;
+    }
+
+    public function count(): int
     {
         return $this->gateway->countResources();
     }
 
-    public function countResourcesInFolder(string $folder): int
-    {
-        return $this->gateway->countResourcesInFolder($folder);
-    }
-
-    public function listTags(): array
-    {
-        return $this->gateway->listTags();
-    }
-
-    public function upload(UploadFile $uploadFile, ?array $options = []): RemoteResource
-    {
-        $options = $this->prepareUploadOptions($uploadFile, $options);
-        $response = $this->gateway->upload($uploadFile->uri(), $options);
-
-        return RemoteResource::createFromCloudinaryResponse($response);
-    }
-
-    public function getRemoteResource(string $resourceId, string $resourceType = 'image'): RemoteResource
+    /**
+     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     */
+    public function loadFromRemote(string $remoteId): RemoteResource
     {
         try {
-            $response = $this->gateway->get($resourceId, $resourceType);
-        } catch (NotFound $e) {
-            throw new RemoteResourceNotFoundException($resourceId, $resourceType);
+            return $this->gateway->get(
+                CloudinaryRemoteId::fromRemoteId($remoteId),
+            );
+        } catch (InvalidRemoteIdException $exception) {
+            $this->logger->notice('[NGRM][Cloudinary] ' . $exception->getMessage());
         }
 
-        if (empty($response)) {
-            throw new RemoteResourceNotFoundException($resourceId, $resourceType);
-        }
-
-        try {
-            return RemoteResource::createFromCloudinaryResponse($response);
-        } catch (InvalidArgumentException $e) {
-            throw new RemoteResourceNotFoundException($resourceId, $resourceType);
-        }
+        throw new RemoteResourceNotFoundException($remoteId);
     }
 
-    public function searchResources(Query $query): Result
+    public function deleteFromRemote(RemoteResource $resource): void
+    {
+        $this->gateway->delete(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+        );
+    }
+
+    public function search(Query $query): Result
     {
         return $this->gateway->search($query);
     }
 
-    public function searchResourcesCount(Query $query): int
+    public function searchCount(Query $query): int
     {
         return $this->gateway->searchCount($query);
     }
 
-    public function deleteResource(RemoteResource $resource): void
-    {
-        $this->gateway->delete($resource->resourceId, $resource->resourceType);
-    }
-
-    /**
-     * Gets the remote media Variation.
-     * If the remote media does not support variations, this method should return the Variation
-     * with the url set to original resource.
-     *
-     * @param mixed $format
-     */
-    public function buildVariation(RemoteResource $resource, string $variationGroup, $format, ?bool $secure = true): Variation
-    {
-        $variation = new Variation();
-        $url = $secure ? $resource->secure_url : $resource->url;
-        $variation->url = $url;
-
-        if (empty($format)) {
-            return $variation;
-        }
-
-        if (is_array($format)) {
-            /*
-             * This means the 'variationName' is actually an array with all the configuration
-             * options provided, and we can pass those directly to the cloudinary
-             */
-            $options = $format;
-        } else {
-            $options = $this->processConfiguredVariation($resource, $format, $variationGroup);
-        }
-
-        $finalOptions['transformation'] = $options;
-        $finalOptions['secure'] = $secure;
-
-        $url = $this->gateway->getVariationUrl($resource->resourceId, $finalOptions);
-        $variation->url = $url;
-
-        return $variation;
-    }
-
-    public function addTagToResource(RemoteResource $resource, string $tag): void
-    {
-        $this->gateway->addTag($resource->resourceId, $resource->resourceType, $tag);
-    }
-
-    public function removeTagFromResource(RemoteResource $resource, string $tag): void
-    {
-        $this->gateway->removeTag($resource->resourceId, $resource->resourceType, $tag);
-    }
-
-    public function removeAllTagsFromResource(RemoteResource $resource): void
-    {
-        $this->gateway->removeAllTags($resource->resourceId, $resource->resourceType);
-    }
-
-    public function updateTags(RemoteResource $resource, array $tags): void
+    public function updateOnRemote(RemoteResource $resource): void
     {
         $options = [
-            'tags' => implode(',', $tags),
+            'context' => array_merge(
+                $resource->getContext(),
+                [
+                    'alt' => $resource->getAltText(),
+                    'caption' => $resource->getCaption(),
+                ],
+            ),
+            'tags' => $resource->getTags(),
         ];
 
-        $this->gateway->update($resource->resourceId, $resource->resourceType, $options);
-    }
-
-    /**
-     * Updates the resource context.
-     * eg. alt text and caption:
-     * context = [
-     *      'caption' => 'new caption'
-     *      'alt' => 'alt text'
-     * ];.
-     */
-    public function updateResourceContext(RemoteResource $resource, array $context): void
-    {
-        $options = [
-            'context' => $context,
-        ];
-
-        $this->gateway->update($resource->resourceId, $resource->resourceType, $options);
-    }
-
-    public function getVideoThumbnail(RemoteResource $resource, ?array $options = []): string
-    {
-        if (count($options) === 0 || !array_key_exists('resource_type', $options)) {
-            $options['resource_type'] = 'video';
+        if (count($resource->getTags()) === 0) {
+            $this->gateway->removeAllTagsFromResource(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            );
         }
 
-        if ($this->isAudio($resource)) {
+        $this->gateway->update(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
+    }
+
+    public function generateDownloadLink(RemoteResource $resource, array $transformations = []): string
+    {
+        $options = [];
+        if (count($transformations) > 0) {
+            $options['transformation'] = $transformations;
+        }
+
+        return $this->gateway->getDownloadLink(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
+    }
+
+    public function authenticateRemoteResource(RemoteResource $resource, AuthToken $token): AuthenticatedRemoteResource
+    {
+        $url = $this->gateway->getAuthenticatedUrl(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token);
+
+        return new AuthenticatedRemoteResource($resource, $url, $token);
+    }
+
+    public function authenticateRemoteResourceVariation(RemoteResourceVariation $variation, AuthToken $token): AuthenticatedRemoteResource
+    {
+        $url = $this->gateway->getAuthenticatedUrl(
+            CloudinaryRemoteId::fromRemoteId($variation->getRemoteResource()->getRemoteId()),
+            $token,
+            $variation->getTransformations(),
+        );
+
+        return new AuthenticatedRemoteResource($variation->getRemoteResource(), $url, $token);
+    }
+
+    protected function internalListFolders(?Folder $parent = null): array
+    {
+        return array_map(
+            static fn ($folderPath) => Folder::fromPath($folderPath),
+            $parent instanceof Folder
+                ? $this->gateway->listSubFolders($parent->getPath())
+                : $this->gateway->listFolders(),
+        );
+    }
+
+    protected function internalCreateFolder(string $name, ?Folder $parent = null): Folder
+    {
+        $path = $name;
+        if ($parent instanceof Folder) {
+            $path = $parent->getPath() . '/' . $path;
+        }
+
+        $this->gateway->createFolder($path);
+
+        return Folder::fromPath($path);
+    }
+
+    protected function internalCountInFolder(Folder $folder): int
+    {
+        return $this->gateway->countResourcesInFolder($folder->getPath());
+    }
+
+    protected function internalListTags(): array
+    {
+        return $this->gateway->listTags();
+    }
+
+    protected function internalUpload(ResourceStruct $resourceStruct): RemoteResource
+    {
+        return $this->gateway->upload(
+            $resourceStruct->getFileStruct()->getUri(),
+            $this->uploadOptionsResolver->resolve($resourceStruct),
+        );
+    }
+
+    protected function internalBuildVariation(RemoteResource $resource, array $transformations = []): RemoteResourceVariation
+    {
+        $variationUrl = $this->gateway->getVariationUrl(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $transformations,
+        );
+
+        return new RemoteResourceVariation($resource, $variationUrl, $transformations);
+    }
+
+    protected function internalBuildVideoThumbnail(RemoteResource $resource, array $transformations = [], ?int $startOffset = null): RemoteResourceVariation
+    {
+        $options = [
+            'resource_type' => 'video',
+            'transformation' => $transformations,
+        ];
+
+        if ($resource->getType() === RemoteResource::TYPE_AUDIO) {
             $options['raw_transformation'] = 'fl_waveform';
         }
 
-        $options['start_offset'] = !empty($options['start_offset']) ? $options['start_offset'] : 'auto';
+        $options['start_offset'] = $startOffset !== null ? $startOffset : 'auto';
 
-        return $this->gateway->getVideoThumbnail($resource->resourceId, $options);
+        $thumbnailUrl = $this->gateway->getVideoThumbnail(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
+
+        return new RemoteResourceVariation($resource, $thumbnailUrl, array_merge(default_poster_options(), $options));
     }
 
-    public function generateVideoTag(RemoteResource $resource, string $variationGroup, $format = []): string
+    protected function generatePictureTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
-        $transformationOptions = $format;
-
-        if (!is_array($transformationOptions)) {
-            $transformationOptions = [];
-            $transformationOptions['transformation'] = $this->processConfiguredVariation($resource, $format, $variationGroup);
-            $transformationOptions['secure'] = true;
+        if (!($htmlAttributes['alt'] ?? null) && $resource->getAltText()) {
+            $htmlAttributes['alt'] = $resource->getAltText();
         }
 
-        $finalOptions = [
-            'fallback_content' => 'Your browser does not support HTML5 video tags',
-            'controls' => true,
-            'poster' => $transformationOptions,
+        if (!($htmlAttributes['title'] ?? null) && $resource->getCaption()) {
+            $htmlAttributes['title'] = $resource->getCaption();
+        }
+
+        $options = [
+            'secure' => true,
+            'attributes' => $htmlAttributes,
         ];
 
-        $finalOptions = $finalOptions + $transformationOptions;
-
-        $enableAudioWaveform = $this->enableAudioWaveform;
-
-        if (is_array($format) && array_key_exists('enable_audio_waveform', $format)) {
-            $enableAudioWaveform = $format['enable_audio_waveform'];
+        if (count($transformations) > 0) {
+            $options['transformation'] = $transformations;
         }
 
-        if ($this->isAudio($resource)) {
-            if ($enableAudioWaveform) {
-                $finalOptions['poster']['raw_transformation'] = 'fl_waveform';
-            }
-
-            if (!$enableAudioWaveform) {
-                $finalOptions['attributes']['poster'] = null;
-            }
-        }
-
-        $tag = $this->gateway->getVideoTag($resource->resourceId, $finalOptions);
-
-        if ($this->isAudio($resource) && !$enableAudioWaveform) {
-            $tag = str_replace(['<video', '</video>'], ['<audio', '</audio>'], $tag);
-        }
-
-        return $tag;
+        return $this->gateway->getImageTag(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
     }
 
-    public function generateDownloadLink(RemoteResource $resource): string
+    protected function generateVideoTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
         $options = [
-            'type' => $resource->type,
-            'resource_type' => $resource->resourceType,
-            'flags' => 'attachment',
             'secure' => true,
-        ];
-
-        return $this->gateway->getDownloadLink($resource->resourceId, $resource->resourceType, $options);
-    }
-
-    /**
-     * Prepares upload options for Cloudinary.
-     * Every image with the same name will be overwritten.
-     */
-    protected function prepareUploadOptions(UploadFile $uploadFile, array $options = []): array
-    {
-        $clean = preg_replace('#[^\\p{L}|\\p{N}]+#u', '_', $options['filename'] ?? $uploadFile->originalFilename());
-        $cleanFileName = preg_replace('#[\\p{Z}]{2,}#u', '_', $clean);
-        $fileName = rtrim($cleanFileName, '_');
-
-        // check if overwrite is set, if it is, do not append random string
-        $overwrite = $options['overwrite'] ?? false;
-        $invalidate = $options['invalidate'] ?? $overwrite;
-
-        $publicId = $overwrite ? $fileName : $fileName . '_' . base_convert(uniqid(), 16, 36);
-        $publicId = $this->appendExtension($publicId, $uploadFile);
-
-        if (!empty($options['folder'])) {
-            $publicId = $options['folder'] . '/' . $publicId;
-        }
-
-        return [
-            'public_id' => $publicId,
-            'overwrite' => $overwrite,
-            'invalidate' => $invalidate,
-            'discard_original_filename' => $options['discard_original_filename'] ?? true,
-            'context' => [
-                'alt' => !empty($options['alt_text']) ? $options['alt_text'] : '',
-                'caption' => !empty($options['caption']) ? $options['caption'] : '',
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+            'controls' => true,
+            'poster' => [
+                'secure' => true,
             ],
-            'resource_type' => !empty($options['resource_type']) ? $options['resource_type'] : 'auto',
-            'tags' => !empty($options['tags']) ? $options['tags'] : [],
+            'attributes' => $htmlAttributes,
         ];
+
+        if (count($transformations) > 0) {
+            $options['transformation'] = $transformations;
+            $options['poster']['transformation'] = $transformations;
+        }
+
+        if ($resource->getType() === RemoteResource::TYPE_AUDIO) {
+            $options['poster']['raw_transformation'] = 'fl_waveform';
+        }
+
+        return $this->gateway->getVideoTag(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
     }
 
-    /**
-     * Builds transformation options for the provider to consume.
-     *
-     * @return array options of the total sum of transformations for the provider to use
-     */
-    protected function processConfiguredVariation(RemoteResource $resource, string $variationName, string $variationGroup): array
+    protected function generateVideoThumbnailTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
-        $configuredVariations = $this->variationResolver->getVariationsForGroup($variationGroup);
+        $thumbnailUrl = $this->buildVideoThumbnailRawVariation($resource, $transformations)->getUrl();
 
-        $options = [];
-
-        if (!isset($configuredVariations[$variationName])) {
-            return $options;
+        if (!($htmlAttributes['alt'] ?? null) && $resource->getAltText()) {
+            $htmlAttributes['alt'] = $resource->getAltText();
         }
 
-        $variationConfiguration = $configuredVariations[$variationName];
-        foreach ($variationConfiguration['transformations'] as $transformationIdentifier => $config) {
-            try {
-                $transformationHandler = $this->registry->getHandler(
-                    $transformationIdentifier,
-                    $this->getIdentifier(),
-                );
-            } catch (TransformationHandlerNotFoundException $transformationHandlerNotFoundException) {
-                $this->logError($transformationHandlerNotFoundException->getMessage());
-
-                continue;
-            }
-
-            try {
-                $options[] = $transformationHandler->process($resource, $variationName, $config);
-            } catch (TransformationHandlerFailedException $transformationHandlerFailedException) {
-                $this->logError($transformationHandlerFailedException->getMessage());
-
-                continue;
-            }
+        if (!($htmlAttributes['title'] ?? null) && $resource->getCaption()) {
+            $htmlAttributes['title'] = $resource->getCaption();
         }
 
-        return $options;
+        $options = [
+            'secure' => true,
+            'attributes' => $htmlAttributes,
+        ];
+
+        if (count($transformations) > 0) {
+            $options['transformation'] = $transformations;
+        }
+
+        $thumbnailTag = $this->gateway->getImageTag(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
+
+        preg_match('/src=["|\']([^"|\']*)["|\']/', $thumbnailTag, $parts);
+
+        if (count($parts) > 1) {
+            return str_replace($parts[1], $thumbnailUrl, $thumbnailTag);
+        }
     }
 
-    private function parseMimeCategory(File $file)
+    protected function generateAudioTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
-        $parsedMime = explode('/', $file->getMimeType());
-        if (count($parsedMime) !== 2) {
-            throw new MimeCategoryParseException($file->getMimeType());
-        }
+        $options = [
+            'secure' => true,
+            'fallback_content' => 'Your browser does not support HTML5 audio tags',
+            'controls' => true,
+            'attributes' => $htmlAttributes,
+        ];
 
-        return $parsedMime[0];
+        $tag = $this->gateway->getVideoTag(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            $options,
+        );
+
+        return str_replace(
+            ['<video', '</video>'],
+            ['<audio', '</audio>'],
+            $tag,
+        );
     }
 
-    private function appendExtension(string $publicId, UploadFile $uploadFile): string
+    protected function generateDocumentTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
-        $extension = $uploadFile->originalExtension();
-
-        if (empty($extension)) {
-            return $publicId;
-        }
-
-        $file = new File($uploadFile->uri());
-        $mimeCategory = $this->parseMimeCategory($file);
-
-        // cloudinary handles pdf in a weird way - it is considered an "image" but it delivers it with proper extension on download
-        if ($extension !== 'pdf' && !in_array($mimeCategory, $this->noExtensionMimeTypes, true)) {
-            $publicId .= '.' . $extension;
-        }
-
-        return $publicId;
+        return $this->generateDownloadTag($resource, $transformations, $htmlAttributes);
     }
 
-    private function isAudio(RemoteResource $resource): bool
+    protected function generateDownloadTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string
     {
-        $audioFormats = ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'];
+        $downloadLink = $this->generateDownloadLink($resource, $transformations);
+        $filename = basename($downloadLink);
 
-        return array_key_exists('format', $resource->metaData) && in_array($resource->metaData['format'], $audioFormats, true);
+        unset($htmlAttributes['href']);
+
+        $htmlAttributesString = '';
+        foreach ($htmlAttributes as $attributeKey => $attributeValue) {
+            $htmlAttributesString .= sprintf(' %s="%s"', $attributeKey, $attributeValue);
+        }
+
+        return sprintf('<a href="%s"%s>%s</a>', $downloadLink, $htmlAttributesString, $filename);
     }
 }

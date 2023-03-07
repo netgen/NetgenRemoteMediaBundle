@@ -15,7 +15,7 @@ final class TransformationHandlerNotFoundExceptionTest extends TestCase
     public function testException(): void
     {
         $this->expectException(TransformationHandlerNotFoundException::class);
-        $this->expectExceptionMessage('[NgRemoteMedia] Transformation handler with \'some_handler\' identifier for \'some_provider\' provider not found.');
+        $this->expectExceptionMessage('Transformation handler with "some_handler" identifier for "some_provider" provider not found.');
 
         throw new TransformationHandlerNotFoundException('some_provider', 'some_handler');
     }

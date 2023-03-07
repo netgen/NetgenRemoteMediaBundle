@@ -6,17 +6,24 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache;
 
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
+use Netgen\RemoteMedia\API\Values\AuthToken;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CacheableGatewayInterface;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
+
 use function array_merge;
 use function array_unique;
+use function array_values;
 use function array_walk;
 use function implode;
 use function str_replace;
 use function trim;
 
-final class Psr6CachedGateway extends Gateway
+final class Psr6CachedGateway implements CacheableGatewayInterface
 {
     public const PROJECT_KEY = 'ngremotemedia';
     public const PROVIDER_KEY = 'cloudinary';
@@ -29,107 +36,86 @@ final class Psr6CachedGateway extends Gateway
     public const FOLDER_COUNT = 'folder_count';
     public const RESOURCE_ID = 'resource';
 
-    protected Gateway $gateway;
+    private GatewayInterface $gateway;
 
-    protected CacheItemPoolInterface $cache;
+    private CacheItemPoolInterface $cache;
 
-    protected int $ttl;
+    private int $ttl;
 
-    public function __construct(Gateway $gateway, CacheItemPoolInterface $cache, int $ttl = 7200)
+    public function __construct(GatewayInterface $gateway, CacheItemPoolInterface $cache, int $ttl = 7200)
     {
         $this->gateway = $gateway;
         $this->cache = $cache;
         $this->ttl = $ttl;
     }
 
-    public function usage(): array
+    public function usage(): StatusData
     {
         return $this->gateway->usage();
     }
 
-    public function upload(string $fileUri, array $options): array
+    public function isEncryptionEnabled(): bool
     {
-        $uploadResult = $this->gateway->upload($fileUri, $options);
-
-        if ($this->isCacheTaggable()) {
-            $tags = array_unique(array_merge(
-                $this->getCacheTags(self::SEARCH),
-                $this->getCacheTags(self::LIST),
-                $this->getCacheTags(self::FOLDER_LIST),
-                $this->getCacheTags(self::FOLDER_COUNT),
-            ));
-
-            $this->cache->invalidateTags($tags);
-        }
-
-        return $uploadResult;
+        return $this->gateway->isEncryptionEnabled();
     }
 
-    public function getVariationUrl(string $source, array $options): string
+    public function countResources(): int
     {
-        return $this->gateway->getVariationUrl($source, $options);
-    }
-
-    public function search(Query $query): Result
-    {
-        $searchCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, (string) $query]),
+        $cacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::COUNT]),
         );
 
-        $cacheItem = $this->cache->getItem($searchCacheKey);
+        $cacheItem = $this->cache->getItem($cacheKey);
 
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
         }
 
-        $result = $this->gateway->search($query);
-
-        $cacheItem->set($result);
+        $count = $this->gateway->countResources();
+        $cacheItem->set($count);
         $cacheItem->expiresAfter($this->ttl);
 
         if ($this->isCacheTaggable()) {
-            $cacheItem->tag($this->getCacheTags(self::SEARCH));
+            $cacheItem->tag($this->getCacheTags(self::COUNT));
         }
 
         $this->cache->save($cacheItem);
 
-        return $result;
+        return $count;
     }
 
-    public function searchCount(Query $query): int
+    public function countResourcesInFolder(string $folder): int
     {
-        $searchCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH_COUNT, (string) $query]),
+        $cacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder]),
         );
 
-        $cacheItem = $this->cache->getItem($searchCacheKey);
+        $cacheItem = $this->cache->getItem($cacheKey);
 
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
         }
 
-        $result = $this->gateway->searchCount($query);
-
-        $cacheItem->set($result);
+        $count = $this->gateway->countResourcesInFolder($folder);
+        $cacheItem->set($count);
         $cacheItem->expiresAfter($this->ttl);
 
         if ($this->isCacheTaggable()) {
-            $cacheItem->tag(
-                $this->getCacheTags(self::SEARCH_COUNT),
-            );
+            $cacheItem->tag($this->getCacheTags(self::FOLDER_COUNT));
         }
 
         $this->cache->save($cacheItem);
 
-        return $result;
+        return $count;
     }
 
     public function listFolders(): array
     {
-        $listFolderCacheKey = $this->washKey(
+        $cacheKey = $this->washKey(
             implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST]),
         );
-        $cacheItem = $this->cache->getItem($listFolderCacheKey);
+
+        $cacheItem = $this->cache->getItem($cacheKey);
 
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
@@ -150,10 +136,11 @@ final class Psr6CachedGateway extends Gateway
 
     public function listSubFolders(string $parentFolder): array
     {
-        $listFolderCacheKey = $this->washKey(
+        $cacheKey = $this->washKey(
             implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_LIST, $parentFolder]),
         );
-        $cacheItem = $this->cache->getItem($listFolderCacheKey);
+
+        $cacheItem = $this->cache->getItem($cacheKey);
 
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
@@ -175,67 +162,152 @@ final class Psr6CachedGateway extends Gateway
     public function createFolder(string $path): void
     {
         $this->gateway->createFolder($path);
+        $this->invalidateFoldersCache();
     }
 
-    public function countResources(): int
+    public function get(CloudinaryRemoteId $remoteId): RemoteResource
     {
-        return $this->gateway->countResources();
-    }
-
-    public function countResourcesInFolder(string $folder): int
-    {
-        $countCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::FOLDER_COUNT, $folder]),
+        $cacheKey = $this->washKey(
+            implode('-', [
+                self::PROJECT_KEY,
+                self::PROVIDER_KEY,
+                self::RESOURCE_ID,
+                $remoteId->getType(),
+                $remoteId->getResourceType(),
+                $remoteId->getResourceId(),
+            ]),
         );
-        $cacheItem = $this->cache->getItem($countCacheKey);
+
+        $cacheItem = $this->cache->getItem($cacheKey);
 
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
         }
 
-        $count = $this->gateway->countResourcesInFolder($folder);
-        $cacheItem->set($count);
+        $resource = $this->gateway->get($remoteId);
+        $cacheItem->set($resource);
         $cacheItem->expiresAfter($this->ttl);
 
         if ($this->isCacheTaggable()) {
-            $cacheItem->tag($this->getCacheTags(self::FOLDER_COUNT));
+            $cacheItem->tag($this->getItemCacheTags(
+                $remoteId->getType(),
+                $remoteId->getResourceType(),
+                $remoteId->getResourceId(),
+            ));
         }
 
         $this->cache->save($cacheItem);
 
-        return $count;
+        return $resource;
     }
 
-    public function get(string $id, string $type): array
+    public function upload(string $fileUri, array $options): RemoteResource
     {
-        $resourceCacheKey = $this->washKey(
-            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $id, $type]),
+        $uploadResult = $this->gateway->upload($fileUri, $options);
+
+        $this->invalidateResourceCache(CloudinaryRemoteId::fromRemoteId($uploadResult->getRemoteId()));
+        $this->invalidateResourceListCache();
+        $this->invalidateFoldersCache();
+        $this->invalidateTagsCache();
+
+        return $uploadResult;
+    }
+
+    public function update(CloudinaryRemoteId $remoteId, array $options): void
+    {
+        $this->gateway->update($remoteId, $options);
+
+        $this->invalidateResourceCache($remoteId);
+        $this->invalidateTagsCache();
+    }
+
+    public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void
+    {
+        $this->gateway->removeAllTagsFromResource($remoteId);
+
+        $this->invalidateResourceCache($remoteId);
+        $this->invalidateTagsCache();
+    }
+
+    public function delete(CloudinaryRemoteId $remoteId): void
+    {
+        $this->gateway->delete($remoteId);
+
+        $this->invalidateResourceCache($remoteId);
+        $this->invalidateResourceListCache();
+    }
+
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string
+    {
+        return $this->gateway->getAuthenticatedUrl($remoteId, $token, $transformations);
+    }
+
+    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string
+    {
+        return $this->gateway->getVariationUrl($remoteId, $transformations);
+    }
+
+    public function search(Query $query): Result
+    {
+        $cacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH, (string) $query]),
         );
-        $cacheItem = $this->cache->getItem($resourceCacheKey);
+
+        $cacheItem = $this->cache->getItem($cacheKey);
 
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
         }
 
-        $value = $this->gateway->get($id, $type);
-        $cacheItem->set($value);
+        $result = $this->gateway->search($query);
+
+        $cacheItem->set($result);
         $cacheItem->expiresAfter($this->ttl);
 
         if ($this->isCacheTaggable()) {
-            $cacheItem->tag($this->getItemCacheTags($id));
+            $cacheItem->tag($this->getCacheTags(self::SEARCH));
         }
 
         $this->cache->save($cacheItem);
 
-        return $value;
+        return $result;
+    }
+
+    public function searchCount(Query $query): int
+    {
+        $cacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::SEARCH_COUNT, (string) $query]),
+        );
+
+        $cacheItem = $this->cache->getItem($cacheKey);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
+
+        $result = $this->gateway->searchCount($query);
+
+        $cacheItem->set($result);
+        $cacheItem->expiresAfter($this->ttl);
+
+        if ($this->isCacheTaggable()) {
+            $cacheItem->tag(
+                $this->getCacheTags(self::SEARCH_COUNT),
+            );
+        }
+
+        $this->cache->save($cacheItem);
+
+        return $result;
     }
 
     public function listTags(): array
     {
-        $listTagCacheKey = $this->washKey(
+        $cacheKey = $this->washKey(
             implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::TAG_LIST]),
         );
-        $cacheItem = $this->cache->getItem($listTagCacheKey);
+
+        $cacheItem = $this->cache->getItem($cacheKey);
 
         if ($cacheItem->isHit()) {
             return $cacheItem->get();
@@ -254,54 +326,93 @@ final class Psr6CachedGateway extends Gateway
         return $list;
     }
 
-    public function addTag(string $id, string $type, string $tag): void
+    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $this->gateway->addTag($id, $type, $tag);
-        $this->cache->invalidateTags($this->getItemCacheTags($id));
+        return $this->gateway->getVideoThumbnail($remoteId, $options);
     }
 
-    public function removeTag(string $id, string $type, string $tag): void
+    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $this->gateway->removeTag($id, $type, $tag);
-        $this->cache->invalidateTags($this->getItemCacheTags($id));
+        return $this->gateway->getImageTag($remoteId, $options);
     }
 
-    public function removeAllTags(string $id, string $type): void
+    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $this->gateway->removeAllTags($id, $type);
-        $this->cache->invalidateTags($this->getItemCacheTags($id));
+        return $this->gateway->getVideoTag($remoteId, $options);
     }
 
-    public function update(string $id, string $type, array $options): void
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string
     {
-        $this->gateway->update($id, $type, $options);
-        $this->cache->invalidateTags($this->getItemCacheTags($id));
+        return $this->gateway->getDownloadLink($remoteId, $options);
     }
 
-    public function getVideoThumbnail(string $id, array $options = []): string
+    public function invalidateResourceListCache(): void
     {
-        return $this->gateway->getVideoThumbnail($id, $options);
+        if (!$this->isCacheTaggable()) {
+            return;
+        }
+
+        $tags = array_values(
+            array_unique(
+                array_merge(
+                    $this->getCacheTags(self::SEARCH),
+                    $this->getCacheTags(self::SEARCH_COUNT),
+                    $this->getCacheTags(self::LIST),
+                    $this->getCacheTags(self::COUNT),
+                    $this->getCacheTags(self::TAG_LIST),
+                ),
+            ),
+        );
+
+        $this->cache->invalidateTags($tags);
     }
 
-    public function getVideoTag(string $id, array $options = []): string
+    public function invalidateResourceCache(CloudinaryRemoteId $remoteId): void
     {
-        return $this->gateway->getVideoTag($id, $options);
+        if (!$this->isCacheTaggable()) {
+            return;
+        }
+
+        $tags = $this->getItemCacheTags(
+            $remoteId->getType(),
+            $remoteId->getResourceType(),
+            $remoteId->getResourceId(),
+        );
+
+        $this->cache->invalidateTags($tags);
     }
 
-    public function getDownloadLink(string $id, string $type, array $options): string
+    public function invalidateFoldersCache(): void
     {
-        return $this->gateway->getDownloadLink($id, $type, $options);
+        if (!$this->isCacheTaggable()) {
+            return;
+        }
+
+        $tags = array_values(
+            array_unique(
+                array_merge(
+                    $this->getCacheTags(self::FOLDER_LIST),
+                    $this->getCacheTags(self::FOLDER_COUNT),
+                ),
+            ),
+        );
+
+        $this->cache->invalidateTags($tags);
     }
 
-    public function delete(string $id, string $type): void
+    public function invalidateTagsCache(): void
     {
-        $this->gateway->delete($id, $type);
+        if (!$this->isCacheTaggable()) {
+            return;
+        }
 
-        $tags = array_unique(array_merge(
-            $this->getCacheTags(self::SEARCH),
-            $this->getCacheTags(self::LIST),
-            $this->getCacheTags(self::FOLDER_COUNT),
-        ));
+        $tags = array_values(
+            array_unique(
+                array_merge(
+                    $this->getCacheTags(self::TAG_LIST),
+                ),
+            ),
+        );
 
         $this->cache->invalidateTags($tags);
     }
@@ -312,7 +423,7 @@ final class Psr6CachedGateway extends Gateway
     }
 
     /**
-     * All items will be tagged with this tag, so all cache can be invalidate at once.
+     * All items will be tagged with this tag, so all cache can be invalidated at once.
      */
     private function getBaseTag(): string
     {
@@ -329,11 +440,11 @@ final class Psr6CachedGateway extends Gateway
         ];
     }
 
-    private function getItemCacheTags(string $resourceId): array
+    private function getItemCacheTags(string $type, string $resourceType, string $resourceId): array
     {
         $tags = [
             $this->getBaseTag(),
-            self::PROJECT_KEY, self::PROVIDER_KEY, self::RESOURCE_ID, $resourceId,
+            self::PROJECT_KEY . '-' . self::PROVIDER_KEY . '-' . self::RESOURCE_ID . '-' . $type . '-' . $resourceType . '-' . $resourceId,
         ];
 
         array_walk($tags, function (&$tag) {

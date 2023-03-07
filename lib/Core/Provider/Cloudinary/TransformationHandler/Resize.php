@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 
@@ -16,13 +15,13 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
  * by using both the width and height parameters or with only one of them:
  * the other dimension is automatically updated to maintain the aspect ratio.
  */
-class Resize implements HandlerInterface
+final class Resize implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
      * properly configured array of options.
      */
-    public function process(RemoteResource $resource, string $variationName, array $config = []): array
+    public function process(array $config = []): array
     {
         $options = [];
 

@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\GlobFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Yaml\Yaml;
+
 use function file_get_contents;
 use function sprintf;
 
@@ -63,6 +64,14 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['image_variations'],
         );
         $container->setParameter(
+            'netgen_remote_media.named_remote_resources',
+            $config['named_objects']['remote_resource'] ?? [],
+        );
+        $container->setParameter(
+            'netgen_remote_media.named_remote_resource_locations',
+            $config['named_objects']['remote_resource_location'] ?? [],
+        );
+        $container->setParameter(
             'netgen_remote_media.cache.pool_name',
             $config['cache']['pool'],
         );
@@ -70,6 +79,22 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             'netgen_remote_media.cache.ttl',
             $config['cache']['ttl'],
         );
+        $container->setParameter(
+            'netgen_remote_media.encryption_key',
+            $config['cloudinary']['encryption_key'],
+        );
+
+        $cloudinaryInnerGatewayAlias = $config['cloudinary']['log_requests']
+            ? 'netgen_remote_media.provider.cloudinary.gateway.logged'
+            : 'netgen_remote_media.provider.cloudinary.gateway.api';
+
+        $container->setAlias('netgen_remote_media.provider.cloudinary.gateway.inner', $cloudinaryInnerGatewayAlias);
+
+        $cloudinaryGatewayAlias = $config['cloudinary']['cache_requests']
+            ? 'netgen_remote_media.provider.cloudinary.gateway.cached'
+            : 'netgen_remote_media.provider.cloudinary.gateway.inner';
+
+        $container->setAlias('netgen_remote_media.provider.cloudinary.gateway', $cloudinaryGatewayAlias);
 
         $loader->load('default_parameters.yaml');
         $loader->load('services/**/*.yaml', 'glob');
@@ -79,6 +104,10 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
     {
         $prependConfigs = [
             'default_settings.yaml' => 'netgen_remote_media',
+            'doctrine.yaml' => 'doctrine',
+            'framework.yaml' => 'framework',
+            'monolog.yaml' => 'monolog',
+            'twig.yaml' => 'twig',
         ];
 
         foreach ($prependConfigs as $configFile => $prependConfig) {

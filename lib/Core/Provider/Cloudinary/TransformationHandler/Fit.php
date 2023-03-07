@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 
 /**
@@ -14,13 +13,13 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * within a bounding box defined by the given width and height parameters.
  * The original aspect ratio is retained and all of the original image is visible.
  */
-class Fit implements HandlerInterface
+final class Fit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
      * properly configured array of options.
      */
-    public function process(RemoteResource $resource, string $variationName, array $config = []): array
+    public function process(array $config = []): array
     {
         $options = [
             'crop' => 'fit',

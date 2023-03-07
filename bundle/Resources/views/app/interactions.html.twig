@@ -1,0 +1,148 @@
+{% trans_default_domain 'ngremotemedia' %}
+
+{% set field_id = field_id|default('ngrm') %}
+{% set variation_group = variation_group|default('default') %}
+{% set selected_image = selected_image|default(null) %}
+{% set location_id = location_id|default(null) %}
+{% set variation_settings_json = variation_settings_json|default('{}') %}
+{% set input_fields = input_fields|default([]) %}
+{% set available_variations = available_variations|default([]) %}
+{% set allowed_visibilities = allowed_visibilities|default([]) %}
+{% set allowed_types = allowed_types|default([]) %}
+{% set allowed_tags = allowed_tags|default([]) %}
+{% set parent_folder = parent_folder|default(null) %}
+{% set folder = folder|default(null) %}
+{% set upload_context = upload_context|default([]) %}
+
+{% set location = null %}
+{% if location_id %}
+    {% set location = ngrm_remote_resource_location(location_id) %}
+{% endif %}
+
+{% set config = {
+    'paths': {
+        'browse_resources': path('netgen_remote_media_ajax_resource_browse'),
+        'upload_resources': path('netgen_remote_media_ajax_resource_upload'),
+        'load_facets': path('netgen_remote_media_ajax_facets_load'),
+        'load_folders': path('netgen_remote_media_ajax_folder_load'),
+        'create_folder': path('netgen_remote_media_ajax_folder_create'),
+    },
+    'translations': {
+        'browse_title': 'ngrm.edit.vue.browse.title'|trans,
+        'browse_select_type': 'ngrm.edit.vue.browse.facets.select_type'|trans,
+        'browse_loading_types': 'ngrm.edit.vue.browse.facets.loading_types'|trans,
+        'browse_all_types': 'ngrm.edit.vue.browse.facets.all_types'|trans,
+        'browse_select_folder': 'ngrm.edit.vue.browse.facets.select_folder'|trans,
+        'browse_loading_folders': 'ngrm.edit.vue.browse.facets.loading_folders'|trans,
+        'browse_all_folders': 'ngrm.edit.vue.browse.facets.all_folders'|trans,
+        'browse_select_tag': 'ngrm.edit.vue.browse.facets.select_tag'|trans,
+        'browse_loading_tags': 'ngrm.edit.vue.browse.facets.loading_tags'|trans,
+        'browse_all_tags': 'ngrm.edit.vue.browse.facets.all_tags'|trans,
+        'browse_select_visibility': 'ngrm.edit.vue.browse.facets.select_visibility'|trans,
+        'browse_loading_visibilities': 'ngrm.edit.vue.browse.facets.loading_visibilities'|trans,
+        'browse_all_visibilities': 'ngrm.edit.vue.browse.facets.all_visibilities'|trans,
+        'search': 'ngrm.edit.vue.browse.facets.search'|trans,
+        'search_placeholder': 'ngrm.edit.vue.browse.facets.search_placeholder'|trans,
+        'browse_empty_folder': 'ngrm.edit.vue.browse.empty_folder'|trans,
+        'browse_empty_folder_hint': 'ngrm.edit.vue.browse.empty_folder_hint'|trans,
+        'browse_select': 'ngrm.edit.vue.browse.select'|trans,
+        'load_more': 'ngrm.edit.vue.browse.load_more'|trans,
+        'crop_reset': 'ngrm.edit.vue.crop.reset'|trans,
+        'crop_apply': 'ngrm.edit.vue.crop.apply'|trans,
+        'crop_cancel': 'ngrm.edit.vue.crop.cancel'|trans,
+        'crop_add': 'ngrm.edit.vue.crop.add'|trans,
+        'crop_preview': 'ngrm.edit.vue.crop.preview'|trans,
+        'crop_save_sizes': 'ngrm.edit.vue.crop.save_sizes'|trans,
+        'crop_add_size': 'ngrm.edit.vue.crop.add_size'|trans,
+        'crop_added_for_confirmation': 'ngrm.edit.vue.crop.added_for_confirmation'|trans,
+        'crop_media_too_small': 'ngrm.edit.vue.crop.media_too_small'|trans,
+        'media_gallery_empty_folder': 'ngrm.edit.vue.media_gallery.empty_folder'|trans,
+        'media_gallery_upload_media': 'ngrm.edit.vue.media_gallery.upload_media'|trans,
+        'media_gallery_select': 'ngrm.edit.vue.media_gallery.select'|trans,
+        'media_gallery_load_more': 'ngrm.edit.vue.media_gallery.load_more'|trans,
+        'Search for media': "Search for media",
+        'Load more': "Load more",
+        'Upload new media': 'Upload new media',
+        'No results': 'No results',
+        'Alternate text': 'Alternate text',
+        'Class': 'CSS class',
+        'Create new folder?': 'Create new folder?',
+        'Folder': 'Folder',
+        'All': 'All',
+        'Add tag': 'Add tag',
+        'Media type': 'Media type',
+        'Image': 'Image and documents',
+        'Video': 'Video',
+        'Loading...': 'Loading...',
+        'Cancel': 'Cancel',
+        'Save all': 'Save all',
+        'Generate': 'Generate',
+        'Caption': 'Caption',
+        'by': 'by',
+        'name': 'name',
+        'tag': 'tag',
+        'Image is to small for this version': 'Image is to small for this version',
+        'close': 'Close',
+        'next': 'Next 25 &gt;',
+        'prev': '&lt; Previous 25',
+        'interactions_scale': 'ngrm.edit.vue.interactions.scale'|trans,
+        'interactions_no_media_selected': 'ngrm.edit.vue.interactions.no_media_selected'|trans,
+        'interactions_remove_media': 'ngrm.edit.vue.interactions.remove_media'|trans,
+        'interactions_select_media': 'ngrm.edit.vue.interactions.select_media'|trans,
+        'interactions_manage_media': 'ngrm.edit.vue.interactions.manage_media'|trans,
+        'interactions_quick_upload': 'ngrm.edit.vue.interactions.quick_upload'|trans,
+        'preview_alternate_text': 'ngrm.edit.vue.preview.alternate_text'|trans,
+        'preview_tags': 'ngrm.edit.vue.preview.tags'|trans,
+        'preview_size': 'ngrm.edit.vue.preview.size'|trans,
+        'upload_breadcrumbs_info': 'ngrm.edit.vue.upload.breadcrumbs_info'|trans,
+        'upload_root_folder': 'ngrm.edit.vue.upload.root_folder'|trans,
+        'upload_info_text': 'ngrm.edit.vue.upload.info_text'|trans,
+        'upload_button_select': 'ngrm.edit.vue.upload.button.select'|trans,
+        'upload_button_create': 'ngrm.edit.vue.upload.button.create'|trans,
+        'upload_button_upload': 'ngrm.edit.vue.upload.button.upload'|trans,
+        'upload_button_use_existing_resource': 'ngrm.edit.vue.upload.button.use_existing_resource'|trans,
+        'upload_checkbox_overwrite': 'ngrm.edit.vue.upload.checkbox.overwrite'|trans,
+        'upload_placeholder_new_folder': 'ngrm.edit.vue.upload.placeholder.new_folder'|trans,
+        'upload_error_existing_resource': 'ngrm.edit.vue.upload.error.existing_resource'|trans,
+        'upload_error_unsupported_resource_type': 'ngrm.edit.vue.upload.error.unsupported_resource_type'|trans
+    },
+    'inputFields': input_fields,
+    'availableVariations': available_variations,
+    'allowedVisibilities': allowed_visibilities,
+    'allowedTypes': allowed_types,
+    'allowedTags': allowed_tags,
+    'parentFolder': parent_folder,
+    'folder': folder,
+    'uploadContext': upload_context
+} %}
+
+{% set selected_image = {
+    'id': location and location.remoteResource.remoteId ? location.remoteResource.remoteId : '',
+    'name': location and location.remoteResource.name ? location.remoteResource.name : '',
+    'type': location and location.remoteResource.type ? location.remoteResource.type : '',
+    'format': location and location.remoteResource.metadata.format is defined ? location.remoteResource.metadata.format : '',
+    'url': location and location.remoteResource.url ? location.remoteResource.url : '',
+    'browseUrl': location ? ngrm_remote_resource_variation(location, 'ngrm_interface', 'browse').url : '',
+    'previewUrl': location ? ngrm_remote_resource_variation(location, 'ngrm_interface', 'preview').url : '',
+    'alternateText': location and location.remoteResource.altText ? location.remoteResource.altText : '',
+    'tags': location ? location.remoteResource.tags : [],
+    'size': location ? location.remoteResource.size : 0,
+    'variations': '%VARIATION_SETTINGS%',
+    'height': location and location.remoteResource.metadata.height is defined ? location.remoteResource.metadata.height : 0,
+    'width': location and location.remoteResource.metadata.width is defined ? location.remoteResource.metadata.width : 0
+} %}
+
+{% set encoded_selected_image = selected_image|json_encode|replace({'"%VARIATION_SETTINGS%"': variation_settings_json}) %}
+
+<div
+    class="ngremotemedia-container"
+    data-id="{{ field_id }}"
+    v-init:selected-image='{{ encoded_selected_image }}'
+    v-init:config='{{ config|json_encode }}'
+>
+    <interactions
+        field-id="{{ field_id }}"
+        :config="config"
+        :selected-image="selectedImage"
+    ></interactions>
+</div>

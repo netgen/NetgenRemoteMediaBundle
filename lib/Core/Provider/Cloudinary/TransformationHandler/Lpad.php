@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 
 /**
@@ -19,13 +18,13 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * width and height, padding is added to the image to reach the required size.
  * You can also specify the color of the background in the case that padding is added.
  */
-class Lpad implements HandlerInterface
+final class Lpad implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
      * properly configured array of options.
      */
-    public function process(RemoteResource $resource, string $variationName, array $config = []): array
+    public function process(array $config = []): array
     {
         $options = [
             'crop' => 'lpad',

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 
 /**
@@ -18,17 +17,13 @@ use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
  * is visible. This mode doesn't scale down the image if your requested
  * dimensions are smaller than the original image's.
  */
-class Mfit implements HandlerInterface
+final class Mfit implements HandlerInterface
 {
     /**
      * Takes options from the configuration and returns
      * properly configured array of options.
-     *
-     * @param string $variationName name of the configured image variation configuration
-     *
-     * @return array
      */
-    public function process(RemoteResource $resource, string $variationName, array $config = []): array
+    public function process(array $config = []): array
     {
         $options = [
             'crop' => 'mfit',

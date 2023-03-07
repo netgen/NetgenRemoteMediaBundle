@@ -1,0 +1,29 @@
+netgen_remote_media_ajax_facets_load:
+    path: /facets/load
+    defaults:
+        _controller: netgen_remote_media.controller.facets.load
+    methods: [GET]
+
+netgen_remote_media_ajax_folder_load:
+    path: /folder/load
+    defaults:
+        _controller: netgen_remote_media.controller.folder.load
+    methods: [GET]
+
+netgen_remote_media_ajax_folder_create:
+    path: /folder/create
+    defaults:
+        _controller: netgen_remote_media.controller.folder.create
+    methods: [POST]
+
+netgen_remote_media_ajax_resource_browse:
+    path: /resource/browse
+    defaults:
+        _controller: netgen_remote_media.controller.resource.browse
+    methods: [GET]
+
+netgen_remote_media_ajax_resource_upload:
+    path: /resource/upload
+    defaults:
+        _controller: netgen_remote_media.controller.resource.upload
+    methods: [POST]

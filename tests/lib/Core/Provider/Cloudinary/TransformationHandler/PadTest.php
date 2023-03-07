@@ -5,56 +5,74 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Pad;
+use PHPUnit\Framework\TestCase;
 
-final class PadTest extends BaseTest
+final class PadTest extends TestCase
 {
     protected Pad $pad;
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->pad = new Pad();
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Pad::process
      */
-    public function testPadSimple(): void
+    public function testWithoutConfig(): void
     {
         self::assertSame(
             ['crop' => 'pad'],
-            $this->pad->process($this->resource, 'small'),
+            $this->pad->process(),
         );
     }
 
     /**
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Pad::process
+     *
+     * @dataProvider dataProvider
      */
-    public function testPadWithDimensions(): void
+    public function test(array $config, array $result): void
     {
         self::assertSame(
-            [
-                'crop' => 'pad',
-                'width' => 100,
-                'height' => 200,
-            ],
-            $this->pad->process($this->resource, 'small', [100, 200]),
+            $result,
+            $this->pad->process($config),
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Pad::process
-     */
-    public function testPadWithDimensionsAndColour(): void
+    public function dataProvider(): array
     {
-        self::assertSame(
+        return [
             [
-                'crop' => 'pad',
-                'width' => 100,
-                'height' => 200,
-                'background' => 'red',
+                [],
+                [
+                    'crop' => 'pad',
+                ],
             ],
-            $this->pad->process($this->resource, 'small', [100, 200, 'red']),
-        );
+            [
+                [100],
+                [
+                    'crop' => 'pad',
+                    'width' => 100,
+                ],
+            ],
+            [
+                [100, 200],
+                [
+                    'crop' => 'pad',
+                    'width' => 100,
+                    'height' => 200,
+                ],
+            ],
+            [
+                [100, 200, 'red'],
+                [
+                    'crop' => 'pad',
+                    'width' => 100,
+                    'height' => 200,
+                    'background' => 'red',
+                ],
+            ],
+        ];
     }
 }
