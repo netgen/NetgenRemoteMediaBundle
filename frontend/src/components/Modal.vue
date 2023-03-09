@@ -26,8 +26,6 @@ export default {
 };
 </script>
 
->
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "../scss/variables";
@@ -39,7 +37,7 @@ export default {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, .8);
-  z-index: 11;
+  z-index: 99999;
 
   .media-modal {
     background-color: $wild-sand;

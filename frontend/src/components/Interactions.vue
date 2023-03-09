@@ -27,9 +27,12 @@
     </div>
 
     <input type="hidden" :name="this.config.inputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
-    <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :translations="config.translations" :selected-image="selectedImage" :available-variations="this.config.availableVariations"></crop-modal>
-    <media-modal :config="config" :tags="tags" :types="types" :visibilities="visibilities" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-    <upload-modal v-if="uploadModalOpen" :config="config" :visibilities="visibilities" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
+    <portal to="ngrm-body-modal">
+      <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :translations="config.translations" :selected-image="selectedImage" :available-variations="this.config.availableVariations"></crop-modal>
+      <media-modal :config="config" :tags="tags" :types="types" :visibilities="visibilities" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+      <upload-modal v-if="uploadModalOpen" :config="config" :visibilities="visibilities" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
+    </portal>
+    <portal-target name="ngrm-body-modal" class="ngrm-model-portal"></portal-target>
   </div>
 </template>
 
@@ -39,8 +42,8 @@ import Preview from "./Preview";
 import MediaModal from "./MediaModal";
 import CropModal from "./CropModal";
 import UploadModal from "./UploadModal";
-import {objectFilter} from "../utility/functional";
-import {truthy} from "../utility/predicates";
+import {objectFilter} from "@/utility/functional";
+import {truthy} from "@/utility/predicates";
 
 export default {
   name: "Interactions",
@@ -221,12 +224,19 @@ export default {
         top: 0,
         behavior: "smooth"
       });
-    }
+    },
   },
   watch: {
     selectedImage: function() {
       this.$emit("selectedImageChanged", this.selectedImage);
     }
-  }
+  },
+  mounted() {
+    this.$nextTick(function() {
+      const modalPortal = document.querySelector('.ngrm-model-portal');
+
+      document.body.prepend(modalPortal);
+    })
+  },
 };
 </script>
