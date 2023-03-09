@@ -9,7 +9,10 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build && node copyFiles.js",
     "dev": "vue-cli-service build --mode development && node copyFilesDev.js",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "dev-sha": "npm run dev && npm run sha-remote && npm run sha-remote-vendors",
+    "sha-remote": "curl -s http://fh-akeneo.dev.php80.sf/bundles/netgenremotemedia/js/remotemedia.js | openssl dgst -sha256 -binary | openssl base64",
+    "sha-remote-vendors": "curl -s http://fh-akeneo.dev.php80.sf/bundles/netgenremotemedia/js/remotemedia-vendors.js | openssl dgst -sha256 -binary | openssl base64"
   },
   "dependencies": {
     "@riophae/vue-treeselect": "^0.4.0",
