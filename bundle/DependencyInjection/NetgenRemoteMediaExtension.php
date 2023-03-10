@@ -60,6 +60,10 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['account_secret'],
         );
         $container->setParameter(
+            sprintf('netgen_remote_media.parameters.%s.upload_prefix', $config['provider']),
+            $config['upload_prefix'],
+        );
+        $container->setParameter(
             'netgen_remote_media.image_variations',
             $config['image_variations'],
         );

@@ -21,6 +21,7 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_name', 'testname');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_key', 'testkey');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_secret', 'testsecret');
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.upload_prefix', 'testprefix');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.remove_unused_resources', false);
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.pool_name', 'cache.app');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.ttl', 3600);
@@ -118,6 +119,7 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
             'account_name' => 'testname',
             'account_key' => 'testkey',
             'account_secret' => 'testsecret',
+            'upload_prefix' => 'testprefix',
             'cache' => [
                 'pool' => 'cache.app',
                 'ttl' => 3600,

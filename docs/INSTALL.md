@@ -71,6 +71,15 @@ netgen_remote_media:
         encryption_key: [YOUR_CLOUDINARY_ENCRYPTION_KEY]
 ```
 
+#### Upload prefix
+
+If you need to change Cloudinary API url (to use eg. GEO specific URLs), there's a parameter `upload_prefix` (set to `https://api.cloudinary.com` by default):
+
+```yaml
+netgen_remote_media:
+    upload_prefix: 'https://api.cloudinary.com'
+```
+
 ### Require the bundle
 
 Run the following from your website root folder:

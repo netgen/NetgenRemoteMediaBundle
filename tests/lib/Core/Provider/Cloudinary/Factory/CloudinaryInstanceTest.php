@@ -14,7 +14,7 @@ final class CloudinaryInstanceTest extends AbstractTest
 
     protected function setUp(): void
     {
-        $this->cloudinaryInstanceFactory = new CloudinaryInstanceFactory('myCloud', 'myKey', 'mySecret');
+        $this->cloudinaryInstanceFactory = new CloudinaryInstanceFactory('myCloud', 'myKey', 'mySecret', 'myprefix');
     }
 
     /**

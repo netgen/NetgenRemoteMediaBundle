@@ -32,16 +32,12 @@ use function cl_video_thumbnail_path;
 use function cloudinary_url_internal;
 use function count;
 use function date;
-use function explode;
 use function floor;
-use function implode;
-use function is_array;
 use function log;
 use function max;
 use function min;
 use function round;
 use function sprintf;
-use function urlencode;
 
 final class CloudinaryApiGateway implements GatewayInterface
 {

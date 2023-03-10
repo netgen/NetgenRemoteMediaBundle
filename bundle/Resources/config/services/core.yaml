@@ -64,6 +64,7 @@ services:
             - '%netgen_remote_media.parameters.cloudinary.account_name%'
             - '%netgen_remote_media.parameters.cloudinary.account_key%'
             - "%netgen_remote_media.parameters.cloudinary.account_secret%"
+            - "%netgen_remote_media.parameters.cloudinary.upload_prefix%"
             - "%netgen_remote_media.parameters.use_subdomains%"
 
     netgen_remote_media.provider.cloudinary.cloudinary_instance:
