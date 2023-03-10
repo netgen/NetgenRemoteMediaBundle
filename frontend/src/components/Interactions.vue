@@ -93,13 +93,30 @@ export default {
     handleMediaModalClose() {
       this.mediaModalOpen = false;
       this.resetDomAfterModal();
+      this.dispatchVanillaModalCloseEvent();
     },
     handleCropModalClose() {
       this.cropModalOpen = false;
       this.resetDomAfterModal();
+      this.dispatchVanillaModalCloseEvent();
     },
     handleUploadModalClose() {
       this.uploadModalOpen = false;
+      this.dispatchVanillaModalCloseEvent();
+    },
+    dispatchVanillaModalCloseEvent() {
+      this.$nextTick(function() {
+        this.$el.dispatchEvent(
+            new CustomEvent(
+                'ngrm-modal-close',
+                {
+                  detail: {
+                    inputFields: this.config.inputFields,
+                  }
+                }
+            )
+        );
+      })
     },
     handleMediaSelected(item) {
       this.selectedImage = {
@@ -119,6 +136,7 @@ export default {
       };
 
       this.mediaModalOpen = false;
+      this.dispatchVanillaModalCloseEvent();
     },
     handleVariationCropChange(newValues) {
       this.selectedImage = {
@@ -129,7 +147,7 @@ export default {
         }
       };
     },
-    handleResourceUploaded(item){
+    handleResourceUploaded(item) {
       this.selectedImage = {
         id: item.remoteId,
         name: item.filename,
@@ -147,6 +165,7 @@ export default {
       };
 
       this.uploadModalOpen = false;
+      this.dispatchVanillaModalCloseEvent();
     },
     handleCropClicked() {
       this.cropModalOpen = true;
