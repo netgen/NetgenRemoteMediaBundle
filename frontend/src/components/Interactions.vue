@@ -11,13 +11,13 @@
 
       <input type="hidden" :name="this.config.inputFields.remoteId" v-model="selectedImage.id" class="media-id" />
 
-      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid button" @click="handleCropClicked" :value="this.config.translations.interactions_scale" >
-      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file button" :value="this.config.translations.interactions_remove_media" />
+      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid btn" @click="handleCropClicked" :value="this.config.translations.interactions_scale" >
+      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file btn" :value="this.config.translations.interactions_remove_media" />
 
-      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media" />
+      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file btn" :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media" />
 
       <div v-if="!this.config.disableUpload" class="ngremotemedia-local-file-container">
-        <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" @click="handleScrollTop">
+        <button type="button" class="btn btn-default ngremotemedia-local-file btn upload-from-disk" @click="handleScrollTop">
           <Label :for="fieldId + '_file_upload'">
             {{ this.config.translations.interactions_quick_upload }}
           </Label>
