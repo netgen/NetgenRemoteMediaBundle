@@ -17,7 +17,7 @@
       <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file btn" :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media" />
 
       <div v-if="!this.config.disableUpload" class="ngremotemedia-local-file-container">
-        <button type="button" class="btn btn-default ngremotemedia-local-file btn upload-from-disk" @click="handleScrollTop">
+        <button type="button" class="btn btn-default ngremotemedia-local-file btn upload-from-disk">
           <Label :for="fieldId + '_file_upload'">
             {{ this.config.translations.interactions_quick_upload }}
           </Label>
@@ -170,11 +170,6 @@ export default {
     handleCropClicked() {
       this.cropModalOpen = true;
       this.prepareDomForModal();
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
     },
     handleRemoveMediaClicked() {
       this.selectedImage = {
@@ -225,25 +220,13 @@ export default {
       this.mediaModalOpen = true;
       this.prepareDomForModal();
       this.fetchFacets();
-
-      // Scroll to top to avoid modal being not visible when the Select Media button has been clicked on a long page
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
     },
     handleFileInputChange() {
       this.fetchFacets();
       this.uploadModalOpen = true;
 
       this.newFile = this.$refs.fileUploadInput.files.item(0);
-    },
-    handleScrollTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-    },
+    }
   },
   watch: {
     selectedImage: function() {
