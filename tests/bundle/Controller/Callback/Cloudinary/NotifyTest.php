@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use function in_array;
 use function json_encode;
 use function sprintf;
 use function time;
@@ -403,27 +402,49 @@ final class NotifyTest extends TestCase
             ->expects(self::once())
             ->method('invalidateFoldersCache');
 
-        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|sample');
+        $cloudinaryRemoteId1 = CloudinaryRemoteId::fromRemoteId('upload|image|sample');
         $cloudinaryRemoteId2 = CloudinaryRemoteId::fromRemoteId('upload|video|sample2');
 
         $this->gatewayMock
             ->expects(self::exactly(2))
             ->method('invalidateResourceCache')
-            ->withConsecutive([$cloudinaryRemoteId], [$cloudinaryRemoteId2]);
+            ->willReturnCallback(
+                static fn (CloudinaryRemoteId $cloudinaryRemoteId) => match ($cloudinaryRemoteId->getRemoteId()) {
+                    $cloudinaryRemoteId1->getRemoteId(), $cloudinaryRemoteId2->getRemoteId() => null,
+                    default => throw new RuntimeException(
+                        sprintf(
+                            'Failed asserting that argument #1 for method "invalidateResourceCache" with value "%s" matches one of the expecting values.',
+                            $cloudinaryRemoteId->getRemoteId(),
+                        ),
+                    ),
+                },
+            );
 
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('loadByRemoteId')
-            ->withConsecutive(
-                [$cloudinaryRemoteId->getRemoteId()],
-                [$cloudinaryRemoteId2->getRemoteId()],
-            )
-            ->willReturnOnConsecutiveCalls($resource, $resource2);
+            ->willReturnCallback(
+                static fn (string $remoteId): ?RemoteResource => match ($remoteId) {
+                    $cloudinaryRemoteId1->getRemoteId() => $resource,
+                    $cloudinaryRemoteId2->getRemoteId() => $resource2,
+                    default => null,
+                },
+            );
 
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('remove')
-            ->withConsecutive([$resource], [$resource2]);
+            ->willReturnCallback(
+                static fn (RemoteResource $resource) => match ($resource->getRemoteId()) {
+                    $cloudinaryRemoteId1->getRemoteId(), $cloudinaryRemoteId2->getRemoteId() => null,
+                    default => throw new RuntimeException(
+                        sprintf(
+                            'Failed asserting that argument #1 for method "remove" with value "%s" matches one of the expecting values.',
+                            $resource->getRemoteId(),
+                        ),
+                    ),
+                },
+            );
 
         $response = $this->controller->__invoke($request);
 
@@ -605,19 +626,17 @@ final class NotifyTest extends TestCase
         $this->gatewayMock
             ->expects(self::exactly(3))
             ->method('invalidateResourceCache')
-            ->willReturnCallback(static function ($cloudinaryRemoteId) {
-                $expectedIds = [
-                    'upload|image|sample',
-                    'upload|video|video_sample',
-                    'upload|raw|non_existing_sample',
-                ];
-
-                if (in_array($cloudinaryRemoteId->getRemoteId(), $expectedIds, true)) {
-                    return null;
-                }
-
-                throw new RuntimeException(sprintf('Failed asserting that argument #1 for method "invalidateResourceCache" with value "%s" matches one of the expecting values.', $cloudinaryRemoteId->getRemoteId()));
-            });
+            ->willReturnCallback(
+                static fn (CloudinaryRemoteId $cloudinaryRemoteId) => match ($cloudinaryRemoteId->getRemoteId()) {
+                    'upload|image|sample', 'upload|video|video_sample', 'upload|raw|non_existing_sample' => null,
+                    default => throw new RuntimeException(
+                        sprintf(
+                            'Failed asserting that argument #1 for method "invalidateResourceCache" with value "%s" matches one of the expecting values.',
+                            $cloudinaryRemoteId->getRemoteId(),
+                        ),
+                    ),
+                },
+            );
 
         $this->gatewayMock
             ->expects(self::once())
@@ -646,21 +665,14 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(3))
             ->method('loadByRemoteId')
-            ->willReturnCallback(static function ($remoteId) use ($image, $video) {
-                if ($remoteId === 'upload|image|sample') {
-                    return $image;
-                }
-
-                if ($remoteId === 'upload|video|video_sample') {
-                    return $video;
-                }
-
-                if ($remoteId === 'upload|raw|non_existing_sample') {
-                    throw new RemoteResourceNotFoundException('upload|raw|non_existing_sample');
-                }
-
-                throw new RuntimeException(sprintf('Failed asserting that argument #1 for method "loadByRemoteId" with value "%s" matches one of the expecting values.', $remoteId));
-            });
+            ->willReturnCallback(
+                static fn (string $remoteId): ?RemoteResource => match ($remoteId) {
+                    'upload|image|sample' => $image,
+                    'upload|video|video_sample' => $video,
+                    'upload|raw|non_existing_sample' => throw new RemoteResourceNotFoundException('upload|raw|non_existing_sample'),
+                    default => null,
+                },
+            );
 
         $image->addTag('tag2');
         $image->addTag('tag3');
@@ -673,18 +685,12 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('store')
-            ->willReturnCallback(static function ($resource) use ($image, $video) {
-                $expectedResources = [
-                    $image,
-                    $video,
-                ];
-
-                if (in_array($resource, $expectedResources, true)) {
-                    return $resource;
-                }
-
-                throw new RuntimeException(sprintf('Failed asserting that remote resource as argument #1 for method "store" with remote ID "%s" matches one of the expecting values.', $resource->getRemoteId()));
-            });
+            ->willReturnCallback(
+                static fn (RemoteResource $resource): ?RemoteResource => match ($resource->getRemoteId()) {
+                    'upload|image|sample', 'upload|video|video_sample' => $resource,
+                    default => null,
+                },
+            );
 
         $response = $this->controller->__invoke($request);
 
@@ -831,20 +837,17 @@ final class NotifyTest extends TestCase
         $this->gatewayMock
             ->expects(self::exactly(4))
             ->method('invalidateResourceCache')
-            ->willReturnCallback(static function ($cloudinaryRemoteId) {
-                $expectedIds = [
-                    'upload|image|sample',
-                    'upload|video|video_sample',
-                    'upload|raw|file_sample',
-                    'upload|raw|non_existing_sample',
-                ];
-
-                if (in_array($cloudinaryRemoteId->getRemoteId(), $expectedIds, true)) {
-                    return null;
-                }
-
-                throw new RuntimeException(sprintf('Failed asserting that argument #1 for method "invalidateResourceCache" with value "%s" matches one of the expecting values.', $cloudinaryRemoteId->getRemoteId()));
-            });
+            ->willReturnCallback(
+                static fn (CloudinaryRemoteId $cloudinaryRemoteId) => match ($cloudinaryRemoteId->getRemoteId()) {
+                    'upload|image|sample', 'upload|video|video_sample', 'upload|raw|file_sample', 'upload|raw|non_existing_sample' => null,
+                    default => throw new RuntimeException(
+                        sprintf(
+                            'Failed asserting that argument #1 for method "invalidateResourceCache" with value "%s" matches one of the expecting values.',
+                            $cloudinaryRemoteId->getRemoteId(),
+                        ),
+                    ),
+                },
+            );
 
         $image = new RemoteResource([
             'id' => 5,
@@ -887,25 +890,15 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(4))
             ->method('loadByRemoteId')
-            ->willReturnCallback(static function ($remoteId) use ($image, $video, $file) {
-                if ($remoteId === 'upload|image|sample') {
-                    return $image;
-                }
-
-                if ($remoteId === 'upload|video|video_sample') {
-                    return $video;
-                }
-
-                if ($remoteId === 'upload|raw|file_sample') {
-                    return $file;
-                }
-
-                if ($remoteId === 'upload|raw|non_existing_sample') {
-                    throw new RemoteResourceNotFoundException('upload|raw|non_existing_sample');
-                }
-
-                throw new RuntimeException(sprintf('Failed asserting that argument #1 for method "loadByRemoteId" with value "%s" matches one of the expecting values.', $remoteId));
-            });
+            ->willReturnCallback(
+                static fn (string $remoteId): ?RemoteResource => match ($remoteId) {
+                    'upload|image|sample' => $image,
+                    'upload|video|video_sample' => $video,
+                    'upload|raw|file_sample' => $file,
+                    'upload|raw|non_existing_sample' => throw new RemoteResourceNotFoundException('upload|raw|non_existing_sample'),
+                    default => null,
+                },
+            );
 
         $image->setAltText('New alt text');
         $image->setCaption('New caption');
@@ -922,19 +915,12 @@ final class NotifyTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(3))
             ->method('store')
-            ->willReturnCallback(static function ($resource) use ($image, $video, $file) {
-                $expectedResources = [
-                    $image,
-                    $video,
-                    $file,
-                ];
-
-                if (in_array($resource, $expectedResources, true)) {
-                    return $resource;
-                }
-
-                throw new RuntimeException(sprintf('Failed asserting that remote resource as argument #1 for method "store" with remote ID "%s" matches one of the expecting values.', $resource->getRemoteId()));
-            });
+            ->willReturnCallback(
+                static fn (RemoteResource $resource): ?RemoteResource => match ($resource->getRemoteId()) {
+                    $image->getRemoteId(), $video->getRemoteId(), $file->getRemoteId() => $resource,
+                    default => null,
+                },
+            );
 
         $response = $this->controller->__invoke($request);
 

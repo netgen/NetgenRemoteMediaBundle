@@ -57,10 +57,11 @@ final class CloudinaryProviderTest extends AbstractTest
         $entityManager
             ->expects(self::exactly(2))
             ->method('getRepository')
-            ->withConsecutive([RemoteResource::class], [RemoteResourceLocation::class])
-            ->willReturnOnConsecutiveCalls(
-                $this->createMock(ObjectRepository::class),
-                $this->createMock(ObjectRepository::class),
+            ->willReturnMap(
+                [
+                    [RemoteResource::class, $this->createMock(ObjectRepository::class)],
+                    [RemoteResourceLocation::class, $this->createMock(ObjectRepository::class)],
+                ],
             );
 
         $this->cloudinaryProvider = new CloudinaryProvider(

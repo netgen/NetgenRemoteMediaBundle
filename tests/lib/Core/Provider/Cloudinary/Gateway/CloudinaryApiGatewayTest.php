@@ -580,8 +580,12 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $this->cloudinarySearchMock
             ->expects(self::exactly(2))
             ->method('with_field')
-            ->withConsecutive(['context'], ['tags'])
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturnMap(
+                [
+                    ['context', $this->cloudinarySearchMock],
+                    ['tags', $this->cloudinarySearchMock],
+                ],
+            );
 
         $apiResponse = $this->getSearchResponse();
 
@@ -651,8 +655,12 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $this->cloudinarySearchMock
             ->expects(self::exactly(2))
             ->method('with_field')
-            ->withConsecutive(['context'], ['tags'])
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturnMap(
+                [
+                    ['context', $this->cloudinarySearchMock],
+                    ['tags', $this->cloudinarySearchMock],
+                ],
+            );
 
         $apiResponse = $this->getSearchResponse();
 
@@ -752,39 +760,45 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $this->cloudinaryApiMock
             ->expects(self::exactly(3))
             ->method('tags')
-            ->withConsecutive(
-                [[
-                    'max_results' => 500,
-                ]],
-                [[
-                    'max_results' => 500,
-                    'next_cursor' => 'gegtrgofu0439ree9i0',
-                ]],
-                [[
-                    'max_results' => 500,
-                    'next_cursor' => 'ewtfdrejofjpjoijpo04',
-                ]],
-            )
-            ->willReturnOnConsecutiveCalls(
+            ->willReturnMap(
                 [
-                    'tags' => [
-                        'tag1',
-                        'tag2',
-                        'tag3',
+                    [
+                        [
+                            'max_results' => 500,
+                        ],
+                        [
+                            'tags' => [
+                                'tag1',
+                                'tag2',
+                                'tag3',
+                            ],
+                            'next_cursor' => 'gegtrgofu0439ree9i0',
+                        ],
                     ],
-                    'next_cursor' => 'gegtrgofu0439ree9i0',
-                ],
-                [
-                    'tags' => [
-                        'tag4',
-                        'tag5',
-                        'tag6',
+                    [
+                        [
+                            'max_results' => 500,
+                            'next_cursor' => 'gegtrgofu0439ree9i0',
+                        ],
+                        [
+                            'tags' => [
+                                'tag4',
+                                'tag5',
+                                'tag6',
+                            ],
+                            'next_cursor' => 'ewtfdrejofjpjoijpo04',
+                        ],
                     ],
-                    'next_cursor' => 'ewtfdrejofjpjoijpo04',
-                ],
-                [
-                    'tags' => [
-                        'tag7',
+                    [
+                        [
+                            'max_results' => 500,
+                            'next_cursor' => 'ewtfdrejofjpjoijpo04',
+                        ],
+                        [
+                            'tags' => [
+                                'tag7',
+                            ],
+                        ],
                     ],
                 ],
             );

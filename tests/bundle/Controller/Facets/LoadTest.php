@@ -95,25 +95,17 @@ final class LoadTest extends TestCase
         $this->translatorMock
             ->expects(self::exactly(8))
             ->method('trans')
-            ->withConsecutive(
-                ['ngrm.supported_types.image', [], 'ngremotemedia'],
-                ['ngrm.supported_types.video', [], 'ngremotemedia'],
-                ['ngrm.supported_types.audio', [], 'ngremotemedia'],
-                ['ngrm.supported_types.document', [], 'ngremotemedia'],
-                ['ngrm.supported_types.other', [], 'ngremotemedia'],
-                ['ngrm.supported_visibilities.public', [], 'ngremotemedia'],
-                ['ngrm.supported_visibilities.private', [], 'ngremotemedia'],
-                ['ngrm.supported_visibilities.protected', [], 'ngremotemedia'],
-            )
-            ->willReturnOnConsecutiveCalls(
-                'Image',
-                'Video',
-                'Audio',
-                'Document',
-                'Other',
-                'Public',
-                'Private',
-                'Protected',
+            ->willReturnMap(
+                [
+                    ['ngrm.supported_types.image', [], 'ngremotemedia', null, 'Image'],
+                    ['ngrm.supported_types.video', [], 'ngremotemedia', null, 'Video'],
+                    ['ngrm.supported_types.audio', [], 'ngremotemedia', null, 'Audio'],
+                    ['ngrm.supported_types.document', [], 'ngremotemedia', null, 'Document'],
+                    ['ngrm.supported_types.other', [], 'ngremotemedia', null, 'Other'],
+                    ['ngrm.supported_visibilities.public', [], 'ngremotemedia', null, 'Public'],
+                    ['ngrm.supported_visibilities.private', [], 'ngremotemedia', null, 'Private'],
+                    ['ngrm.supported_visibilities.protected', [], 'ngremotemedia', null, 'Protected'],
+                ],
             );
 
         $expectedResponseContent = json_encode([
@@ -259,25 +251,17 @@ final class LoadTest extends TestCase
         $this->translatorMock
             ->expects(self::exactly(8))
             ->method('trans')
-            ->withConsecutive(
-                ['ngrm.supported_types.image', [], 'ngremotemedia'],
-                ['ngrm.supported_types.video', [], 'ngremotemedia'],
-                ['ngrm.supported_types.audio', [], 'ngremotemedia'],
-                ['ngrm.supported_types.document', [], 'ngremotemedia'],
-                ['ngrm.supported_types.other', [], 'ngremotemedia'],
-                ['ngrm.supported_visibilities.public', [], 'ngremotemedia'],
-                ['ngrm.supported_visibilities.private', [], 'ngremotemedia'],
-                ['ngrm.supported_visibilities.protected', [], 'ngremotemedia'],
-            )
-            ->willReturnOnConsecutiveCalls(
-                'Image',
-                'ngrm.supported_types.video',
-                'Audio',
-                'Document',
-                'Other',
-                'ngrm.supported_visibilities.public',
-                'Private',
-                'Protected',
+            ->willReturnMap(
+                [
+                    ['ngrm.supported_types.image', [], 'ngremotemedia', null, 'Image'],
+                    ['ngrm.supported_types.video', [], 'ngremotemedia', null, 'ngrm.supported_types.video'],
+                    ['ngrm.supported_types.audio', [], 'ngremotemedia', null, 'Audio'],
+                    ['ngrm.supported_types.document', [], 'ngremotemedia', null, 'Document'],
+                    ['ngrm.supported_types.other', [], 'ngremotemedia', null, 'Other'],
+                    ['ngrm.supported_visibilities.public', [], 'ngremotemedia', null, 'ngrm.supported_visibilities.public'],
+                    ['ngrm.supported_visibilities.private', [], 'ngremotemedia', null, 'Private'],
+                    ['ngrm.supported_visibilities.protected', [], 'ngremotemedia', null, 'Protected'],
+                ],
             );
 
         $expectedResponseContent = json_encode([

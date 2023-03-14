@@ -122,11 +122,16 @@ final class UploadTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('buildVariation')
-            ->withConsecutive(
-                [$location, 'ngrm_interface', 'browse'],
-                [$location, 'ngrm_interface', 'preview'],
-            )
-            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
+            ->willReturnCallback(
+                static fn (
+                    RemoteResourceLocation $location,
+                    string $variationGroup,
+                    string $variationName
+                ) => match ($location->getRemoteResource()->getRemoteId()) {
+                    'upload|image|media/image/sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
+                    default => null,
+                },
+            );
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'upload|image|media/image/sample_image.jpg',
@@ -257,11 +262,16 @@ final class UploadTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('buildVariation')
-            ->withConsecutive(
-                [$location, 'ngrm_interface', 'browse'],
-                [$location, 'ngrm_interface', 'preview'],
-            )
-            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
+            ->willReturnCallback(
+                static fn (
+                    RemoteResourceLocation $location,
+                    string $variationGroup,
+                    string $variationName
+                ) => match ($location->getRemoteResource()->getRemoteId()) {
+                    'authenticated|image|media/image/sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
+                    default => null,
+                },
+            );
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'authenticated|image|media/image/sample_image.jpg',
@@ -403,11 +413,16 @@ final class UploadTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('buildVariation')
-            ->withConsecutive(
-                [$location, 'ngrm_interface', 'browse'],
-                [$location, 'ngrm_interface', 'preview'],
-            )
-            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
+            ->willReturnCallback(
+                static fn (
+                    RemoteResourceLocation $location,
+                    string $variationGroup,
+                    string $variationName
+                ) => match ($location->getRemoteResource()->getRemoteId()) {
+                    'upload|image|sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
+                    default => null,
+                },
+            );
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'upload|image|sample_image.jpg',
@@ -525,11 +540,16 @@ final class UploadTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('buildVariation')
-            ->withConsecutive(
-                [$location, 'ngrm_interface', 'browse'],
-                [$location, 'ngrm_interface', 'preview'],
-            )
-            ->willReturnOnConsecutiveCalls($browseVariation, $previewVariation);
+            ->willReturnCallback(
+                static fn (
+                    RemoteResourceLocation $location,
+                    string $variationGroup,
+                    string $variationName
+                ) => match ($location->getRemoteResource()->getRemoteId()) {
+                    'upload|image|media/image/sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
+                    default => null,
+                },
+            );
 
         $expectedResponseContent = json_encode([
             'remoteId' => 'upload|image|media/image/sample_image.jpg',

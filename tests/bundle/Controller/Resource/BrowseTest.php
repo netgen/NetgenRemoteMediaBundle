@@ -30,7 +30,6 @@ final class BrowseTest extends TestCase
     protected function setUp(): void
     {
         $this->providerMock = $this->createMock(ProviderInterface::class);
-
         $this->controller = new BrowseController($this->providerMock);
     }
 
@@ -140,43 +139,31 @@ final class BrowseTest extends TestCase
         $this->providerMock
             ->expects(self::exactly(4))
             ->method('buildVariation')
-            ->withConsecutive(
-                [
-                    new RemoteResourceLocation($result->getResources()[0]),
-                    'ngrm_interface',
-                    'browse',
-                ],
-                [
-                    new RemoteResourceLocation($result->getResources()[0]),
-                    'ngrm_interface',
-                    'preview',
-                ],
-                [
-                    new RemoteResourceLocation($result->getResources()[1]),
-                    'ngrm_interface',
-                    'browse',
-                ],
-                [
-                    new RemoteResourceLocation($result->getResources()[1]),
-                    'ngrm_interface',
-                    'preview',
-                ],
-            )
-            ->willReturnOnConsecutiveCalls(
-                $image1BrowseVariation,
-                $image1PreviewVariation,
-                $image2BrowseVariation,
-                $image2PreviewVariation,
+            ->willReturnCallback(
+                static fn (
+                    RemoteResourceLocation $location,
+                    string $variationGroup,
+                    string $variationName
+                ) => match ($location->getRemoteResource()->getRemoteId()) {
+                    'upload|image|media/images/image.jpg' => $variationName === 'browse' ? $image1BrowseVariation : $image1PreviewVariation,
+                    'upload|image|media/images/image2.jpg' => $variationName === 'browse' ? $image2BrowseVariation : $image2PreviewVariation,
+                    default => null,
+                },
             );
 
         $this->providerMock
             ->expects(self::exactly(2))
             ->method('buildVideoThumbnailVariation')
-            ->withConsecutive(
-                [new RemoteResourceLocation($result->getResources()[2]), 'ngrm_interface', 'browse'],
-                [new RemoteResourceLocation($result->getResources()[2]), 'ngrm_interface', 'preview'],
-            )
-            ->willReturnOnConsecutiveCalls($videoThumbnailBrowseVariation, $videoThumbnailPreviewVariation);
+            ->willReturnCallback(
+                static fn (
+                    RemoteResourceLocation $location,
+                    string $variationGroup,
+                    string $variationName
+                ) => match ($location->getRemoteResource()->getRemoteId()) {
+                    'upload|image|media/videos/example.mp4' => $variationName === 'browse' ? $videoThumbnailBrowseVariation : $videoThumbnailPreviewVariation,
+                    default => null,
+                },
+            );
 
         $expectedResponseContent = json_encode([
             'hits' => [

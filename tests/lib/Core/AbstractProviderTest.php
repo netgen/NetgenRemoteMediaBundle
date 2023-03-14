@@ -27,6 +27,9 @@ use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
+
+use function sprintf;
 
 final class AbstractProviderTest extends AbstractTest
 {
@@ -99,8 +102,12 @@ final class AbstractProviderTest extends AbstractTest
         $this->entityManager
             ->expects(self::exactly(2))
             ->method('getRepository')
-            ->withConsecutive([RemoteResource::class], [RemoteResourceLocation::class])
-            ->willReturnOnConsecutiveCalls($this->resourceRepository, $this->locationRepository);
+            ->willReturnMap(
+                [
+                    [RemoteResource::class, $this->resourceRepository],
+                    [RemoteResourceLocation::class, $this->locationRepository],
+                ],
+            );
 
         $namedRemoteResources = [
             'test_image' => 'upload|image|media/images/test_image.jpg',
@@ -1030,7 +1037,19 @@ final class AbstractProviderTest extends AbstractTest
         $this->entityManager
             ->expects(self::exactly(2))
             ->method('persist')
-            ->withConsecutive([$resource], [$location]);
+            ->willReturnCallback(
+                static fn (RemoteResource|RemoteResourceLocation $value) => match (
+                    $value instanceof RemoteResourceLocation ? $value->getRemoteResource()->getRemoteId() : $value->getRemoteId()
+                ) {
+                    $resource->getRemoteId(), $location->getRemoteResource()->getRemoteId() => null,
+                    default => throw new RuntimeException(
+                        sprintf(
+                            'Failed asserting that argument #1 for method "persist" with value "%s" matches one of the expecting values.',
+                            $value instanceof RemoteResourceLocation ? $value->getRemoteResource()->getRemoteId() : $value->getRemoteId(),
+                        ),
+                    ),
+                },
+            );
 
         $this->entityManager
             ->expects(self::exactly(2))
