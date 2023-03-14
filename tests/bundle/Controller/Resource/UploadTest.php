@@ -247,8 +247,6 @@ final class UploadTest extends TestCase
             ->with($resourceStruct)
             ->willReturn($resource);
 
-        $location = new RemoteResourceLocation($resource);
-
         $browseVariation = new RemoteResourceVariation(
             $resource,
             'https://cloudinary.com/test/c_fit_160_120/authenticated/image/media/image/sample_image.jpg',

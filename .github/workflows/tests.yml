@@ -14,16 +14,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0']
-        symfony: ['~4.4.0', '~5.2.0', '~5.3.0']
+        php: [ '8.0', '8.1' ]
+        symfony: [ '~4.4.0', '~5.4.0', '~6.2.0' ]
         deps: ['normal']
         include:
-          - php: '7.4'
-            symfony: '~5.2.0'
+          - php: '8.0'
+            symfony: '~4.4.0'
             deps: 'low'
+        exclude:
+          - php: '8.0'
+            symfony: '~6.2.0'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -34,16 +37,15 @@ jobs:
 
       # Install Flex as a global dependency to enable usage of extra.symfony.require
       # while keeping Flex recipes from applying
+      - run: composer global config --no-plugins allow-plugins.symfony/flex true
       - run: composer global require --no-scripts symfony/flex
 
       - run: composer config extra.symfony.require ${{ matrix.symfony }}
 
-      -
-        run: composer update --prefer-dist
+      - run: composer update --prefer-dist
         if: ${{ matrix.deps != 'low' }}
 
-      -
-        run: composer update --prefer-dist --prefer-lowest --prefer-stable
+      - run: composer update --prefer-dist --prefer-lowest --prefer-stable
         if: ${{ matrix.deps == 'low' }}
 
       - run: vendor/bin/phpunit -c phpunit.xml --colors=always
