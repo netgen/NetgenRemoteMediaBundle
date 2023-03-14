@@ -16,6 +16,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 
 use function array_merge;
+use function array_search;
 use function array_unique;
 use function array_values;
 use function array_walk;
@@ -29,7 +30,6 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
     public const PROVIDER_KEY = 'cloudinary';
     public const SEARCH = 'search';
     public const SEARCH_COUNT = 'search_count';
-    public const LIST = 'resource_list';
     public const FOLDER_LIST = 'folder_list';
     public const TAG_LIST = 'tag_list';
     public const COUNT = 'resources_count';
@@ -357,12 +357,13 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
                 array_merge(
                     $this->getCacheTags(self::SEARCH),
                     $this->getCacheTags(self::SEARCH_COUNT),
-                    $this->getCacheTags(self::LIST),
                     $this->getCacheTags(self::COUNT),
                     $this->getCacheTags(self::TAG_LIST),
                 ),
             ),
         );
+
+        unset($tags[array_search($this->getBaseTag(), $tags, true)]);
 
         $this->cache->invalidateTags($tags);
     }
@@ -378,6 +379,8 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
             $remoteId->getResourceType(),
             $remoteId->getResourceId(),
         );
+
+        unset($tags[array_search($this->getBaseTag(), $tags, true)]);
 
         $this->cache->invalidateTags($tags);
     }
@@ -397,6 +400,8 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
             ),
         );
 
+        unset($tags[array_search($this->getBaseTag(), $tags, true)]);
+
         $this->cache->invalidateTags($tags);
     }
 
@@ -413,6 +418,8 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
                 ),
             ),
         );
+
+        unset($tags[array_search($this->getBaseTag(), $tags, true)]);
 
         $this->cache->invalidateTags($tags);
     }

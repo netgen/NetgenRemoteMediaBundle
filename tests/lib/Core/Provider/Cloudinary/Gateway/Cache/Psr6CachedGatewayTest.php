@@ -16,11 +16,12 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Tests\AbstractTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\TagAwareAdapter;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 
+use function array_values;
 use function count;
 use function sprintf;
 
@@ -37,31 +38,26 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     protected MockObject $apiGatewayMock;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\Cache\Adapter\TagAwareAdapterInterface
-     */
-    protected MockObject $taggableCacheMock;
+    protected CacheItemPoolInterface $taggableCache;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Cache\CacheItemPoolInterface
-     */
-    protected MockObject $nonTaggableCacheMock;
+    protected CacheItemPoolInterface $nonTaggableCache;
 
     protected function setUp(): void
     {
         $this->apiGatewayMock = self::createMock(GatewayInterface::class);
-        $this->taggableCacheMock = self::createMock(TagAwareAdapterInterface::class);
-        $this->nonTaggableCacheMock = self::createMock(CacheItemPoolInterface::class);
+
+        $this->taggableCache = new TagAwareAdapter(new ArrayAdapter());
+        $this->nonTaggableCache = new ArrayAdapter();
 
         $this->taggableCachedGateway = new Psr6CachedGateway(
             $this->apiGatewayMock,
-            $this->taggableCacheMock,
+            $this->taggableCache,
             self::CACHE_TTL,
         );
 
         $this->nonTaggableCachedGateway = new Psr6CachedGateway(
             $this->apiGatewayMock,
-            $this->nonTaggableCacheMock,
+            $this->nonTaggableCache,
             self::CACHE_TTL,
         );
     }
@@ -116,23 +112,11 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testCountResourcesCached(): void
     {
-        $cacheItem = self::createMock(CacheItemInterface::class);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-resources_count');
+        $cacheItem->set(500);
+        $cacheItem->expiresAfter(1000);
 
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-resources_count')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn(500);
+        $this->taggableCache->save($cacheItem);
 
         self::assertSame(
             500,
@@ -149,48 +133,23 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testCountResourcesNonCachedTaggable(): void
     {
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-resources_count')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->taggableCache->deleteItem('ngremotemedia-cloudinary-resources_count');
 
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('countResources')
             ->willReturn(500);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with(500);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-resources_count']);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             500,
             $this->taggableCachedGateway->countResources(),
         );
+
+        $tags = ['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-resources_count'];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-resources_count');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -202,43 +161,22 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testCountResourcesNonCachedNonTaggable(): void
     {
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-resources_count')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->nonTaggableCache->deleteItem('ngremotemedia-cloudinary-resources_count');
 
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('countResources')
             ->willReturn(500);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with(500);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             500,
             $this->nonTaggableCachedGateway->countResources(),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resources_count');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -252,23 +190,11 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $folder = 'test/subtest';
 
-        $cacheItem = self::createMock(CacheItemInterface::class);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest');
+        $cacheItem->set(200);
+        $cacheItem->expiresAfter(1000);
 
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_count-test_subtest')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn(200);
+        $this->taggableCache->save($cacheItem);
 
         self::assertSame(
             200,
@@ -287,18 +213,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $folder = 'test/subtest';
 
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_count-test_subtest')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->taggableCache->delete('ngremotemedia-cloudinary-folder_count-test_subtest');
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -306,30 +221,16 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->with($folder)
             ->willReturn(200);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with(200);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_count']);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             200,
             $this->taggableCachedGateway->countResourcesInFolder($folder),
         );
+
+        $tags = ['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_count'];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -343,18 +244,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $folder = 'test/subtest';
 
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_count-test_subtest')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-folder_count-test_subtest');
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -362,25 +252,15 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->with($folder)
             ->willReturn(200);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with(200);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             200,
             $this->nonTaggableCachedGateway->countResourcesInFolder($folder),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -398,23 +278,11 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'test/subfolder2',
         ];
 
-        $cacheItem = self::createMock(CacheItemInterface::class);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list');
+        $cacheItem->set($folders);
+        $cacheItem->expiresAfter(1000);
 
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_list')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn($folders);
+        $this->taggableCache->save($cacheItem);
 
         self::assertSame(
             $folders,
@@ -429,7 +297,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listFolders
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
      */
-    public function testListFoldersCachedTaggable(): void
+    public function testListFoldersNonCachedTaggable(): void
     {
         $folders = [
             'test',
@@ -437,43 +305,23 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'test/subfolder2',
         ];
 
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_list')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->taggableCache->delete('ngremotemedia-cloudinary-folder_list');
 
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('listFolders')
             ->willReturn($folders);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($folders);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list']);
-
         self::assertSame(
             $folders,
             $this->taggableCachedGateway->listFolders(),
         );
+
+        $tags = ['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list'];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -483,7 +331,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listFolders
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
      */
-    public function testListFoldersCachedNonTaggable(): void
+    public function testListFoldersNonCachedNonTaggable(): void
     {
         $folders = [
             'test',
@@ -491,38 +339,22 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'test/subfolder2',
         ];
 
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_list')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-folder_list');
 
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('listFolders')
             ->willReturn($folders);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($folders);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
 
         self::assertSame(
             $folders,
             $this->nonTaggableCachedGateway->listFolders(),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -541,23 +373,11 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'subfolder2',
         ];
 
-        $cacheItem = self::createMock(CacheItemInterface::class);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list-test');
+        $cacheItem->set($subFolders);
+        $cacheItem->expiresAfter(1000);
 
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_list-test')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn($subFolders);
+        $this->taggableCache->save($cacheItem);
 
         self::assertSame(
             $subFolders,
@@ -572,7 +392,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listSubFolders
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
      */
-    public function testListSubFoldersCachedTaggable(): void
+    public function testListSubFoldersNonCachedTaggable(): void
     {
         $folder = 'test';
 
@@ -581,18 +401,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'subfolder2',
         ];
 
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_list-test')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->taggableCache->delete('ngremotemedia-cloudinary-folder_list-test');
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -600,25 +409,16 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->with($folder)
             ->willReturn($subFolders);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($subFolders);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list']);
-
         self::assertSame(
             $subFolders,
             $this->taggableCachedGateway->listSubFolders($folder),
         );
+
+        $tags = ['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list'];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list-test');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -628,7 +428,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listSubFolders
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
      */
-    public function testListSubFoldersCachedNonTaggable(): void
+    public function testListSubFoldersNonCachedNonTaggable(): void
     {
         $folder = 'test';
 
@@ -637,39 +437,23 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'subfolder2',
         ];
 
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-folder_list-test')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-folder_list-test');
 
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('listSubFolders')
             ->with($folder)
             ->willReturn($subFolders);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($subFolders);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
 
         self::assertSame(
             $subFolders,
             $this->nonTaggableCachedGateway->listSubFolders($folder),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list-test');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -695,19 +479,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
         $remoteResource = new RemoteResource([
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
@@ -719,10 +490,11 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ],
         ]);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn($remoteResource);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
+        $cacheItem->set($remoteResource);
+        $cacheItem->expiresAfter(1000);
+
+        $this->taggableCache->save($cacheItem);
 
         self::assertRemoteResourceSame(
             $remoteResource,
@@ -741,19 +513,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
-
         $remoteResource = new RemoteResource([
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
@@ -765,39 +524,27 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ],
         ]);
 
+        $this->taggableCache->delete('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
+
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('get')
             ->with($remoteId)
             ->willReturn($remoteResource);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($remoteResource);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with([
-                'ngremotemedia-cloudinary',
-                'ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg',
-            ]);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertRemoteResourceSame(
             $remoteResource,
             $this->taggableCachedGateway->get($remoteId),
         );
+
+        $tags = [
+            'ngremotemedia-cloudinary',
+            'ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg',
+        ];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -809,19 +556,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
-
         $remoteResource = new RemoteResource([
             'remoteId' => $remoteId->getRemoteId(),
             'type' => RemoteResource::TYPE_IMAGE,
@@ -833,31 +567,23 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ],
         ]);
 
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
+
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('get')
             ->with($remoteId)
             ->willReturn($remoteResource);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($remoteResource);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertRemoteResourceSame(
             $remoteResource,
             $this->nonTaggableCachedGateway->get($remoteId),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -868,18 +594,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -1025,19 +740,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testSearchCached(): void
     {
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
         $resource = new RemoteResource([
             'remoteId' => 'upload|image|test_image.jpg',
             'type' => 'image',
@@ -1048,10 +750,11 @@ final class Psr6CachedGatewayTest extends AbstractTest
 
         $searchResult = new Result(200, '123', [$resource]);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn($searchResult);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem->set($searchResult);
+        $cacheItem->expiresAfter(1000);
+
+        $this->taggableCache->save($cacheItem);
 
         $query = new Query([
             'query' => 'test',
@@ -1074,19 +777,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testSearchNonCachedTaggable(): void
     {
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
-
         $query = new Query([
             'query' => 'test',
             'types' => ['image', 'video'],
@@ -1104,39 +794,27 @@ final class Psr6CachedGatewayTest extends AbstractTest
 
         $searchResult = new Result(200, '123', [$resource]);
 
+        $this->taggableCache->delete('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('search')
             ->with($query)
             ->willReturn($searchResult);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($searchResult);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with([
-                'ngremotemedia-cloudinary',
-                'ngremotemedia-cloudinary-search',
-            ]);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSearchResultSame(
             $searchResult,
             $this->taggableCachedGateway->search($query),
         );
+
+        $tags = [
+            'ngremotemedia-cloudinary',
+            'ngremotemedia-cloudinary-search',
+        ];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -1147,19 +825,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testSearchNonCachedNonTaggable(): void
     {
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
-
         $query = new Query([
             'query' => 'test',
             'types' => ['image', 'video'],
@@ -1177,31 +842,23 @@ final class Psr6CachedGatewayTest extends AbstractTest
 
         $searchResult = new Result(200, '123', [$resource]);
 
+        $this->taggableCache->delete('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('search')
             ->with($query)
             ->willReturn($searchResult);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($searchResult);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSearchResultSame(
             $searchResult,
             $this->nonTaggableCachedGateway->search($query),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -1210,23 +867,11 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testSearchCountCached(): void
     {
-        $cacheItem = self::createMock(CacheItemInterface::class);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem->set(50);
+        $cacheItem->expiresAfter(1000);
 
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn(50);
+        $this->taggableCache->save($cacheItem);
 
         $query = new Query([
             'query' => 'test',
@@ -1249,18 +894,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testSearchCountNonCachedTaggable(): void
     {
-        $cacheItem = self::createMock(ItemInterface::class);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||type=product_image,type=category_image|created_at=desc')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->taggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||type=product_image,type=category_image|created_at=desc');
 
         $query = new Query([
             'query' => 'test',
@@ -1276,33 +910,19 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->with($query)
             ->willReturn(50);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with(50);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with([
-                'ngremotemedia-cloudinary',
-                'ngremotemedia-cloudinary-search_count',
-            ]);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             50,
             $this->taggableCachedGateway->searchCount($query),
         );
+
+        $tags = [
+            'ngremotemedia-cloudinary',
+            'ngremotemedia-cloudinary-search_count',
+        ];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||type=product_image,type=category_image|created_at=desc');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -1313,18 +933,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testSearchCountNonCachedNonTaggable(): void
     {
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
 
         $query = new Query([
             'query' => 'test',
@@ -1339,25 +948,15 @@ final class Psr6CachedGatewayTest extends AbstractTest
             ->with($query)
             ->willReturn(50);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with(50);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             50,
             $this->nonTaggableCachedGateway->searchCount($query),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -1366,25 +965,13 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testListTagsCached(): void
     {
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
         $tags = ['tag1', 'tag2'];
 
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-tag_list')
-            ->willReturn($cacheItem);
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list');
+        $cacheItem->set($tags);
+        $cacheItem->expiresAfter(1000);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(true);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('get')
-            ->willReturn($tags);
+        $this->taggableCache->save($cacheItem);
 
         self::assertSame(
             $tags,
@@ -1400,53 +987,28 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testListTagsNonCachedTaggable(): void
     {
-        $cacheItem = self::createMock(ItemInterface::class);
-
         $tags = ['tag1', 'tag2'];
 
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-tag_list')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->taggableCache->delete('ngremotemedia-cloudinary-tag_list');
 
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('listTags')
             ->willReturn($tags);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($tags);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('tag')
-            ->with([
-                'ngremotemedia-cloudinary',
-                'ngremotemedia-cloudinary-tag_list',
-            ]);
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             $tags,
             $this->taggableCachedGateway->listTags(),
         );
+
+        $tags = [
+            'ngremotemedia-cloudinary',
+            'ngremotemedia-cloudinary-tag_list',
+        ];
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
     /**
@@ -1456,45 +1018,24 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testListTagsNonCachedNonTaggable(): void
     {
-        $cacheItem = self::createMock(CacheItemInterface::class);
-
         $tags = ['tag1', 'tag2'];
 
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('getItem')
-            ->with('ngremotemedia-cloudinary-tag_list')
-            ->willReturn($cacheItem);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('isHit')
-            ->willReturn(false);
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-tag_list');
 
         $this->apiGatewayMock
             ->expects(self::once())
             ->method('listTags')
             ->willReturn($tags);
 
-        $cacheItem
-            ->expects(self::once())
-            ->method('set')
-            ->with($tags);
-
-        $cacheItem
-            ->expects(self::once())
-            ->method('expiresAfter')
-            ->with(self::CACHE_TTL);
-
-        $this->nonTaggableCacheMock
-            ->expects(self::once())
-            ->method('save')
-            ->with($cacheItem);
-
         self::assertSame(
             $tags,
             $this->nonTaggableCachedGateway->listTags(),
         );
+
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list');
+
+        self::assertTrue($cacheItem->isHit());
+        self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
     /**
@@ -1586,21 +1127,19 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testInvalidateResourceListCache(): void
     {
-        $tags = [
-            'ngremotemedia-cloudinary',
-            'ngremotemedia-cloudinary-search',
-            'ngremotemedia-cloudinary-search_count',
-            'ngremotemedia-cloudinary-resource_list',
-            'ngremotemedia-cloudinary-resources_count',
-            'ngremotemedia-cloudinary-tag_list',
-        ];
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('invalidateTags')
-            ->with($tags);
+        $this->prepareCacheForInvalidationTest($this->taggableCache);
 
         $this->taggableCachedGateway->invalidateResourceListCache();
+
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
     /**
@@ -1611,11 +1150,19 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testInvalidateResourceListCacheNonTaggable(): void
     {
-        $this->nonTaggableCacheMock
-            ->expects(self::never())
-            ->method(self::anything());
+        $this->prepareCacheForInvalidationTest($this->nonTaggableCache);
 
         $this->nonTaggableCachedGateway->invalidateResourceListCache();
+
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
     /**
@@ -1628,17 +1175,19 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $tags = [
-            'ngremotemedia-cloudinary',
-            'ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg',
-        ];
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('invalidateTags')
-            ->with($tags);
+        $this->prepareCacheForInvalidationTest($this->taggableCache);
 
         $this->taggableCachedGateway->invalidateResourceCache($remoteId);
+
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
     /**
@@ -1651,11 +1200,19 @@ final class Psr6CachedGatewayTest extends AbstractTest
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $this->nonTaggableCacheMock
-            ->expects(self::never())
-            ->method(self::anything());
+        $this->prepareCacheForInvalidationTest($this->nonTaggableCache);
 
         $this->nonTaggableCachedGateway->invalidateResourceCache($remoteId);
+
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
     /**
@@ -1666,18 +1223,19 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testInvalidateFoldersCache(): void
     {
-        $tags = [
-            'ngremotemedia-cloudinary',
-            'ngremotemedia-cloudinary-folder_list',
-            'ngremotemedia-cloudinary-folder_count',
-        ];
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('invalidateTags')
-            ->with($tags);
+        $this->prepareCacheForInvalidationTest($this->taggableCache);
 
         $this->taggableCachedGateway->invalidateFoldersCache();
+
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
     /**
@@ -1688,32 +1246,42 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testInvalidateFoldersCacheNonTaggable(): void
     {
-        $this->nonTaggableCacheMock
-            ->expects(self::never())
-            ->method(self::anything());
+        $this->prepareCacheForInvalidationTest($this->nonTaggableCache);
 
         $this->nonTaggableCachedGateway->invalidateFoldersCache();
+
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
     /**
-     * * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
      * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateTagsCache
+     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
      */
     public function testInvalidateTagsCache(): void
     {
-        $tags = [
-            'ngremotemedia-cloudinary',
-            'ngremotemedia-cloudinary-tag_list',
-        ];
-
-        $this->taggableCacheMock
-            ->expects(self::once())
-            ->method('invalidateTags')
-            ->with($tags);
+        $this->prepareCacheForInvalidationTest($this->taggableCache);
 
         $this->taggableCachedGateway->invalidateTagsCache();
+
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
     /**
@@ -1724,10 +1292,145 @@ final class Psr6CachedGatewayTest extends AbstractTest
      */
     public function testInvalidateTagsCacheNonTaggable(): void
     {
-        $this->nonTaggableCacheMock
-            ->expects(self::never())
-            ->method(self::anything());
+        $this->prepareCacheForInvalidationTest($this->nonTaggableCache);
 
         $this->nonTaggableCachedGateway->invalidateTagsCache();
+
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resources_count')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_count-media')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-folder_list-test')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc')->isHit());
+        self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
+    }
+
+    private function prepareCacheForInvalidationTest(CacheItemPoolInterface $cache): void
+    {
+        $cache->deleteItem('ngremotemedia-cloudinary-resources_count');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-resources_count');
+        $cacheItem->set(500);
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-resources_count']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-folder_count-test_subtest');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-folder_count-test_subtest');
+        $cacheItem->set(200);
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-folder_count-media');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-folder_count-media');
+        $cacheItem->set(30);
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-folder_list');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-folder_list');
+        $cacheItem->set(['test', 'test2']);
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-folder_list-test');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-folder_list-test');
+        $cacheItem->set(['subfolder']);
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-folder_list']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
+
+        $cacheItem->set(
+            new RemoteResource([
+                'remoteId' => 'upload|image|folder/test_image.jpg',
+                'type' => RemoteResource::TYPE_IMAGE,
+                'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+                'name' => 'test_image.jpg',
+                'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
+                'metadata' => [
+                    'format' => 'jpg',
+                ],
+            ]),
+        );
+
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+
+        $cacheItem->set(
+            new Result(200, '123', [
+                new RemoteResource([
+                    'remoteId' => 'upload|image|test_image.jpg',
+                    'type' => 'image',
+                    'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
+                    'name' => 'test_image.jpg',
+                    'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
+                ]),
+            ]),
+        );
+
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-search']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem->set(50);
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-search']);
+        }
+
+        $cache->save($cacheItem);
+
+        $cache->deleteItem('ngremotemedia-cloudinary-tag_list');
+        $cacheItem = $cache->getItem('ngremotemedia-cloudinary-tag_list');
+        $cacheItem->set(['tag1', 'tag2']);
+        $cacheItem->expiresAfter(1000);
+
+        if ($cache instanceof TagAwareAdapterInterface) {
+            $cacheItem->tag(['ngremotemedia-cloudinary', 'ngremotemedia-cloudinary-tag_list']);
+        }
+
+        $cache->save($cacheItem);
     }
 }
