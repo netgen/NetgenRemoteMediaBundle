@@ -52,6 +52,7 @@ final class ConfigurationTest extends TestCase
                     'account_name' => 'examplename',
                     'account_key' => 'examplekey',
                     'account_secret' => 'examplesecret',
+                    'upload_prefix' => 'test_prefix',
                     'cache' => [
                         'pool' => 'cache.app',
                         'ttl' => 7200,

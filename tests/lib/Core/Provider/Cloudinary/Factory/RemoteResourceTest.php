@@ -26,7 +26,7 @@ final class RemoteResourceTest extends AbstractTest
     {
         $this->fileHashFactoryMock = $this->createMock(FileHashFactoryInterface::class);
 
-        $cloudinaryInstanceFactory = new CloudinaryInstance('myCloud', 'myKey', 'mySecret');
+        $cloudinaryInstanceFactory = new CloudinaryInstance('myCloud', 'myKey', 'mySecret', 'https://api.cloudinary.com');
         $cloudinaryInstanceFactory->create();
 
         $this->remoteResourceFactory = new RemoteResourceFactory(

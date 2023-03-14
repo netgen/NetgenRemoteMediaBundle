@@ -37,10 +37,8 @@ final class Upload extends AbstractController
             throw new InvalidArgumentException('Missing file to upload');
         }
 
-        $uploadContext = $request->request->get('upload_context', []);
-        if (!is_array($uploadContext)) {
-            $uploadContext = [];
-        }
+        $uploadContext = $request->request->all()['upload_context'] ?? [];
+        $uploadContext = is_array($uploadContext) ? $uploadContext : [];
 
         $folder = $request->request->get('folder') && $request->request->get('folder') !== 'null'
             ? Folder::fromPath($request->request->get('folder'))

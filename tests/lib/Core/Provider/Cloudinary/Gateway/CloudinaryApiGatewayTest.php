@@ -41,6 +41,8 @@ class CloudinaryApiGatewayTest extends AbstractTest
 
     protected const API_SECRET = 'secret';
 
+    protected const UPLOAD_PREFIX = 'https://api.cloudinary.com';
+
     protected CloudinaryApiGateway $apiGateway;
 
     /**
@@ -80,6 +82,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
             self::CLOUD_NAME,
             self::API_KEY,
             self::API_SECRET,
+            self::UPLOAD_PREFIX,
         );
 
         $this->apiGateway = new CloudinaryApiGateway(
@@ -277,6 +280,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
             self::CLOUD_NAME,
             self::API_KEY,
             self::API_SECRET,
+            self::UPLOAD_PREFIX,
         );
 
         $apiGateway = new CloudinaryApiGateway(
@@ -524,7 +528,7 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/image/upload/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=59c5e3be84f6000c8da6c7a32014390d77dd4def021dd01529cf59b28116713d',
+            'https://res.cloudinary.com/testcloud/image/upload/folder/test_image.jpg?__cld_token__=exp=1672531200~hmac=2dd3d9ad80b2cd7b02589a11e5a5ccfd8d2fbf75eef8d54b84e89c2dfd951255',
             $this->apiGateway->getAuthenticatedUrl($remoteId, $token),
         );
     }

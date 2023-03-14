@@ -79,7 +79,7 @@ abstract class AbstractController
             return [];
         }
 
-        $value = $inputBag->get($key);
+        $value = $inputBag->all()[$key] ?? [];
 
         return is_array($value) ? $value : [$value];
     }
