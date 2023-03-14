@@ -56,6 +56,9 @@
             "Netgen\\Bundle\\RemoteMediaBundle\\Tests\\": "tests/bundle/"
         }
     },
+    "config": {
+        "allow-plugins": false
+    },
     "scripts": {
         "test": "@php vendor/bin/phpunit --colors=always",
         "fix": "@php vendor/bin/php-cs-fixer fix"
