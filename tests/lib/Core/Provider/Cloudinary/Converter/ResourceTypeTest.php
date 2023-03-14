@@ -67,7 +67,7 @@ final class ResourceTypeTest extends TestCase
         );
     }
 
-    public function fromCloudinaryDataProvider(): array
+    public static function fromCloudinaryDataProvider(): array
     {
         return [
             ['image', null, RemoteResource::TYPE_IMAGE],
@@ -89,7 +89,7 @@ final class ResourceTypeTest extends TestCase
         ];
     }
 
-    public function toCloudinaryTypeProvider(): array
+    public static function toCloudinaryTypeProvider(): array
     {
         return [
             [RemoteResource::TYPE_IMAGE, 'image'],

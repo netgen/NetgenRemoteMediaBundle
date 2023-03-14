@@ -228,7 +228,7 @@ final class QueryTest extends TestCase
         );
     }
 
-    public function constructorPropsProvider(): array
+    public static function constructorPropsProvider(): array
     {
         return [
             [
@@ -313,7 +313,7 @@ final class QueryTest extends TestCase
         ];
     }
 
-    public function remoteIdsProvider(): array
+    public static function remoteIdsProvider(): array
     {
         return [
             [

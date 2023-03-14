@@ -212,7 +212,7 @@ final class ConfigurationTest extends TestCase
         $this->assertConfigurationIsInvalid($configuration);
     }
 
-    public function invalidNamedObjectsProvider(): array
+    public static function invalidNamedObjectsProvider(): array
     {
         return [
             [

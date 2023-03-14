@@ -43,7 +43,7 @@ final class AuthTokenTest extends TestCase
         self::assertTrue($this->resolver->hasEncryptionKey());
     }
 
-    public function dataProvider(): array
+    public static function dataProvider(): array
     {
         return [
             [

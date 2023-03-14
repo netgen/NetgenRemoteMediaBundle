@@ -42,7 +42,7 @@ final class CropTest extends TestCase
         $this->crop->process($config);
     }
 
-    public function validDataProvider(): array
+    public static function validDataProvider(): array
     {
         return [
             [
@@ -78,7 +78,7 @@ final class CropTest extends TestCase
         ];
     }
 
-    public function invalidDataProvider(): array
+    public static function invalidDataProvider(): array
     {
         return [
             [

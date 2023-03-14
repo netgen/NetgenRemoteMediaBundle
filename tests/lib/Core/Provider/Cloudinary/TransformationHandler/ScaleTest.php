@@ -40,7 +40,7 @@ final class ScaleTest extends TestCase
         );
     }
 
-    public function dataProvider(): array
+    public static function dataProvider(): array
     {
         return [
             [

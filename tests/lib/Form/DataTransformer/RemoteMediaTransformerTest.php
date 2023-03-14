@@ -694,7 +694,7 @@ class RemoteMediaTransformerTest extends AbstractTest
         self::assertNull($this->dataTransformer->reverseTransform($data));
     }
 
-    public function transformDataProvider(): array
+    public static function transformDataProvider(): array
     {
         return [
             [

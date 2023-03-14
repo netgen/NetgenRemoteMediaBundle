@@ -92,7 +92,7 @@ final class RemoteResourceTest extends AbstractTest
         $this->remoteResourceFactory->create(['public_id' => 'test']);
     }
 
-    public function createDataProvider(): array
+    public static function createDataProvider(): array
     {
         return [
             [

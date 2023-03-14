@@ -40,7 +40,7 @@ final class MfitTest extends TestCase
         );
     }
 
-    public function dataProvider(): array
+    public static function dataProvider(): array
     {
         return [
             [
