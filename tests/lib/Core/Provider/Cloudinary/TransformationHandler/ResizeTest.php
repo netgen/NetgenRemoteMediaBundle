@@ -6,8 +6,10 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Resize::class)]
 final class ResizeTest extends TestCase
 {
     protected Resize $resize;
@@ -17,9 +19,6 @@ final class ResizeTest extends TestCase
         $this->resize = new Resize();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize::process
-     */
     public function testWithWidth(): void
     {
         self::assertSame(
@@ -30,9 +29,6 @@ final class ResizeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize::process
-     */
     public function testWithBothDimensions(): void
     {
         self::assertSame(
@@ -44,9 +40,6 @@ final class ResizeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize::process
-     */
     public function testWithoutConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);

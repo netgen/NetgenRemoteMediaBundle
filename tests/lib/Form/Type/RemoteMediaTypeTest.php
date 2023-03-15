@@ -10,19 +10,20 @@ use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Form\Type\RemoteMediaType;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
 
+#[CoversClass(RemoteMediaType::class)]
 class RemoteMediaTypeTest extends TypeTestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\Form\DataTransformerInterface */
-    private MockObject $dataTransformerMock;
+    private MockObject|DataTransformerInterface $dataTransformerMock;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
@@ -32,14 +33,7 @@ class RemoteMediaTypeTest extends TypeTestCase
         parent::setUp();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\Type\RemoteMediaType::__construct
-     * @covers \Netgen\RemoteMedia\Form\Type\RemoteMediaType::buildForm
-     * @covers \Netgen\RemoteMedia\Form\Type\RemoteMediaType::buildView
-     * @covers \Netgen\RemoteMedia\Form\Type\RemoteMediaType::configureOptions
-     *
-     * @dataProvider submitDataProvider
-     */
+    #[DataProvider('submitDataProvider')]
     public function testSubmitValidData(
         array $formData,
         array $options,
@@ -48,7 +42,16 @@ class RemoteMediaTypeTest extends TypeTestCase
         array $viewData,
         array $viewOptions
     ): void {
-        $location = new RemoteResourceLocation(new RemoteResource());
+        $location = new RemoteResourceLocation(
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+            ),
+        );
 
         $form = $this->factory->create(RemoteMediaType::class, $location, $options);
 
@@ -77,7 +80,7 @@ class RemoteMediaTypeTest extends TypeTestCase
 
         self::assertTrue($form->isSynchronized());
 
-        AbstractTest::assertRemoteResourceLocationSame(
+        AbstractTestCase::assertRemoteResourceLocationSame(
             $expectedLocation,
             $form->getData(),
         );
@@ -138,14 +141,14 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => null,
                 ],
                 new RemoteResourceLocation(
-                    new RemoteResource([
-                        'remoteId' => 'upload|image|media/images/example.jpg',
-                        'type' => 'image',
-                        'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        'name' => 'example.jpg',
-                        'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                        'folder' => Folder::fromPath('media/images'),
-                    ]),
+                    new RemoteResource(
+                        remoteId: 'upload|image|media/images/example.jpg',
+                        type: 'image',
+                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                        name: 'example.jpg',
+                        folder: Folder::fromPath('media/images'),
+                    ),
                     null,
                     [
                         new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -197,13 +200,13 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => 'Test source',
                 ],
                 new RemoteResourceLocation(
-                    new RemoteResource([
-                        'remoteId' => 'upload|image|media/images/example.jpg',
-                        'type' => 'image',
-                        'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        'name' => 'example.jpg',
-                        'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                    ]),
+                    new RemoteResource(
+                        remoteId: 'upload|image|media/images/example.jpg',
+                        type: 'image',
+                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                        name: 'example.jpg',
+                    ),
                     'Test source',
                 ),
                 [
@@ -261,13 +264,13 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'source' => 'Test source',
                 ],
                 new RemoteResourceLocation(
-                    new RemoteResource([
-                        'remoteId' => 'upload|image|media/images/example.jpg',
-                        'type' => 'image',
-                        'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        'name' => 'example.jpg',
-                        'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                    ]),
+                    new RemoteResource(
+                        remoteId: 'upload|image|media/images/example.jpg',
+                        type: 'image',
+                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                        name: 'example.jpg',
+                    ),
                     'Test source',
                 ),
                 [

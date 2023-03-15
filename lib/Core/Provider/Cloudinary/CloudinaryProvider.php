@@ -36,17 +36,13 @@ final class CloudinaryProvider extends AbstractProvider
 {
     private const IDENTIFIER = 'cloudinary';
 
-    private GatewayInterface $gateway;
-
-    private UploadOptionsResolver $uploadOptionsResolver;
-
     public function __construct(
         TransformationRegistry $registry,
         VariationResolver $variationsResolver,
         EntityManagerInterface $entityManager,
-        GatewayInterface $gateway,
+        private GatewayInterface $gateway,
         DateTimeFactoryInterface $datetimeFactory,
-        UploadOptionsResolver $uploadOptionsResolver,
+        private UploadOptionsResolver $uploadOptionsResolver,
         array $namedRemoteResources,
         array $namedRemoteResourceLocations,
         ?LoggerInterface $logger = null,
@@ -62,9 +58,6 @@ final class CloudinaryProvider extends AbstractProvider
             $logger,
             $shouldDeleteFromRemote,
         );
-
-        $this->gateway = $gateway;
-        $this->uploadOptionsResolver = $uploadOptionsResolver;
     }
 
     public function getIdentifier(): string
@@ -359,6 +352,8 @@ final class CloudinaryProvider extends AbstractProvider
         if (count($parts) > 1) {
             return str_replace($parts[1], $thumbnailUrl, $thumbnailTag);
         }
+
+        return $thumbnailTag;
     }
 
     protected function generateAudioTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string

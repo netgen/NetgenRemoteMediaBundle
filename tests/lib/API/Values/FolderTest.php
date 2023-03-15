@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use Netgen\RemoteMedia\API\Values\Folder;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Folder::class)]
 final class FolderTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::__toString
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::getName
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::getParent
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::getPath
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::isRoot
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testCreate(string $name, ?Folder $parent, bool $isRoot, string $path): void
     {
         $folder = new Folder($name, $parent);
@@ -60,16 +54,7 @@ final class FolderTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::fromPath
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::getName
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::getParent
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::getPath
-     * @covers \Netgen\RemoteMedia\API\Values\Folder::isRoot
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testCreateFromPath(string $name, ?Folder $parent, bool $isRoot, string $path): void
     {
         $folder = Folder::fromPath($path);

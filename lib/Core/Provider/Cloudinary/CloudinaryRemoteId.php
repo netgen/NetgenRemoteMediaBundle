@@ -14,17 +14,11 @@ use function implode;
 
 final class CloudinaryRemoteId
 {
-    private string $type;
-
-    private string $resourceType;
-
-    private string $resourceId;
-
-    public function __construct(string $type, string $resourceType, string $resourceId)
-    {
-        $this->type = $type;
-        $this->resourceType = $resourceType;
-        $this->resourceId = $resourceId;
+    public function __construct(
+        private string $type,
+        private string $resourceType,
+        private string $resourceId
+    ) {
     }
 
     public static function fromCloudinaryData(array $data): self
@@ -85,7 +79,7 @@ final class CloudinaryRemoteId
         $resourceIdParts = explode('/', $this->resourceId);
         array_pop($resourceIdParts);
 
-        if (empty($resourceIdParts)) {
+        if (count($resourceIdParts) === 0) {
             return null;
         }
 

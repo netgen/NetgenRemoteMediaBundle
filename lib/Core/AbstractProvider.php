@@ -25,47 +25,22 @@ use Psr\Log\NullLogger;
 
 abstract class AbstractProvider implements ProviderInterface
 {
-    protected TransformationRegistry $registry;
-
-    protected VariationResolver $variationResolver;
-
-    protected EntityManagerInterface $entityManager;
-
     protected ObjectRepository $resourceRepository;
 
     protected ObjectRepository $locationRepository;
 
-    protected DateTimeFactoryInterface $dateTimeFactory;
-
-    protected ?LoggerInterface $logger;
-
-    /** @var array<string, string> */
-    private array $namedRemoteResources = [];
-
-    /** @var array<string, array> */
-    private array $namedRemoteResourceLocations = [];
-
-    private bool $shouldDeleteFromRemote;
-
     public function __construct(
-        TransformationRegistry $registry,
-        VariationResolver $variationsResolver,
-        EntityManagerInterface $entityManager,
-        DateTimeFactoryInterface $dateTimeFactory,
-        array $namedRemoteResources,
-        array $namedRemoteResourceLocations,
-        ?LoggerInterface $logger = null,
-        bool $shouldDeleteFromRemote = false
+        protected TransformationRegistry $registry,
+        protected VariationResolver $variationResolver,
+        protected EntityManagerInterface $entityManager,
+        protected DateTimeFactoryInterface $dateTimeFactory,
+        private array $namedRemoteResources,
+        private array $namedRemoteResourceLocations,
+        protected ?LoggerInterface $logger = null,
+        private bool $shouldDeleteFromRemote = false
     ) {
-        $this->registry = $registry;
-        $this->variationResolver = $variationsResolver;
-        $this->dateTimeFactory = $dateTimeFactory;
-        $this->namedRemoteResources = $namedRemoteResources;
-        $this->namedRemoteResourceLocations = $namedRemoteResourceLocations;
-        $this->logger = $logger ?? new NullLogger();
-        $this->shouldDeleteFromRemote = $shouldDeleteFromRemote;
+        $this->logger = $this->logger ?? new NullLogger();
 
-        $this->entityManager = $entityManager;
         $this->resourceRepository = $entityManager->getRepository(RemoteResource::class);
         $this->locationRepository = $entityManager->getRepository(RemoteResourceLocation::class);
     }

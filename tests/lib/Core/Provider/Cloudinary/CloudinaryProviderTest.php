@@ -26,25 +26,25 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as Upload
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Mime\MimeTypesInterface;
 
 use function count;
 
-final class CloudinaryProviderTest extends AbstractTest
+#[CoversClass(CloudinaryProvider::class)]
+final class CloudinaryProviderTest extends AbstractTestCase
 {
     protected CloudinaryProvider $cloudinaryProvider;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface */
-    protected MockObject $gateway;
+    protected MockObject|GatewayInterface $gateway;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Log\LoggerInterface */
-    protected MockObject $logger;
+    protected MockObject|LoggerInterface $logger;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\Mime\MimeTypesInterface */
-    protected MockObject $mimeTypes;
+    protected MockObject|MimeTypesInterface $mimeTypes;
 
     protected function setUp(): void
     {
@@ -66,7 +66,10 @@ final class CloudinaryProviderTest extends AbstractTest
 
         $this->cloudinaryProvider = new CloudinaryProvider(
             new Registry(),
-            new VariationResolver(),
+            new VariationResolver(
+                new Registry(),
+                new NullLogger(),
+            ),
             $entityManager,
             $this->gateway,
             new DateTimeFactory(),
@@ -82,10 +85,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getIdentifier
-     */
     public function testIdentifier(): void
     {
         self::assertSame(
@@ -94,10 +93,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsFolders
-     */
     public function testSupportsFolders(): void
     {
         self::assertTrue(
@@ -105,10 +100,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsDelete
-     */
     public function testSupportsDelete(): void
     {
         self::assertTrue(
@@ -116,10 +107,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsTags
-     */
     public function testSupportsTags(): void
     {
         self::assertTrue(
@@ -127,10 +114,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsProtectedResources
-     */
     public function testSupportsProtectedResources(): void
     {
         $this->gateway
@@ -142,10 +125,6 @@ final class CloudinaryProviderTest extends AbstractTest
         self::assertFalse($this->cloudinaryProvider->supportsProtectedResources());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::status
-     */
     public function testStatus(): void
     {
         $data = new StatusData([
@@ -165,10 +144,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getSupportedTypes
-     */
     public function testGetSupportedTypes(): void
     {
         self::assertSame(
@@ -177,11 +152,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::getSupportedVisibilities
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::supportsProtectedResources
-     */
     public function testGetSupportedVisibilities(): void
     {
         $this->gateway
@@ -200,10 +170,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::count
-     */
     public function testCount(): void
     {
         $this->gateway
@@ -217,20 +183,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::loadFromRemote
-     */
     public function testLoadFromRemote(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+        );
 
         $this->gateway
             ->expects(self::once())
@@ -244,10 +206,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::loadFromRemote
-     */
     public function testLoadFromRemoteNotFound(): void
     {
         $this->gateway
@@ -262,10 +220,6 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->loadFromRemote('upload|image|media/images/image2.jpg');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::loadFromRemote
-     */
     public function testLoadFromRemoteInvalidRemoteId(): void
     {
         $this->logger
@@ -279,20 +233,16 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->loadFromRemote('image2.jpg');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::deleteFromRemote
-     */
     public function testDeleteFromRemote(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+        );
 
         $this->gateway
             ->expects(self::once())
@@ -302,20 +252,16 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->deleteFromRemote($resource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::deleteFromRemote
-     */
     public function testDeleteFromRemoteNotFound(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+        );
 
         $this->gateway
             ->expects(self::once())
@@ -329,44 +275,40 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->deleteFromRemote($resource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::search
-     */
     public function testSearch(): void
     {
-        $query = new Query([
-            'query' => 'test',
-        ]);
+        $query = new Query(
+            query: 'test',
+        );
 
         $result = new Result(
             10,
             'i4gtgoijf94fef43dss',
             [
-                new RemoteResource([
-                    'remoteId' => 'upload|image|media/images/image.jpg',
-                    'type' => 'image',
-                    'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-                    'name' => 'image.jpg',
-                    'size' => 95,
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
-                new RemoteResource([
-                    'remoteId' => 'upload|image|media/images/image2.jpg',
-                    'type' => 'image',
-                    'url' => 'https://cloudinary.com/test/upload/images/image2.jpg',
-                    'name' => 'image2.jpg',
-                    'size' => 75,
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
-                new RemoteResource([
-                    'remoteId' => 'upload|image|media/videos/example.mp4',
-                    'type' => 'video',
-                    'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
-                    'name' => 'example.mp4',
-                    'size' => 550,
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
+                new RemoteResource(
+                    remoteId: 'upload|image|media/images/image.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/images/image.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'image.jpg',
+                    size: 95,
+                ),
+                new RemoteResource(
+                    remoteId: 'upload|image|media/images/image2.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/images/image2.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'image2.jpg',
+                    size: 75,
+                ),
+                new RemoteResource(
+                    remoteId: 'upload|image|media/videos/example.mp4',
+                    type: 'video',
+                    url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'example.mp4',
+                    size: 550,
+                ),
             ],
         );
 
@@ -382,15 +324,11 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::searchCount
-     */
     public function testSearchCount(): void
     {
-        $query = new Query([
-            'query' => 'test',
-        ]);
+        $query = new Query(
+            query: 'test',
+        );
 
         $this->gateway
             ->expects(self::once())
@@ -404,27 +342,23 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateOnRemote
-     */
     public function testUpdateOnRemote(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'tags' => ['tag1', 'tag2'],
-            'altText' => 'Test alt text',
-            'caption' => 'Test caption',
-            'context' => [
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+            altText: 'Test alt text',
+            caption: 'Test caption',
+            tags: ['tag1', 'tag2'],
+            context: [
                 'source' => 'user_upload',
                 'type' => 'product_image',
             ],
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        );
 
         $expectedOptions = [
             'context' => [
@@ -444,22 +378,18 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->updateOnRemote($resource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateOnRemote
-     */
     public function testUpdateOnRemoteWithEmptyTags(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'altText' => 'Test alt text',
-            'caption' => 'Test caption',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+            altText: 'Test alt text',
+            caption: 'Test caption',
+        );
 
         $expectedOptions = [
             'context' => [
@@ -482,23 +412,19 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->updateOnRemote($resource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateOnRemote
-     */
     public function testUpdateOnRemoteNotFound(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'tags' => ['tag1', 'tag2'],
-            'altText' => 'Test alt text',
-            'caption' => 'Test caption',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+            altText: 'Test alt text',
+            caption: 'Test caption',
+            tags: ['tag1', 'tag2'],
+        );
 
         $expectedOptions = [
             'context' => [
@@ -520,23 +446,19 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->updateOnRemote($resource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::updateOnRemote
-     */
     public function testUpdateOnRemoteWithEmptyTagsNotFound(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'tags' => [],
-            'altText' => 'Test alt text',
-            'caption' => 'Test caption',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+            altText: 'Test alt text',
+            caption: 'Test caption',
+            tags: [],
+        );
 
         $this->gateway
             ->expects(self::once())
@@ -550,20 +472,16 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->updateOnRemote($resource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateDownloadLink
-     */
     public function testGenerateDownloadLink(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+        );
 
         $transformations = [
             'crop' => 'fit',
@@ -587,21 +505,17 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::authenticateRemoteResource
-     */
     public function testAuthenticateRemoteResource(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'authenticated|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/authenticated/images/image.jpg',
-            'visibility' => 'protected',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'authenticated|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/authenticated/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            visibility: 'protected',
+            size: 95,
+        );
 
         $token = AuthToken::fromDuration(50);
 
@@ -621,21 +535,17 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::authenticateRemoteResourceVariation
-     */
     public function testAuthenticateRemoteResourceVariation(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'authenticated|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/authenticated/image/images/image.jpg',
-            'visibility' => 'protected',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'authenticated|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/authenticated/image/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            visibility: 'protected',
+            size: 95,
+        );
 
         $variationUrl = 'https://cloudinary.com/test/authenticated/image/c_120_160/q_auto/images/image.jpg';
 
@@ -665,10 +575,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalListFolders
-     */
     public function testInternalListFolders(): void
     {
         $folders = [
@@ -682,9 +588,9 @@ final class CloudinaryProviderTest extends AbstractTest
 
         $returnedFolders = $this->cloudinaryProvider->listFolders();
 
-        self::assertSame(
+        self::assertCount(
             count($folders),
-            count($returnedFolders),
+            $returnedFolders,
         );
 
         foreach ($folders as $key => $folder) {
@@ -695,10 +601,6 @@ final class CloudinaryProviderTest extends AbstractTest
         }
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalListFolders
-     */
     public function testInternalListSubFolders(): void
     {
         $parent = Folder::fromPath('media');
@@ -721,9 +623,9 @@ final class CloudinaryProviderTest extends AbstractTest
 
         $returnedFolders = $this->cloudinaryProvider->listFolders($parent);
 
-        self::assertSame(
+        self::assertCount(
             count($folders),
-            count($returnedFolders),
+            $returnedFolders,
         );
 
         foreach ($folders as $key => $folder) {
@@ -734,10 +636,6 @@ final class CloudinaryProviderTest extends AbstractTest
         }
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalCreateFolder
-     */
     public function testInternalCreateFolder(): void
     {
         $this->gateway
@@ -748,10 +646,6 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->createFolder('upload');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalCreateFolder
-     */
     public function testInternalCreateSubFolder(): void
     {
         $parent = Folder::fromPath('media');
@@ -764,10 +658,6 @@ final class CloudinaryProviderTest extends AbstractTest
         $this->cloudinaryProvider->createFolder('archives', $parent);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalCountInFolder
-     */
     public function testInternalCountInFolder(): void
     {
         $folder = Folder::fromPath('media/images');
@@ -784,10 +674,6 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalListTags
-     */
     public function testInternalListTags(): void
     {
         $tags = [
@@ -807,20 +693,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalUpload
-     */
     public function testInternalUpload(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+        );
 
         $folder = Folder::fromPath('upload/images');
 
@@ -872,20 +754,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalBuildVariation
-     */
     public function testInternalBuildVariation(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+        );
 
         $cropOptions = [
             'x' => 5,
@@ -919,20 +797,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalBuildVideoThumbnail
-     */
     public function testGetVideoThumbnail(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/videos/example.mp4',
-            'type' => 'video',
-            'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
-            'name' => 'example.mp4',
-            'size' => 495,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/videos/example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp4',
+            size: 495,
+        );
 
         $url = 'https://cloudinary.com/test/upload/videos/example.mp4.jpg';
 
@@ -962,20 +836,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::internalBuildVideoThumbnail
-     */
     public function testGetVideoThumbnailAudio(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/songs/example.mp3',
-            'type' => 'audio',
-            'url' => 'https://cloudinary.com/test/upload/songs/example.mp3',
-            'name' => 'example.mp3',
-            'size' => 105,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/songs/example.mp3',
+            type: 'audio',
+            url: 'https://cloudinary.com/test/upload/songs/example.mp3',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp3',
+            size: 105,
+        );
 
         $url = 'https://cloudinary.com/test/upload/songs/example.mp3.jpg';
 
@@ -1016,20 +886,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generatePictureTag
-     */
     public function testGeneratePictureTag(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+        );
 
         $options = [
             'secure' => true,
@@ -1053,22 +919,18 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generatePictureTag
-     */
     public function testGeneratePictureTagVariation(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-            'name' => 'image.jpg',
-            'size' => 95,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'altText' => 'Alternate text',
-            'caption' => 'Test title',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            size: 95,
+            altText: 'Alternate text',
+            caption: 'Test title',
+        );
 
         $htmlAttributes = [
             'width' => 200,
@@ -1115,20 +977,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoTag
-     */
     public function testGenerateVideoTag(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/videos/example.mp4',
-            'type' => 'video',
-            'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
-            'name' => 'example.mp4',
-            'size' => 495,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/videos/example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp4',
+            size: 495,
+        );
 
         $options = [
             'secure' => true,
@@ -1157,20 +1015,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoTag
-     */
     public function testGenerateVideoTagAudio(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/songs/example.mp3',
-            'type' => 'audio',
-            'url' => 'https://cloudinary.com/test/upload/songs/example.mp3',
-            'name' => 'example.mp3',
-            'size' => 105,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/songs/example.mp3',
+            type: 'audio',
+            url: 'https://cloudinary.com/test/upload/songs/example.mp3',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp3',
+            size: 105,
+        );
 
         $htmlAttributes = [
             'width' => '100%',
@@ -1204,20 +1058,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoTag
-     */
     public function testGenerateVideoTagVariation(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/videos/example.mp4',
-            'type' => 'video',
-            'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
-            'name' => 'example.mp4',
-            'size' => 495,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/videos/example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp4',
+            size: 495,
+        );
 
         $cropOptions = [
             'x' => 5,
@@ -1258,23 +1108,18 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::buildVideoThumbnailRawVariation
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateVideoThumbnailTag
-     */
     public function testGenerateVideoTagThumbnailVariation(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/videos/example.mp4',
-            'type' => 'video',
-            'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
-            'name' => 'example.mp4',
-            'size' => 495,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'altText' => 'Alternate text',
-            'caption' => 'Test caption',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/videos/example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp4',
+            size: 495,
+            altText: 'Alternate text',
+            caption: 'Test caption',
+        );
 
         $cropOptions = [
             'x' => 5,
@@ -1331,20 +1176,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateAudioTag
-     */
     public function testGenerateAudioTag(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/songs/example.mp3',
-            'type' => 'audio',
-            'url' => 'https://cloudinary.com/test/upload/songs/example.mp3',
-            'name' => 'example.mp3',
-            'size' => 105,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/songs/example.mp3',
+            type: 'audio',
+            url: 'https://cloudinary.com/test/upload/songs/example.mp3',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp3',
+            size: 105,
+        );
 
         $htmlAttributes = [
             'width' => '100%',
@@ -1374,22 +1215,16 @@ final class CloudinaryProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateDocumentTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateDownloadLink
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider::generateDownloadTag
-     */
     public function testGenerateDocumentTag(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/doc/example.pdf',
-            'type' => 'document',
-            'url' => 'https://cloudinary.com/test/upload/doc/example.pdf',
-            'name' => 'example.pdf',
-            'size' => 35,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/doc/example.pdf',
+            type: 'document',
+            url: 'https://cloudinary.com/test/upload/doc/example.pdf',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.pdf',
+            size: 35,
+        );
 
         $htmlAttributes = [
             'target' => '_blank',

@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Exception;
 
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(RemoteResourceLocationNotFoundException::class)]
 final class RemoteResourceLocationNotFoundExceptionTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException::__construct
-     */
     public function testException(): void
     {
         $this->expectException(RemoteResourceLocationNotFoundException::class);

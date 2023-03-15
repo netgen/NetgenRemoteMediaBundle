@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Fit::class)]
 final class FitTest extends TestCase
 {
     protected Fit $fit;
@@ -16,9 +19,6 @@ final class FitTest extends TestCase
         $this->fit = new Fit();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit::process
-     */
     public function testWithoutConfig(): void
     {
         self::assertSame(
@@ -27,11 +27,7 @@ final class FitTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fit::process
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function test(array $config, array $result): void
     {
         self::assertSame(

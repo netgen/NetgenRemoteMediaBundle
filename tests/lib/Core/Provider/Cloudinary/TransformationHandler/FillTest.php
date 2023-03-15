@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fill;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Fill::class)]
 final class FillTest extends TestCase
 {
     protected Fill $fill;
@@ -16,9 +19,6 @@ final class FillTest extends TestCase
         $this->fill = new Fill();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fill::process
-     */
     public function testWithoutConfig(): void
     {
         self::assertSame(
@@ -27,11 +27,7 @@ final class FillTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Fill::process
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function test(array $config, array $result): void
     {
         self::assertSame(

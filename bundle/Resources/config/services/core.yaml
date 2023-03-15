@@ -6,9 +6,10 @@ services:
     netgen_remote_media.resolver.variation:
         class: Netgen\RemoteMedia\Core\Resolver\Variation
         public: false
-        calls:
-            - [setVariations, ["%netgen_remote_media.image_variations%"]]
-            - [setServices, ["@netgen_remote_media.handler_registry", "@?logger"]]
+        arguments:
+            - "@netgen_remote_media.handler_registry"
+            - "@?logger"
+            - "%netgen_remote_media.image_variations%"
 
     netgen_remote_media.provider.cloudinary.gateway.api:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway

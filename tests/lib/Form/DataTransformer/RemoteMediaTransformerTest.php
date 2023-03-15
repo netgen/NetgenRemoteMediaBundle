@@ -12,16 +12,18 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\DataTransformerInterface;
 
-class RemoteMediaTransformerTest extends AbstractTest
+#[CoversClass(RemoteMediaTransformer::class)]
+class RemoteMediaTransformerTest extends AbstractTestCase
 {
     protected DataTransformerInterface $dataTransformer;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    protected MockObject $providerMock;
+    protected MockObject|ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
@@ -30,16 +32,8 @@ class RemoteMediaTransformerTest extends AbstractTest
         $this->dataTransformer = new RemoteMediaTransformer($this->providerMock);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettingsString
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::transform
-     *
-     * @dataProvider transformDataProvider
-     *
-     * @param mixed $value
-     */
-    public function testTransform($value, ?array $expectedData): void
+    #[DataProvider('transformDataProvider')]
+    public function testTransform(mixed $value, ?array $expectedData): void
     {
         self::assertSame(
             $expectedData,
@@ -47,12 +41,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithNewResource(): void
     {
         $data = [
@@ -66,14 +54,14 @@ class RemoteMediaTransformerTest extends AbstractTest
             'source' => null,
         ];
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/example.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-            'name' => 'example.jpg',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'folder' => Folder::fromPath('media/images'),
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/example.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.jpg',
+            folder: Folder::fromPath('media/images'),
+        );
 
         $this->providerMock
             ->expects(self::once())
@@ -88,17 +76,17 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->willReturn($resource);
 
         $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'altText' => 'Test alt text',
-                'caption' => 'Test caption',
-                'tags' => ['tag1', 'tag2'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+                caption: 'Test caption',
+                tags: ['tag1', 'tag2'],
+            ),
             null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -126,12 +114,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithExistingResourceNewLocation(): void
     {
         $data = [
@@ -146,15 +128,15 @@ class RemoteMediaTransformerTest extends AbstractTest
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'altText' => 'Test alt text',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+            ),
             null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -168,17 +150,17 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->willReturn($location->getRemoteResource());
 
         $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'altText' => 'Test alt text',
-                'caption' => 'Test caption',
-                'tags' => ['tag1', 'tag2'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+                caption: 'Test caption',
+                tags: ['tag1', 'tag2'],
+            ),
             'product_image',
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -207,12 +189,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithExistingLocation(): void
     {
         $data = [
@@ -224,15 +200,15 @@ class RemoteMediaTransformerTest extends AbstractTest
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag1', 'tag2', 'tag3'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                tags: ['tag1', 'tag2', 'tag3'],
+            ),
             null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -252,15 +228,15 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->willReturn($location->getRemoteResource());
 
         $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag2'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                tags: ['tag2'],
+            ),
         );
 
         $this->providerMock
@@ -284,12 +260,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithResourceNotExistingOnRemoteAnymore(): void
     {
         $data = [
@@ -302,15 +272,15 @@ class RemoteMediaTransformerTest extends AbstractTest
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag1', 'tag2', 'tag3'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                tags: ['tag1', 'tag2', 'tag3'],
+            ),
             'test',
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -342,12 +312,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         self::assertNull($this->dataTransformer->reverseTransform($data));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithResourceNotExistingOnRemoteAnymoreWithoutLocation(): void
     {
         $data = [
@@ -359,15 +323,15 @@ class RemoteMediaTransformerTest extends AbstractTest
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag1', 'tag2', 'tag3'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                tags: ['tag1', 'tag2', 'tag3'],
+            ),
             null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -393,12 +357,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         self::assertNull($this->dataTransformer->reverseTransform($data));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithExistingLocationMissingInDatabase(): void
     {
         $data = [
@@ -418,17 +376,17 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->with(5)
             ->willThrowException(new RemoteResourceLocationNotFoundException(5));
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/example.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-            'name' => 'example.jpg',
-            'altText' => 'Test alt text',
-            'caption' => 'Test caption',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'folder' => Folder::fromPath('media/images'),
-            'tags' => ['tag2'],
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/example.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.jpg',
+            folder: Folder::fromPath('media/images'),
+            altText: 'Test alt text',
+            caption: 'Test caption',
+            tags: ['tag2'],
+        );
 
         $this->providerMock
             ->expects(self::once())
@@ -437,17 +395,17 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->willReturn($resource);
 
         $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'altText' => 'Test alt text',
-                'caption' => 'Test caption',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag2'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+                caption: 'Test caption',
+                tags: ['tag2'],
+            ),
             'test',
         );
 
@@ -472,10 +430,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithDeletingExistingLocation(): void
     {
         $data = [
@@ -488,17 +442,17 @@ class RemoteMediaTransformerTest extends AbstractTest
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'altText' => 'Test alt text',
-                'caption' => 'Test caption',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag1', 'tag2', 'tag3'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+                caption: 'Test caption',
+                tags: ['tag1', 'tag2', 'tag3'],
+            ),
             null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -519,12 +473,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         self::assertNull($this->dataTransformer->reverseTransform($data));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::needsUpdateOnRemote
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithExistingLocationNewResource(): void
     {
         $data = [
@@ -537,17 +485,17 @@ class RemoteMediaTransformerTest extends AbstractTest
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'altText' => 'Test alt text',
-                'caption' => 'Test caption',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag1', 'tag2', 'tag3'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+                caption: 'Test caption',
+                tags: ['tag1', 'tag2', 'tag3'],
+            ),
             null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -560,15 +508,15 @@ class RemoteMediaTransformerTest extends AbstractTest
             ->with(5)
             ->willReturn($location);
 
-        $newResource = new RemoteResource([
-            'remoteId' => 'upload|image|media/images/new_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/media/images/new_image.jpg',
-            'name' => 'new_image.jpg',
-            'md5' => 'a132fs3cf89aa0afd03387c32esb631c',
-            'folder' => Folder::fromPath('media/images'),
-            'tags' => ['tag1', 'tag2', 'tag3'],
-        ]);
+        $newResource = new RemoteResource(
+            remoteId: 'upload|image|media/images/new_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/media/images/new_image.jpg',
+            md5: 'a132fs3cf89aa0afd03387c32esb631c',
+            name: 'new_image.jpg',
+            folder: Folder::fromPath('media/images'),
+            tags: ['tag1', 'tag2', 'tag3'],
+        );
 
         $this->providerMock
             ->expects(self::once())
@@ -604,10 +552,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithResourceNoLongerExistingOnRemote(): void
     {
         $data = [
@@ -634,11 +578,6 @@ class RemoteMediaTransformerTest extends AbstractTest
         self::assertNull($this->dataTransformer->reverseTransform($data));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::__construct
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::resolveCropSettings
-     * @covers \Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer::reverseTransform
-     */
     public function testReverseTransformWithNewResourceNoLongerExistingOnRemote(): void
     {
         $data = [
@@ -651,17 +590,17 @@ class RemoteMediaTransformerTest extends AbstractTest
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource([
-                'remoteId' => 'upload|image|media/images/example.jpg',
-                'type' => 'image',
-                'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                'name' => 'example.jpg',
-                'altText' => 'Test alt text',
-                'caption' => 'Test caption',
-                'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                'folder' => Folder::fromPath('media/images'),
-                'tags' => ['tag1', 'tag2', 'tag3'],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+                caption: 'Test caption',
+                tags: ['tag1', 'tag2', 'tag3'],
+            ),
             null,
             [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -698,7 +637,13 @@ class RemoteMediaTransformerTest extends AbstractTest
     {
         return [
             [
-                new RemoteResource(),
+                new RemoteResource(
+                    remoteId: 'upload|image|media/images/example.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'example.jpg',
+                ),
                 null,
             ],
             [
@@ -707,17 +652,17 @@ class RemoteMediaTransformerTest extends AbstractTest
             ],
             [
                 new RemoteResourceLocation(
-                    new RemoteResource([
-                        'remoteId' => 'upload|image|media/images/example.jpg',
-                        'type' => 'image',
-                        'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        'name' => 'example.jpg',
-                        'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                        'folder' => Folder::fromPath('media/images'),
-                        'altText' => 'Test alt text',
-                        'caption' => 'Test caption',
-                        'tags' => ['tag1', 'tag2'],
-                    ]),
+                    new RemoteResource(
+                        remoteId: 'upload|image|media/images/example.jpg',
+                        type: 'image',
+                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                        name: 'example.jpg',
+                        folder: Folder::fromPath('media/images'),
+                        altText: 'Test alt text',
+                        caption: 'Test caption',
+                        tags: ['tag1', 'tag2'],
+                    ),
                     null,
                     [
                         new CropSettings('hero_image', 10, 20, 1920, 1080),
@@ -736,13 +681,13 @@ class RemoteMediaTransformerTest extends AbstractTest
             ],
             [
                 new RemoteResourceLocation(
-                    new RemoteResource([
-                        'remoteId' => 'upload|image|media/images/example.jpg',
-                        'type' => 'image',
-                        'url' => 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        'name' => 'example.jpg',
-                        'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                    ]),
+                    new RemoteResource(
+                        remoteId: 'upload|image|media/images/example.jpg',
+                        type: 'image',
+                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                        name: 'example.jpg',
+                    ),
                     'my_source',
                 ),
                 [

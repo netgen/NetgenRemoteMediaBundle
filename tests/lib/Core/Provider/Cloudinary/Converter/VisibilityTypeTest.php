@@ -6,8 +6,11 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Converter;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(VisibilityTypeConverter::class)]
 final class VisibilityTypeTest extends TestCase
 {
     protected VisibilityTypeConverter $converter;
@@ -17,11 +20,7 @@ final class VisibilityTypeTest extends TestCase
         $this->converter = new VisibilityTypeConverter();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType::fromCloudinaryType
-     *
-     * @dataProvider fromCloudinaryTypeProvider
-     */
+    #[DataProvider('fromCloudinaryTypeProvider')]
     public function testFromCloudinaryType(string $type, string $expectedFormat): void
     {
         self::assertSame(
@@ -30,11 +29,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType::toCloudinaryType
-     *
-     * @dataProvider toCloudinaryTypeProvider
-     */
+    #[DataProvider('toCloudinaryTypeProvider')]
     public function testToCloudinaryType(string $visibility, string $expectedType): void
     {
         self::assertSame(
@@ -43,11 +38,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType::toCloudinaryAccessMode
-     *
-     * @dataProvider toCloudinaryAccessModeProvider
-     */
+    #[DataProvider('toCloudinaryAccessModeProvider')]
     public function testToCloudinaryAccessMode(string $visibility, string $expectedMode): void
     {
         self::assertSame(
@@ -56,11 +47,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType::toCloudinaryAccessControl
-     *
-     * @dataProvider toCloudinaryAccessControlProvider
-     */
+    #[DataProvider('toCloudinaryAccessControlProvider')]
     public function testToCloudinaryAccessControl(string $visibility, array $expectedSettings): void
     {
         self::assertSame(

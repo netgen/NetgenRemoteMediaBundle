@@ -6,8 +6,10 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Format;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Format::class)]
 final class FormatTest extends TestCase
 {
     protected Format $format;
@@ -17,9 +19,6 @@ final class FormatTest extends TestCase
         $this->format = new Format();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Format::process
-     */
     public function test(): void
     {
         self::assertSame(
@@ -28,9 +27,6 @@ final class FormatTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Format::process
-     */
     public function testInvalidConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);

@@ -10,7 +10,7 @@ use function md5_file;
 
 final class Md5FileHash implements FileHashFactoryInterface
 {
-    public function createHash($path): string
+    public function createHash(string $path): string
     {
         return md5_file($path);
     }

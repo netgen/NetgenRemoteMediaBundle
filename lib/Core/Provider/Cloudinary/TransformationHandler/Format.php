@@ -7,6 +7,8 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 
+use function count;
+
 /**
  * Class Format.
  *
@@ -28,12 +30,9 @@ final class Format implements HandlerInterface
      */
     public function process(array $config = []): array
     {
-        if (empty($config[0])) {
-            throw new TransformationHandlerFailedException(self::class);
-        }
-
-        return [
-            'fetch_format' => $config[0],
-        ];
+        return match (true) {
+            count($config) > 0 => ['fetch_format' => $config[0]],
+            default => throw new TransformationHandlerFailedException(self::class),
+        };
     }
 }

@@ -7,6 +7,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Folder;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create as CreateController;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\Folder;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -14,12 +15,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+#[CoversClass(CreateController::class)]
 final class CreateTest extends TestCase
 {
     private CreateController $controller;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
@@ -28,10 +29,6 @@ final class CreateTest extends TestCase
         $this->controller = new CreateController($this->providerMock);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create::__invoke
-     */
     public function testInvalid(): void
     {
         $request = new Request();
@@ -41,10 +38,6 @@ final class CreateTest extends TestCase
         $this->controller->__invoke($request);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create::__invoke
-     */
     public function test(): void
     {
         $request = new Request();
@@ -71,10 +64,6 @@ final class CreateTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Create::__invoke
-     */
     public function testWithParent(): void
     {
         $request = new Request();

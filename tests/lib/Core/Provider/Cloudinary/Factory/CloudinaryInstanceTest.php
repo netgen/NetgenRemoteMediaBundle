@@ -6,9 +6,11 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 
 use Cloudinary;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance as CloudinaryInstanceFactory;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-final class CloudinaryInstanceTest extends AbstractTest
+#[CoversClass(CloudinaryInstanceFactory::class)]
+final class CloudinaryInstanceTest extends AbstractTestCase
 {
     protected CloudinaryInstanceFactory $cloudinaryInstanceFactory;
 
@@ -17,10 +19,6 @@ final class CloudinaryInstanceTest extends AbstractTest
         $this->cloudinaryInstanceFactory = new CloudinaryInstanceFactory('myCloud', 'myKey', 'mySecret', 'myprefix');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance::create
-     */
     public function testCreate(): void
     {
         $cloudinaryInstance = $this->cloudinaryInstanceFactory->create();

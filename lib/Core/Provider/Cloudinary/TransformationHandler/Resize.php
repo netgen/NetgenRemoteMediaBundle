@@ -7,6 +7,8 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 
+use function count;
+
 /**
  * Class Resize.
  *
@@ -25,18 +27,17 @@ final class Resize implements HandlerInterface
     {
         $options = [];
 
-        if (isset($config[0]) && $config[0] !== 0) {
+        if (($config[0] ?? 0) !== 0) {
             $options['width'] = $config[0];
         }
 
-        if (isset($config[1]) && $config[1] !== 0) {
+        if (($config[1] ?? 0) !== 0) {
             $options['height'] = $config[1];
         }
 
-        if (empty($options)) {
-            throw new TransformationHandlerFailedException(self::class);
-        }
-
-        return $options;
+        return match (true) {
+            count($options) > 0 => $options,
+            default => throw new TransformationHandlerFailedException(self::class),
+        };
     }
 }

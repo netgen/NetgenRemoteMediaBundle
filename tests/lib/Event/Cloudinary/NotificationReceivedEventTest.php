@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Event\Cloudinary;
 
 use Netgen\RemoteMedia\Event\Cloudinary\NotificationReceivedEvent;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
+#[CoversClass(NotificationReceivedEvent::class)]
 class NotificationReceivedEventTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Event\Cloudinary\NotificationReceivedEvent::__construct
-     * @covers \Netgen\RemoteMedia\Event\Cloudinary\NotificationReceivedEvent::getRequest
-     */
     public function test(): void
     {
         $request = new Request();

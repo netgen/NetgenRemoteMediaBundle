@@ -5,18 +5,12 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use Netgen\RemoteMedia\API\Values\CropSettings;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(CropSettings::class)]
 final class CropSettingsTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getHeight
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getVariationName
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getWidth
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getX
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getY
-     */
     public function testCreate(): void
     {
         $cropSettings = new CropSettings(
@@ -53,15 +47,6 @@ final class CropSettingsTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::fromArray
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getHeight
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getVariationName
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getWidth
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getX
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getY
-     */
     public function testCreateFromArray(): void
     {
         $cropSettings = CropSettings::fromArray(
@@ -100,15 +85,6 @@ final class CropSettingsTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::fromArray
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getHeight
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getVariationName
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getWidth
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getX
-     * @covers \Netgen\RemoteMedia\API\Values\CropSettings::getY
-     */
     public function testCreateFromArrayAlternative(): void
     {
         $cropSettings = CropSettings::fromArray(

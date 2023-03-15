@@ -12,6 +12,7 @@ use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,12 +21,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function json_encode;
 
+#[CoversClass(BrowseController::class)]
 final class BrowseTest extends TestCase
 {
     private BrowseController $controller;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
@@ -33,13 +34,6 @@ final class BrowseTest extends TestCase
         $this->controller = new BrowseController($this->providerMock);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResource
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResources
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::getArrayFromInputBag
-     */
     public function test(): void
     {
         $request = new Request();
@@ -53,50 +47,50 @@ final class BrowseTest extends TestCase
             'next_cursor' => 'ewdewr43r43r43',
         ]);
 
-        $query = new Query([
-            'query' => 'image',
-            'types' => ['image'],
-            'folders' => ['media'],
-            'visibilities' => ['public'],
-            'tags' => ['test'],
-            'limit' => 20,
-            'nextCursor' => 'ewdewr43r43r43',
-        ]);
+        $query = new Query(
+            query: 'image',
+            types: ['image'],
+            folders: ['media'],
+            visibilities: ['public'],
+            tags: ['test'],
+            limit: 20,
+            nextCursor: 'ewdewr43r43r43',
+        );
 
         $result = new Result(
             10,
             'i4gtgoijf94fef43dss',
             [
-                new RemoteResource([
-                    'remoteId' => 'upload|image|media/images/image.jpg',
-                    'type' => 'image',
-                    'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
-                    'name' => 'image.jpg',
-                    'folder' => Folder::fromPath('media/images'),
-                    'size' => 95,
-                    'tags' => ['test', 'image'],
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
-                new RemoteResource([
-                    'remoteId' => 'upload|image|media/images/image2.jpg',
-                    'type' => 'image',
-                    'url' => 'https://cloudinary.com/test/upload/images/image2.jpg',
-                    'name' => 'image2.jpg',
-                    'folder' => Folder::fromPath('media/images'),
-                    'size' => 75,
-                    'tags' => ['test'],
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
-                new RemoteResource([
-                    'remoteId' => 'upload|image|media/videos/example.mp4',
-                    'type' => 'video',
-                    'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
-                    'name' => 'example.mp4',
-                    'folder' => Folder::fromPath('media/videos'),
-                    'size' => 550,
-                    'tags' => ['test', 'video'],
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
+                new RemoteResource(
+                    remoteId: 'upload|image|media/images/image.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/images/image.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'image.jpg',
+                    folder: Folder::fromPath('media/images'),
+                    size: 95,
+                    tags: ['test', 'image'],
+                ),
+                new RemoteResource(
+                    remoteId: 'upload|image|media/images/image2.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/images/image2.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'image2.jpg',
+                    folder: Folder::fromPath('media/images'),
+                    size: 75,
+                    tags: ['test'],
+                ),
+                new RemoteResource(
+                    remoteId: 'upload|image|media/videos/example.mp4',
+                    type: 'video',
+                    url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'example.mp4',
+                    folder: Folder::fromPath('media/videos'),
+                    size: 550,
+                    tags: ['test', 'video'],
+                ),
             ],
         );
 
@@ -238,13 +232,6 @@ final class BrowseTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResource
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::formatResources
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse::getArrayFromInputBag
-     */
     public function testWithoutResults(): void
     {
         $request = new Request();
@@ -256,13 +243,13 @@ final class BrowseTest extends TestCase
             'tags' => 'test',
         ]);
 
-        $query = new Query([
-            'query' => 'image',
-            'types' => ['image', 'video'],
-            'folders' => ['media', 'other'],
-            'visibilities' => ['private', 'protected'],
-            'tags' => [],
-        ]);
+        $query = new Query(
+            query: 'image',
+            types: ['image', 'video'],
+            folders: ['media', 'other'],
+            visibilities: ['private', 'protected'],
+            tags: [],
+        );
 
         $result = new Result(0, null, []);
 

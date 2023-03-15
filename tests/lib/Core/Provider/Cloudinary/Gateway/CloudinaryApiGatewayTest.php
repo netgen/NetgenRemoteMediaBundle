@@ -27,13 +27,15 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenR
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use Netgen\RemoteMedia\Exception\FolderNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use stdClass;
 
 use function json_encode;
 
-class CloudinaryApiGatewayTest extends AbstractTest
+#[CoversClass(CloudinaryApiGateway::class)]
+class CloudinaryApiGatewayTest extends AbstractTestCase
 {
     protected const CLOUD_NAME = 'testcloud';
 
@@ -45,30 +47,15 @@ class CloudinaryApiGatewayTest extends AbstractTest
 
     protected CloudinaryApiGateway $apiGateway;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Cloudinary\Api
-     */
-    protected MockObject $cloudinaryMock;
+    protected MockObject|Cloudinary $cloudinaryMock;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Cloudinary\Api
-     */
-    protected MockObject $cloudinaryApiMock;
+    protected MockObject|Api $cloudinaryApiMock;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Cloudinary\Search
-     */
-    protected MockObject $cloudinarySearchMock;
+    protected MockObject|Search $cloudinarySearchMock;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\RemoteResource
-     */
-    protected MockObject $remoteResourceFactoryMock;
+    protected MockObject|RemoteResourceFactoryInterface $remoteResourceFactoryMock;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\SearchResult
-     */
-    protected MockObject $searchResultFactoryMock;
+    protected MockObject|SearchResultFactoryInterface $searchResultFactoryMock;
 
     protected function setUp(): void
     {
@@ -104,12 +91,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::formatBytes
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::setServices
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::usage
-     */
     public function testUsage(): void
     {
         $data = [
@@ -268,10 +249,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         self::assertNull($usage->get('random_key'));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::isEncryptionEnabled
-     */
     public function testIsEncryptionEnabled(): void
     {
         self::assertTrue($this->apiGateway->isEncryptionEnabled());
@@ -297,9 +274,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         self::assertFalse($apiGateway->isEncryptionEnabled());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::countResources
-     */
     public function testCountResources(): void
     {
         $this->cloudinaryApiMock
@@ -313,9 +287,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::countResourcesInFolder
-     */
     public function testCountResourcesInFolder(): void
     {
         $expression = 'folder:folderName/*';
@@ -343,9 +314,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::listFolders
-     */
     public function testListFolders(): void
     {
         $folders = [
@@ -377,9 +345,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::listSubFolders
-     */
     public function testListSubFolders(): void
     {
         $folders = [
@@ -412,9 +377,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::listSubFolders
-     */
     public function testListSubFoldersInNonExistingParent(): void
     {
         $this->cloudinaryApiMock
@@ -429,9 +391,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $this->apiGateway->listSubFolders('non_existing_folder/non_existing_subfolder');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::createFolder
-     */
     public function testCreateFolder(): void
     {
         $path = 'folder/subfolder/my_new_folder';
@@ -444,9 +403,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $this->apiGateway->createFolder($path);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::get
-     */
     public function testGet(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -471,16 +427,14 @@ class CloudinaryApiGatewayTest extends AbstractTest
             )
             ->willReturn($cloudinaryResponse);
 
-        $remoteResource = new RemoteResource([
-            'remoteId' => $remoteId->getRemoteId(),
-            'type' => RemoteResource::TYPE_IMAGE,
-            'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'metadata' => [
-                'format' => 'jpg',
-            ],
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: $remoteId->getRemoteId(),
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+            metadata: ['format' => 'jpg'],
+        );
 
         $this->remoteResourceFactoryMock
             ->expects(self::once())
@@ -494,9 +448,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::get
-     */
     public function testGetNotExisting(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -519,9 +470,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         $this->apiGateway->get($remoteId);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getAuthenticatedUrl
-     */
     public function testGetAuthenticatedUrl(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -533,9 +481,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getVariationUrl
-     */
     public function testGetVariationUrl(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -553,9 +498,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::search
-     */
     public function testSearch(): void
     {
         $expression = '(resource_type:"image" OR resource_type:"video")'
@@ -594,24 +536,24 @@ class CloudinaryApiGatewayTest extends AbstractTest
             ->method('execute')
             ->willReturn($apiResponse);
 
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
         $searchResult = new Result(
             200,
             '123',
             [
-                new RemoteResource([
-                    'remoteId' => 'upload|image|test.jpg',
-                    'type' => 'image',
-                    'url' => 'https://cloudinary.com/test/upload/image/test.jpg',
-                    'name' => 'test.jpg',
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
+                new RemoteResource(
+                    remoteId: 'upload|image|test.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/image/test.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'test.jpg',
+                ),
             ],
         );
 
@@ -627,9 +569,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::search
-     */
     public function testSearchWithNextCursor(): void
     {
         $expression = '(resource_type:"image" OR resource_type:"video")'
@@ -675,25 +614,25 @@ class CloudinaryApiGatewayTest extends AbstractTest
             ->method('execute')
             ->willReturn($apiResponse);
 
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-            'nextCursor' => $nextCursor,
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+            nextCursor: $nextCursor,
+        );
 
         $searchResult = new Result(
             200,
             '123',
             [
-                new RemoteResource([
-                    'remoteId' => 'upload|image|test.jpg',
-                    'type' => 'image',
-                    'url' => 'https://cloudinary.com/test/upload/image/test.jpg',
-                    'name' => 'test.jpg',
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                ]),
+                new RemoteResource(
+                    remoteId: 'upload|image|test.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/image/test.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'test.jpg',
+                ),
             ],
         );
 
@@ -709,9 +648,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::searchCount
-     */
     public function testSearchCount(): void
     {
         $expression = '(resource_type:"image" OR resource_type:"video")'
@@ -739,12 +675,12 @@ class CloudinaryApiGatewayTest extends AbstractTest
             ->method('execute')
             ->willReturn($apiResponse);
 
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
         self::assertSame(
             200,
@@ -752,9 +688,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::listTags
-     */
     public function testListTags(): void
     {
         $this->cloudinaryApiMock
@@ -817,9 +750,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getVideoThumbnail
-     */
     public function testGetVideoThumbnail(): void
     {
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
@@ -830,9 +760,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getImageTag
-     */
     public function testGetImageTag(): void
     {
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/example');
@@ -843,9 +770,6 @@ class CloudinaryApiGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway::getVideoTag
-     */
     public function testGetVideoTag(): void
     {
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');

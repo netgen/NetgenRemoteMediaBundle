@@ -17,11 +17,9 @@ use function json_encode;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
 {
-    private ProviderInterface $provider;
-
-    public function __construct(ProviderInterface $provider)
-    {
-        $this->provider = $provider;
+    public function __construct(
+        private ProviderInterface $provider
+    ) {
     }
 
     public function transform($value)
@@ -45,12 +43,12 @@ final class RemoteMediaTransformer implements DataTransformerInterface
     public function reverseTransform($value)
     {
         try {
-            $remoteResourceLocation = $value['locationId'] ? $this->provider->loadLocation((int) $value['locationId']) : null;
+            $remoteResourceLocation = $value['locationId'] !== null && $value['locationId'] !== '' ? $this->provider->loadLocation((int) $value['locationId']) : null;
         } catch (RemoteResourceLocationNotFoundException $e) {
             $remoteResourceLocation = null;
         }
 
-        if (!$value['remoteId']) {
+        if ($value['remoteId'] === null) {
             if ($remoteResourceLocation instanceof RemoteResourceLocation) {
                 $this->provider->removeLocation($remoteResourceLocation);
             }
@@ -98,7 +96,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             try {
                 $this->provider->updateOnRemote($remoteResource);
             } catch (RemoteResourceNotFoundException $e) {
-                if ($remoteResourceLocation instanceof RemoteResourceLocation && $value['locationId']) {
+                if ($remoteResourceLocation instanceof RemoteResourceLocation && $value['locationId'] !== null && $value['locationId'] !== '') {
                     $this->provider->removeLocation($remoteResourceLocation);
                 }
 

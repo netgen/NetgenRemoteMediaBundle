@@ -7,6 +7,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Folder;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Load as LoadController;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\Folder;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,12 +16,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function json_encode;
 
+#[CoversClass(LoadController::class)]
 final class LoadTest extends TestCase
 {
     private LoadController $controller;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
@@ -29,10 +30,6 @@ final class LoadTest extends TestCase
         $this->controller = new LoadController($this->providerMock);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Load::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Load::__invoke
-     */
     public function test(): void
     {
         $request = new Request();
@@ -90,10 +87,6 @@ final class LoadTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Load::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Folder\Load::__invoke
-     */
     public function testWithParent(): void
     {
         $request = new Request();

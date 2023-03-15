@@ -7,27 +7,15 @@ namespace Netgen\RemoteMedia\Tests\API\Upload;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function basename;
 
+#[CoversClass(ResourceStruct::class)]
 final class ResourceStructTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::__construct
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::doInvalidate
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::doOverwrite
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getAltText
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getCaption
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getContext
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFilename
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFilenameOverride
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFileStruct
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFolder
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getResourceType
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getTags
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getVisibility
-     */
     public function testSimpleCreate(): void
     {
         $fileStruct = FileStruct::fromUri('var/images/test.jpg');
@@ -63,22 +51,7 @@ final class ResourceStructTest extends TestCase
         self::assertEmpty($resourceStruct->getContext());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::__construct
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::doInvalidate
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::doOverwrite
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getAltText
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getCaption
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getContext
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFilenameOverride
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFileStruct
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getFolder
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getResourceType
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getTags
-     * @covers \Netgen\RemoteMedia\API\Upload\ResourceStruct::getVisibility
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testCreate(
         FileStruct $fileStruct,
         string $resourceType,
@@ -127,7 +100,7 @@ final class ResourceStructTest extends TestCase
         );
 
         self::assertSame(
-            $filenameOverride ?: basename($fileStruct->getUri()),
+            $filenameOverride ?? basename($fileStruct->getUri()),
             $resourceStruct->getFilename(),
         );
 

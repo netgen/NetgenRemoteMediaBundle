@@ -12,25 +12,23 @@ use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
+#[CoversClass(VariationResolver::class)]
 final class VariationTest extends TestCase
 {
     protected VariationResolver $variationResolver;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Transformation\HandlerInterface */
-    private MockObject $cropHandler;
+    private MockObject|HandlerInterface $cropHandler;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Transformation\HandlerInterface */
-    private MockObject $formatHandler;
+    private MockObject|HandlerInterface $formatHandler;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Transformation\HandlerInterface */
-    private MockObject $watermarkTextHandler;
+    private MockObject|HandlerInterface $watermarkTextHandler;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Log\LoggerInterface */
-    private MockObject $logger;
+    private MockObject|LoggerInterface $logger;
 
     protected function setUp(): void
     {
@@ -44,16 +42,13 @@ final class VariationTest extends TestCase
         $registry->addHandler('cloudinary', 'format', $this->formatHandler);
         $registry->addHandler('cloudinary', 'watermark_text', $this->watermarkTextHandler);
 
-        $this->variationResolver = new VariationResolver();
-        $this->variationResolver->setServices($registry, $this->logger);
-        $this->variationResolver->setVariations($this->getVariationSet());
+        $this->variationResolver = new VariationResolver(
+            $registry,
+            $this->logger,
+            $this->getVariationSet(),
+        );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableVariations
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testGetAvailableVariations(): void
     {
         self::assertSame(
@@ -73,11 +68,6 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableVariations
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testGetAvailableVariationsForGroup(): void
     {
         self::assertSame(
@@ -121,11 +111,6 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableVariations
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testGetAvailableVariationsWithoutOverride(): void
     {
         self::assertSame(
@@ -150,11 +135,6 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableCroppableVariations
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testGetAvailableCroppableVariations(): void
     {
         self::assertSame(
@@ -169,11 +149,6 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::getAvailableCroppableVariations
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testGetAvailableCroppableVariationsForGroup(): void
     {
         self::assertSame(
@@ -194,22 +169,17 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::processConfiguredVariation
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testProcessConfiguredVariation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $cropSettings = [
             new CropSettings('small', 5, 10, 200, 200),
@@ -252,22 +222,17 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::processConfiguredVariation
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testProcessConfiguredVariationMissing(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -281,22 +246,17 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::processConfiguredVariation
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testProcessConfiguredVariationMissingCropSettings(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $cropSettings = [
             new CropSettings('large', 5, 10, 800, 800),
@@ -325,22 +285,17 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::processConfiguredVariation
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testProcessConfiguredVariationMissingTransformationHandler(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -359,22 +314,17 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::processConfiguredVariation
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testProcessConfiguredVariationTransformationHandlerFailed(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $cropSettings = [
             new CropSettings('small', 5, 10, 200, 200),
@@ -409,22 +359,17 @@ final class VariationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::processConfiguredVariation
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setServices
-     * @covers \Netgen\RemoteMedia\Core\Resolver\Variation::setVariations
-     */
     public function testProcessConfiguredVariationWithWatermarkText(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource, null, [], 'Test text');
 

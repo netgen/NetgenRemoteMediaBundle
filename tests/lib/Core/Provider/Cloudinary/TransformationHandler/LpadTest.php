@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Lpad::class)]
 final class LpadTest extends TestCase
 {
     protected Lpad $lpad;
@@ -16,9 +19,6 @@ final class LpadTest extends TestCase
         $this->lpad = new Lpad();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad::process
-     */
     public function testWithoutConfig(): void
     {
         self::assertSame(
@@ -27,11 +27,7 @@ final class LpadTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Lpad::process
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function test(array $config, array $result): void
     {
         self::assertSame(

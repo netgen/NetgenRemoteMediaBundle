@@ -17,6 +17,8 @@ use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Twig\Extension\AbstractExtension;
 
+use function count;
+
 final class RemoteMediaRuntime extends AbstractExtension
 {
     protected ProviderInterface $provider;
@@ -146,7 +148,7 @@ final class RemoteMediaRuntime extends AbstractExtension
 
     public function applyScalingFormat(array $variations): array
     {
-        if (empty($variations)) {
+        if (count($variations) === 0) {
             return $variations;
         }
 

@@ -6,8 +6,11 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\WatermarkText;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(WatermarkText::class)]
 final class WatermarkTextTest extends TestCase
 {
     private WatermarkText $watermarkText;
@@ -17,11 +20,7 @@ final class WatermarkTextTest extends TestCase
         $this->watermarkText = new WatermarkText();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\WatermarkText::process
-     *
-     * @dataProvider validDataProvider
-     */
+    #[DataProvider('validDataProvider')]
     public function test(array $config, array $result): void
     {
         self::assertSame(
@@ -30,11 +29,7 @@ final class WatermarkTextTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\WatermarkText::process
-     *
-     * @dataProvider invalidDataProvider
-     */
+    #[DataProvider('invalidDataProvider')]
     public function testInvalid(array $config): void
     {
         self::expectException(TransformationHandlerFailedException::class);

@@ -7,26 +7,22 @@ namespace Netgen\RemoteMedia\Tests\API\Values;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-final class RemoteResourceVariationTest extends AbstractTest
+#[CoversClass(RemoteResourceVariation::class)]
+final class RemoteResourceVariationTest extends AbstractTestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getRemoteResource
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getTransformations
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getUrl
-     */
     public function testConstruction(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'image/test.jpg',
-            'type' => 'img',
-            'url' => 'https://cloudinary.com/test/upload/image/image/test.jpg',
-            'name' => 'test.jpg',
-            'folder' => Folder::fromPath('image'),
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'image/test.jpg',
+            type: 'img',
+            url: 'https://cloudinary.com/test/upload/image/image/test.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test.jpg',
+            folder: Folder::fromPath('image'),
+        );
 
         $variationUrl = 'https://cloudinary.com/test/upload/image/c_120_160/q_auto/image/test.jpg';
 
@@ -54,23 +50,16 @@ final class RemoteResourceVariationTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::fromResource
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getRemoteResource
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getTransformations
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceVariation::getUrl
-     */
     public function testConstructionFromRemoteResource(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'image/test.jpg',
-            'type' => 'img',
-            'url' => 'https://cloudinary.com/test/upload/image/image/test.jpg',
-            'name' => 'test.jpg',
-            'folder' => Folder::fromPath('image'),
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'image/test.jpg',
+            type: 'img',
+            url: 'https://cloudinary.com/test/upload/image/image/test.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test.jpg',
+            folder: Folder::fromPath('image'),
+        );
 
         $variation = RemoteResourceVariation::fromResource($resource);
 

@@ -13,28 +13,21 @@ use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
 use function count;
 
-final class MonologLoggedGatewayTest extends AbstractTest
+#[CoversClass(MonologLoggedGateway::class)]
+final class MonologLoggedGatewayTest extends AbstractTestCase
 {
-    /**
-     * @var \Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface
-     */
-    protected $gateway;
+    protected MonologLoggedGateway $gateway;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface
-     */
-    protected MockObject $apiGatewayMock;
+    protected MockObject|GatewayInterface $apiGatewayMock;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Log\LoggerInterface
-     */
-    protected MockObject $loggerMock;
+    protected MockObject|LoggerInterface $loggerMock;
 
     protected function setUp(): void
     {
@@ -47,10 +40,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::usage
-     */
     public function testUsage(): void
     {
         $usageData = new StatusData([
@@ -76,15 +65,12 @@ final class MonologLoggedGatewayTest extends AbstractTest
             $result,
         );
 
-        self::assertSame(
+        self::assertCount(
             count($usageData->all()),
-            count($result->all()),
+            $result->all(),
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::isEncryptionEnabled
-     */
     public function testIsEncryptionEnabled(): void
     {
         $this->apiGatewayMock
@@ -101,9 +87,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         self::assertFalse($this->gateway->isEncryptionEnabled());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::countResources
-     */
     public function testCountResources(): void
     {
         $this->apiGatewayMock
@@ -122,9 +105,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::countResourcesInFolder
-     */
     public function testCountResourcesInFolder(): void
     {
         $folder = 'test/subtest';
@@ -146,9 +126,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::listFolders
-     */
     public function testListFolders(): void
     {
         $folders = [
@@ -173,9 +150,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::listSubFolders
-     */
     public function testListSubFolders(): void
     {
         $folder = 'test';
@@ -202,9 +176,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::createFolder
-     */
     public function testCreateFolder(): void
     {
         $path = 'test/subfolder/newfolder';
@@ -222,23 +193,18 @@ final class MonologLoggedGatewayTest extends AbstractTest
         $this->gateway->createFolder($path);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::get
-     */
     public function testGet(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $remoteResource = new RemoteResource([
-            'remoteId' => $remoteId->getRemoteId(),
-            'type' => RemoteResource::TYPE_IMAGE,
-            'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'metadata' => [
-                'format' => 'jpg',
-            ],
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: $remoteId->getRemoteId(),
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+            metadata: ['format' => 'jpg'],
+        );
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -257,9 +223,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::upload
-     */
     public function testUpload(): void
     {
         $fileUri = 'test_image.jpg';
@@ -268,13 +231,13 @@ final class MonologLoggedGatewayTest extends AbstractTest
             'resource_type' => 'auto',
         ];
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|test_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+        );
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -293,9 +256,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::update
-     */
     public function testUpdate(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
@@ -316,9 +276,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         $this->gateway->update($remoteId, $options);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::removeAllTagsFromResource
-     */
     public function testRemoveAllTagsFromResource(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
@@ -336,9 +293,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         $this->gateway->removeAllTagsFromResource($remoteId);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::delete
-     */
     public function testDelete(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
@@ -356,9 +310,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         $this->gateway->delete($remoteId);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::getAuthenticatedUrl
-     */
     public function testGetAuthenticatedUrl(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -382,9 +333,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::getVariationUrl
-     */
     public function testGetVariationUrl(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -413,25 +361,22 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::search
-     */
     public function testSearch(): void
     {
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|test_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+        );
 
         $searchResult = new Result(200, '123', [$resource]);
 
@@ -452,17 +397,14 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::searchCount
-     */
     public function testSearchCount(): void
     {
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -481,9 +423,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::listTags
-     */
     public function testListTags(): void
     {
         $tags = ['tag1', 'tag2'];
@@ -504,9 +443,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::getVideoThumbnail
-     */
     public function testGetVideoThumbnail(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|video|example.mp4');
@@ -528,9 +464,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::getImageTag
-     */
     public function testGetImageTag(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|image.jpg');
@@ -552,9 +485,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::getVideoTag
-     */
     public function testGetVideoTag(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|video|example.mp4');
@@ -576,9 +506,6 @@ final class MonologLoggedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway::getDownloadLink
-     */
     public function testGetDownloadLink(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|raw|test.zip');

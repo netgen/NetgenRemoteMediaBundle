@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Exception;
 
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(TransformationHandlerFailedException::class)]
 final class TransformationHandlerFailedExceptionTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Exception\TransformationHandlerFailedException::__construct
-     */
     public function testException(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);

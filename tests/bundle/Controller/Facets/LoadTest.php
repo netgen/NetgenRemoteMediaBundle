@@ -8,6 +8,7 @@ use Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load as LoadController;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Exception\NotSupportedException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,15 +18,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function json_encode;
 
+#[CoversClass(LoadController::class)]
 final class LoadTest extends TestCase
 {
     private LoadController $controller;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Contracts\Translation\TranslatorInterface */
-    private MockObject $translatorMock;
+    private MockObject|TranslatorInterface $translatorMock;
 
     protected function setUp(): void
     {
@@ -35,12 +35,6 @@ final class LoadTest extends TestCase
         $this->controller = new LoadController($this->providerMock, $this->translatorMock);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveTypeName
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveVisibilityName
-     */
     public function test(): void
     {
         $request = new Request();
@@ -201,12 +195,6 @@ final class LoadTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveTypeName
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Facets\Load::resolveVisibilityName
-     */
     public function testNotSupportedFoldersAndTagsMissingTrans(): void
     {
         $folderPath = 'media/images/new';

@@ -10,8 +10,10 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Resize;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Registry::class)]
 class RegistryTest extends TestCase
 {
     protected Registry $registry;
@@ -35,10 +37,6 @@ class RegistryTest extends TestCase
         $this->registry->addHandler('otherprovider', 'crop', $this->otherProviderCropTransformation);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Transformation\Registry::addHandler
-     * @covers \Netgen\RemoteMedia\Core\Transformation\Registry::getHandler
-     */
     public function testGetHandler(): void
     {
         self::assertSame(
@@ -47,10 +45,6 @@ class RegistryTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Transformation\Registry::addHandler
-     * @covers \Netgen\RemoteMedia\Core\Transformation\Registry::getHandler
-     */
     public function testNoHandler(): void
     {
         $this->expectException(TransformationHandlerNotFoundException::class);

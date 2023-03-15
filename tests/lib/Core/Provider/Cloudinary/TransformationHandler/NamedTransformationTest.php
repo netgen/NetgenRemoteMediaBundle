@@ -6,8 +6,10 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\NamedTransformation;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(NamedTransformation::class)]
 final class NamedTransformationTest extends TestCase
 {
     protected NamedTransformation $namedTransformation;
@@ -17,9 +19,6 @@ final class NamedTransformationTest extends TestCase
         $this->namedTransformation = new NamedTransformation();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\NamedTransformation::process
-     */
     public function testNamedTransformation(): void
     {
         self::assertSame(
@@ -28,9 +27,6 @@ final class NamedTransformationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\NamedTransformation::process
-     */
     public function testMissingNamedTransformationConfiguration(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);

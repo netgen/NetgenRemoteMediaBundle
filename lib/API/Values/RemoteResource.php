@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\API\Values;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 use function array_diff;
 use function array_key_exists;
 use function array_unique;
 use function array_values;
 use function in_array;
-use function property_exists;
 
 /**
  * @ORM\Entity()
@@ -20,6 +20,7 @@ use function property_exists;
  *
  * @ORM\HasLifecycleCallbacks()
  */
+
 class RemoteResource
 {
     use TimestampableTrait;
@@ -145,17 +146,24 @@ class RemoteResource
     /**
      * @param array<string,mixed> $properties
      */
-    public function __construct(array $properties = [])
-    {
-        foreach ($properties as $name => $value) {
-            if (!property_exists($this, $name)) {
-                continue;
-            }
-
-            $this->{$name} = $value;
-        }
-
-        $this->tags = array_unique(array_values($this->tags));
+    public function __construct(
+        string $remoteId,
+        string $type,
+        string $url,
+        string $md5,
+        ?int $id = null,
+        ?string $name = null,
+        ?string $version = null,
+        ?string $visibility = self::VISIBILITY_PUBLIC,
+        ?Folder $folder = null,
+        int $size = 0,
+        ?string $altText = null,
+        ?string $caption = null,
+        array $tags = [],
+        array $metadata = [],
+        array $context = [],
+        PersistentCollection|array $locations = []
+    ) {
     }
 
     public function getId(): ?int
@@ -374,10 +382,7 @@ class RemoteResource
         return array_key_exists($name, $this->metadata);
     }
 
-    /**
-     * @return mixed
-     */
-    public function getMetadataProperty(string $name)
+    public function getMetadataProperty(string $name): mixed
     {
         if (!$this->hasMetadataProperty($name)) {
             return null;
@@ -409,10 +414,7 @@ class RemoteResource
         return array_key_exists($name, $this->context);
     }
 
-    /**
-     * @return mixed
-     */
-    public function getContextProperty(string $name)
+    public function getContextProperty(string $name): mixed
     {
         if (!$this->hasContextProperty($name)) {
             return null;

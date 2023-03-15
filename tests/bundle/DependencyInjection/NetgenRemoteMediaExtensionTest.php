@@ -7,12 +7,11 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection;
 use InvalidArgumentException;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtension;
+use PHPUnit\Framework\Attributes\CoversClass;
 
+#[CoversClass(NetgenRemoteMediaExtension::class)]
 final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
 {
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtension::load
-     */
     public function testItSetsValidContainerParameters(): void
     {
         $this->setParameter('kernel.bundles', []);
@@ -50,18 +49,12 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.testprovider');
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtension::load
-     */
     public function testWithoutProviderParameter(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->load(['provider' => null]);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtension::load
-     */
     public function testWithEnabledCloudinaryLogging(): void
     {
         $this->load([
@@ -74,9 +67,6 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider.cloudinary.gateway', 'netgen_remote_media.provider.cloudinary.gateway.cached');
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtension::load
-     */
     public function testWithDisabledCloudinaryCaching(): void
     {
         $this->load([
@@ -89,9 +79,6 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider.cloudinary.gateway', 'netgen_remote_media.provider.cloudinary.gateway.inner');
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtension::load
-     */
     public function testWithDisabledCloudinaryCachingAndEnabledLogging(): void
     {
         $this->load([

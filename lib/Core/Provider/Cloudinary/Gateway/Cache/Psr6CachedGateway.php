@@ -36,17 +36,11 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
     public const FOLDER_COUNT = 'folder_count';
     public const RESOURCE_ID = 'resource';
 
-    private GatewayInterface $gateway;
-
-    private CacheItemPoolInterface $cache;
-
-    private int $ttl;
-
-    public function __construct(GatewayInterface $gateway, CacheItemPoolInterface $cache, int $ttl = 7200)
-    {
-        $this->gateway = $gateway;
-        $this->cache = $cache;
-        $this->ttl = $ttl;
+    public function __construct(
+        private GatewayInterface $gateway,
+        private CacheItemPoolInterface $cache,
+        private int $ttl = 7200
+    ) {
     }
 
     public function usage(): StatusData

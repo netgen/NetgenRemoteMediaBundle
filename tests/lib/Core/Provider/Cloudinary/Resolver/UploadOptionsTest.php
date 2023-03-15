@@ -9,10 +9,13 @@ use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as UploadOptionsResolver;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mime\MimeTypesInterface;
 
+#[CoversClass(UploadOptionsResolver::class)]
 final class UploadOptionsTest extends TestCase
 {
     protected UploadOptionsResolver $resolver;
@@ -30,15 +33,7 @@ final class UploadOptionsTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::appendExtension
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::parseMimeCategory
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::resolve
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions::resolveContext
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testResolve(ResourceStruct $resourceStruct, string $mimeType, array $options, bool $hasExtension = true): void
     {
         if ($hasExtension) {

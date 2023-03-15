@@ -6,8 +6,10 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Effect::class)]
 final class EffectTest extends TestCase
 {
     protected Effect $effect;
@@ -17,9 +19,6 @@ final class EffectTest extends TestCase
         $this->effect = new Effect();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
-     */
     public function testSimple(): void
     {
         self::assertSame(
@@ -30,9 +29,6 @@ final class EffectTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
-     */
     public function test(): void
     {
         self::assertSame(
@@ -43,9 +39,6 @@ final class EffectTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
-     */
     public function testMissingConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);
@@ -53,9 +46,6 @@ final class EffectTest extends TestCase
         $this->effect->process();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Effect::process
-     */
     public function testInvalidConfig(): void
     {
         $this->expectException(TransformationHandlerFailedException::class);

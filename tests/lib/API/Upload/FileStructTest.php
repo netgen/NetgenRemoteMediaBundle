@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\API\Upload;
 
 use Netgen\RemoteMedia\API\Upload\FileStruct;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
+#[CoversClass(FileStruct::class)]
 final class FileStructTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::fromUri
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::getOriginalExtension
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::getOriginalFilename
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::getUri
-     */
     public function testFromUri(): void
     {
         $fileStruct = FileStruct::fromUri('/var/www/project/media/images/sample_image.jpg');
@@ -36,12 +32,6 @@ final class FileStructTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::fromUploadedFile
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::getOriginalExtension
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::getOriginalFilename
-     * @covers \Netgen\RemoteMedia\API\Upload\FileStruct::getUri
-     */
     public function testFromUploadedFile(): void
     {
         $uploadedFile = $this->createMock(UploadedFile::class);

@@ -8,26 +8,15 @@ use Cloudinary;
 
 final class CloudinaryInstance
 {
-    private string $cloudName;
-    private string $apiKey;
-    private string $apiSecret;
-    private string $uploadPrefix;
-    private bool $useSubdomains;
-
     private ?Cloudinary $cloudinary = null;
 
     public function __construct(
-        string $cloudName,
-        string $apiKey,
-        string $apiSecret,
-        string $uploadPrefix,
-        bool $useSubdomains = false
+        private string $cloudName,
+        private string $apiKey,
+        private string $apiSecret,
+        private string $uploadPrefix,
+        private bool $useSubdomains = false
     ) {
-        $this->cloudName = $cloudName;
-        $this->apiKey = $apiKey;
-        $this->apiSecret = $apiSecret;
-        $this->uploadPrefix = $uploadPrefix;
-        $this->useSubdomains = $useSubdomains;
     }
 
     public function create(): Cloudinary

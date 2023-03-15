@@ -7,12 +7,14 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Verifier\Request;
 use Cloudinary;
 use Cloudinary\SignatureVerifier as CloudinarySignatureVerifier;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature as SignatureVerifier;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 use function json_encode;
 use function time;
 
+#[CoversClass(SignatureVerifier::class)]
 class SignatureTest extends TestCase
 {
     private const CLOUD_NAME = 'testcloud';
@@ -38,9 +40,6 @@ class SignatureTest extends TestCase
         $this->signatureVerifier = new SignatureVerifier();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature::verify
-     */
     public function testVerifyValid(): void
     {
         $body = json_encode([
@@ -92,9 +91,6 @@ class SignatureTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature::verify
-     */
     public function testVerifyInvalidRequest(): void
     {
         $signatureVerifier = new SignatureVerifier();
@@ -103,9 +99,6 @@ class SignatureTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature::verify
-     */
     public function testVerifyInvalidSgnature(): void
     {
         $body = json_encode([

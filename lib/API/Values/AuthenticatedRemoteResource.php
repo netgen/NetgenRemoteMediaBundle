@@ -6,17 +6,11 @@ namespace Netgen\RemoteMedia\API\Values;
 
 class AuthenticatedRemoteResource
 {
-    private RemoteResource $remoteResource;
-
-    private string $url;
-
-    private AuthToken $token;
-
-    public function __construct(RemoteResource $remoteResource, string $url, AuthToken $token)
-    {
-        $this->remoteResource = $remoteResource;
-        $this->url = $url;
-        $this->token = $token;
+    public function __construct(
+        private RemoteResource $remoteResource,
+        private string $url,
+        private AuthToken $token
+    ) {
     }
 
     public function getRemoteResource(): RemoteResource

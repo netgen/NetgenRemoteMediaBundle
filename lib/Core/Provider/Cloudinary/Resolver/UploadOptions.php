@@ -20,20 +20,12 @@ use function rtrim;
 
 final class UploadOptions
 {
-    private VisibilityTypeConverter $visibilityTypeConverter;
-
-    private array $noExtensionMimeTypes;
-
-    private MimeTypesInterface $mimeTypes;
-
     public function __construct(
-        VisibilityTypeConverter $visibilityTypeConverter,
-        array $noExtensionMimeTypes = ['image', 'video'],
-        ?MimeTypesInterface $mimeTypes = null
+        private VisibilityTypeConverter $visibilityTypeConverter,
+        private array $noExtensionMimeTypes = ['image', 'video'],
+        private ?MimeTypesInterface $mimeTypes = null
     ) {
-        $this->visibilityTypeConverter = $visibilityTypeConverter;
-        $this->noExtensionMimeTypes = $noExtensionMimeTypes;
-        $this->mimeTypes = $mimeTypes ?? MimeTypes::getDefault();
+        $this->mimeTypes = $this->mimeTypes ?? MimeTypes::getDefault();
     }
 
     public function resolve(ResourceStruct $resourceStruct): array
@@ -71,7 +63,7 @@ final class UploadOptions
     {
         $extension = $fileStruct->getOriginalExtension();
 
-        if (empty($extension)) {
+        if ($extension === '') {
             return $publicId;
         }
 

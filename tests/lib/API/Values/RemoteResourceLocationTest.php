@@ -8,28 +8,21 @@ use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\CropSettingsNotFoundException;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-final class RemoteResourceLocationTest extends AbstractTest
+#[CoversClass(RemoteResourceLocation::class)]
+final class RemoteResourceLocationTest extends AbstractTestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettings
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettingsForVariation
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getId
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getRemoteResource
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getSource
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getWatermarkText
-     */
     public function test(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'test_remote_id',
-            'type' => 'raw',
-            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
-            'name' => 'test_remote_id',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'raw',
+            url: 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_remote_id',
+        );
 
         $location = new RemoteResourceLocation(
             $resource,
@@ -85,19 +78,15 @@ final class RemoteResourceLocationTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::setCropSettings
-     */
     public function testSetCropSettings(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'test_remote_id',
-            'type' => 'raw',
-            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
-            'name' => 'test_remote_id',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'raw',
+            url: 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_remote_id',
+        );
 
         $expected = new RemoteResourceLocation(
             $resource,
@@ -123,20 +112,15 @@ final class RemoteResourceLocationTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getWatermarkText
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::setWatermarkText
-     */
     public function testSetWatermarkText(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'test_remote_id',
-            'type' => 'raw',
-            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
-            'name' => 'test_remote_id',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'raw',
+            url: 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_remote_id',
+        );
 
         $expected = new RemoteResourceLocation(
             $resource,
@@ -157,20 +141,15 @@ final class RemoteResourceLocationTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getSource
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::setSource
-     */
     public function testSetSource(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'test_remote_id',
-            'type' => 'raw',
-            'url' => 'https://cloudinary.com/test/upload/raw/test_remote_id',
-            'name' => 'test_remote_id',
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'raw',
+            url: 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_remote_id',
+        );
 
         $expected = new RemoteResourceLocation(
             $resource,
@@ -189,15 +168,15 @@ final class RemoteResourceLocationTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettings
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getCropSettingsForVariation
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResourceLocation::getRemoteResource
-     */
     public function testWithNonExistingVariation(): void
     {
-        $resource = new RemoteResource();
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'raw',
+            url: 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_remote_id',
+        );
 
         $location = new RemoteResourceLocation(
             $resource,

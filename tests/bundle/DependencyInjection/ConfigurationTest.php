@@ -6,21 +6,16 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection;
 
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
+#[CoversClass(Configuration::class)]
 final class ConfigurationTest extends TestCase
 {
     use ConfigurationTestCaseTrait;
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
-     */
     public function testBasicConfigurationValuesAreOkAndValid(): void
     {
         $this->assertConfigurationIsValid(
@@ -35,14 +30,6 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
-     */
     public function testCompleteConfigurationIsOkAndValid(): void
     {
         $this->assertConfigurationIsValid(
@@ -111,14 +98,6 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
-     */
     public function testEmptyAccountNameIsInvalid(): void
     {
         $this->assertConfigurationIsInvalid(
@@ -133,14 +112,6 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
-     */
     public function testEmptyAccountKeyIsInvalid(): void
     {
         $this->assertConfigurationIsInvalid(
@@ -155,14 +126,6 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
-     */
     public function testMissingAccountNameIsInvalid(): void
     {
         $this->assertConfigurationIsInvalid(
@@ -176,14 +139,6 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
-     */
     public function testMissingAccountKeyIsInvalid(): void
     {
         $this->assertConfigurationIsInvalid(
@@ -197,16 +152,7 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCacheConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addCloudinaryConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addImageConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addNamedObjectsConfiguration
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::addProviderSection
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration::getConfigTreeBuilder
-     *
-     * @dataProvider invalidNamedObjectsProvider
-     */
+    #[DataProvider('invalidNamedObjectsProvider')]
     public function testInvalidNamedObjectsConfiguration(array $configuration): void
     {
         $this->assertConfigurationIsInvalid($configuration);

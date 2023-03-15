@@ -24,16 +24,15 @@ final class Crop implements HandlerInterface
      */
     public function process(array $config = []): array
     {
-        if (count($config) < 4) {
-            throw new TransformationHandlerFailedException(self::class);
-        }
-
-        return [
-            'x' => $config[0],
-            'y' => $config[1],
-            'width' => $config[2],
-            'height' => $config[3],
-            'crop' => 'crop',
-        ];
+        return match (true) {
+            count($config) >= 4 => [
+                'x' => $config[0],
+                'y' => $config[1],
+                'width' => $config[2],
+                'height' => $config[3],
+                'crop' => 'crop',
+            ],
+            default => throw new TransformationHandlerFailedException(self::class),
+        };
     }
 }

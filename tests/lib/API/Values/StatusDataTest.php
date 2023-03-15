@@ -5,17 +5,12 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use Netgen\RemoteMedia\API\Values\StatusData;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(StatusData::class)]
 final class StatusDataTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::add
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::all
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::get
-     * @covers \Netgen\RemoteMedia\API\Values\StatusData::has
-     */
     public function test(): void
     {
         $data = [

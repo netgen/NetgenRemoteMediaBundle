@@ -8,47 +8,30 @@ use function get_object_vars;
 use function http_build_query;
 use function implode;
 use function is_array;
-use function property_exists;
 
 final class Query
 {
-    private ?string $query = null;
-
-    /** @var string[] */
-    private array $types = [];
-
-    /** @var string[] */
-    private array $folders = [];
-
-    /** @var string[] */
-    private array $visibilities = [];
-
-    /** @var string[] */
-    private array $tags = [];
-
-    /** @var string[] */
-    private array $remoteIds = [];
-
-    /** @var array<string,string|string[]> */
-    private array $context = [];
-
-    private int $limit = 25;
-
-    private ?string $nextCursor = null;
-
-    /** @var array<string, string> */
-    private array $sortBy = ['created_at' => 'desc'];
-
     /**
-     * @param array<string,mixed> $properties
+     * @param string[] $types
+     * @param string[] $folders
+     * @param string[] $visibilities
+     * @param string[] $tags
+     * @param string[] $remoteIds
+     * @param array<string,string|string[]> $context
+     * @param array<string,string> $sortBy
      */
-    public function __construct(array $properties = [])
-    {
-        foreach ($properties as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->{$key} = $value;
-            }
-        }
+    public function __construct(
+        private ?string $query = null,
+        private array $types = [],
+        private array $folders = [],
+        private array $visibilities = [],
+        private array $tags = [],
+        private array $remoteIds = [],
+        private array $context = [],
+        private int $limit = 25,
+        private ?string $nextCursor = null,
+        private array $sortBy = ['created_at' => 'desc']
+    ) {
     }
 
     public function __toString(): string
@@ -97,12 +80,12 @@ final class Query
         ?string $nextCursor = null,
         array $sortBy = ['created_at' => 'desc']
     ): self {
-        return new self([
-            'remoteIds' => $remoteIds,
-            'limit' => $limit,
-            'nextCursor' => $nextCursor,
-            'sortBy' => $sortBy,
-        ]);
+        return new self(
+            remoteIds: $remoteIds,
+            limit: $limit,
+            nextCursor: $nextCursor,
+            sortBy: $sortBy,
+        );
     }
 
     public function getQuery(): ?string

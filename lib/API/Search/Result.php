@@ -6,18 +6,14 @@ namespace Netgen\RemoteMedia\API\Search;
 
 final class Result
 {
-    private int $totalCount;
-
-    private ?string $nextCursor;
-
-    /** @var \Netgen\RemoteMedia\API\Values\RemoteResource[] */
-    private array $resources = [];
-
-    public function __construct(int $totalCount, ?string $nextCursor, array $resources)
-    {
-        $this->totalCount = $totalCount;
-        $this->nextCursor = $nextCursor;
-        $this->resources = $resources;
+    /**
+     * @param \Netgen\RemoteMedia\API\Values\RemoteResource[] $resources
+     */
+    public function __construct(
+        private int $totalCount,
+        private ?string $nextCursor = null,
+        private array $resources = []
+    ) {
     }
 
     public function getTotalCount(): int

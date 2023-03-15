@@ -7,18 +7,12 @@ namespace Netgen\RemoteMedia\Tests\API\Values;
 use DateInterval;
 use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Values\AuthToken;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(AuthToken::class)]
 final class AuthTokenTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::fromDuration
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getIpAddress
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getStartsAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::isValid
-     */
     public function testFromDuration(): void
     {
         $token = AuthToken::fromDuration(50);
@@ -30,14 +24,6 @@ final class AuthTokenTest extends TestCase
         self::assertTrue($token->isValid());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::fromDuration
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getIpAddress
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getStartsAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::isValid
-     */
     public function testFromExpiredDuration(): void
     {
         $token = AuthToken::fromDuration(0);
@@ -49,15 +35,6 @@ final class AuthTokenTest extends TestCase
         self::assertFalse($token->isValid());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::fromExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getIpAddress
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getStartsAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::isValid
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::setIpAddress
-     */
     public function testFromExpiresAtWithIp(): void
     {
         $dateTime = new DateTimeImmutable();
@@ -72,15 +49,6 @@ final class AuthTokenTest extends TestCase
         self::assertTrue($token->isValid());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::fromExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getIpAddress
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getStartsAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::isValid
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::setIpAddress
-     */
     public function testFromExpiresAtWithInvalidIp(): void
     {
         $dateTime = new DateTimeImmutable();
@@ -95,14 +63,6 @@ final class AuthTokenTest extends TestCase
         self::assertFalse($token->isValid('192.168.1.1'));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::fromPeriod
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getIpAddress
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getStartsAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::isValid
-     */
     public function testFromPeriod(): void
     {
         $startDateTime = new DateTimeImmutable();
@@ -119,15 +79,6 @@ final class AuthTokenTest extends TestCase
         self::assertTrue($token->isValid());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::fromPeriod
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getExpiresAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getIpAddress
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::getStartsAt
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::isValid
-     * @covers \Netgen\RemoteMedia\API\Values\AuthToken::setStartsAt
-     */
     public function testFromFuturePeriod(): void
     {
         $startDateTime = new DateTimeImmutable();

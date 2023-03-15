@@ -11,13 +11,10 @@ use function implode;
 
 final class Folder
 {
-    private string $name;
-    private ?Folder $parent = null;
-
-    public function __construct(string $name, ?self $parent = null)
-    {
-        $this->name = $name;
-        $this->parent = $parent;
+    public function __construct(
+        private string $name,
+        private ?self $parent = null
+    ) {
     }
 
     public function __toString(): string

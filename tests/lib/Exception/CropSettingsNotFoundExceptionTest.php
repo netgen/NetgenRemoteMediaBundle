@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Exception;
 
 use Netgen\RemoteMedia\Exception\CropSettingsNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(CropSettingsNotFoundException::class)]
 final class CropSettingsNotFoundExceptionTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Exception\CropSettingsNotFoundException::__construct
-     */
     public function testException(): void
     {
         $this->expectException(CropSettingsNotFoundException::class);

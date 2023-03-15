@@ -23,19 +23,17 @@ final class Pad implements HandlerInterface
      */
     public function process(array $config = []): array
     {
-        $options = [
-            'crop' => 'pad',
-        ];
+        $options = ['crop' => 'pad'];
 
-        if (isset($config[0]) && $config[0] !== 0) {
+        if (($config[0] ?? 0) !== 0) {
             $options['width'] = $config[0];
         }
 
-        if (isset($config[1]) && $config[1] !== 0) {
+        if (($config[1] ?? 0) !== 0) {
             $options['height'] = $config[1];
         }
 
-        if (!empty($config[2])) {
+        if (($config[2] ?? null) !== null) {
             $options['background'] = $config[2];
         }
 

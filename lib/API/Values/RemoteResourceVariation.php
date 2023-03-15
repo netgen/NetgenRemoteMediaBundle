@@ -6,17 +6,11 @@ namespace Netgen\RemoteMedia\API\Values;
 
 final class RemoteResourceVariation
 {
-    private RemoteResource $resource;
-
-    private string $url;
-
-    private array $transformations;
-
-    public function __construct(RemoteResource $resource, string $url, array $transformations = [])
-    {
-        $this->resource = $resource;
-        $this->url = $url;
-        $this->transformations = $transformations;
+    public function __construct(
+        private RemoteResource $resource,
+        private string $url,
+        private array $transformations = []
+    ) {
     }
 
     public static function fromResource(RemoteResource $resource): self

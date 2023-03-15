@@ -6,13 +6,12 @@ namespace Netgen\RemoteMedia\Tests\Exception;
 
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Exception\FolderNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(FolderNotFoundException::class)]
 final class FolderNotFoundExceptionTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Exception\FolderNotFoundException::__construct
-     */
     public function testException(): void
     {
         $this->expectException(FolderNotFoundException::class);

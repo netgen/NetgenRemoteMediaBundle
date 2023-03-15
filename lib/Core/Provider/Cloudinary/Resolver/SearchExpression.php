@@ -27,14 +27,10 @@ use function sprintf;
 
 final class SearchExpression
 {
-    private ResourceTypeConverter $resourceTypeConverter;
-
-    private VisibilityTypeConverter $visibilityTypeConverter;
-
-    public function __construct(ResourceTypeConverter $resourceTypeConverter, VisibilityTypeConverter $visibilityTypeConverter)
-    {
-        $this->resourceTypeConverter = $resourceTypeConverter;
-        $this->visibilityTypeConverter = $visibilityTypeConverter;
+    public function __construct(
+        private ResourceTypeConverter $resourceTypeConverter,
+        private VisibilityTypeConverter $visibilityTypeConverter,
+    ) {
     }
 
     public function resolve(Query $query): string

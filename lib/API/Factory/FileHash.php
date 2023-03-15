@@ -6,5 +6,5 @@ namespace Netgen\RemoteMedia\API\Factory;
 
 interface FileHash
 {
-    public function createHash($path): string;
+    public function createHash(string $path): string;
 }

@@ -9,13 +9,11 @@ use function array_key_exists;
 final class StatusData
 {
     /**
-     * @var array<string, mixed>
+     * @param array<string, mixed> $properties
      */
-    private array $properties;
-
-    public function __construct(array $properties = [])
-    {
-        $this->properties = $properties;
+    public function __construct(
+        private array $properties = []
+    ) {
     }
 
     public function has(string $key): bool
@@ -23,10 +21,7 @@ final class StatusData
         return array_key_exists($key, $this->properties);
     }
 
-    /**
-     * @return mixed
-     */
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         if (!$this->has($key)) {
             return null;
@@ -43,10 +38,7 @@ final class StatusData
         return $this->properties;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function add(string $key, $value): void
+    public function add(string $key, mixed $value): void
     {
         $this->properties[$key] = $value;
     }

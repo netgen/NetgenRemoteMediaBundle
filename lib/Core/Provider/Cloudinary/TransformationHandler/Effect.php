@@ -7,6 +7,8 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 
+use function count;
+
 /**
  * Class Effect.
  *
@@ -25,18 +27,10 @@ final class Effect implements HandlerInterface
      */
     public function process(array $config = []): array
     {
-        if (empty($config[0])) {
-            throw new TransformationHandlerFailedException(self::class);
-        }
-
-        if (empty($config[1])) {
-            return [
-                'effect' => $config[0],
-            ];
-        }
-
-        return [
-            'effect' => $config[0] . ':' . $config[1],
-        ];
+        return match (true) {
+            count($config) >= 2 => ['effect' => $config[0] . ':' . $config[1]],
+            count($config) === 1 => ['effect' => $config[0]],
+            default => throw new TransformationHandlerFailedException(self::class),
+        };
     }
 }

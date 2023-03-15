@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 
 use function count;
 
-abstract class AbstractTest extends TestCase
+abstract class AbstractTestCase extends TestCase
 {
     public static function assertFolderSame(Folder $expected, Folder $actual): void
     {
@@ -247,9 +247,9 @@ abstract class AbstractTest extends TestCase
             $actual->getTotalCount(),
         );
 
-        self::assertSame(
+        self::assertCount(
             count($expected->getResources()),
-            count($actual->getResources()),
+            $actual->getResources(),
         );
 
         foreach ($expected->getResources() as $key => $resource) {

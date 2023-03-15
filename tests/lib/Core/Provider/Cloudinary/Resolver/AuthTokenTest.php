@@ -7,8 +7,11 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Resolver;
 use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Values\AuthToken as AuthTokenEntity;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenResolver;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(AuthTokenResolver::class)]
 final class AuthTokenTest extends TestCase
 {
     protected const ENCRYPTION_KEY = '38128319a3a49e1d589a31a217e1a3f8';
@@ -20,12 +23,7 @@ final class AuthTokenTest extends TestCase
         $this->resolver = new AuthTokenResolver(self::ENCRYPTION_KEY);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken::resolve
-     *
-     * @dataProvider dataProvider
-     */
+    #[DataProvider('dataProvider')]
     public function testResolve(AuthTokenEntity $token, array $options): void
     {
         self::assertSame(
@@ -34,10 +32,6 @@ final class AuthTokenTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken::hasEncryptionKey
-     */
     public function testHasEncryptionKey(): void
     {
         self::assertTrue($this->resolver->hasEncryptionKey());

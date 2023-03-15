@@ -14,7 +14,8 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
@@ -25,7 +26,8 @@ use function array_values;
 use function count;
 use function sprintf;
 
-final class Psr6CachedGatewayTest extends AbstractTest
+#[CoversClass(Psr6CachedGateway::class)]
+final class Psr6CachedGatewayTest extends AbstractTestCase
 {
     private const CACHE_TTL = 7200;
 
@@ -33,10 +35,7 @@ final class Psr6CachedGatewayTest extends AbstractTest
 
     protected Psr6CachedGateway $nonTaggableCachedGateway;
 
-    /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface
-     */
-    protected MockObject $apiGatewayMock;
+    protected MockObject|GatewayInterface $apiGatewayMock;
 
     protected CacheItemPoolInterface $taggableCache;
 
@@ -62,10 +61,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::usage
-     */
     public function testUsage(): void
     {
         $usageData = new StatusData([
@@ -86,16 +81,12 @@ final class Psr6CachedGatewayTest extends AbstractTest
             $result,
         );
 
-        self::assertSame(
+        self::assertCount(
             count($usageData->all()),
-            count($result->all()),
+            $result->all(),
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isEncryptionEnabled
-     */
     public function testIsEncryptionEnabled(): void
     {
         $this->apiGatewayMock
@@ -107,9 +98,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertFalse($this->taggableCachedGateway->isEncryptionEnabled());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::countResources
-     */
     public function testCountResourcesCached(): void
     {
         $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-resources_count');
@@ -124,13 +112,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::countResources
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testCountResourcesNonCachedTaggable(): void
     {
         $this->taggableCache->deleteItem('ngremotemedia-cloudinary-resources_count');
@@ -152,13 +133,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::countResources
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testCountResourcesNonCachedNonTaggable(): void
     {
         $this->nonTaggableCache->deleteItem('ngremotemedia-cloudinary-resources_count');
@@ -179,13 +153,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::countResourcesInFolder
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testCountResourcesInFolderCached(): void
     {
         $folder = 'test/subtest';
@@ -202,13 +169,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::countResourcesInFolder
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testCountResourcesInFolderNonCachedTaggable(): void
     {
         $folder = 'test/subtest';
@@ -233,13 +193,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::countResourcesInFolder
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testCountResourcesInFolderNonCachedNonTaggable(): void
     {
         $folder = 'test/subtest';
@@ -263,13 +216,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listFolders
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListFoldersCached(): void
     {
         $folders = [
@@ -290,13 +236,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listFolders
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListFoldersNonCachedTaggable(): void
     {
         $folders = [
@@ -324,13 +263,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listFolders
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListFoldersNonCachedNonTaggable(): void
     {
         $folders = [
@@ -357,13 +289,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listSubFolders
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListSubFoldersCached(): void
     {
         $folder = 'test';
@@ -385,13 +310,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listSubFolders
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListSubFoldersNonCachedTaggable(): void
     {
         $folder = 'test';
@@ -421,13 +339,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listSubFolders
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListSubFoldersNonCachedNonTaggable(): void
     {
         $folder = 'test';
@@ -456,9 +367,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::createFolder
-     */
     public function testCreateFolder(): void
     {
         $path = 'test/subfolder/newfolder';
@@ -471,24 +379,18 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->taggableCachedGateway->createFolder($path);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::get
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testGetCached(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $remoteResource = new RemoteResource([
-            'remoteId' => $remoteId->getRemoteId(),
-            'type' => RemoteResource::TYPE_IMAGE,
-            'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-            'metadata' => [
-                'format' => 'jpg',
-            ],
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: $remoteId->getRemoteId(),
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'test_image.jpg',
+            metadata: ['format' => 'jpg'],
+        );
 
         $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
         $cacheItem->set($remoteResource);
@@ -502,27 +404,18 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::get
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getItemCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testGetNonCachedTaggable(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $remoteResource = new RemoteResource([
-            'remoteId' => $remoteId->getRemoteId(),
-            'type' => RemoteResource::TYPE_IMAGE,
-            'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-            'metadata' => [
-                'format' => 'jpg',
-            ],
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: $remoteId->getRemoteId(),
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'test_image.jpg',
+            metadata: ['format' => 'jpg'],
+        );
 
         $this->taggableCache->delete('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
 
@@ -547,25 +440,18 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::get
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testGetNonCachedNonTaggable(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $remoteResource = new RemoteResource([
-            'remoteId' => $remoteId->getRemoteId(),
-            'type' => RemoteResource::TYPE_IMAGE,
-            'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-            'metadata' => [
-                'format' => 'jpg',
-            ],
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: $remoteId->getRemoteId(),
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'test_image.jpg',
+            metadata: ['format' => 'jpg'],
+        );
 
         $this->nonTaggableCache->delete('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
 
@@ -586,10 +472,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::get
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testGetNotFound(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -608,9 +490,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->nonTaggableCachedGateway->get($remoteId);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::upload
-     */
     public function testUpload(): void
     {
         $fileUri = 'test_image.jpg';
@@ -619,13 +498,13 @@ final class Psr6CachedGatewayTest extends AbstractTest
             'resource_type' => 'auto',
         ];
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|test_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'test_image.jpg',
+        );
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -639,15 +518,10 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::update
-     */
     public function testUpdate(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
-        $options = [
-            'tags' => ['new_tag'],
-        ];
+        $options = ['tags' => ['new_tag']];
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -657,9 +531,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->nonTaggableCachedGateway->update($remoteId, $options);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::removeAllTagsFromResource
-     */
     public function testRemoveAllTagsFromResource(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
@@ -672,9 +543,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->nonTaggableCachedGateway->removeAllTagsFromResource($remoteId);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::delete
-     */
     public function testDelete(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');
@@ -687,9 +555,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $this->nonTaggableCachedGateway->delete($remoteId);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getAuthenticatedUrl
-     */
     public function testGetAuthenticatedUrl(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -708,9 +573,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getVariationUrl
-     */
     public function testGetVariationUrl(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -734,19 +596,15 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::search
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testSearchCached(): void
     {
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|test_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'test_image.jpg',
+        );
 
         $searchResult = new Result(200, '123', [$resource]);
 
@@ -756,12 +614,12 @@ final class Psr6CachedGatewayTest extends AbstractTest
 
         $this->taggableCache->save($cacheItem);
 
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
         self::assertSearchResultSame(
             $searchResult,
@@ -769,28 +627,22 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::search
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testSearchNonCachedTaggable(): void
     {
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|test_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'test_image.jpg',
+        );
 
         $searchResult = new Result(200, '123', [$resource]);
 
@@ -817,28 +669,22 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::search
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testSearchNonCachedNonTaggable(): void
     {
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|test_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'test_image.jpg',
+        );
 
         $searchResult = new Result(200, '123', [$resource]);
 
@@ -861,10 +707,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::searchCount
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testSearchCountCached(): void
     {
         $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
@@ -873,12 +715,12 @@ final class Psr6CachedGatewayTest extends AbstractTest
 
         $this->taggableCache->save($cacheItem);
 
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
         self::assertSame(
             50,
@@ -886,23 +728,17 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::searchCount
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testSearchCountNonCachedTaggable(): void
     {
         $this->taggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||type=product_image,type=category_image|created_at=desc');
 
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-            'context' => ['type' => ['product_image', 'category_image']],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+            context: ['type' => ['product_image', 'category_image']],
+        );
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -925,22 +761,16 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::searchCount
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testSearchCountNonCachedNonTaggable(): void
     {
         $this->nonTaggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
 
-        $query = new Query([
-            'query' => 'test',
-            'types' => ['image', 'video'],
-            'tags' => ['tag1'],
-            'folders' => ['test_folder'],
-        ]);
+        $query = new Query(
+            query: 'test',
+            types: ['image', 'video'],
+            folders: ['test_folder'],
+            tags: ['tag1'],
+        );
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -959,10 +789,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListTagsCached(): void
     {
         $tags = ['tag1', 'tag2'];
@@ -979,12 +805,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListTagsNonCachedTaggable(): void
     {
         $tags = ['tag1', 'tag2'];
@@ -1011,11 +831,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::listTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::washKey
-     */
     public function testListTagsNonCachedNonTaggable(): void
     {
         $tags = ['tag1', 'tag2'];
@@ -1038,9 +853,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getVideoThumbnail
-     */
     public function testGetVideoThumbnail(): void
     {
         $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|video|example.mp4');
@@ -1057,9 +869,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getImageTag
-     */
     public function testGetImageTag(): void
     {
         $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|image|image.jpg');
@@ -1076,9 +885,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getVideoTag
-     */
     public function testGetVideoTag(): void
     {
         $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|video|example.mp4');
@@ -1095,9 +901,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getDownloadLink
-     */
     public function testGetDownloadLink(): void
     {
         $cloudinaryId = CloudinaryRemoteId::fromRemoteId('upload|raw|test.zip');
@@ -1118,13 +921,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateResourceListCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateResourceListCache(): void
     {
         $this->prepareCacheForInvalidationTest($this->taggableCache);
@@ -1142,12 +938,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateResourceListCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateResourceListCacheNonTaggable(): void
     {
         $this->prepareCacheForInvalidationTest($this->nonTaggableCache);
@@ -1165,12 +955,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getItemCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateResourceCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateResourceCache(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -1190,12 +974,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getItemCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateResourceCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateResourceCacheNonTaggable(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
@@ -1215,12 +993,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateFoldersCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateFoldersCache(): void
     {
         $this->prepareCacheForInvalidationTest($this->taggableCache);
@@ -1238,12 +1010,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertTrue($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateFoldersCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateFoldersCacheNonTaggable(): void
     {
         $this->prepareCacheForInvalidationTest($this->nonTaggableCache);
@@ -1261,12 +1027,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertTrue($this->nonTaggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateTagsCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateTagsCache(): void
     {
         $this->prepareCacheForInvalidationTest($this->taggableCache);
@@ -1284,12 +1044,6 @@ final class Psr6CachedGatewayTest extends AbstractTest
         self::assertFalse($this->taggableCache->getItem('ngremotemedia-cloudinary-tag_list')->isHit());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getBaseTag
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::getCacheTags
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::invalidateTagsCache
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway::isCacheTaggable
-     */
     public function testInvalidateTagsCacheNonTaggable(): void
     {
         $this->prepareCacheForInvalidationTest($this->nonTaggableCache);
@@ -1368,16 +1122,14 @@ final class Psr6CachedGatewayTest extends AbstractTest
         $cacheItem = $cache->getItem('ngremotemedia-cloudinary-resource-upload-image-folder_test_image.jpg');
 
         $cacheItem->set(
-            new RemoteResource([
-                'remoteId' => 'upload|image|folder/test_image.jpg',
-                'type' => RemoteResource::TYPE_IMAGE,
-                'url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
-                'name' => 'test_image.jpg',
-                'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-                'metadata' => [
-                    'format' => 'jpg',
-                ],
-            ]),
+            new RemoteResource(
+                remoteId: 'upload|image|folder/test_image.jpg',
+                type: RemoteResource::TYPE_IMAGE,
+                url: 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
+                md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+                name: 'test_image.jpg',
+                metadata: ['format' => 'jpg'],
+            ),
         );
 
         $cacheItem->expiresAfter(1000);
@@ -1393,13 +1145,13 @@ final class Psr6CachedGatewayTest extends AbstractTest
 
         $cacheItem->set(
             new Result(200, '123', [
-                new RemoteResource([
-                    'remoteId' => 'upload|image|test_image.jpg',
-                    'type' => 'image',
-                    'url' => 'https://cloudinary.com/test/upload/image/test_image.jpg',
-                    'name' => 'test_image.jpg',
-                    'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-                ]),
+                new RemoteResource(
+                    remoteId: 'upload|image|test_image.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+                    md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+                    name: 'test_image.jpg',
+                ),
             ]),
         );
 

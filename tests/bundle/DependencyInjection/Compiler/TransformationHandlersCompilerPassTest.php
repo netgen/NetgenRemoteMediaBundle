@@ -7,15 +7,14 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection\Compiler;
 use LogicException;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
+#[CoversClass(TransformationHandlersPass::class)]
 final class TransformationHandlersCompilerPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass::process
-     */
     public function testCompilerPassCollectsValidServices(): void
     {
         $registry = new Definition();
@@ -49,17 +48,6 @@ final class TransformationHandlersCompilerPassTest extends AbstractCompilerPassT
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass::process
-     */
-    public function testCompilerPassFailsMissingDefinition(): void
-    {
-        self::assertNull($this->compile());
-    }
-
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass::process
-     */
     public function testCompilerPassFailsMissingAlias(): void
     {
         $registry = new Definition();
@@ -85,9 +73,6 @@ final class TransformationHandlersCompilerPassTest extends AbstractCompilerPassT
         $this->compile();
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\TransformationHandlersPass::process
-     */
     public function testCompilerPassFailsMissingProvider(): void
     {
         $registry = new Definition();

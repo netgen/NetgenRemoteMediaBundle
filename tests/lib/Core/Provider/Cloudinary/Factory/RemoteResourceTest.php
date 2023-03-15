@@ -12,15 +12,17 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as Visi
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource as RemoteResourceFactory;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
-final class RemoteResourceTest extends AbstractTest
+#[CoversClass(RemoteResourceFactory::class)]
+final class RemoteResourceTest extends AbstractTestCase
 {
     protected RemoteResourceFactory $remoteResourceFactory;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\FileHash */
-    protected MockObject $fileHashFactoryMock;
+    protected MockObject|FileHashFactoryInterface $fileHashFactoryMock;
 
     protected function setUp(): void
     {
@@ -36,20 +38,7 @@ final class RemoteResourceTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveAltText
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveContext
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveCorrectUrl
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveMd5
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveMetaData
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveResourceType
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::resolveVisibility
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
-     *
-     * @dataProvider createDataProvider
-     */
+    #[DataProvider('createDataProvider')]
     public function testCreate(array $cloudinaryResponse, RemoteResource $expectedResource): void
     {
         if (!($cloudinaryResponse['etag'] ?? null)) {
@@ -68,10 +57,6 @@ final class RemoteResourceTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
-     */
     public function testCreateMissingPublicId(): void
     {
         self::expectException(InvalidDataException::class);
@@ -80,10 +65,6 @@ final class RemoteResourceTest extends AbstractTest
         $this->remoteResourceFactory->create(['test' => 'test']);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::create
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource::validateData
-     */
     public function testCreateMissingUrls(): void
     {
         self::expectException(InvalidDataException::class);
@@ -126,18 +107,18 @@ final class RemoteResourceTest extends AbstractTest
                         'variation2',
                     ],
                 ],
-                new RemoteResource([
-                    'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
-                    'type' => 'image',
-                    'url' => 'https://res.cloudinary.com/myCloud/image/upload/c87hg9xfxrd4itiim3t0',
-                    'name' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
-                    'size' => 120253,
-                    'altText' => 'alt text',
-                    'caption' => 'caption text',
-                    'tags' => ['tag1'],
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-                    'metadata' => [
+                new RemoteResource(
+                    remoteId: 'upload|image|c87hg9xfxrd4itiim3t0',
+                    type: 'image',
+                    url: 'https://res.cloudinary.com/myCloud/image/upload/c87hg9xfxrd4itiim3t0',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    version: '1371995958',
+                    size: 120253,
+                    altText: 'alt text',
+                    caption: 'caption text',
+                    tags: ['tag1'],
+                    metadata: [
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
                         'height' => 576,
@@ -145,11 +126,11 @@ final class RemoteResourceTest extends AbstractTest
                         'created_at' => '2013-06-23T13:59:18Z',
                         'overwritten' => 'true',
                     ],
-                    'context' => [
+                    context: [
                         'type' => 'product_image',
                         'source' => 'user_upload',
                     ],
-                ]),
+                ),
             ],
             [
                 [
@@ -164,24 +145,24 @@ final class RemoteResourceTest extends AbstractTest
                     'secure_url' => 'https://res.cloudinary.com/myCloud/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
                     'etag' => 'e522f43cf89aa0afd03387c37e2b6e29',
                 ],
-                new RemoteResource([
-                    'remoteId' => 'upload|image|other/c87hg9xfxrd4itiim3t0',
-                    'type' => 'document',
-                    'url' => 'https://res.cloudinary.com/myCloud/image/upload/other/c87hg9xfxrd4itiim3t0',
-                    'name' => 'c87hg9xfxrd4itiim3t0',
-                    'folder' => Folder::fromPath('other'),
-                    'visibility' => 'public',
-                    'size' => 120253,
-                    'altText' => null,
-                    'caption' => null,
-                    'tags' => [],
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                    'metadata' => [
+                new RemoteResource(
+                    remoteId: 'upload|image|other/c87hg9xfxrd4itiim3t0',
+                    type: 'document',
+                    url: 'https://res.cloudinary.com/myCloud/image/upload/other/c87hg9xfxrd4itiim3t0',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    visibility: 'public',
+                    folder: Folder::fromPath('other'),
+                    size: 120253,
+                    altText: null,
+                    caption: null,
+                    tags: [],
+                    metadata: [
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'pdf',
                         'created_at' => '2013-06-23T13:59:18Z',
                     ],
-                ]),
+                ),
             ],
             [
                 [
@@ -207,17 +188,17 @@ final class RemoteResourceTest extends AbstractTest
                         'variation2',
                     ],
                 ],
-                new RemoteResource([
-                    'remoteId' => 'upload|video|c87hg9xfxrd4itiim3t0',
-                    'type' => 'video',
-                    'url' => 'https://res.cloudinary.com/myCloud/video/upload/c87hg9xfxrd4itiim3t0',
-                    'name' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '13711295958',
-                    'size' => 120253,
-                    'altText' => 'alt text',
-                    'tags' => ['tag1', 'tag2'],
-                    'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-                    'metadata' => [
+                new RemoteResource(
+                    remoteId: 'upload|video|c87hg9xfxrd4itiim3t0',
+                    type: 'video',
+                    url: 'https://res.cloudinary.com/myCloud/video/upload/c87hg9xfxrd4itiim3t0',
+                    md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    version: '13711295958',
+                    size: 120253,
+                    altText: 'alt text',
+                    tags: ['tag1', 'tag2'],
+                    metadata: [
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
                         'height' => 576,
@@ -225,7 +206,7 @@ final class RemoteResourceTest extends AbstractTest
                         'created_at' => '2013-06-23T13:59:18Z',
                         'overwritten' => 'false',
                     ],
-                ]),
+                ),
             ],
             [
                 [
@@ -249,17 +230,17 @@ final class RemoteResourceTest extends AbstractTest
                         'variation2',
                     ],
                 ],
-                new RemoteResource([
-                    'remoteId' => 'authenticated|video|c87hg9xfxrd4itiim3t0',
-                    'type' => 'video',
-                    'url' => 'https://res.cloudinary.com/myCloud/video/authenticated/c87hg9xfxrd4itiim3t0',
-                    'name' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
-                    'visibility' => 'protected',
-                    'size' => 120253,
-                    'tags' => ['tag1', 'tag2'],
-                    'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-                    'metadata' => [
+                new RemoteResource(
+                    remoteId: 'authenticated|video|c87hg9xfxrd4itiim3t0',
+                    type: 'video',
+                    url: 'https://res.cloudinary.com/myCloud/video/authenticated/c87hg9xfxrd4itiim3t0',
+                    md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    version: '1371995958',
+                    visibility: 'protected',
+                    size: 120253,
+                    tags: ['tag1', 'tag2'],
+                    metadata: [
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'width' => 864,
                         'height' => 576,
@@ -267,7 +248,7 @@ final class RemoteResourceTest extends AbstractTest
                         'created_at' => '2013-06-23T13:59:18Z',
                         'overwritten' => 'false',
                     ],
-                ]),
+                ),
             ],
             [
                 [
@@ -290,26 +271,26 @@ final class RemoteResourceTest extends AbstractTest
                         'variation2',
                     ],
                 ],
-                new RemoteResource([
-                    'remoteId' => 'private|video|c87hg9xfxrd4itiim3t0',
-                    'type' => 'audio',
-                    'url' => 'https://res.cloudinary.com/myCloud/video/private/c87hg9xfxrd4itiim3t0',
-                    'name' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
-                    'visibility' => 'private',
-                    'size' => 12025,
-                    'tags' => [],
-                    'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                    'metadata' => [
+                new RemoteResource(
+                    remoteId: 'private|video|c87hg9xfxrd4itiim3t0',
+                    type: 'audio',
+                    url: 'https://res.cloudinary.com/myCloud/video/private/c87hg9xfxrd4itiim3t0',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    version: '1371995958',
+                    visibility: 'private',
+                    size: 12025,
+                    tags: [],
+                    metadata: [
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'mp3',
                         'created_at' => '2013-06-23T13:59:18Z',
                         'overwritten' => 'false',
                     ],
-                    'context' => [
+                    context: [
                         'test' => 'test',
                     ],
-                ]),
+                ),
             ],
             [
                 [
@@ -324,23 +305,23 @@ final class RemoteResourceTest extends AbstractTest
                     'secure_url' => 'https://res.cloudinary.com/myCloud/v1371995958/raw/media/raw/new/c87hg9xfxrd4itiim3t0',
                     'etag' => 'e522f43cf89aa0afd03387c38e2b6e29',
                 ],
-                new RemoteResource([
-                    'remoteId' => 'test|raw|media/raw/new/c87hg9xfxrd4itiim3t0',
-                    'type' => 'other',
-                    'url' => 'https://res.cloudinary.com/myCloud/raw/test/media/raw/new/c87hg9xfxrd4itiim3t0',
-                    'name' => 'c87hg9xfxrd4itiim3t0',
-                    'version' => '1371995958',
-                    'folder' => Folder::fromPath('media/raw/new'),
-                    'visibility' => 'public',
-                    'size' => 12025,
-                    'tags' => [],
-                    'md5' => 'e522f43cf89aa0afd03387c38e2b6e29',
-                    'metadata' => [
+                new RemoteResource(
+                    remoteId: 'test|raw|media/raw/new/c87hg9xfxrd4itiim3t0',
+                    type: 'other',
+                    url: 'https://res.cloudinary.com/myCloud/raw/test/media/raw/new/c87hg9xfxrd4itiim3t0',
+                    md5: 'e522f43cf89aa0afd03387c38e2b6e29',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    version: '1371995958',
+                    visibility: 'public',
+                    folder: Folder::fromPath('media/raw/new'),
+                    size: 12025,
+                    tags: [],
+                    metadata: [
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'zip',
                         'created_at' => '2011-06-23T13:59:18Z',
                     ],
-                ]),
+                ),
             ],
         ];
     }

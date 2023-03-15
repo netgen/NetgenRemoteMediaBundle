@@ -13,15 +13,15 @@ final class Browse extends AbstractController
 {
     public function __invoke(Request $request): Response
     {
-        $query = new Query([
-            'query' => $request->query->get('query'),
-            'types' => $this->getArrayFromInputBag($request->query, 'type'),
-            'folders' => $this->getArrayFromInputBag($request->query, 'folder'),
-            'visibilities' => $this->getArrayFromInputBag($request->query, 'visibility'),
-            'tags' => $this->getArrayFromInputBag($request->query, 'tag'),
-            'limit' => $request->query->get('limit') ? (int) $request->query->get('limit') : 25,
-            'nextCursor' => $request->query->get('next_cursor'),
-        ]);
+        $query = new Query(
+            query: $request->query->get('query'),
+            types: $this->getArrayFromInputBag($request->query, 'type'),
+            folders: $this->getArrayFromInputBag($request->query, 'folder'),
+            visibilities: $this->getArrayFromInputBag($request->query, 'visibility'),
+            tags: $this->getArrayFromInputBag($request->query, 'tag'),
+            limit: $request->query->get('limit') ? (int) $request->query->get('limit') : 25,
+            nextCursor: $request->query->get('next_cursor'),
+        );
 
         $results = $this->provider->search($query);
 

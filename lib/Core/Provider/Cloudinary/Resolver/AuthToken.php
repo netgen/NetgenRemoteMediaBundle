@@ -9,11 +9,9 @@ use Netgen\RemoteMedia\API\Values\AuthToken as AuthTokenEntity;
 
 final class AuthToken
 {
-    private ?string $encryptionKey = null;
-
-    public function __construct(?string $encryptionKey = null)
-    {
-        $this->encryptionKey = $encryptionKey;
+    public function __construct(
+        private ?string $encryptionKey = null
+    ) {
     }
 
     public function resolve(AuthTokenEntity $token): array

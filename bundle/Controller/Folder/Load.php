@@ -21,8 +21,7 @@ final class Load
 
     public function __invoke(Request $request): Response
     {
-        $folder = $request->query->get('folder');
-        $parent = $folder ? Folder::fromPath($folder) : null;
+        $parent = $request->query->get('folder') ? Folder::fromPath($request->query->get('folder')) : null;
 
         $folders = $this->provider->listFolders($parent);
         $formattedFolders = [];

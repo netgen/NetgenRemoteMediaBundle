@@ -21,14 +21,10 @@ use function is_string;
 
 final class RemoteMediaType extends AbstractType
 {
-    private DataTransformerInterface $transformer;
-
-    private ProviderInterface $provider;
-
-    public function __construct(DataTransformerInterface $transformer, ProviderInterface $provider)
-    {
-        $this->transformer = $transformer;
-        $this->provider = $provider;
+    public function __construct(
+        private DataTransformerInterface $transformer,
+        private ProviderInterface $provider,
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -79,14 +75,14 @@ final class RemoteMediaType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $parentFolder = null;
-        if ($options['parent_folder']) {
+        if ($options['parent_folder'] !== null) {
             $parentFolder = ($options['parent_folder'] instanceof Folder)
                 ? $options['parent_folder']
                 : Folder::fromPath($options['parent_folder']);
         }
 
         $folder = null;
-        if ($options['folder']) {
+        if ($options['folder'] !== null) {
             $folder = ($options['folder'] instanceof Folder)
                 ? $options['folder']
                 : Folder::fromPath($options['folder']);

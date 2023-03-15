@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Exception\Factory;
 
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(InvalidDataException::class)]
 final class InvalidDataExceptionTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Exception\Factory\InvalidDataException::__construct
-     */
     public function testException(): void
     {
         $this->expectException(InvalidDataException::class);
@@ -20,9 +19,6 @@ final class InvalidDataExceptionTest extends TestCase
         throw new InvalidDataException();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Exception\Factory\InvalidDataException::__construct
-     */
     public function testExceptionWithCustomMessage(): void
     {
         $this->expectException(InvalidDataException::class);

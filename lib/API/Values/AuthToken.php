@@ -9,20 +9,11 @@ use DateTimeImmutable;
 
 final class AuthToken
 {
-    private ?DateTimeImmutable $startsAt;
-
-    private DateTimeImmutable $expiresAt;
-
-    private ?string $ipAddress;
-
     private function __construct(
-        ?DateTimeImmutable $startsAt = null,
-        ?DateTimeImmutable $expiresAt = null,
-        ?string $ipAddress = null
+        private ?DateTimeImmutable $startsAt = null,
+        private ?DateTimeImmutable $expiresAt = null,
+        private ?string $ipAddress = null
     ) {
-        $this->startsAt = $startsAt;
-        $this->expiresAt = $expiresAt;
-        $this->ipAddress = $ipAddress;
     }
 
     public static function fromDuration(int $duration): self

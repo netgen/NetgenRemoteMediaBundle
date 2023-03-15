@@ -11,11 +11,9 @@ final class NotificationReceivedEvent extends Event
 {
     public const NAME = 'ngrm.cloudinary.notification.received';
 
-    private Request $request;
-
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
+    public function __construct(
+        private Request $request,
+    ) {
     }
 
     public function getRequest(): Request

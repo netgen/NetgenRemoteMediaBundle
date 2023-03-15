@@ -6,52 +6,28 @@ namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-final class RemoteResourceTest extends AbstractTest
+#[CoversClass(RemoteResource::class)]
+final class RemoteResourceTest extends AbstractTestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getAltText
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getCaption
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContext
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContextProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getFolder
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getId
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMd5
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadata
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getMetadataProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getName
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getRemoteId
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getSize
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getType
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getUrl
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getVersion
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getVisibility
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasContextProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasMetadataProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::isPrivate
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::isProtected
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::isPublic
-     */
     public function testConstruct(): void
     {
-        $resource = new RemoteResource([
-            'id' => 56,
-            'remoteId' => 'upload|image|media/c87hg9xfxrd4itiim3t0',
-            'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/media/c87hg9xfxrd4itiim3t0.jpg',
-            'name' => 'c87hg9xfxrd4itiim3t0',
-            'version' => '1371995958',
-            'folder' => Folder::fromPath('media'),
-            'size' => 120253,
-            'altText' => 'alt text',
-            'caption' => 'caption text',
-            'tags' => ['tag1'],
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'metadata' => [
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/c87hg9xfxrd4itiim3t0',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/c87hg9xfxrd4itiim3t0.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 56,
+            name: 'c87hg9xfxrd4itiim3t0',
+            version: '1371995958',
+            folder: Folder::fromPath('media'),
+            size: 120253,
+            altText: 'alt text',
+            caption: 'caption text',
+            tags: ['tag1'],
+            metadata: [
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                 'width' => 864,
                 'height' => 576,
@@ -60,12 +36,11 @@ final class RemoteResourceTest extends AbstractTest
                 'etag' => 'test_tag',
                 'overwritten' => 'true',
             ],
-            'context' => [
+            context: [
                 'original_filename' => 'c87hg9xfxrd4itiim3t0.jpg',
                 'type' => 'shop_product',
             ],
-            'test' => 'test',
-        ]);
+        );
 
         self::assertSame(
             56,
@@ -179,40 +154,23 @@ final class RemoteResourceTest extends AbstractTest
         self::assertNull($resource->getContextProperty('source'));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::__construct
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setAltText
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setCaption
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setContext
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setFolder
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setMd5
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setMetadata
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setName
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setRemoteId
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setSize
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setTags
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setType
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setUrl
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setVersion
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::setVisibility
-     */
     public function testSetters(): void
     {
-        $expected = new RemoteResource([
-            'id' => 56,
-            'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
-            'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg',
-            'name' => 'c87hg9xfxrd4itiim3t0',
-            'version' => '1371995958',
-            'folder' => Folder::fromPath('media/image'),
-            'visibility' => 'protected',
-            'size' => 120253,
-            'altText' => 'alt text',
-            'caption' => 'caption text',
-            'tags' => ['tag1'],
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-            'metadata' => [
+        $expected = new RemoteResource(
+            remoteId: 'upload|image|c87hg9xfxrd4itiim3t0',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 56,
+            name: 'c87hg9xfxrd4itiim3t0',
+            version: '1371995958',
+            visibility: 'protected',
+            folder: Folder::fromPath('media/image'),
+            size: 120253,
+            altText: 'alt text',
+            caption: 'caption text',
+            tags: ['tag1'],
+            metadata: [
                 'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                 'width' => 864,
                 'height' => 576,
@@ -221,14 +179,19 @@ final class RemoteResourceTest extends AbstractTest
                 'etag' => 'test_tag',
                 'overwritten' => 'true',
             ],
-            'context' => [
+            context: [
                 'original_filename' => 'c87hg9xfxrd4itiim3t0.jpg',
                 'type' => 'shop_product',
             ],
-            'test' => 'test',
-        ]);
+        );
 
-        $resource = new RemoteResource(['id' => 56]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|old_name',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/old_name.jpg',
+            md5: '5f3409jg45jg5igj09g45',
+            id: 56,
+        );
 
         $resource
             ->setRemoteId('upload|image|c87hg9xfxrd4itiim3t0')
@@ -263,14 +226,15 @@ final class RemoteResourceTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::addTag
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
-     */
     public function testAddTag(): void
     {
-        $resource = new RemoteResource();
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|old_name',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/old_name.jpg',
+            md5: '5f3409jg45jg5igj09g45',
+            id: 56,
+        );
 
         self::assertEmpty($resource->getTags());
         self::assertFalse($resource->hasTag('tag1'));
@@ -285,14 +249,16 @@ final class RemoteResourceTest extends AbstractTest
         self::assertTrue($resource->hasTag('tag1'));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::addTag
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
-     */
     public function testAddExistingTag(): void
     {
-        $resource = new RemoteResource(['tags' => ['tag1']]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|old_name',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/old_name.jpg',
+            md5: '5f3409jg45jg5igj09g45',
+            id: 56,
+            tags: ['tag1'],
+        );
 
         self::assertCount(1, $resource->getTags());
         self::assertTrue($resource->hasTag('tag1'));
@@ -308,14 +274,16 @@ final class RemoteResourceTest extends AbstractTest
         self::assertTrue($resource->hasTag('tag1'));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getTags
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasTag
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::removeTag
-     */
     public function testRemoveTags(): void
     {
-        $resource = new RemoteResource(['tags' => ['tag1']]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|old_name',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/old_name.jpg',
+            md5: '5f3409jg45jg5igj09g45',
+            id: 56,
+            tags: ['tag1'],
+        );
 
         self::assertSame(
             ['tag1'],
@@ -331,19 +299,16 @@ final class RemoteResourceTest extends AbstractTest
         self::assertFalse($resource->hasTag('tag1'));
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::addContextProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContext
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContextProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasContextProperty
-     */
     public function testAddContextProperty(): void
     {
-        $resource = new RemoteResource([
-            'context' => [
-                'source' => 'test_source',
-            ],
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|old_name',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/old_name.jpg',
+            md5: '5f3409jg45jg5igj09g45',
+            id: 56,
+            context: ['source' => 'test_source'],
+        );
 
         self::assertSame(
             ['source' => 'test_source'],
@@ -368,19 +333,16 @@ final class RemoteResourceTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContext
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::getContextProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::hasContextProperty
-     * @covers \Netgen\RemoteMedia\API\Values\RemoteResource::removeContextProperty
-     */
     public function testRemoveContextProperty(): void
     {
-        $resource = new RemoteResource([
-            'context' => [
-                'source' => 'test_source',
-            ],
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|old_name',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/old_name.jpg',
+            md5: '5f3409jg45jg5igj09g45',
+            id: 56,
+            context: ['source' => 'test_source'],
+        );
 
         self::assertSame(
             ['source' => 'test_source'],

@@ -6,8 +6,11 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Converter;
 
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(ResourceTypeConverter::class)]
 final class ResourceTypeTest extends TestCase
 {
     protected ResourceTypeConverter $converter;
@@ -17,13 +20,7 @@ final class ResourceTypeTest extends TestCase
         $this->converter = new ResourceTypeConverter();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::fromCloudinaryData
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::isAudioFormat
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::isDocumentFormat
-     *
-     * @dataProvider fromCloudinaryDataProvider
-     */
+    #[DataProvider('fromCloudinaryDataProvider')]
     public function testFromCloudinaryData(string $type, ?string $format, string $expectedFormat): void
     {
         self::assertSame(
@@ -32,11 +29,7 @@ final class ResourceTypeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::toCloudinaryType
-     *
-     * @dataProvider toCloudinaryTypeProvider
-     */
+    #[DataProvider('toCloudinaryTypeProvider')]
     public function testToCloudinaryType(string $type, string $expectedType): void
     {
         self::assertSame(
@@ -45,9 +38,6 @@ final class ResourceTypeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::getAudioFormats
-     */
     public function testGetAudioFormats(): void
     {
         self::assertSame(
@@ -56,9 +46,6 @@ final class ResourceTypeTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType::getDocumentFormats
-     */
     public function testGetDocumentFormats(): void
     {
         self::assertSame(

@@ -24,37 +24,33 @@ use Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Exception\NotSupportedException;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 
 use function sprintf;
 
-final class AbstractProviderTest extends AbstractTest
+#[CoversClass(AbstractProvider::class)]
+final class AbstractProviderTest extends AbstractTestCase
 {
     private AbstractProvider $provider;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Doctrine\ORM\EntityManagerInterface */
-    private MockObject $entityManager;
+    private MockObject|EntityManagerInterface $entityManager;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\DateTime */
-    private MockObject $dateTimeFactory;
+    private MockObject|DateTimeFactoryInterface $dateTimeFactory;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Transformation\HandlerInterface */
-    private MockObject $cropHandler;
+    private MockObject|HandlerInterface $cropHandler;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Transformation\HandlerInterface */
-    private MockObject $formatHandler;
+    private MockObject|HandlerInterface $formatHandler;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Psr\Log\LoggerInterface */
-    private MockObject $logger;
+    private MockObject|LoggerInterface $logger;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Doctrine\Persistence\ObjectRepository */
-    private MockObject $resourceRepository;
+    private MockObject|ObjectRepository $resourceRepository;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Doctrine\Persistence\ObjectRepository */
-    private MockObject $locationRepository;
+    private MockObject|ObjectRepository $locationRepository;
 
     protected function setUp(): void
     {
@@ -70,34 +66,36 @@ final class AbstractProviderTest extends AbstractTest
         $registry->addHandler('cloudinary', 'crop', $this->cropHandler);
         $registry->addHandler('cloudinary', 'format', $this->formatHandler);
 
-        $variationResolver = new VariationResolver();
-        $variationResolver->setServices($registry);
-        $variationResolver->setVariations([
-            'default' => [
-                'banner' => [
-                    'transformations' => [
-                        'crop' => [100, 100],
+        $variationResolver = new VariationResolver(
+            $registry,
+            new NullLogger(),
+            [
+                'default' => [
+                    'banner' => [
+                        'transformations' => [
+                            'crop' => [100, 100],
+                        ],
+                    ],
+                ],
+                'article' => [
+                    'small' => [
+                        'transformations' => [
+                            'crop' => [200, 100],
+                        ],
+                    ],
+                    'jpeg' => [
+                        'transformations' => [
+                            'format' => ['jpeg'],
+                        ],
+                    ],
+                    'mp4' => [
+                        'transformations' => [
+                            'format' => ['mp4'],
+                        ],
                     ],
                 ],
             ],
-            'article' => [
-                'small' => [
-                    'transformations' => [
-                        'crop' => [200, 100],
-                    ],
-                ],
-                'jpeg' => [
-                    'transformations' => [
-                        'format' => ['jpeg'],
-                    ],
-                ],
-                'mp4' => [
-                    'transformations' => [
-                        'format' => ['mp4'],
-                    ],
-                ],
-            ],
-        ]);
+        );
 
         $this->entityManager
             ->expects(self::exactly(2))
@@ -141,10 +139,6 @@ final class AbstractProviderTest extends AbstractTest
             );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::listFolders
-     */
     public function testListFolders(): void
     {
         $folders = [
@@ -168,10 +162,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::listFolders
-     */
     public function testListFoldersBelowParent(): void
     {
         $parent = Folder::fromPath('media');
@@ -199,10 +189,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::listFolders
-     */
     public function testListFoldersUnsupported(): void
     {
         $this->provider
@@ -221,10 +207,6 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->listFolders();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::createFolder
-     */
     public function testCreateFolder(): void
     {
         $folder = Folder::fromPath('media');
@@ -246,10 +228,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::createFolder
-     */
     public function testCreateFolderBelowParent(): void
     {
         $parent = Folder::fromPath('media');
@@ -272,10 +250,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::createFolder
-     */
     public function testCreateFolderUnsupported(): void
     {
         $this->provider
@@ -294,10 +268,6 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->createFolder('media');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::countInFolder
-     */
     public function testCountInFolder(): void
     {
         $folder = Folder::fromPath('media');
@@ -319,10 +289,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::countInFolder
-     */
     public function testCountInFolderUnsupported(): void
     {
         $folder = Folder::fromPath('media');
@@ -343,10 +309,6 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->countInFolder($folder);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::listTags
-     */
     public function testListTags(): void
     {
         $tags = ['tag1', 'tag2'];
@@ -367,10 +329,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::listTags
-     */
     public function testListTagsUnsupported(): void
     {
         $this->provider
@@ -389,21 +347,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->listTags();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::load
-     */
     public function testLoad(): void
     {
-        $remoteResource = new RemoteResource([
-            'id' => 15,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 15,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->resourceRepository
             ->expects(self::once())
@@ -419,10 +373,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::load
-     */
     public function testLoadNotFound(): void
     {
         $this->resourceRepository
@@ -437,21 +387,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->load(20);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadByRemoteId
-     */
     public function testLoadByRemoteId(): void
     {
-        $remoteResource = new RemoteResource([
-            'id' => 15,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 15,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->resourceRepository
             ->expects(self::once())
@@ -467,10 +413,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadByRemoteId
-     */
     public function testLoadByRemoteIdNotFound(): void
     {
         $this->resourceRepository
@@ -485,21 +427,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->loadByRemoteId('test_image_2.jpg');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::store
-     */
     public function testStoreExisting(): void
     {
-        $remoteResource = new RemoteResource([
-            'id' => 15,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 15,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->entityManager
             ->expects(self::once())
@@ -516,20 +454,16 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::store
-     */
     public function testStoreNew(): void
     {
-        $remoteResource = new RemoteResource([
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->resourceRepository
             ->expects(self::once())
@@ -552,43 +486,40 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::store
-     */
     public function testStoreExistingRemoteId(): void
     {
-        $oldRemoteResource = new RemoteResource([
-            'id' => 15,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $oldRemoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 15,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
-        $remoteResource = new RemoteResource([
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image_2.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 250,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image_2.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+            size: 250,
+        );
 
         $dateTime = new DateTimeImmutable('now');
 
-        $newRemoteResource = new RemoteResource([
-            'id' => 15,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image_2.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 250,
-            'updatedAt' => $dateTime,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $newRemoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image_2.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 15,
+            name: 'test_image.jpg',
+            size: 250,
+        );
+
+        $newRemoteResource->setUpdatedAt($dateTime);
 
         $this->resourceRepository
             ->expects(self::once())
@@ -616,21 +547,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::remove
-     */
     public function testRemove(): void
     {
-        $remoteResource = new RemoteResource([
-            'id' => 15,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 250,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 15,
+            name: 'test_image.jpg',
+            size: 250,
+        );
 
         $this->entityManager
             ->expects(self::once())
@@ -649,21 +576,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->remove($remoteResource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::remove
-     */
     public function testRemoveWithDelete(): void
     {
-        $remoteResource = new RemoteResource([
-            'id' => 15,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 250,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $remoteResource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 15,
+            name: 'test_image.jpg',
+            size: 250,
+        );
 
         $this->entityManager
             ->expects(self::once())
@@ -687,21 +610,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->remove($remoteResource);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocation
-     */
     public function testLoadLocation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -719,10 +638,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocation
-     */
     public function testLoadLocationNotFound(): void
     {
         $this->locationRepository
@@ -737,21 +652,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->loadLocation(30);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::storeLocation
-     */
     public function testStoreLocation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -767,21 +678,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->storeLocation($location);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::removeLocation
-     */
     public function testRemoveLocation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -797,21 +704,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->removeLocation($location);
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResource
-     */
     public function testLoadNamedRemoteResource(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'upload|image|media/images/test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->resourceRepository
             ->expects(self::once())
@@ -825,21 +728,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResource
-     */
     public function testLoadNamedRemoteResourceFirstTime(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'upload|image|media/images/test_image2.jpg',
-            'url' => 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image2.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->resourceRepository
             ->expects(self::once())
@@ -868,10 +767,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResource
-     */
     public function testLoadNamedRemoteResourceNotFound(): void
     {
         self::expectException(NamedRemoteResourceNotFoundException::class);
@@ -880,22 +775,17 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->loadNamedRemoteResource('non_existing_image');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
-     */
     public function testLoadExistingNamedRemoteResourceLocation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'upload|image|media/images/test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource, 'test_image_location_source');
 
@@ -911,22 +801,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
-     */
     public function testLoadExistingNamedRemoteResourceLocationWithNewWatermark(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'upload|image|media/images/test_image2.jpg',
-            'url' => 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
-            'name' => 'test_image2.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image2.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image2.jpg',
+            size: 200,
+        );
 
         $location = new RemoteResourceLocation($resource, 'named_remote_resource_location_test_image_location2', [], 'Old watermark');
 
@@ -951,22 +836,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
-     */
     public function testLoadNewNamedRemoteResourceLocationWithExistingResource(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'upload|image|media/images/test_image2.jpg',
-            'url' => 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
-            'name' => 'test_image2.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image2.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image2.jpg',
+            size: 200,
+        );
 
         $this->locationRepository
             ->expects(self::once())
@@ -997,22 +877,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
-     */
     public function testLoadNewNamedRemoteResourceLocationWithNewResource(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'upload|image|media/images/test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->locationRepository
             ->expects(self::once())
@@ -1061,11 +936,6 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadLocationBySource
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
-     */
     public function testLoadNewNamedRemoteResourceLocationWithNonExistingResource(): void
     {
         $this->locationRepository
@@ -1092,10 +962,6 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->loadNamedRemoteResourceLocation('test_image_location');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::loadNamedRemoteResourceLocation
-     */
     public function testLoadNamedRemoteResourceLocationNotFound(): void
     {
         self::expectException(NamedRemoteResourceLocationNotFoundException::class);
@@ -1104,23 +970,18 @@ final class AbstractProviderTest extends AbstractTest
         $this->provider->loadNamedRemoteResourceLocation('non_existing_image_location');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::store
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::upload
-     */
     public function testUpload(): void
     {
         $struct = new ResourceStruct(FileStruct::fromUri('test_image.jpg'));
 
-        $resource = new RemoteResource([
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $this->provider
             ->expects(self::once())
@@ -1149,21 +1010,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::buildVariation
-     */
     public function testBuildVariationCrop(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $cropSettings = [
             new CropSettings('small', 5, 10, 200, 100),
@@ -1209,21 +1066,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::buildRawVariation
-     */
     public function testBuildRawVariation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'test_image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/test_image.jpg',
-            'name' => 'test_image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
 
         $cropOptions = [
             'x' => 5,
@@ -1252,21 +1105,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::buildVideoThumbnail
-     */
     public function testBuildVideoThumbnail(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp4',
-            'url' => 'https://cloudinary.com/upload/video/example.mp4',
-            'name' => 'example.mp4',
-            'type' => 'video',
-            'size' => 1000,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp4',
+            size: 1000,
+        );
 
         $variation = new RemoteResourceVariation(
             $resource,
@@ -1285,21 +1134,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::buildVideoThumbnailVariation
-     */
     public function testBuildVideoThumbnailVariation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp4',
-            'url' => 'https://cloudinary.com/upload/video/example.mp4',
-            'name' => 'example.mp4',
-            'type' => 'video',
-            'size' => 1000,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp4',
+            size: 1000,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -1333,21 +1178,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::buildVideoThumbnailRawVariation
-     */
     public function testBuildVideoThumbnailRawVariation(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp4',
-            'url' => 'https://cloudinary.com/upload/video/example.mp4',
-            'name' => 'example.mp4',
-            'type' => 'video',
-            'size' => 1000,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp4',
+            size: 1000,
+        );
 
         $transformations = ['fetch_format' => 'jpeg'];
 
@@ -1368,22 +1209,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateHtmlTag
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     */
     public function testGenerateHtmlTag(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'image.jpg',
-            'url' => 'https://cloudinary.com/upload/image/image.jpg',
-            'name' => 'image.jpg',
-            'type' => 'image',
-            'size' => 200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'image.jpg',
+            size: 200,
+        );
 
         $htmlAttributes = [
             'width' => 200,
@@ -1404,22 +1240,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateVariationHtmlTag
-     */
     public function testGenerateVariationHtmlTag(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp4',
-            'url' => 'https://cloudinary.com/upload/video/example.mp4',
-            'name' => 'example.mp4',
-            'type' => 'video',
-            'size' => 1200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp4',
+            size: 1200,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -1454,22 +1285,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateVariationHtmlTag
-     */
     public function testGenerateVariationHtmlTagThumbnail(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp4',
-            'url' => 'https://cloudinary.com/upload/video/example.mp4',
-            'name' => 'example.mp4',
-            'type' => 'video',
-            'size' => 1200,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp4',
+            size: 1200,
+        );
 
         $location = new RemoteResourceLocation($resource);
 
@@ -1500,21 +1326,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     */
     public function testGenerateRawVariationHtmlTagAudio(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp3',
-            'url' => 'https://cloudinary.com/upload/video/example.mp3',
-            'name' => 'example.mp3',
-            'type' => 'audio',
-            'size' => 120,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp3',
+            type: 'audio',
+            url: 'https://cloudinary.com/upload/video/example.mp3',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp3',
+            size: 120,
+        );
 
         $transformations = [['fetch_format' => 'mp3']];
 
@@ -1536,21 +1358,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     */
     public function testGenerateRawVariationHtmlTagAudioThumbnail(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp3',
-            'url' => 'https://cloudinary.com/upload/video/example.mp3',
-            'name' => 'example.mp3',
-            'type' => 'audio',
-            'size' => 120,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp3',
+            type: 'audio',
+            url: 'https://cloudinary.com/upload/video/example.mp3',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp3',
+            size: 120,
+        );
 
         $transformations = [['fetch_format' => 'mp3']];
 
@@ -1568,21 +1386,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     */
     public function testGenerateRawVariationHtmlTagAudioForceVideo(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.mp3',
-            'url' => 'https://cloudinary.com/upload/video/example.mp3',
-            'name' => 'example.mp3',
-            'type' => 'audio',
-            'size' => 120,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.mp3',
+            type: 'audio',
+            url: 'https://cloudinary.com/upload/video/example.mp3',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.mp3',
+            size: 120,
+        );
 
         $transformations = [['fetch_format' => 'mp3']];
 
@@ -1604,21 +1418,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     */
     public function testGenerateRawVariationHtmlTagDocument(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.pdf',
-            'url' => 'https://cloudinary.com/upload/raw/example.pdf',
-            'name' => 'example.pdf',
-            'type' => 'document',
-            'size' => 80,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.pdf',
+            type: 'document',
+            url: 'https://cloudinary.com/upload/raw/example.pdf',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.pdf',
+            size: 80,
+        );
 
         $tag = '<a href="https://cloudinary.com/upload/raw/example.pdf">example.pdf</a>';
 
@@ -1634,21 +1444,17 @@ final class AbstractProviderTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::__construct
-     * @covers \Netgen\RemoteMedia\Core\AbstractProvider::generateRawVariationHtmlTag
-     */
     public function testGenerateRawVariationHtmlTagOther(): void
     {
-        $resource = new RemoteResource([
-            'id' => 30,
-            'remoteId' => 'example.zip',
-            'url' => 'https://cloudinary.com/upload/raw/example.zip',
-            'name' => 'example.zip',
-            'type' => 'other',
-            'size' => 30,
-            'md5' => 'e522f43cf89aa0afd03387c37e2b6e12',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'example.zip',
+            type: 'other',
+            url: 'https://cloudinary.com/upload/raw/example.zip',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            id: 30,
+            name: 'example.zip',
+            size: 30,
+        );
 
         $htmlAttributes = ['target' => '_blank'];
 

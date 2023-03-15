@@ -56,27 +56,12 @@ final class WatermarkText implements HandlerInterface
         }
 
         if (array_key_exists('align', $config)) {
-            switch ($config['align']) {
-                case 'left':
-                    $options['gravity'] = 'west';
-
-                    break;
-
-                case 'right':
-                    $options['gravity'] = 'east';
-
-                    break;
-
-                case 'top':
-                    $options['gravity'] = 'north';
-
-                    break;
-
-                case 'bottom':
-                    $options['gravity'] = 'south';
-
-                    break;
-            }
+            $options['gravity'] = match ($config['align']) {
+                'left' => 'west',
+                'right' => 'east',
+                'top' => 'north',
+                'bottom' => 'south',
+            };
             unset($config['align']);
         }
 

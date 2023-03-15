@@ -16,14 +16,11 @@ use Psr\Log\NullLogger;
 
 final class MonologLoggedGateway implements GatewayInterface
 {
-    private GatewayInterface $gateway;
-
-    private LoggerInterface $logger;
-
-    public function __construct(GatewayInterface $gateway, ?LoggerInterface $logger)
-    {
-        $this->gateway = $gateway;
-        $this->logger = $logger ?? new NullLogger();
+    public function __construct(
+        private GatewayInterface $gateway,
+        private ?LoggerInterface $logger
+    ) {
+        $this->logger = $this->logger ?? new NullLogger();
     }
 
     public function usage(): StatusData

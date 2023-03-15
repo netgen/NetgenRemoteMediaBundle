@@ -7,6 +7,8 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
 
+use function count;
+
 /**
  * Class Quality
  * Set compression level to apply to an image as a value between 1
@@ -35,22 +37,10 @@ final class Quality implements HandlerInterface
      */
     public function process(array $config = []): array
     {
-        if (empty($config[0])) {
-            throw new TransformationHandlerFailedException(self::class);
-        }
-
-        if (empty($config[1])) {
-            return [
-                'quality' => $config[0],
-            ];
-        }
-
-        if ($config[0] === 'auto') {
-            return [
-                'quality' => $config[0] . ':' . $config[1],
-            ];
-        }
-
-        throw new TransformationHandlerFailedException(self::class);
+        return match (true) {
+            count($config) >= 2 && $config[0] === 'auto' => ['quality' => $config[0] . ':' . $config[1]],
+            count($config) === 1 => ['quality' => $config[0]],
+            default => throw new TransformationHandlerFailedException(self::class),
+        };
     }
 }

@@ -6,8 +6,11 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\TransformationHandle
 
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop;
 use Netgen\RemoteMedia\Exception\TransformationHandlerFailedException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Crop::class)]
 final class CropTest extends TestCase
 {
     private Crop $crop;
@@ -17,11 +20,7 @@ final class CropTest extends TestCase
         $this->crop = new Crop();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop::process
-     *
-     * @dataProvider validDataProvider
-     */
+    #[DataProvider('validDataProvider')]
     public function test(array $config, array $result): void
     {
         self::assertSame(
@@ -30,11 +29,7 @@ final class CropTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Crop::process
-     *
-     * @dataProvider invalidDataProvider
-     */
+    #[DataProvider('invalidDataProvider')]
     public function testWithException(array $config): void
     {
         $this->expectException(TransformationHandlerFailedException::class);

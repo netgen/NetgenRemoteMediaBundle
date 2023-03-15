@@ -20,20 +20,11 @@ use const PATHINFO_FILENAME;
 
 final class RemoteResource implements RemoteResourceFactoryInterface
 {
-    private ResourceTypeConverter $resourceTypeConverter;
-
-    private VisibilityTypeConverter $visibilityTypeConverter;
-
-    private FileHashFactoryInterface $fileHashFactory;
-
     public function __construct(
-        ResourceTypeConverter $resourceTypeConverter,
-        VisibilityTypeConverter $visibilityTypeConverter,
-        FileHashFactoryInterface $fileHashFactory
+        private ResourceTypeConverter $resourceTypeConverter,
+        private VisibilityTypeConverter $visibilityTypeConverter,
+        private FileHashFactoryInterface $fileHashFactory
     ) {
-        $this->resourceTypeConverter = $resourceTypeConverter;
-        $this->visibilityTypeConverter = $visibilityTypeConverter;
-        $this->fileHashFactory = $fileHashFactory;
     }
 
     public function create($data): RemoteResourceValue
@@ -42,22 +33,22 @@ final class RemoteResource implements RemoteResourceFactoryInterface
 
         $cloudinaryRemoteId = CloudinaryRemoteId::fromCloudinaryData($data);
 
-        return new RemoteResourceValue([
-            'remoteId' => $cloudinaryRemoteId->getRemoteId(),
-            'type' => $this->resolveResourceType($data),
-            'url' => $this->resolveCorrectUrl($data),
-            'name' => pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
-            'version' => ($data['version'] ?? null) ? (string) $data['version'] : null,
-            'folder' => $cloudinaryRemoteId->getFolder(),
-            'visibility' => $this->resolveVisibility($data),
-            'size' => $data['bytes'] ?? 0,
-            'altText' => $this->resolveAltText($data),
-            'caption' => $data['context']['custom']['caption'] ?? null,
-            'tags' => $data['tags'] ?? [],
-            'md5' => $this->resolveMd5($data),
-            'metadata' => $this->resolveMetaData($data),
-            'context' => $this->resolveContext($data),
-        ]);
+        return new RemoteResourceValue(
+            remoteId: $cloudinaryRemoteId->getRemoteId(),
+            type: $this->resolveResourceType($data),
+            url: $this->resolveCorrectUrl($data),
+            md5: $this->resolveMd5($data),
+            name: pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
+            version: ($data['version'] ?? null) !== null ? (string) $data['version'] : null,
+            visibility: $this->resolveVisibility($data),
+            folder: $cloudinaryRemoteId->getFolder(),
+            size: $data['bytes'] ?? 0,
+            altText: $this->resolveAltText($data),
+            caption: $data['context']['custom']['caption'] ?? null,
+            tags: $data['tags'] ?? [],
+            metadata: $this->resolveMetaData($data),
+            context: $this->resolveContext($data),
+        );
     }
 
     /**
@@ -71,7 +62,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             throw new InvalidDataException('Missing required "public_id" property!');
         }
 
-        if ($data['secure_url'] ?? $data['url'] ?? null) {
+        if (($data['secure_url'] ?? $data['url'] ?? null) !== null) {
             return;
         }
 

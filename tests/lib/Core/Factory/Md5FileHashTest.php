@@ -7,10 +7,12 @@ namespace Netgen\RemoteMedia\Tests\Core\Factory;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\Core\Factory\Md5FileHash as Md5FileHashFactory;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 use function md5_file;
 
+#[CoversClass(FileHashFactoryInterface::class)]
 final class Md5FileHashTest extends TestCase
 {
     private FileHashFactoryInterface $md5FileHashFactory;
@@ -20,9 +22,6 @@ final class Md5FileHashTest extends TestCase
         $this->md5FileHashFactory = new Md5FileHashFactory();
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Factory\Md5FileHash::createHash
-     */
     public function testCreateCurrent(): void
     {
         $media = vfsStream::setup('media');

@@ -6,28 +6,13 @@ namespace Netgen\RemoteMedia\API\Values;
 
 final class CropSettings
 {
-    private string $variationName;
-
-    private int $x = 0;
-
-    private int $y = 0;
-
-    private int $width = 0;
-
-    private int $height = 0;
-
     public function __construct(
-        string $variationName,
-        int $x,
-        int $y,
-        int $width,
-        int $height
+        private string $variationName,
+        private int $x = 0,
+        private int $y = 0,
+        private int $width = 0,
+        private int $height = 0
     ) {
-        $this->variationName = $variationName;
-        $this->x = $x;
-        $this->y = $y;
-        $this->width = $width;
-        $this->height = $height;
     }
 
     public static function fromArray(string $transformationName, array $coords): self

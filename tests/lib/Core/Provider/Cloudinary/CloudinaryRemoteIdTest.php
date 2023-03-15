@@ -7,19 +7,12 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Exception\Cloudinary\InvalidRemoteIdException;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-final class CloudinaryRemoteIdTest extends AbstractTest
+#[CoversClass(CloudinaryRemoteId::class)]
+final class CloudinaryRemoteIdTest extends AbstractTestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromCloudinaryData
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getFolder
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getRemoteId
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceId
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceType
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getType
-     */
     public function testFromCloudinaryData(): void
     {
         $data = [
@@ -55,15 +48,6 @@ final class CloudinaryRemoteIdTest extends AbstractTest
         self::assertNull($remoteId->getFolder());
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromRemoteId
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getFolder
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getRemoteId
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceId
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getResourceType
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::getType
-     */
     public function testFromRemoteId(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('private|video|media/videos/my_test_video.mp4');
@@ -94,9 +78,6 @@ final class CloudinaryRemoteIdTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromRemoteId
-     */
     public function testFromInvalidRemoteId(): void
     {
         self::expectException(InvalidRemoteIdException::class);
@@ -104,9 +85,6 @@ final class CloudinaryRemoteIdTest extends AbstractTest
         CloudinaryRemoteId::fromRemoteId('some_image.jpg');
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId::fromRemoteId
-     */
     public function testFromHalfInvalidRemoteId(): void
     {
         self::expectException(InvalidRemoteIdException::class);

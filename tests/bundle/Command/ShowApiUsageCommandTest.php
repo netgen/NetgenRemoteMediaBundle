@@ -7,6 +7,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\Command;
 use Netgen\Bundle\RemoteMediaBundle\Command\ShowApiUsageCommand;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\StatusData;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -16,10 +17,10 @@ use function trim;
 
 use const PHP_EOL;
 
+#[CoversClass(ShowApiUsageCommand::class)]
 final class ShowApiUsageCommandTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
     private CommandTester $commandTester;
 
@@ -34,12 +35,6 @@ final class ShowApiUsageCommandTest extends TestCase
         $this->commandTester = new CommandTester($command);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Command\ShowApiUsageCommand::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Command\ShowApiUsageCommand::configure
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Command\ShowApiUsageCommand::execute
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Command\ShowApiUsageCommand::getPrettyKey
-     */
     public function testExecute(): void
     {
         $statusData = new StatusData([

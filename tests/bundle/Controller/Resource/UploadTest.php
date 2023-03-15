@@ -15,6 +15,7 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -24,15 +25,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 use function json_encode;
 
+#[CoversClass(UploadController::class)]
 final class UploadTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\FileHash */
-    protected MockObject $fileHashFactoryMock;
-
+    protected MockObject|FileHashFactoryInterface $fileHashFactoryMock;
     private UploadController $controller;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
@@ -42,11 +41,6 @@ final class UploadTest extends TestCase
         $this->controller = new UploadController($this->providerMock, $this->fileHashFactoryMock);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::formatResource
-     */
     public function testUpload(): void
     {
         $request = new Request();
@@ -91,23 +85,21 @@ final class UploadTest extends TestCase
             $request->request->get('filename'),
         );
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/image/sample_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
-            'name' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
-            'folder' => Folder::fromPath('media/image'),
-            'size' => 123,
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/image/sample_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            folder: Folder::fromPath('media/image'),
+            size: 123,
+        );
 
         $this->providerMock
             ->expects(self::once())
             ->method('upload')
             ->with($resourceStruct)
             ->willReturn($resource);
-
-        $location = new RemoteResourceLocation($resource);
 
         $browseVariation = new RemoteResourceVariation(
             $resource,
@@ -168,11 +160,6 @@ final class UploadTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::formatResource
-     */
     public function testUploadProtectedWithContext(): void
     {
         $uploadContext = [
@@ -230,16 +217,16 @@ final class UploadTest extends TestCase
             $uploadContext,
         );
 
-        $resource = new RemoteResource([
-            'remoteId' => 'authenticated|image|media/image/sample_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
-            'name' => 'sample_image.jpg',
-            'folder' => Folder::fromPath('media/image'),
-            'visibility' => 'protected',
-            'size' => 123,
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'authenticated|image|media/image/sample_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'sample_image.jpg',
+            visibility: 'protected',
+            folder: Folder::fromPath('media/image'),
+            size: 123,
+        );
 
         $this->providerMock
             ->expects(self::once())
@@ -306,10 +293,6 @@ final class UploadTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
-     */
     public function testUploadInvalidVisibility(): void
     {
         $request = new Request();
@@ -330,11 +313,6 @@ final class UploadTest extends TestCase
         $this->controller->__invoke($request);
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::formatResource
-     */
     public function testUploadExistingFile(): void
     {
         $request = new Request();
@@ -380,23 +358,21 @@ final class UploadTest extends TestCase
             $request->request->get('filename'),
         );
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|sample_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
-            'name' => 'sample_image.jpg',
-            'folder' => null,
-            'size' => 123,
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|sample_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/sample_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'sample_image.jpg',
+            folder: null,
+            size: 123,
+        );
 
         $this->providerMock
             ->expects(self::once())
             ->method('upload')
             ->with($resourceStruct)
             ->willThrowException(new RemoteResourceExistsException($resource));
-
-        $location = new RemoteResourceLocation($resource);
 
         $browseVariation = new RemoteResourceVariation(
             $resource,
@@ -457,11 +433,6 @@ final class UploadTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::formatResource
-     */
     public function testUploadExistingFileName(): void
     {
         $request = new Request();
@@ -507,23 +478,21 @@ final class UploadTest extends TestCase
             $request->request->get('filename'),
         );
 
-        $resource = new RemoteResource([
-            'remoteId' => 'upload|image|media/image/sample_image.jpg',
-            'type' => 'image',
-            'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
-            'name' => 'sample_image.jpg',
-            'folder' => Folder::fromPath('media/image'),
-            'size' => 123,
-            'md5' => 'a522f23sf81aa0afd03387c37e2b6eax',
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/image/sample_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'sample_image.jpg',
+            folder: Folder::fromPath('media/image'),
+            size: 123,
+        );
 
         $this->providerMock
             ->expects(self::once())
             ->method('upload')
             ->with($resourceStruct)
             ->willThrowException(new RemoteResourceExistsException($resource));
-
-        $location = new RemoteResourceLocation($resource);
 
         $browseVariation = new RemoteResourceVariation(
             $resource,
@@ -584,11 +553,6 @@ final class UploadTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload::formatResource
-     */
     public function testUploadWithoutFile(): void
     {
         $request = new Request();

@@ -10,14 +10,12 @@ use Netgen\RemoteMedia\API\Search\Result;
 
 final class SearchResult implements SearchResultFactoryInterface
 {
-    private RemoteResourceFactory $remoteResourceFactory;
-
-    public function __construct(RemoteResourceFactory $remoteResourceFactory)
-    {
-        $this->remoteResourceFactory = $remoteResourceFactory;
+    public function __construct(
+        private RemoteResourceFactory $remoteResourceFactory,
+    ) {
     }
 
-    public function create($data): Result
+    public function create(mixed $data): Result
     {
         $resources = [];
         foreach ($data['resources'] ?? [] as $resourceData) {

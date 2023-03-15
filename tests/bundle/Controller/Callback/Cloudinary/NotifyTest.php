@@ -13,6 +13,7 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\RequestVerifierInterface;
 use Netgen\RemoteMedia\Event\Cloudinary\NotificationReceivedEvent;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -25,24 +26,20 @@ use function json_encode;
 use function sprintf;
 use function time;
 
+#[CoversClass(NotifyController::class)]
 final class NotifyTest extends TestCase
 {
     private NotifyController $controller;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface */
-    private MockObject $gatewayMock;
+    private MockObject|CacheableGatewayInterface $gatewayMock;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\ProviderInterface */
-    private MockObject $providerMock;
+    private MockObject|ProviderInterface $providerMock;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\Core\RequestVerifierInterface */
-    private MockObject $signatureVerifierMock;
+    private MockObject|RequestVerifierInterface $signatureVerifierMock;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Doctrine\ORM\EntityManagerInterface */
-    private MockObject $entityManagerMock;
+    private MockObject|EntityManagerInterface $entityManagerMock;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\EventDispatcher\EventDispatcherInterface */
-    private MockObject $eventDispatcherMock;
+    private MockObject|EventDispatcherInterface $eventDispatcherMock;
 
     protected function setUp(): void
     {
@@ -61,11 +58,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnUnverified
-     */
     public function testUnverified(): void
     {
         $request = new Request();
@@ -94,12 +86,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleResourceUploaded
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testResourceUploaded(): void
     {
         $body = json_encode([
@@ -198,12 +184,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleResourceUploaded
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testResourceRewritten(): void
     {
         $body = json_encode([
@@ -246,15 +226,16 @@ final class NotifyTest extends TestCase
             ],
         );
 
-        $resource = new RemoteResource([
-            'id' => 5,
-            'remoteId' => 'upload|image|sample',
-            'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
-            'name' => 'sample',
-            'version' => '1608120578',
-            'size' => 380250,
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|sample',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+            md5: 'dsf099i32432432432',
+            id: 5,
+            name: 'sample',
+            version: '1608120578',
+            size: 380250,
+        );
 
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|sample');
 
@@ -318,12 +299,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleResourceDeleted
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testResourcesDeleted(): void
     {
         $body = json_encode([
@@ -342,23 +317,25 @@ final class NotifyTest extends TestCase
             ],
         ]);
 
-        $resource = new RemoteResource([
-            'id' => 5,
-            'remoteId' => 'upload|image|sample',
-            'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
-            'name' => 'sample',
-            'size' => 380250,
-        ]);
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|sample',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+            md5: 'ef438r9438u43453432432',
+            id: 5,
+            name: 'sample',
+            size: 380250,
+        );
 
-        $resource2 = new RemoteResource([
-            'id' => 5,
-            'remoteId' => 'upload|video|sample2',
-            'type' => 'video',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/sample2.mp4',
-            'name' => 'sample2',
-            'size' => 3802530,
-        ]);
+        $resource2 = new RemoteResource(
+            remoteId: 'upload|video|sample2',
+            type: 'video',
+            url: 'https://res.cloudinary.com/demo/image/upload/sample2.mp4',
+            md5: '43543fref43f43f43f43',
+            id: 5,
+            name: 'sample2',
+            size: 3802530,
+        );
 
         $request = new Request(
             [],
@@ -464,12 +441,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleResourceDeleted
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testResourceDeletedNotFound(): void
     {
         $body = json_encode([
@@ -556,12 +527,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleTagsChanged
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testTagsChanged(): void
     {
         $body = json_encode([
@@ -642,25 +607,27 @@ final class NotifyTest extends TestCase
             ->expects(self::once())
             ->method('invalidateTagsCache');
 
-        $image = new RemoteResource([
-            'id' => 5,
-            'remoteId' => 'upload|image|sample',
-            'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/sample',
-            'name' => 'sample',
-            'size' => 380250,
-            'tags' => ['tag1', 'tag4'],
-        ]);
+        $image = new RemoteResource(
+            remoteId: 'upload|image|sample',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/sample',
+            md5: 'r43tr4t45454324342',
+            id: 5,
+            name: 'sample',
+            size: 380250,
+            tags: ['tag1', 'tag4'],
+        );
 
-        $video = new RemoteResource([
-            'id' => 6,
-            'remoteId' => 'upload|video|video_sample',
-            'type' => 'video',
-            'url' => 'https://res.cloudinary.com/demo/video/upload/video_sample',
-            'name' => 'video_sample',
-            'size' => 3802350,
-            'tags' => ['old_tag'],
-        ]);
+        $video = new RemoteResource(
+            remoteId: 'upload|video|video_sample',
+            type: 'video',
+            url: 'https://res.cloudinary.com/demo/video/upload/video_sample',
+            md5: '3r43456fdgregregre',
+            id: 6,
+            name: 'video_sample',
+            size: 3802350,
+            tags: ['old_tag'],
+        );
 
         $this->providerMock
             ->expects(self::exactly(3))
@@ -710,12 +677,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleContextChanged
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testContextChanged(): void
     {
         $body = json_encode([
@@ -849,43 +810,46 @@ final class NotifyTest extends TestCase
                 },
             );
 
-        $image = new RemoteResource([
-            'id' => 5,
-            'remoteId' => 'upload|image|sample',
-            'type' => 'image',
-            'url' => 'https://res.cloudinary.com/demo/image/upload/sample',
-            'name' => 'sample',
-            'size' => 380250,
-            'context' => [
+        $image = new RemoteResource(
+            remoteId: 'upload|image|sample',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/sample',
+            md5: 'esf434554t5rgt4g4343',
+            id: 5,
+            name: 'sample',
+            size: 380250,
+            context: [
                 'source' => 'This was once a source',
                 'type' => 'Old type',
             ],
-        ]);
+        );
 
-        $video = new RemoteResource([
-            'id' => 6,
-            'remoteId' => 'upload|video|video_sample',
-            'type' => 'video',
-            'url' => 'https://res.cloudinary.com/demo/video/upload/video_sample',
-            'name' => 'video_sample',
-            'size' => 3802350,
-            'altText' => 'New alt text',
-            'caption' => 'New caption',
-            'context' => [
+        $video = new RemoteResource(
+            remoteId: 'upload|video|video_sample',
+            type: 'video',
+            url: 'https://res.cloudinary.com/demo/video/upload/video_sample',
+            md5: 'fewfwr43543trer',
+            id: 6,
+            name: 'video_sample',
+            size: 3802350,
+            altText: 'New alt text',
+            caption: 'New caption',
+            context: [
                 'source' => 'Old source',
             ],
-        ]);
+        );
 
-        $file = new RemoteResource([
-            'id' => 6,
-            'remoteId' => 'upload|raw|file_sample',
-            'type' => 'other',
-            'url' => 'https://res.cloudinary.com/demo/raw/upload/file_sample',
-            'name' => 'file_sample',
-            'size' => 234142,
-            'altText' => 'Old alt text',
-            'caption' => 'Old caption',
-        ]);
+        $file = new RemoteResource(
+            remoteId: 'upload|raw|file_sample',
+            type: 'other',
+            url: 'https://res.cloudinary.com/demo/raw/upload/file_sample',
+            md5: 'efregtr454erf4t45',
+            id: 6,
+            name: 'file_sample',
+            size: 234142,
+            altText: 'Old alt text',
+            caption: 'Old caption',
+        );
 
         $this->providerMock
             ->expects(self::exactly(4))
@@ -940,12 +904,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleFoldersChanged
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testFolderCreated(): void
     {
         $body = json_encode([
@@ -1005,12 +963,6 @@ final class NotifyTest extends TestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__construct
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::__invoke
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::handleFoldersChanged
-     * @covers \Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify::returnSuccess
-     */
     public function testFolderDeleted(): void
     {
         $body = json_encode([

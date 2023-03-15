@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Exception;
 
 use Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(NamedRemoteResourceNotFoundException::class)]
 final class NamedRemoteResourceNotFoundExceptionTest extends TestCase
 {
-    /**
-     * @covers \Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException::__construct
-     */
     public function testException(): void
     {
         $this->expectException(NamedRemoteResourceNotFoundException::class);

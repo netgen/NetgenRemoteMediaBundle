@@ -6,14 +6,13 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection\Compiler;
 
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractCompilerPassTestCase;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\CachePoolPass;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
+#[CoversClass(CachePoolPass::class)]
 final class CachePoolPassTest extends AbstractCompilerPassTestCase
 {
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\CachePoolPass::process
-     */
     public function testCompilerPass(): void
     {
         $this->setDefinition('cache.app', new Definition());
@@ -26,9 +25,6 @@ final class CachePoolPassTest extends AbstractCompilerPassTestCase
         );
     }
 
-    /**
-     * @covers \Netgen\Bundle\RemoteMediaBundle\DependencyInjection\CompilerPass\CachePoolPass::process
-     */
     public function testCompilerPassWithoutParameter(): void
     {
         $this->compile();

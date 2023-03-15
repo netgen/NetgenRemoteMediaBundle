@@ -10,17 +10,19 @@ use Netgen\RemoteMedia\API\Search\Result as SearchResult;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult as SearchResultFactory;
-use Netgen\RemoteMedia\Tests\AbstractTest;
+use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 
 use function count;
 
-final class SearchResultTest extends AbstractTest
+#[CoversClass(SearchResultFactoryInterface::class)]
+final class SearchResultTest extends AbstractTestCase
 {
     protected SearchResultFactoryInterface $searchResultFactory;
 
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Netgen\RemoteMedia\API\Factory\RemoteResource */
-    protected MockObject $remoteResourceFactoryMock;
+    protected MockObject|RemoteResourceFactory $remoteResourceFactoryMock;
 
     protected function setUp(): void
     {
@@ -31,12 +33,7 @@ final class SearchResultTest extends AbstractTest
         );
     }
 
-    /**
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult::__construct
-     * @covers \Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult::create
-     *
-     * @dataProvider createDataProvider
-     */
+    #[DataProvider('createDataProvider')]
     public function testCreate(array $data, SearchResult $expectedResult): void
     {
         $this->remoteResourceFactoryMock
@@ -78,22 +75,22 @@ final class SearchResultTest extends AbstractTest
                     2,
                     'dsr943565kjosdf',
                     [
-                        new RemoteResource([
-                            'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
-                            'type' => 'image',
-                            'url' => 'https://res.cloudinary.com/demo/image/upload/c87hg9xfxrd4itiim3t0.jpg',
-                            'name' => 'c87hg9xfxrd4itiim3t0',
-                            'version' => '435464523',
-                            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                        ]),
-                        new RemoteResource([
-                            'remoteId' => 'upload|video|c87hg9xfxrd4defe3t0',
-                            'type' => 'video',
-                            'url' => 'https://res.cloudinary.com/demo/image/upload/c87hg9xfxrd4defe3t0.mp4',
-                            'name' => 'c87hg9xfxrd4defe3t0',
-                            'version' => '547034322',
-                            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                        ]),
+                        new RemoteResource(
+                            remoteId: 'upload|image|c87hg9xfxrd4itiim3t0',
+                            type: 'image',
+                            url: 'https://res.cloudinary.com/demo/image/upload/c87hg9xfxrd4itiim3t0.jpg',
+                            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                            name: 'c87hg9xfxrd4itiim3t0',
+                            version: '435464523',
+                        ),
+                        new RemoteResource(
+                            remoteId: 'upload|video|c87hg9xfxrd4defe3t0',
+                            type: 'video',
+                            url: 'https://res.cloudinary.com/demo/image/upload/c87hg9xfxrd4defe3t0.mp4',
+                            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                            name: 'c87hg9xfxrd4defe3t0',
+                            version: '547034322',
+                        ),
                     ],
                 ),
             ],
@@ -114,15 +111,15 @@ final class SearchResultTest extends AbstractTest
                     1,
                     null,
                     [
-                        new RemoteResource([
-                            'remoteId' => 'upload|image|c87hg9xfxrd4itiim3t0',
-                            'type' => 'image',
-                            'url' => 'https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg',
-                            'name' => 'c87hg9xfxrd4itiim3t0',
-                            'version' => '465788331',
-                            'folder' => Folder::fromPath('media/image'),
-                            'md5' => 'e522f43cf89aa0afd03387c37e2b6e29',
-                        ]),
+                        new RemoteResource(
+                            remoteId: 'upload|image|c87hg9xfxrd4itiim3t0',
+                            type: 'image',
+                            url: 'https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg',
+                            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                            name: 'c87hg9xfxrd4itiim3t0',
+                            version: '465788331',
+                            folder: Folder::fromPath('media/image'),
+                        ),
                     ],
                 ),
             ],

@@ -13,32 +13,29 @@ use const PATHINFO_EXTENSION;
 
 final class FileStruct
 {
-    private string $uri;
-
-    private string $originalFilename;
-
-    private string $originalExtension;
+    private function __construct(
+        private string $uri,
+        private string $originalFilename,
+        private string $originalExtension,
+    ) {
+    }
 
     public static function fromUri(string $uri): self
     {
-        $uploadFile = new self();
-
-        $uploadFile->uri = $uri;
-        $uploadFile->originalFilename = pathinfo($uri, PATHINFO_BASENAME);
-        $uploadFile->originalExtension = pathinfo($uri, PATHINFO_EXTENSION);
-
-        return $uploadFile;
+        return new self(
+            $uri,
+            pathinfo($uri, PATHINFO_BASENAME),
+            pathinfo($uri, PATHINFO_EXTENSION),
+        );
     }
 
     public static function fromUploadedFile(UploadedFile $file)
     {
-        $uploadFile = new self();
-
-        $uploadFile->uri = $file->getRealPath();
-        $uploadFile->originalFilename = $file->getClientOriginalName();
-        $uploadFile->originalExtension = $file->getClientOriginalExtension();
-
-        return $uploadFile;
+        return new self(
+            $file->getRealPath(),
+            $file->getClientOriginalName(),
+            $file->getClientOriginalExtension(),
+        );
     }
 
     public function getUri(): string

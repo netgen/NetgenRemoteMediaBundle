@@ -16,21 +16,12 @@ use function array_merge;
 
 final class Variation
 {
-    private Registry $registry;
-
-    private LoggerInterface $logger;
-
-    private array $variations = [];
-
-    public function setVariations(array $variations = [])
-    {
-        $this->variations = $variations;
-    }
-
-    public function setServices(Registry $registry, ?LoggerInterface $logger = null)
-    {
-        $this->registry = $registry;
-        $this->logger = $logger ?? new NullLogger();
+    public function __construct(
+        private Registry $registry,
+        private ?LoggerInterface $logger,
+        private array $variations = [],
+    ) {
+        $this->logger = $this->logger ?? new NullLogger();
     }
 
     public function getAvailableVariations(?string $group = null): array

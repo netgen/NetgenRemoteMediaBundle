@@ -11,12 +11,8 @@ use function sprintf;
 
 final class RemoteResourceExistsException extends Exception
 {
-    private RemoteResource $remoteResource;
-
-    public function __construct(RemoteResource $remoteResource)
+    public function __construct(private RemoteResource $remoteResource)
     {
-        $this->remoteResource = $remoteResource;
-
         parent::__construct(sprintf('Remote resource with ID "%s" already exists.', $remoteResource->getRemoteId()));
     }
 

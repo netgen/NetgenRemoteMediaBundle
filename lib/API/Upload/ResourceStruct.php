@@ -9,58 +9,23 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 
 final class ResourceStruct
 {
-    private FileStruct $fileStruct;
-
-    private string $resourceType = 'auto';
-
-    private ?Folder $folder;
-
-    private string $visibility = RemoteResource::VISIBILITY_PUBLIC;
-
-    private ?string $filenameOverride;
-
-    private bool $overwrite = false;
-
-    private bool $invalidate = false;
-
-    private ?string $altText;
-
-    private ?string $caption;
-
     /**
-     * @var string[]
+     * @param string[] $tags
+     * @param array<string, string> $context
      */
-    private array $tags = [];
-
-    /**
-     * @var array<string, string>
-     */
-    private array $context = [];
-
     public function __construct(
-        FileStruct $fileStruct,
-        string $resourceType = 'auto',
-        ?Folder $folder = null,
-        string $visibility = RemoteResource::VISIBILITY_PUBLIC,
-        ?string $filenameOverride = null,
-        bool $overwrite = false,
-        bool $invalidate = false,
-        ?string $altText = null,
-        ?string $caption = null,
-        array $tags = [],
-        array $context = []
+        private FileStruct $fileStruct,
+        private string $resourceType = 'auto',
+        private ?Folder $folder = null,
+        private string $visibility = RemoteResource::VISIBILITY_PUBLIC,
+        private ?string $filenameOverride = null,
+        private bool $overwrite = false,
+        private bool $invalidate = false,
+        private ?string $altText = null,
+        private ?string $caption = null,
+        private array $tags = [],
+        private array $context = []
     ) {
-        $this->fileStruct = $fileStruct;
-        $this->resourceType = $resourceType;
-        $this->folder = $folder;
-        $this->visibility = $visibility;
-        $this->filenameOverride = $filenameOverride;
-        $this->overwrite = $overwrite;
-        $this->invalidate = $invalidate;
-        $this->altText = $altText;
-        $this->caption = $caption;
-        $this->tags = $tags;
-        $this->context = $context;
     }
 
     public function getFileStruct(): FileStruct
@@ -85,7 +50,7 @@ final class ResourceStruct
 
     public function getFilename(): ?string
     {
-        return $this->filenameOverride ?: $this->fileStruct->getOriginalFilename();
+        return $this->filenameOverride ?? $this->fileStruct->getOriginalFilename();
     }
 
     public function doOverwrite(): bool

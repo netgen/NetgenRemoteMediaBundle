@@ -41,37 +41,22 @@ use function sprintf;
 
 final class CloudinaryApiGateway implements GatewayInterface
 {
-    private Cloudinary $cloudinary;
-
     private CloudinaryApi $cloudinaryApi;
 
     private CloudinaryUploader $cloudinaryUploader;
 
     private CloudinarySearch $cloudinarySearch;
 
-    private RemoteResourceFactoryInterface $remoteResourceFactory;
-
-    private SearchResultFactoryInterface $searchResultFactory;
-
-    private SearchExpressionResolver $searchExpressionResolver;
-
-    private AuthTokenResolver $authTokenResolver;
-
     public function __construct(
-        Cloudinary $cloudinary,
-        RemoteResourceFactoryInterface $remoteResourceFactory,
-        SearchResultFactoryInterface $searchResultFactory,
-        SearchExpressionResolver $searchExpressionResolver,
-        AuthTokenResolver $authTokenResolver
+        private Cloudinary $cloudinary,
+        private RemoteResourceFactoryInterface $remoteResourceFactory,
+        private SearchResultFactoryInterface $searchResultFactory,
+        private SearchExpressionResolver $searchExpressionResolver,
+        private AuthTokenResolver $authTokenResolver
     ) {
-        $this->cloudinary = $cloudinary;
         $this->cloudinaryUploader = new CloudinaryUploader();
         $this->cloudinaryApi = new CloudinaryApi();
         $this->cloudinarySearch = new CloudinarySearch();
-        $this->remoteResourceFactory = $remoteResourceFactory;
-        $this->searchResultFactory = $searchResultFactory;
-        $this->searchExpressionResolver = $searchExpressionResolver;
-        $this->authTokenResolver = $authTokenResolver;
     }
 
     public function setServices(
@@ -207,8 +192,10 @@ final class CloudinaryApiGateway implements GatewayInterface
 
     public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void
     {
-        $options['type'] = $remoteId->getType();
-        $options['resource_type'] = $remoteId->getResourceType();
+        $options = [
+            'type' => $remoteId->getType(),
+            'resource_type' => $remoteId->getResourceType(),
+        ];
 
         try {
             $this->cloudinaryUploader->remove_all_tags([$remoteId->getResourceId()], $options);
@@ -295,7 +282,7 @@ final class CloudinaryApiGateway implements GatewayInterface
             $tags = array_merge($tags, $result['tags']);
             $nextCursor = $result['next_cursor'] ?? null;
 
-            if ($nextCursor) {
+            if ($nextCursor !== null) {
                 $options['next_cursor'] = $nextCursor;
             }
         } while ($nextCursor);

@@ -6,18 +6,14 @@ namespace Netgen\RemoteMedia\Tests\API\Values;
 
 use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Values\TimestampableTrait;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(TimestampableTrait::class)]
 final class TimestampableTraitTest extends TestCase
 {
     use TimestampableTrait;
 
-    /**
-     * @covers \Netgen\RemoteMedia\API\Values\TimestampableTrait::getCreatedAt
-     * @covers \Netgen\RemoteMedia\API\Values\TimestampableTrait::getUpdatedAt
-     * @covers \Netgen\RemoteMedia\API\Values\TimestampableTrait::setUpdatedAt
-     * @covers \Netgen\RemoteMedia\API\Values\TimestampableTrait::updateTimestamps
-     */
     public function test(): void
     {
         self::assertNull(
