@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\PersistentCollection;
 
 use function array_diff;
@@ -12,14 +11,6 @@ use function array_key_exists;
 use function array_unique;
 use function array_values;
 use function in_array;
-
-/**
- * @ORM\Entity()
- *
- * @ORM\Table(name="ngrm_remote_resource")
- *
- * @ORM\HasLifecycleCallbacks()
- */
 
 class RemoteResource
 {
@@ -50,119 +41,28 @@ class RemoteResource
     ];
 
     /**
-     * @var \Doctrine\ORM\PersistentCollection|array
-     *
-     * @ORM\OneToMany(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation", mappedBy="remoteResource", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    public $locations;
-
-    /**
-     * @ORM\Id()
-     *
-     * @ORM\GeneratedValue()
-     *
-     * @ORM\Column(type="integer")
-     */
-    private ?int $id = null;
-
-    /**
-     * @ORM\Column(name="remote_id", unique=true, type="string", length=255)
-     */
-    private string $remoteId;
-
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private string $type;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $url;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private string $name;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private ?string $version = null;
-
-    /**
-     * @ORM\Column(type="object", nullable=true)
-     */
-    private ?Folder $folder = null;
-
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
-    private string $visibility = self::VISIBILITY_PUBLIC;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private int $size = 0;
-
-    /**
-     * @ORM\Column(name="alt_text", type="text", length=1000, nullable=true)
-     */
-    private ?string $altText = null;
-
-    /**
-     * @ORM\Column(type="text", length=1000, nullable=true)
-     */
-    private ?string $caption = null;
-
-    /**
-     * @var string[]
-     *
-     * @ORM\Column(type="array", nullable=true)
-     */
-    private array $tags = [];
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="text", length=64)
-     */
-    private string $md5;
-
-    /**
-     * @var array<string, mixed>
-     *
-     * @ORM\Column(name="metadata", type="array", nullable=true)
-     */
-    private array $metadata = [];
-
-    /**
-     * @var array<string, mixed>
-     *
-     * @ORM\Column(name="context", type="array", nullable=true)
-     */
-    private array $context = [];
-
-    /**
-     * @param array<string,mixed> $properties
+     * @param string[] $tags
+     * @param array<string,mixed> $metadata
+     * @param array<string,mixed> $context
+     * @param \Doctrine\ORM\PersistentCollection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[] $locations
      */
     public function __construct(
-        string $remoteId,
-        string $type,
-        string $url,
-        string $md5,
-        ?int $id = null,
-        ?string $name = null,
-        ?string $version = null,
-        ?string $visibility = self::VISIBILITY_PUBLIC,
-        ?Folder $folder = null,
-        int $size = 0,
-        ?string $altText = null,
-        ?string $caption = null,
-        array $tags = [],
-        array $metadata = [],
-        array $context = [],
-        PersistentCollection|array $locations = []
+        private string $remoteId,
+        private string $type,
+        private string $url,
+        private string $md5,
+        private ?int $id = null,
+        private ?string $name = null,
+        private ?string $version = null,
+        private ?string $visibility = self::VISIBILITY_PUBLIC,
+        private ?Folder $folder = null,
+        private int $size = 0,
+        private ?string $altText = null,
+        private ?string $caption = null,
+        private array $tags = [],
+        private array $metadata = [],
+        private array $context = [],
+        public PersistentCollection|array $locations = []
     ) {
     }
 

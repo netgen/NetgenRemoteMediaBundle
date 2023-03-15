@@ -4,61 +4,19 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
-use Doctrine\ORM\Mapping as ORM;
 use Netgen\RemoteMedia\Exception\CropSettingsNotFoundException;
 
-/**
- * @ORM\Entity
- *
- * @ORM\Table(name="ngrm_remote_resource_location")
- *
- * @ORM\HasLifecycleCallbacks()
- */
 class RemoteResourceLocation
 {
     use TimestampableTrait;
 
-    /**
-     * @ORM\Id()
-     *
-     * @ORM\GeneratedValue()
-     *
-     * @ORM\Column(type="integer")
-     */
-    private ?int $id = null;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResource", inversedBy="locations")
-     */
-    private RemoteResource $remoteResource;
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private ?string $source = null;
-
-    /**
-     * @var \Netgen\RemoteMedia\API\Values\CropSettings[]
-     *
-     * @ORM\Column(name="crop_settings", type="array")
-     */
-    private array $cropSettings = [];
-
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private ?string $watermarkText = null;
-
     public function __construct(
-        RemoteResource $remoteResource,
-        ?string $source = null,
-        array $cropSettings = [],
-        ?string $watermarkText = null
+        private RemoteResource $remoteResource,
+        private ?string $source = null,
+        private array $cropSettings = [],
+        private ?string $watermarkText = null,
+        private ?int $id = null,
     ) {
-        $this->remoteResource = $remoteResource;
-        $this->source = $source;
-        $this->cropSettings = $cropSettings;
-        $this->watermarkText = $watermarkText;
     }
 
     public function getId(): ?int

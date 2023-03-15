@@ -1,0 +1,25 @@
+<doctrine-mapping xmlns="https://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="https://doctrine-project.org/schemas/orm/doctrine-mapping
+                          https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Netgen\RemoteMedia\API\Values\RemoteResourceLocation" table="ngrm_remote_resource_location">
+
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="source" column="source" type="string" length="255" nullable="true" />
+        <field name="cropSettings" column="crop_settings" type="array" />
+        <field name="watermarkText" column="watermark_text" type="text" length="1000" nullable="true" />
+        <field name="createdAt" column="created_at" type="datetime_immutable" />
+        <field name="updatedAt" column="updated_at" type="datetime_immutable" />
+
+        <many-to-one field="remoteResource" target-entity="Netgen\RemoteMedia\API\Values\RemoteResource" inversed-by="locations">
+            <cascade><cascade-remove /></cascade>
+            <join-column name="remote_resource_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
+        </many-to-one>
+
+    </entity>
+
+</doctrine-mapping>
