@@ -20,6 +20,11 @@
             <join-column name="remote_resource_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
         </many-to-one>
 
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="updateTimestamps"/>
+            <lifecycle-callback type="preUpdate" method="updateTimestamps"/>
+        </lifecycle-callbacks>
+
     </entity>
 
 </doctrine-mapping>
