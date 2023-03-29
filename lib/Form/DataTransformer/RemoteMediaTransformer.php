@@ -76,22 +76,6 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         $remoteResource->setCaption($value['caption'] ?? null);
         $remoteResource->setTags($value['tags']);
 
-        if (!$remoteResourceLocation instanceof RemoteResourceLocation) {
-            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
-        }
-
-        if ($remoteResourceLocation->getRemoteResource()->getRemoteId() !== $remoteResource->getRemoteId()) {
-            $this->provider->removeLocation($remoteResourceLocation);
-
-            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
-        }
-
-        $remoteResourceLocation->setSource($value['source'] ?? null);
-
-        $remoteResourceLocation->setCropSettings(
-            $this->resolveCropSettings($value),
-        );
-
         if ($needsUpdateOnRemote) {
             try {
                 $this->provider->updateOnRemote($remoteResource);
@@ -104,8 +88,31 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             }
         }
 
-        $this->provider->store($remoteResource);
+        $remoteResource = $this->provider->store($remoteResource);
+
+        if (!$remoteResourceLocation instanceof RemoteResourceLocation) {
+            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
+        }
+
+        $oldLocation = null;
+        if ($remoteResourceLocation->getRemoteResource()->getRemoteId() !== $remoteResource->getRemoteId()) {
+            $oldLocation = $remoteResourceLocation;
+            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
+
+            $this->provider->storeLocation($remoteResourceLocation);
+        }
+
+        $remoteResourceLocation->setSource($value['source'] ?? null);
+
+        $remoteResourceLocation->setCropSettings(
+            $this->resolveCropSettings($value),
+        );
+
         $this->provider->storeLocation($remoteResourceLocation);
+
+        if ($oldLocation !== null) {
+            $this->provider->removeLocation($oldLocation);
+        }
 
         return $remoteResourceLocation;
     }

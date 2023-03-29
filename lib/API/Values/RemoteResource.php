@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
-use Doctrine\ORM\PersistentCollection;
+use Doctrine\Common\Collections\Collection;
 
 use function array_diff;
 use function array_key_exists;
@@ -44,7 +44,7 @@ class RemoteResource
      * @param string[] $tags
      * @param array<string,mixed> $metadata
      * @param array<string,mixed> $context
-     * @param \Doctrine\ORM\PersistentCollection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[] $locations
+     * @param \Doctrine\Common\Collections\Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[] $locations
      */
     public function __construct(
         private string $remoteId,
@@ -62,7 +62,7 @@ class RemoteResource
         private array $tags = [],
         private array $metadata = [],
         private array $context = [],
-        public PersistentCollection|array $locations = []
+        private Collection|array $locations = [],
     ) {
     }
 
@@ -335,5 +335,13 @@ class RemoteResource
         unset($this->context[$name]);
 
         return $this;
+    }
+
+    /**
+     * @return \Doctrine\Common\Collections\Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[]
+     */
+    public function getLocations(): Collection|array
+    {
+        return $this->locations;
     }
 }
