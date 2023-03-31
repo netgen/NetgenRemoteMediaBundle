@@ -111,6 +111,12 @@ export default {
   h3.title {
       word-break: break-word;
   }
+
+  .image-wrap {
+    img {
+      width: 100%;
+    }
+  }
 }
 
 .input-file-name-wrapper {
