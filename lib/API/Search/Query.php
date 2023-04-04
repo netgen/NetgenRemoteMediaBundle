@@ -13,7 +13,7 @@ final class Query
 {
     /**
      * @param string[] $types
-     * @param string[] $folders
+     * @param \Netgen\RemoteMedia\API\Values\Folder[] $folders
      * @param string[] $visibilities
      * @param string[] $tags
      * @param string[] $remoteIds
