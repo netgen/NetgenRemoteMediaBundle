@@ -1,39 +1,56 @@
 <template>
-  <div>
-    <preview
-        :field-id="fieldId"
-        :config="config"
-        :selected-image="selectedImage"
-        ref="preview"
-    ></preview>
+    <div>
+        <preview
+                ref="preview"
+                :config="config"
+                :field-id="fieldId"
+                :selected-image="selectedImage"
+                @preview-change="dispatchVanillaChangeEvent"
+        ></preview>
 
-    <div :id="'ngremotemedia-buttons-'+fieldId" class="ngremotemedia-buttons" :data-id="fieldId">
+        <div :id="'ngremotemedia-buttons-'+fieldId" :data-id="fieldId" class="ngremotemedia-buttons">
+            <input v-model="selectedImage.id" :name="this.config.inputFields.remoteId" class="media-id" type="hidden"/>
 
-      <input type="hidden" :name="this.config.inputFields.remoteId" v-model="selectedImage.id" class="media-id" />
+            <input v-if="isCroppable" :value="this.config.translations.interactions_scale"
+                   class="ngremotemedia-scale hid btn" type="button"
+                   @click="handleCropClicked">
+            <input v-if="!!selectedImage.id" :value="this.config.translations.interactions_remove_media"
+                   class="ngremotemedia-remove-file btn"
+                   type="button" @click="handleRemoveMediaClicked"/>
 
-      <input v-if="isCroppable" type="button" class="ngremotemedia-scale hid btn" @click="handleCropClicked" :value="this.config.translations.interactions_scale" >
-      <input v-if="!!selectedImage.id" type="button" @click="handleRemoveMediaClicked" class="ngremotemedia-remove-file btn" :value="this.config.translations.interactions_remove_media" />
+            <input :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media"
+                   class="ngremotemedia-remote-file btn" type="button"
+                   @click="handleBrowseMediaClicked"/>
 
-      <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file btn" :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media" />
+            <div v-if="!this.config.disableUpload" class="ngremotemedia-local-file-container">
+                <button class="btn btn-default ngremotemedia-local-file btn upload-from-disk" type="button">
+                    <Label :for="fieldId + '_file_upload'">
+                        {{ this.config.translations.interactions_quick_upload }}
+                    </Label>
+                    <input :id="fieldId + '_file_upload'" ref="fileUploadInput" :name="this.config.inputFields.new_file"
+                           hidden
+                           type="file" @change="handleFileInputChange">
+                </button>
+            </div>
+        </div>
 
-      <div v-if="!this.config.disableUpload" class="ngremotemedia-local-file-container">
-        <button type="button" class="btn btn-default ngremotemedia-local-file btn upload-from-disk">
-          <Label :for="fieldId + '_file_upload'">
-            {{ this.config.translations.interactions_quick_upload }}
-          </Label>
-          <input hidden :id="fieldId + '_file_upload'" :name="this.config.inputFields.new_file" type="file" @change="handleFileInputChange" ref="fileUploadInput">
-        </button>
-      </div>
+        <input v-model="stringifiedVariations" :name="this.config.inputFields.cropSettings" class="media-id"
+               type="hidden"/>
+        <portal to="ngrm-body-modal">
+            <crop-modal v-if="cropModalOpen" :available-variations="this.config.availableVariations"
+                        :selected-image="selectedImage"
+                        :translations="config.translations" @change="handleVariationCropChange"
+                        @close="handleCropModalClose"></crop-modal>
+            <media-modal v-if="mediaModalOpen" :config="config" :paths="config.paths"
+                         :selected-media-id="selectedImage.id"
+                         :tags="tags" :types="types" :visibilities="visibilities"
+                         @close="handleMediaModalClose" @media-selected="handleMediaSelected"></media-modal>
+            <upload-modal v-if="uploadModalOpen" :config="config" :file="newFile"
+                          :visibilities="visibilities" @close="handleUploadModalClose"
+                          @uploaded="handleResourceUploaded"></upload-modal>
+        </portal>
+        <portal-target class="ngrm-model-portal" name="ngrm-body-modal"></portal-target>
     </div>
-
-    <input type="hidden" :name="this.config.inputFields.cropSettings" v-model="stringifiedVariations" class="media-id"/>
-    <portal to="ngrm-body-modal">
-      <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :translations="config.translations" :selected-image="selectedImage" :available-variations="this.config.availableVariations"></crop-modal>
-      <media-modal :config="config" :tags="tags" :types="types" :visibilities="visibilities" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
-      <upload-modal v-if="uploadModalOpen" :config="config" :visibilities="visibilities" @close="handleUploadModalClose" @uploaded="handleResourceUploaded" :file="newFile" ></upload-modal>
-    </portal>
-    <portal-target name="ngrm-body-modal" class="ngrm-model-portal"></portal-target>
-  </div>
 </template>
 
 <script>
@@ -60,7 +77,7 @@ export default {
     },
     stringifiedVariations() {
       return JSON.stringify(
-          objectFilter(truthy)(this.selectedImage.variations)
+        objectFilter(truthy)(this.selectedImage.variations)
       );
     },
   },
@@ -78,6 +95,20 @@ export default {
     };
   },
   methods: {
+    dispatchVanillaChangeEvent() {
+      this.$nextTick(function () {
+        this.$el.dispatchEvent(
+          new CustomEvent(
+            'ngrm-change',
+            {
+              detail: {
+                inputFields: this.config.inputFields,
+              }
+            }
+          )
+        );
+      })
+    },
     prepareDomForModal() {
       const query = document.querySelector('.ez-page-builder-wrapper')
       if (query) {
@@ -93,30 +124,16 @@ export default {
     handleMediaModalClose() {
       this.mediaModalOpen = false;
       this.resetDomAfterModal();
-      this.dispatchVanillaModalCloseEvent();
+      this.dispatchVanillaChangeEvent();
     },
     handleCropModalClose() {
       this.cropModalOpen = false;
       this.resetDomAfterModal();
-      this.dispatchVanillaModalCloseEvent();
+      this.dispatchVanillaChangeEvent();
     },
     handleUploadModalClose() {
       this.uploadModalOpen = false;
-      this.dispatchVanillaModalCloseEvent();
-    },
-    dispatchVanillaModalCloseEvent() {
-      this.$nextTick(function() {
-        this.$el.dispatchEvent(
-            new CustomEvent(
-                'ngrm-modal-close',
-                {
-                  detail: {
-                    inputFields: this.config.inputFields,
-                  }
-                }
-            )
-        );
-      })
+      this.dispatchVanillaChangeEvent();
     },
     handleMediaSelected(item) {
       this.selectedImage = {
@@ -136,7 +153,7 @@ export default {
       };
 
       this.mediaModalOpen = false;
-      this.dispatchVanillaModalCloseEvent();
+      this.dispatchVanillaChangeEvent();
     },
     handleVariationCropChange(newValues) {
       this.selectedImage = {
@@ -146,6 +163,8 @@ export default {
           ...newValues
         }
       };
+
+      this.dispatchVanillaChangeEvent();
     },
     handleResourceUploaded(item) {
       this.selectedImage = {
@@ -165,7 +184,7 @@ export default {
       };
 
       this.uploadModalOpen = false;
-      this.dispatchVanillaModalCloseEvent();
+      this.dispatchVanillaChangeEvent();
     },
     handleCropClicked() {
       this.cropModalOpen = true;
@@ -188,6 +207,8 @@ export default {
         width: 0
       };
       this.$refs.fileUploadInput.value = null;
+
+      this.dispatchVanillaChangeEvent();
     },
     async fetchFacets() {
       const response = await fetch(this.config.paths.load_facets);
@@ -197,19 +218,19 @@ export default {
       this.visibilities = [];
 
       data.types.forEach((type) => {
-        if(this.config.allowedTypes.indexOf(type.id) !== -1 || this.config.allowedTypes.length === 0) {
+        if (this.config.allowedTypes.indexOf(type.id) !== -1 || this.config.allowedTypes.length === 0) {
           this.types.push(type);
         }
       });
 
       data.tags.forEach((tag) => {
-        if(this.config.allowedTags.indexOf(tag.id) !== -1 || this.config.allowedTags.length === 0) {
+        if (this.config.allowedTags.indexOf(tag.id) !== -1 || this.config.allowedTags.length === 0) {
           this.tags.push(tag);
         }
       });
 
       data.visibilities.forEach((visibility) => {
-        if(this.config.allowedVisibilities.indexOf(visibility.id) !== -1 || this.config.allowedVisibilities.length === 0) {
+        if (this.config.allowedVisibilities.indexOf(visibility.id) !== -1 || this.config.allowedVisibilities.length === 0) {
           this.visibilities.push(visibility);
         }
       });
@@ -229,12 +250,12 @@ export default {
     }
   },
   watch: {
-    selectedImage: function() {
+    selectedImage: function () {
       this.$emit("selectedImageChanged", this.selectedImage);
     }
   },
   mounted() {
-    this.$nextTick(function() {
+    this.$nextTick(function () {
       const modalPortal = document.querySelector('.ngrm-model-portal');
 
       document.body.prepend(modalPortal);
