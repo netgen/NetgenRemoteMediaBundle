@@ -11,18 +11,32 @@
     {{ form_widget(form.locationId) }}
     {{ form_widget(form.source) }}
 
+    {% set available_variations = [] %}
+    {% set allowed_variations = form.vars.allowed_variations|default([]) %}
+
+    {% if allowed_variations|length > 0 %}
+        {% for variation_name, variation_config in ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format %}
+            {% if variation_name in allowed_variations %}
+                {% set available_variations = available_variations|merge({(variation_name): variation_config}) %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        {% set available_variations = ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format %}
+    {% endif %}
+
     {% include '@NetgenRemoteMedia/app/interactions.html.twig' with {
         'field_id': id,
         'location_id': form.children.locationId.vars.value,
         'variation_group': form.vars.variation_group ?: 'default',
         'variation_settings_json': form.vars.value ? form.vars.value.cropSettings : '{}',
         'input_fields': input_fields,
-        'available_variations': ngrm_available_croppable_variations(variation_group)|ngrm_scaling_format,
+        'available_variations': available_variations,
         'allowed_visibilities': form.vars.allowed_visibilities|default([]),
         'allowed_types': form.vars.allowed_types|default([]),
         'allowed_tags': form.vars.allowed_tags|default([]),
         'parent_folder': form.vars.parent_folder,
         'folder': form.vars.folder,
-        'upload_context': form.vars.upload_context|default([])
+        'upload_context': form.vars.upload_context|default([]),
+        'disable_upload': form.vars.disable_upload|default(false)
     } %}
 {% endblock %}

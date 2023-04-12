@@ -16,7 +16,7 @@
 
       <input type="button" @click="handleBrowseMediaClicked" class="ngremotemedia-remote-file button" :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media" />
 
-      <div class="ngremotemedia-local-file-container">
+      <div v-if="!this.config.disableUpload" class="ngremotemedia-local-file-container">
         <button type="button" class="btn btn-default ngremotemedia-local-file button upload-from-disk" @click="handleScrollTop">
           <Label :for="fieldId + '_file_upload'">
             {{ this.config.translations.interactions_quick_upload }}

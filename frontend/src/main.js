@@ -40,6 +40,7 @@ const initVue = (el) => {
                 parentFolder: null,
                 folder: null,
                 uploadContext: {},
+                disableUpload: false,
             },
             selectedImage: {
                 id: '',

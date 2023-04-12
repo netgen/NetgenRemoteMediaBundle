@@ -13,6 +13,7 @@
 {% set parent_folder = parent_folder|default(null) %}
 {% set folder = folder|default(null) %}
 {% set upload_context = upload_context|default([]) %}
+{% set disable_upload = disable_upload|default(false) %}
 
 {% set location = null %}
 {% if location_id %}
@@ -113,7 +114,8 @@
     'allowedTags': allowed_tags,
     'parentFolder': parent_folder,
     'folder': folder,
-    'uploadContext': upload_context
+    'uploadContext': upload_context,
+    'disableUpload': disable_upload
 } %}
 
 {% set browse_url = '' %}

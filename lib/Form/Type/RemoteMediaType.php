@@ -32,6 +32,7 @@ final class RemoteMediaType extends AbstractType
         $resolver->setDefaults([
             'data_class' => null,
             'variation_group' => 'default',
+            'allowed_variations' => [],
             'allowed_visibilities' => [],
             'allowed_types' => [],
             'allowed_tags' => [],
@@ -39,6 +40,7 @@ final class RemoteMediaType extends AbstractType
             'folder' => null,
             'upload_context' => [],
             'location_source' => null,
+            'disable_upload' => false,
         ]);
     }
 
@@ -97,6 +99,7 @@ final class RemoteMediaType extends AbstractType
 
         $view->vars = array_replace($view->vars, [
             'variation_group' => $options['variation_group'] ?? 'default',
+            'allowed_variations' => $options['allowed_variations'] ?? [],
             'allowed_visibilities' => array_intersect($options['allowed_visibilities'], $this->provider->getSupportedVisibilities()),
             'allowed_types' => array_intersect($options['allowed_types'], $this->provider->getSupportedTypes()),
             'allowed_tags' => array_intersect($options['allowed_tags'], $this->provider->listTags()),
@@ -107,6 +110,7 @@ final class RemoteMediaType extends AbstractType
                 ? ['id' => $folder->getPath(), 'label' => $folder->getName()]
                 : null,
             'upload_context' => $uploadContext,
+            'disable_upload' => $options['disable_upload'] ?? false,
         ]);
     }
 }
