@@ -101,7 +101,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         $this->providerMock
             ->expects(self::once())
             ->method('store')
-            ->with($expectedLocation->getRemoteResource());
+            ->with($expectedLocation->getRemoteResource())
+            ->willReturn($expectedLocation->getRemoteResource());
 
         $this->providerMock
             ->expects(self::once())
@@ -176,7 +177,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         $this->providerMock
             ->expects(self::once())
             ->method('store')
-            ->with($expectedLocation->getRemoteResource());
+            ->with($expectedLocation->getRemoteResource())
+            ->willReturn($expectedLocation->getRemoteResource());
 
         $this->providerMock
             ->expects(self::once())
@@ -247,7 +249,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         $this->providerMock
             ->expects(self::once())
             ->method('store')
-            ->with($expectedLocation->getRemoteResource());
+            ->with($expectedLocation->getRemoteResource())
+            ->willReturn($expectedLocation->getRemoteResource());
 
         $this->providerMock
             ->expects(self::once())
@@ -417,7 +420,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         $this->providerMock
             ->expects(self::once())
             ->method('store')
-            ->with($expectedLocation->getRemoteResource());
+            ->with($expectedLocation->getRemoteResource())
+            ->willReturn($expectedLocation->getRemoteResource());
 
         $this->providerMock
             ->expects(self::once())
@@ -539,7 +543,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         $this->providerMock
             ->expects(self::once())
             ->method('store')
-            ->with($newResource);
+            ->with($newResource)
+            ->willReturn($newResource);
 
         $this->providerMock
             ->expects(self::once())

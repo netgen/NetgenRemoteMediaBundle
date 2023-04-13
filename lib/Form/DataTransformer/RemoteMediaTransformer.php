@@ -98,8 +98,6 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         if ($remoteResourceLocation->getRemoteResource()->getRemoteId() !== $remoteResource->getRemoteId()) {
             $oldLocation = $remoteResourceLocation;
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
-
-            $this->provider->storeLocation($remoteResourceLocation);
         }
 
         $remoteResourceLocation->setSource($value['source'] ?? null);
