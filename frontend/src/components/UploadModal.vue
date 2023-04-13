@@ -1,7 +1,7 @@
 <template>
   <modal title="Upload media" @close="$emit('close')">
     <div :class="loading ? 'loading' : ''">
-      <select-folder :config="config" :selected-folder="selectedFolder" @change="handleFolderChange"></select-folder>
+      <select-folder :config="config" :selected-folder="selectedFolder" @select="handleFolderChange" @change="handleFolderChange"></select-folder>
 
       <div class="input-file-name-wrapper">
         <div v-if="this.error" class="error">

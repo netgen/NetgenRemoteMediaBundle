@@ -32,7 +32,7 @@
             <span class="name">{{name}}</span>
             <span class="formatted-size">{{formattedSize(name)}}</span>
           </div>
-          <a v-if="!addingVariations" href="#">
+          <a v-if="!addingVariations">
             <span class="circle-orange"></span>
             <span class="ngrm-icon-trash" @click="removeItem(name)"></span>
           </a>

@@ -1,0 +1,13 @@
+{% block remote_media_folder_widget %}
+    {% set input_fields = {} %}
+    {% for child in form.children %}
+        {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
+    {% endfor %}
+
+    {% include '@NetgenRemoteMedia/app/select_folder.html.twig' with {
+        'field_id': id,
+        'input_fields': input_fields,
+        'parent_folder': form.vars.parent_folder,
+        'selected_folder': value ? value.folder : null
+    } %}
+{% endblock %}

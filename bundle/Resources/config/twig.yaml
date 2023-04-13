@@ -1,2 +1,3 @@
 form_themes:
     - '@NetgenRemoteMedia/form/remote_media_type.html.twig'
+    - '@NetgenRemoteMedia/form/remote_media_folder_type.html.twig'

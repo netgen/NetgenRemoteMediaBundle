@@ -4,11 +4,12 @@ import 'cropperjs/dist/cropper.css';
 import Interactions from './components/Interactions';
 import { initDirective } from './utility/directives';
 import './utility/polyfills';
+import SelectFolderInteraction from "./components/SelectFolderInteraction.vue";
 
 Vue.config.productionTip = false;
 
-const initVue = (el) => {
-    window[`ngrm_app_${el.dataset.id}`] = new Vue({
+const initInteractionsVue = (el) => {
+    window[`ngrm_interactions_vue_${el.dataset.id}`] = new Vue({
         el,
         directives: {
           init: initDirective
@@ -64,17 +65,54 @@ const initVue = (el) => {
     });
 };
 
+const initSelectFolderVue = (el) => {
+    window[`ngrm_select_folder_vue_${el.dataset.id}`] = new Vue({
+        el,
+        directives: {
+            init: initDirective
+        },
+        data: {
+            config: {
+                paths: {
+                    load_folders: '/folder/load',
+                    create_folder: '/folder/create',
+                },
+                translations: {},
+                inputFields: {
+                    'folder': 'folder',
+                },
+            },
+            selectedFolder: null
+        },
+        components: {
+            'select-folder-interaction': SelectFolderInteraction
+        }
+    });
+};
+
 const observerCallback = () => {
     var containers = document.getElementsByClassName('ngremotemedia-container');
 
     for(var i=0; i < containers.length; i++) {
         let el = containers[i];
 
-        if (typeof window[`ngrm_app_${el.dataset.id}`] !== 'undefined') {
+        if (typeof window[`ngrm_interactions_vue_${el.dataset.id}`] !== 'undefined') {
             continue;
         }
 
-        initVue(el);
+        initInteractionsVue(el);
+    }
+
+    containers = document.getElementsByClassName('ngremotemedia-select-folder-container');
+
+    for(var i=0; i < containers.length; i++) {
+        let el = containers[i];
+
+        if (typeof window[`ngrm_select_folder_vue_${el.dataset.id}`] !== 'undefined') {
+            continue;
+        }
+
+        initSelectFolderVue(el);
     }
 };
 

@@ -1,0 +1,30 @@
+{% trans_default_domain 'ngremotemedia' %}
+
+{% set field_id = field_id|default('ngrm') %}
+{% set parent_folder = parent_folder|default(null) %}
+{% set selected_folder = selected_folder|default(null) %}
+
+{% set config = {
+    'paths': {
+        'load_folders': path('netgen_remote_media_ajax_folder_load'),
+        'create_folder': path('netgen_remote_media_ajax_folder_create'),
+    },
+    'translations': {
+        'upload_breadcrumbs_info': 'ngrm.edit.vue.upload.breadcrumbs_info'|trans,
+        'upload_root_folder': 'ngrm.edit.vue.upload.root_folder'|trans,
+        'upload_info_text': 'ngrm.edit.vue.upload.info_text'|trans,
+        'upload_button_select': 'ngrm.edit.vue.upload.button.select'|trans,
+        'upload_button_create': 'ngrm.edit.vue.upload.button.create'|trans,
+    },
+    'inputFields': input_fields,
+    'parentFolder': parent_folder,
+} %}
+
+<div
+    class="ngremotemedia-select-folder-container"
+    data-id="{{ field_id }}"
+    v-init:selected-folder='{{ selected_folder ? '"' ~ selected_folder ~ '"' : null }}'
+    v-init:config='{{ config|json_encode }}'
+>
+    <select-folder-interaction :config="config" :selected-folder="selectedFolder" />
+</div>

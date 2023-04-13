@@ -17,7 +17,7 @@
         {{ this.config.translations.upload_info_text }}
       </div>
 
-      <div class="media" v-for="folder in folders" :key="folder.id" :class="{selected: folder.id === selectedFolder}">
+      <div class="media" v-for="folder in folders" :key="folder.id" :class="{selected: folder.id === _self.folder}">
         <div class="media-container" v-on:dblclick="openFolder(folder.id)">
           <span class="file-placeholder">
             <span class="icon-doc">
@@ -26,7 +26,7 @@
           </span>
           <Label class="filename">{{folder.label}}</Label>
         </div>
-        <button type="button" @click="$emit('change', folder.id)" class="btn btn-blue select-btn">
+        <button type="button" @click="$emit('select', folder.id)" class="btn btn-blue select-btn">
           {{ _self.config.translations.upload_button_select }}
         </button>
       </div>
@@ -63,12 +63,14 @@ export default {
       newFolder: null,
       breadcrumbs: [],
       loading: false,
-      allowCreate: true
+      allowCreate: true,
+      folder: this.selectedFolder,
     };
   },
   methods: {
     openFolder(folderPath) {
-      this.$emit('change', folderPath);
+      this.folder = folderPath;
+      this.$emit('change', this.folder);
       this.loadSubFolders(folderPath);
     },
     async loadSubFolders(folderPath) {
@@ -140,14 +142,14 @@ export default {
       this.loading = true;
 
       var data = new FormData();
-      if (this.selectedFolder) {
-        data.append('parent', this.selectedFolder);
+      if (this.folder) {
+        data.append('parent', this.folder);
       }
       data.append('folder', this.newFolder);
 
       await axios.post(this.config.paths.create_folder, data);
       this.folders.push({
-        'id': this.selectedFolder !== null ? this.selectedFolder + '/' + this.newFolder : this.newFolder,
+        'id': this.folder !== null ? this.folder + '/' + this.newFolder : this.newFolder,
         'label': this.newFolder
       });
       this.newFolder = null;
@@ -159,7 +161,7 @@ export default {
       folder = this.config.folder.id;
       this.allowCreate = false;
 
-      this.$emit('change', folder);
+      this.folder = folder;
       this.generateBreadcrumbs(folder);
 
       return;
