@@ -15,6 +15,7 @@ build
 frontend/dist/
 studio.json
 yarn.lock
+.phpunit.cache/
 
 # local env files
 .env.local
