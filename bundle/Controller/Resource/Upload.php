@@ -15,6 +15,7 @@ use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function implode;
 use function in_array;
@@ -24,11 +25,17 @@ final class Upload extends AbstractController
 {
     private FileHashFactoryInterface $fileHashFactory;
 
-    public function __construct(ProviderInterface $provider, FileHashFactoryInterface $fileHashFactory)
-    {
+    private TranslatorInterface $translator;
+
+    public function __construct(
+        ProviderInterface $provider,
+        FileHashFactoryInterface $fileHashFactory,
+        TranslatorInterface $translator,
+    ) {
         parent::__construct($provider);
 
         $this->fileHashFactory = $fileHashFactory;
+        $this->translator = $translator;
     }
 
     public function __invoke(Request $request): Response
@@ -48,12 +55,30 @@ final class Upload extends AbstractController
 
         if (!in_array($visibility, RemoteResource::SUPPORTED_VISIBILITIES, true)) {
             throw new InvalidArgumentException(
-                'Invalid visibility option "' . $visibility . '", supported options: "' . implode('", "', RemoteResource::SUPPORTED_VISIBILITIES) . '".',
+                $this->translator->trans(
+                    'ngrm.edit.vue.upload.error.invalid_visibility',
+                    [
+                        '%visibility%' => $visibility,
+                        '%supported_visibilities%' => implode('", "', $this->provider->getSupportedVisibilities()),
+                    ],
+                    'ngremotemedia',
+                ),
             );
         }
 
         /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
         $file = $request->files->get('file');
+
+        if (!$file->isFile()) {
+            throw new InvalidArgumentException(
+                $this->translator->trans(
+                    'ngrm.edit.vue.upload.error.file_upload_failed',
+                    [],
+                    'ngremotemedia',
+                ),
+            );
+        }
+
         $md5 = $this->fileHashFactory->createHash($file->getRealPath());
         $fileStruct = FileStruct::fromUploadedFile($file);
         $resourceStruct = new ResourceStruct(

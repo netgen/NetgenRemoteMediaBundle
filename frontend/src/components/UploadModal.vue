@@ -92,7 +92,7 @@ export default {
             this.existingResource = error.response.data;
             this.loading = false;
           } else {
-            this.error = 'Error ' + error.response.status + ' - ' + error.response.statusText;
+            this.error = error.response.data.detail ? error.response.data.detail : 'Error ' + error.response.status + ' - ' + error.response.statusText;
             this.loading = false;
           }
         });

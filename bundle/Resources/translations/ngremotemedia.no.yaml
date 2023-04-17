@@ -82,5 +82,8 @@ ngrm:
                 placeholder:
                     new_folder: 'New folder name'
                 error:
+                    missing_file: 'Missing file to upload'
                     existing_resource: 'Different resource with same name already exists in this folder! Change folder, filename, use overwrite or '
                     unsupported_resource_type: "Resource has been uploaded but it's type is not supported so it can't be used here! Supported types: "
+                    invalid_visibility: 'Invalid visibility option "%visibility%", supported options: "%supported_visibilities%"'
+                    file_upload_failed: 'File upload failed; the file might be too big or corrupted. Check your server file upload size settings.'
