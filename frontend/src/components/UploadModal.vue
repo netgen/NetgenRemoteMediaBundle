@@ -73,8 +73,8 @@ export default {
       data.append('overwrite', this.overwrite);
       data.append('visibility', this.visibility);
 
-      for (let key in this.config.uploadContext) {
-        data.append(`upload_context[${key}]`, this.config.uploadContext[key]);
+      for (const [key, value] of Object.entries(this.config.uploadContext)) {
+        data.append(`upload_context[${key}]`, value);
       }
 
       await axios.post(this.config.paths.upload_resources, data)
