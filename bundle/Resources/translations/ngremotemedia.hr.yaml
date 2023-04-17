@@ -1,0 +1,91 @@
+ngrm:
+    supported_types:
+        image: 'Slika'
+        video: 'Video'
+        audio: 'Audio'
+        document: 'Dokument'
+        other: 'Ostalo'
+    supported_visibilities:
+        public: 'Javno'
+        private: 'Privatno'
+        protected: 'Zaštićeno'
+    edit:
+        form:
+            field:
+                alt_text: 'Alternativni tekst'
+                tags: 'Tagovi'
+        label:
+            size: 'Veličina'
+            crop: 'Obrezivanje'
+            remove_media: 'Ukloni resurs'
+            browse: 'Pretraži resurse'
+            upload: 'Učitaj'
+        vue:
+            interactions:
+                scale: 'Skaliraj'
+                no_media_selected: 'Nema odabranog resursa'
+                remove_media: 'Ukloni resurs'
+                select_media: 'Odaberi resurs'
+                manage_media: 'Upravljaj resursima'
+                quick_upload: 'Učitaj datoteku'
+            preview:
+                alternate_text: 'Alternativni tekst'
+                tags: 'Tagovi'
+                size: 'Veličina'
+            browse:
+                title: 'Odaberi resurs'
+                facets:
+                    select_type: 'Odaberi tip'
+                    loading_types: 'Učitavanje tipova...'
+                    all_types: 'Svi tipovi'
+                    select_folder: 'Odaberi mapu'
+                    loading_folders: 'Učitavanje mapa...'
+                    all_folders: 'Sve mape'
+                    select_tag: 'Odaberi tag'
+                    loading_tags: 'Učitavanje tagova...'
+                    all_tags: 'Svi tagovi'
+                    select_visibility: 'Odaberi vidljivost'
+                    loading_visibilities: 'Učitavanje vidljivosti...'
+                    all_visibilities: 'Sve vidljivosti'
+                    search: 'Pretraži (po imenu, tagu, mapi, alternativom textu itd.)'
+                    search_placeholder: 'Unesi pojam pretraživanja'
+                empty_folder: 'Mapa je prazna'
+                empty_folder_hint: 'Učitaj resurs'
+                select: 'Odaberi'
+                load_more: 'Učitaj više'
+            crop:
+                modal_title: 'Skaliranje'
+                reset: 'Obriši'
+                apply: 'Primjeni'
+                cancel: 'Odustani'
+                add: 'Dodaj'
+                preview: 'Pregled'
+                save_sizes: 'Spremi veličine'
+                add_size: 'Dodaj veličinu'
+                added_for_confirmation: 'Dodano za potvrdu.'
+                media_too_small: 'Resurs je premalen.'
+            media_gallery:
+                empty_folder: 'Mapa je prazna'
+                upload_media: 'Učitaj resurs'
+                select: 'Odaberi'
+                load_more: 'Učitaj više'
+            upload:
+                modal_title: 'Učitaj resurs'
+                breadcrumbs_info: 'Vi se nalazite ovdje:'
+                root_folder: '(root)'
+                info_text: 'Dvaput kliknite na mapu kako biste ju otvorili'
+                button:
+                    select: 'Odaberi'
+                    create: 'Kreiraj'
+                    upload: 'Učitaj'
+                    use_existing_resource: 'koristi postojeći resurs'
+                checkbox:
+                    overwrite: 'Prepiši'
+                placeholder:
+                    new_folder: 'Ime nove mape'
+                error:
+                    missing_file: 'Nedostaje datoteka za učitavanje'
+                    existing_resource: 'Drugi resurs s istim imenom već postoji u ovoj mapi! Promjenite mapu, ime datoteke, odaberite opciju za prepisivanje ili '
+                    unsupported_resource_type: 'Resurs je uspješno učitan no njegov tip nije podržan na ovome mjestu! Podržani tipovi: '
+                    invalid_visibility: 'Odabrana je nepodržana vidljivost "%visibility%", podržane vidljivosti: "%supported_visibilities%"'
+                    file_upload_failed: 'Učitavanje datoteke neuspješno; datoteka je možda prevelika ili neispravna. Provjerite postavke servera za učitavanje datoteka.'
