@@ -1,5 +1,5 @@
 <template>
-  <modal title="Crop" @close="$emit('close')">
+  <modal :title="this.translations.crop_modal_title" @close="$emit('close')">
     <crop-sizes
       :translations="translations"
       :availableVariations="availableVariations"

@@ -1,5 +1,5 @@
 <template>
-  <modal title="Upload media" @close="$emit('close')">
+  <modal :title="this.config.translations.upload_modal_title" @close="$emit('close')">
     <div :class="loading ? 'loading' : ''">
       <select-folder :config="config" :selected-folder="selectedFolder" @select="handleFolderChange" @change="handleFolderChange"></select-folder>
 

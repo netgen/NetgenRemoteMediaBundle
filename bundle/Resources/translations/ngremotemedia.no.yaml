@@ -27,7 +27,7 @@ ngrm:
                 remove_media: 'Fjern media'
                 select_media: 'Select media'
                 manage_media: 'Manage media'
-                quick_upload: 'Quick upload'
+                quick_upload: 'Upload file'
             preview:
                 alternate_text: 'Alternativ tekst'
                 tags: 'Tags'
@@ -54,6 +54,7 @@ ngrm:
                 select: 'Select'
                 load_more: 'Load more'
             crop:
+                modal_title: 'Crop'
                 reset: 'Reset'
                 apply: 'Apply'
                 cancel: 'Cancel'
@@ -69,6 +70,7 @@ ngrm:
                 select: 'Select'
                 load_more: 'Load more'
             upload:
+                modal_title: 'Upload media'
                 breadcrumbs_info: 'You are here:'
                 root_folder: '(root)'
                 info_text: 'Double click on a folder to open it'
