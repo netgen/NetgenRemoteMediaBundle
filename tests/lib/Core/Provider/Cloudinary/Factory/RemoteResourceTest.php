@@ -197,6 +197,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     version: '13711295958',
                     size: 120253,
                     altText: 'alt text',
+                    caption: 'caption text',
                     tags: ['tag1', 'tag2'],
                     metadata: [
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',

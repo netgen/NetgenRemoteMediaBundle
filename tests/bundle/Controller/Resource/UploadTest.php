@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function json_encode;
 
@@ -29,16 +30,23 @@ use function json_encode;
 final class UploadTest extends TestCase
 {
     protected MockObject|FileHashFactoryInterface $fileHashFactoryMock;
-    private UploadController $controller;
-
     private MockObject|ProviderInterface $providerMock;
+
+    private MockObject|TranslatorInterface $translatorMock;
+
+    private UploadController $controller;
 
     protected function setUp(): void
     {
         $this->providerMock = $this->createMock(ProviderInterface::class);
         $this->fileHashFactoryMock = $this->createMock(FileHashFactoryInterface::class);
+        $this->translatorMock = $this->createMock(TranslatorInterface::class);
 
-        $this->controller = new UploadController($this->providerMock, $this->fileHashFactoryMock);
+        $this->controller = new UploadController(
+            $this->providerMock,
+            $this->fileHashFactoryMock,
+            $this->translatorMock,
+        );
     }
 
     public function testUpload(): void
@@ -49,6 +57,11 @@ final class UploadTest extends TestCase
         ]);
 
         $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
 
         $uploadedFileMock
             ->expects(self::exactly(3))
@@ -140,6 +153,7 @@ final class UploadTest extends TestCase
             'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/image/media/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
             'altText' => null,
+            'caption' => null,
         ]);
 
         $response = $this->controller->__invoke($request);
@@ -175,6 +189,11 @@ final class UploadTest extends TestCase
         ]);
 
         $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
 
         $uploadedFileMock
             ->expects(self::exactly(3))
@@ -273,6 +292,7 @@ final class UploadTest extends TestCase
             'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/authenticated/image/media/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg',
             'altText' => null,
+            'caption' => null,
         ]);
 
         $response = $this->controller->__invoke($request);
@@ -307,6 +327,24 @@ final class UploadTest extends TestCase
             'file' => $uploadedFileMock,
         ]);
 
+        $this->providerMock
+            ->expects(self::once())
+            ->method('getSupportedVisibilities')
+            ->willReturn(['public', 'private', 'protected']);
+
+        $this->translatorMock
+            ->expects(self::once())
+            ->method('trans')
+            ->with(
+                'ngrm.edit.vue.upload.error.invalid_visibility',
+                [
+                    '%visibility%' => 'test',
+                    '%supported_visibilities%' => 'public", "private", "protected',
+                ],
+                'ngremotemedia',
+            )
+            ->willReturn('Invalid visibility option "test", supported options: "public", "private", "protected".');
+
         self::expectException(InvalidArgumentException::class);
         self::expectExceptionMessage('Invalid visibility option "test", supported options: "public", "private", "protected".');
 
@@ -322,6 +360,11 @@ final class UploadTest extends TestCase
         ]);
 
         $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
 
         $uploadedFileMock
             ->expects(self::exactly(3))
@@ -413,6 +456,7 @@ final class UploadTest extends TestCase
             'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
             'altText' => null,
+            'caption' => null,
         ]);
 
         $response = $this->controller->__invoke($request);
@@ -433,6 +477,40 @@ final class UploadTest extends TestCase
         );
     }
 
+    public function testUploadInvalidFile(): void
+    {
+        $request = new Request();
+        $request->request->add([
+            'folder' => 'null',
+        ]);
+
+        $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(false);
+
+        $request->files->add([
+            'file' => $uploadedFileMock,
+        ]);
+
+        $this->translatorMock
+            ->expects(self::once())
+            ->method('trans')
+            ->with(
+                'ngrm.edit.vue.upload.error.file_upload_failed',
+                [],
+                'ngremotemedia',
+            )
+            ->willReturn('File upload failed; the file might be too big or corrupted. Check your server file upload size settings.');
+
+        self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('File upload failed; the file might be too big or corrupted. Check your server file upload size settings.');
+
+        $response = $this->controller->__invoke($request);
+    }
+
     public function testUploadExistingFileName(): void
     {
         $request = new Request();
@@ -442,6 +520,11 @@ final class UploadTest extends TestCase
         ]);
 
         $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
 
         $uploadedFileMock
             ->expects(self::exactly(3))
@@ -533,6 +616,7 @@ final class UploadTest extends TestCase
             'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/image/media/image/sample_image.jpg',
             'url' => 'https://cloudinary.com/test/upload/image/media/image/sample_image.jpg',
             'altText' => null,
+            'caption' => null,
         ]);
 
         $response = $this->controller->__invoke($request);
@@ -557,7 +641,18 @@ final class UploadTest extends TestCase
     {
         $request = new Request();
 
+        $this->translatorMock
+            ->expects(self::once())
+            ->method('trans')
+            ->with(
+                'ngrm.edit.vue.upload.error.missing_file',
+                [],
+                'ngremotemedia',
+            )
+            ->willReturn('Missing file to upload');
+
         self::expectException(InvalidArgumentException::class);
+        self::expectExceptionMessage('Missing file to upload');
 
         $this->controller->__invoke($request);
     }

@@ -41,7 +41,13 @@ final class Upload extends AbstractController
     public function __invoke(Request $request): Response
     {
         if (!$request->files->has('file')) {
-            throw new InvalidArgumentException('Missing file to upload');
+            throw new InvalidArgumentException(
+                $this->translator->trans(
+                    'ngrm.edit.vue.upload.error.missing_file',
+                    [],
+                    'ngremotemedia',
+                ),
+            );
         }
 
         $uploadContext = $request->request->all()['upload_context'] ?? [];
