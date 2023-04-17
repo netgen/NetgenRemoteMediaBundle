@@ -57,6 +57,7 @@ abstract class AbstractController
             'previewUrl' => $previewUrl,
             'url' => $resource->getUrl(),
             'altText' => $resource->getAltText(),
+            'caption' => $resource->getCaption(),
         ];
     }
 

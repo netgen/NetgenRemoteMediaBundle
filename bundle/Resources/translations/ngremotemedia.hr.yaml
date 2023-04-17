@@ -30,6 +30,7 @@ ngrm:
                 quick_upload: 'Učitaj datoteku'
             preview:
                 alternate_text: 'Alternativni tekst'
+                caption: 'Naslov'
                 tags: 'Tagovi'
                 size: 'Veličina'
             browse:

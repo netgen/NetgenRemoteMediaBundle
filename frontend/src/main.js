@@ -52,6 +52,7 @@ const initInteractionsVue = (el) => {
                 browse_url: '',
                 previewUrl: '',
                 alternateText: '',
+                caption: '',
                 tags: [],
                 size: '',
                 variations: {},

@@ -30,6 +30,7 @@ ngrm:
                 quick_upload: 'Upload file'
             preview:
                 alternate_text: 'Alternativ tekst'
+                caption: 'Bildetekst'
                 tags: 'Tags'
                 size: 'Size'
             browse:
