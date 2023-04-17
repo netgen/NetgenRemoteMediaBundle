@@ -1,6 +1,6 @@
 <template>
   <modal v-bind:title="this.$root.$data.NgRemoteMediaTranslations.browse_title" @close="$emit('close')">
-    <media-facets :tags="tags" :media-types="mediaTypes" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
+    <media-facets :tags="tags" :metadata-fields="metadataFields" :media-types="mediaTypes" :facets="facets" :facets-loading="facetsLoading" @change="handleFacetsChange" />
     <media-galery
         :media="media"
         :canLoadMore="canLoadMore"
@@ -16,7 +16,7 @@
 <script>
 import MediaFacets from "./MediaFacets";
 import MediaGalery from "./MediaGalery";
-import {FOLDER_ALL, FOLDER_ROOT, TAG_ALL, SEARCH_NAME, TYPE_ALL, TYPE_IMAGE, TYPE_VIDEO, TYPE_RAW} from "../constants/facets";
+import {FOLDER_ALL, FOLDER_ROOT, TAG_ALL, METADATA_ALL, SEARCH_NAME, TYPE_ALL, TYPE_IMAGE, TYPE_VIDEO, TYPE_RAW} from "../constants/facets";
 import { encodeQueryData } from "../utility/utility";
 import debounce from "debounce";
 import Modal from "./Modal";
@@ -25,7 +25,7 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["tags", "facetsLoading", "selectedMediaId", "paths"],
+  props: ["tags", "metadataFields", "facetsLoading", "selectedMediaId", "paths"],
   components: {
     "media-facets": MediaFacets,
     "media-galery": MediaGalery,
@@ -42,7 +42,8 @@ export default {
         searchType: SEARCH_NAME,
         mediaType: "",
         query: "",
-        tag: ""
+        tag: "",
+        metadata: "",
       },
       mediaTypes: [
         {
@@ -77,7 +78,8 @@ export default {
         folder: this.facets.folder || FOLDER_ALL,
         search_type: this.facets.searchType,
         next_cursor: patch ? this.nextCursor : null,
-        tag: this.facets.tag || TAG_ALL
+        tag: this.facets.tag || TAG_ALL,
+        metadata: this.facets.metadata || METADATA_ALL
       };
 
       const url = `${this.paths.browse}?${encodeQueryData(query)}`;

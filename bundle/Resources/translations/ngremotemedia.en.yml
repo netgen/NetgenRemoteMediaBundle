@@ -36,6 +36,8 @@ ngrm:
                     select_tag: 'Select tag'
                     loading_tags: 'Loading tags...'
                     all_tags: 'All tags'
+                    metadata_fields: 'Meta'
+                    all_metadata_fields: 'All'
                     search: 'Search (by name, tag, folder, alternate text etc.)'
                     search_placeholder: 'Enter your search term'
                 empty_folder: 'Folder is empty'
