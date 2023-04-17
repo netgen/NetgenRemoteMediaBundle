@@ -34,6 +34,10 @@ final class Query
 
     /** @var array */
     private $sortBy = ['created_at' => 'desc'];
+    /**
+     * @var string|null
+     */
+    private $metadata;
 
     public function __construct(
         string $query,
@@ -41,6 +45,7 @@ final class Query
         int $limit,
         ?string $folder = null,
         ?string $tag = null,
+        ?string $metadata = null,
         ?string $nextCursor = null,
         array $sortBy = ['created_at' => 'desc'],
         array $resourceIds = []
@@ -49,6 +54,7 @@ final class Query
         $this->resourceType = $resourceType;
         $this->folder = $folder;
         $this->tag = $tag;
+        $this->metadata = $metadata;
         $this->limit = $limit;
         $this->nextCursor = $nextCursor;
         $this->sortBy = $sortBy;
@@ -81,6 +87,7 @@ final class Query
             '',
             null,
             $limit,
+            null,
             null,
             null,
             $nextCursor,
@@ -119,6 +126,14 @@ final class Query
     }
 
     /**
+     * @return string|null
+     */
+    public function getMetadata(): ?string
+    {
+        return $this->metadata;
+    }
+
+    /**
      * @return string[]
      */
     public function getResourceIds(): array
@@ -147,5 +162,13 @@ final class Query
     public function getSortBy(): array
     {
         return $this->sortBy;
+    }
+
+    /**
+     * @param string|null $metadata
+     */
+    public function setMetadata(?string $metadata): void
+    {
+        $this->metadata = $metadata;
     }
 }

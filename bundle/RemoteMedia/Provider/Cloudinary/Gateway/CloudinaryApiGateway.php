@@ -165,7 +165,8 @@ class CloudinaryApiGateway extends Gateway
             ->expression($expression)
             ->max_results($query->getLimit())
             ->with_field('context')
-            ->with_field('tags');
+            ->with_field('tags')
+            ->with_field('metadata');
 
         if ($query->getNextCursor() !== null) {
             $search->next_cursor($query->getNextCursor());
@@ -337,6 +338,30 @@ class CloudinaryApiGateway extends Gateway
     }
 
     /**
+     * Lists metadata fields.
+     *
+     * @return array
+     */
+    public function listMetadataFields()
+    {
+        $options = [
+            'max_results' => 500,
+        ];
+
+        $metadataFields = [];
+        do {
+            $result = $this->cloudinaryApi->list_metadata_fields($options);
+            $metadataFields = array_merge($metadataFields, $result['metadata_fields']);
+
+            if (array_key_exists('next_cursor', $result)) {
+                $options['next_cursor'] = $result['next_cursor'];
+            }
+        } while (array_key_exists('next_cursor', $result));
+
+        return $metadataFields;
+    }
+
+    /**
      * Updates the remote resource.
      *
      * @param $id
@@ -429,6 +454,10 @@ class CloudinaryApiGateway extends Gateway
 
         if ($query->getTag()) {
             $expressions[] = sprintf('tags:%s', $query->getTag());
+        }
+
+        if ($query->getMetadata()) {
+            $expressions[] = sprintf('metadata:%s', $query->getMetadata());
         }
 
         if ($query->getFolder() !== null) {

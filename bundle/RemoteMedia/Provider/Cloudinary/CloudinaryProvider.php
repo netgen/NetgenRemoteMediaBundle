@@ -259,6 +259,14 @@ class CloudinaryProvider extends RemoteMediaProvider
     }
 
     /**
+     * Lists metadata fields.
+     */
+    public function listMetadataFields(): array
+    {
+        return $this->gateway->listMetadataFields();
+    }
+
+    /**
      * Updates the resource context.
      * eg. alt text and caption:
      * context = [

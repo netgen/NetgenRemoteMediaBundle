@@ -48,6 +48,10 @@ class Psr6CachedGateway extends Gateway
     /**
      * @var string
      */
+    const METADATA_FIELDS = 'metadata_fields';
+    /**
+     * @var string
+     */
     const COUNT = 'resources_count';
     /**
      * @var string
@@ -384,6 +388,31 @@ class Psr6CachedGateway extends Gateway
         $this->cache->invalidateTags($this->getItemCacheTags($id));
 
         return $value;
+    }
+
+    /**
+     * Lists metadata fields.
+     *
+     * @return array
+     */
+    public function listMetadataFields()
+    {
+        $listMetadataCacheKey = $this->washKey(
+            implode('-', [self::PROJECT_KEY, self::PROVIDER_KEY, self::METADATA_FIELDS]),
+        );
+        $cacheItem = $this->cache->getItem($listMetadataCacheKey);
+
+        if ($cacheItem->isHit()) {
+            return $cacheItem->get();
+        }
+
+        $list = $this->gateway->listMetadataFields();
+        $cacheItem->set($list);
+        $cacheItem->expiresAfter($this->ttl);
+        $cacheItem->tag($this->getCacheTags(self::METADATA_FIELDS));
+        $this->cache->save($cacheItem);
+
+        return $list;
     }
 
     /**
