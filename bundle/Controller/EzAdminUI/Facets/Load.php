@@ -25,7 +25,7 @@ final class Load
         $folders = $this->remoteMediaProvider->listFolders();
         $tags = $this->remoteMediaProvider->listTags();
         $metadataFields = $this->remoteMediaProvider->listMetadataFields();
-        
+
         $formattedFolders = [];
         foreach ($folders as $folder) {
             $formattedFolders[] = [
@@ -47,7 +47,7 @@ final class Load
         foreach ($metadataFields as $metadataField) {
             $formattedMetadataFields[] = [
                 'id' => $metadataField['external_id'],
-                'label' => $metadataField['label']
+                'label' => $metadataField['label'],
             ];
         }
 
