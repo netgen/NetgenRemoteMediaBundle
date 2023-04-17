@@ -44,7 +44,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             folder: $cloudinaryRemoteId->getFolder(),
             size: $data['bytes'] ?? 0,
             altText: $this->resolveAltText($data),
-            caption: $data['context']['custom']['caption'] ?? null,
+            caption: $this->resolveCaption($data),
             tags: $data['tags'] ?? [],
             metadata: $this->resolveMetaData($data),
             context: $this->resolveContext($data),
@@ -101,7 +101,16 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             return $data['context']['custom']['alt_text'];
         }
 
-        return $data['context']['alt_text'] ?? null;
+        return $data['context']['alt'] ?? null;
+    }
+
+    private function resolveCaption(array $data): ?string
+    {
+        if (($data['context']['custom']['caption'] ?? null) !== null) {
+            return $data['context']['custom']['caption'];
+        }
+
+        return $data['context']['caption'] ?? null;
     }
 
     private function resolveMd5(array $data): string

@@ -106,7 +106,7 @@ export default {
         format: item.format,
         url: item.url,
         previewUrl: item.previewUrl,
-        alternateText: item.alt_text,
+        alternateText: item.altText,
         tags: item.tags,
         size: item.size,
         variations: {},
