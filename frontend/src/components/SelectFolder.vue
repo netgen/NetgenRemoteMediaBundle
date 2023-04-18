@@ -162,6 +162,7 @@ export default {
       this.allowCreate = false;
 
       this.folder = folder;
+      this.$emit('change', this.folder);
       this.generateBreadcrumbs(folder);
 
       return;
