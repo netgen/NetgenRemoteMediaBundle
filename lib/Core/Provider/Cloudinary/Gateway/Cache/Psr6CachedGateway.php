@@ -212,6 +212,7 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         $this->gateway->update($remoteId, $options);
 
         $this->invalidateResourceCache($remoteId);
+        $this->invalidateResourceListCache();
         $this->invalidateTagsCache();
     }
 
@@ -220,6 +221,7 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         $this->gateway->removeAllTagsFromResource($remoteId);
 
         $this->invalidateResourceCache($remoteId);
+        $this->invalidateResourceListCache();
         $this->invalidateTagsCache();
     }
 
