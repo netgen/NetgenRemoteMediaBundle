@@ -94,7 +94,7 @@ final class Upload extends AbstractController
             $visibility,
             $request->request->get('filename'),
             $request->request->getBoolean('overwrite'),
-            false,
+            $request->request->getBoolean('overwrite'),
             null,
             null,
             [],
