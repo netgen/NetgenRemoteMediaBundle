@@ -127,6 +127,24 @@ class RemoteMediaFolderTypeTest extends TypeTestCase
             ],
             [
                 [
+                    'folder' => 'media/images',
+                ],
+                [
+                    'parent_folder' => 'media',
+                ],
+                [
+                    'folder' => 'media/images',
+                ],
+                Folder::fromPath('media/images'),
+                [
+                    'folder' => 'media/images',
+                ],
+                [
+                    'parent_folder' => ['id' => 'media', 'label' => 'media'],
+                ],
+            ],
+            [
+                [
                     'folder' => 'media/images/new',
                 ],
                 [

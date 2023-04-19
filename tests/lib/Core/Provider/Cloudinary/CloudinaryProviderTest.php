@@ -1176,6 +1176,72 @@ final class CloudinaryProviderTest extends AbstractTestCase
         );
     }
 
+    public function testGenerateVideoTagThumbnailVariationInvalid(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/videos/example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.mp4',
+            size: 495,
+            altText: 'Alternate text',
+            caption: 'Test caption',
+        );
+
+        $cropOptions = [
+            'x' => 5,
+            'y' => 10,
+            'width' => 200,
+            'height' => 100,
+            'crop' => 'crop',
+        ];
+
+        $transformations = [$cropOptions];
+
+        $options = [
+            'resource_type' => 'video',
+            'transformation' => $transformations,
+            'start_offset' => 'auto',
+        ];
+
+        $thumbnailUrl = 'https://cloudinary.com/test/c_5_10_200_100/upload/videos/example_thumb.jpg';
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoThumbnail')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+            )
+            ->willReturn($thumbnailUrl);
+
+        $options = [
+            'secure' => true,
+            'attributes' => [
+                'alt' => 'Alternate text',
+                'title' => 'Test caption',
+            ],
+            'transformation' => $transformations,
+        ];
+
+        $tag = '<picture><img alt="Alternate text" title="Test caption" src2="https://cloudinary.com/test/c_5_10_200_100/upload/videos/example"></picture>';
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getImageTag')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+            )
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->cloudinaryProvider->generateRawVariationHtmlTag($resource, $transformations, [], false, true),
+        );
+    }
+
     public function testGenerateAudioTag(): void
     {
         $resource = new RemoteResource(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Resource;
 
 use InvalidArgumentException;
+use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\AbstractController;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload as UploadController;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\API\ProviderInterface;
@@ -27,6 +28,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use function json_encode;
 
 #[CoversClass(UploadController::class)]
+#[CoversClass(AbstractController::class)]
 final class UploadTest extends TestCase
 {
     protected MockObject|FileHashFactoryInterface $fileHashFactoryMock;

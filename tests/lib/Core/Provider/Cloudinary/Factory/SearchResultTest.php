@@ -17,7 +17,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 
 use function count;
 
-#[CoversClass(SearchResultFactoryInterface::class)]
+#[CoversClass(SearchResultFactory::class)]
 final class SearchResultTest extends AbstractTestCase
 {
     protected SearchResultFactoryInterface $searchResultFactory;

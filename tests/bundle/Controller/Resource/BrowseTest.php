@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Resource;
 
+use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\AbstractController;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Browse as BrowseController;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Search\Query;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 use function json_encode;
 
 #[CoversClass(BrowseController::class)]
+#[CoversClass(AbstractController::class)]
 final class BrowseTest extends TestCase
 {
     private BrowseController $controller;

@@ -151,6 +151,18 @@ abstract class AbstractTestCase extends TestCase
             $expected->getFolder(),
             $actual->getFolder(),
         );
+
+        self::assertCount(
+            count($expected->getLocations()),
+            $actual->getLocations(),
+        );
+
+        foreach ($expected->getLocations() as $key => $location) {
+            self::assertRemoteResourceLocationSame(
+                $location,
+                ((array) $actual->getLocations())[$key],
+            );
+        }
     }
 
     public static function assertRemoteResourceLocationSame(RemoteResourceLocation $expected, RemoteResourceLocation $actual): void
