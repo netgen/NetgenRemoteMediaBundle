@@ -6,15 +6,17 @@ If you want to be able to upload, select, edit or remove remote resources inside
 
 You will get the whole interface written in Vue.js where you can browse existing resources (with search and filtering by type, tags, folders etc.), upload new resources (and create folders if needed) and adjust cropping for all available variations.
 
-When you add a resource to your entity, this will be only a relation to objects stored in internal tables which will be automatically generated for you, so you don't have to do any manual work in your controller, on form submission.
-
-All the data needed to display the resource on frontend will be stored internally in the database, so that it doesn't need any requests towards the remote API (to improve performance and prevent breaking API limits).
+When you add a resource to your entity, this will be only a relation to objects stored in internal tables. All the data needed to display the resource on frontend will be stored internally in the database, so that it doesn't need any requests towards the remote API (to improve performance and prevent breaking API limits).
 
 **Note:** if using Cloudinary, you might want to check the [Remote Callback](Cloudinary/REMOTE_CALLBACK.md) configuration to get your locally stored resources automatically updated when the resource gets changed on Cloudinary (either directly through interface or from other system using the same account and resource).
 
 ## Add relation to your entity
 
-All the data needed for Remote Media to work will be stored in its own internal tables in the database, by using `Netgen\RemoteMedia\API\Values\RemoteResource` and `Netgen\RemoteMedia\API\Values\RemoteResourceLoation` entities so your entity will need to have a relation to `Netgen\RemoteMedia\API\Values\RemoteResourceLocation` entity, for example:
+All the data needed for Remote Media to work will be stored in its own internal tables in the database, by using `Netgen\RemoteMedia\API\Values\RemoteResource` and `Netgen\RemoteMedia\API\Values\RemoteResourceLoation` entities so your entity will need to have a relation to `Netgen\RemoteMedia\API\Values\RemoteResourceLocation` entity.
+
+**Important:** Those external objects won't be persisted automatically to the database, so you have to use proper cascade configuration when adding it to your entity to allow Doctrine to properly handle persisting or removing those.
+
+Example:
 
 ```php
 <?php
@@ -24,15 +26,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 
-/**
- * @ORM\Entity
- */
+#[ORM\Entity]
 class MyEntity
 {
-    /**
-     * @ORM\OneToOne(targetEntity="Netgen\RemoteMedia\API\Values\RemoteResourceLocation")
-     */
-    private ?RemoteResourceLocation $remoteResource = null;
+    #[ORM\OneToOne(targetEntity: RemoteResourceLocation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    private ?RemoteResourceLocation $remoteResourceLocation = null;
 
     public function getRemoteResourceLocation(): ?RemoteResourceLocation
     {
@@ -46,7 +45,9 @@ class MyEntity
 }
 ```
 
-The reason why we're using `OneToOne` relation here is because the idea is that every usage of a remote resource has it's own location. Cropping settings are stored in a location and you want to have different cropping settings for the same eg. image used on different places.
+The above example will make sure that, when you select a new resource in the form, Doctrine automatically create both `RemoteResource` and `RemoteResourceLocation` objects in the database and link the location to your entity. Also, if you remove the value for this attribute, it will automatically delete location from the database.
+
+The reason why we're using `OneToOne` relation here is because the idea is that every usage of a remote resource has it's own location. Things such as cropping settings or watermark text are stored in a location, and you want to have different cropping settings for the same eg. image used on different places.
 
 ## Add field to your form
 

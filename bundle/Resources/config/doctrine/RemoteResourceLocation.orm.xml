@@ -16,6 +16,7 @@
         <field name="updatedAt" column="updated_at" type="datetime_immutable" />
 
         <many-to-one field="remoteResource" target-entity="Netgen\RemoteMedia\API\Values\RemoteResource" inversed-by="locations">
+            <cascade><cascade-persist /></cascade>
             <join-column name="remote_resource_id" referenced-column-name="id" on-delete="CASCADE" />
         </many-to-one>
 

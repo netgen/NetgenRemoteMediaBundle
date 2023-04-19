@@ -41,6 +41,20 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         );
     }
 
+    public function testReverseTransformWithoutResource(): void
+    {
+        $data = [
+            'locationId' => 5,
+            'remoteId' => null,
+            'type' => null,
+            'tags' => null,
+            'cropSettings' => null,
+            'source' => null,
+        ];
+
+        self::assertNull($this->dataTransformer->reverseTransform($data));
+    }
+
     public function testReverseTransformWithNewResource(): void
     {
         $data = [
@@ -98,97 +112,38 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->method('updateOnRemote')
             ->with($expectedLocation->getRemoteResource());
 
-        $this->providerMock
-            ->expects(self::once())
-            ->method('store')
-            ->with($expectedLocation->getRemoteResource())
-            ->willReturn($expectedLocation->getRemoteResource());
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('storeLocation')
-            ->with($expectedLocation);
-
         self::assertRemoteResourceLocationSame(
             $expectedLocation,
             $this->dataTransformer->reverseTransform($data),
         );
     }
 
-    public function testReverseTransformWithExistingResourceNewLocation(): void
+    public function testReverseTransformWithNonExistingResource(): void
     {
         $data = [
-            'locationId' => '',
+            'locationId' => null,
             'remoteId' => 'upload|image|media/images/example.jpg',
             'type' => 'image',
             'altText' => 'Test alt text',
             'caption' => 'Test caption',
             'tags' => ['tag1', 'tag2'],
-            'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}, "thumbnail": {"x":0,"y":0,"w":800,"h":600}}',
-            'source' => 'product_image',
+            'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
+            'source' => null,
         ];
-
-        $location = new RemoteResourceLocation(
-            new RemoteResource(
-                remoteId: 'upload|image|media/images/example.jpg',
-                type: 'image',
-                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                name: 'example.jpg',
-                folder: Folder::fromPath('media/images'),
-                altText: 'Test alt text',
-            ),
-            null,
-            [
-                new CropSettings('hero_image', 10, 20, 1920, 1080),
-            ],
-        );
 
         $this->providerMock
             ->expects(self::once())
             ->method('loadByRemoteId')
             ->with('upload|image|media/images/example.jpg')
-            ->willReturn($location->getRemoteResource());
-
-        $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource(
-                remoteId: 'upload|image|media/images/example.jpg',
-                type: 'image',
-                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                name: 'example.jpg',
-                folder: Folder::fromPath('media/images'),
-                altText: 'Test alt text',
-                caption: 'Test caption',
-                tags: ['tag1', 'tag2'],
-            ),
-            'product_image',
-            [
-                new CropSettings('hero_image', 10, 20, 1920, 1080),
-                new CropSettings('thumbnail', 0, 0, 800, 600),
-            ],
-        );
+            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
 
         $this->providerMock
             ->expects(self::once())
-            ->method('updateOnRemote')
-            ->with($expectedLocation->getRemoteResource());
+            ->method('loadFromRemote')
+            ->with('upload|image|media/images/example.jpg')
+            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
 
-        $this->providerMock
-            ->expects(self::once())
-            ->method('store')
-            ->with($expectedLocation->getRemoteResource())
-            ->willReturn($expectedLocation->getRemoteResource());
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('storeLocation')
-            ->with($expectedLocation);
-
-        self::assertRemoteResourceLocationSame(
-            $expectedLocation,
-            $this->dataTransformer->reverseTransform($data),
-        );
+        self::assertNull($this->dataTransformer->reverseTransform($data));
     }
 
     public function testReverseTransformWithExistingLocation(): void
@@ -219,15 +174,15 @@ class RemoteMediaTransformerTest extends AbstractTestCase
 
         $this->providerMock
             ->expects(self::once())
-            ->method('loadLocation')
-            ->with(5)
-            ->willReturn($location);
-
-        $this->providerMock
-            ->expects(self::once())
             ->method('loadByRemoteId')
             ->with('upload|image|media/images/example.jpg')
             ->willReturn($location->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadLocation')
+            ->with(5)
+            ->willReturn($location);
 
         $expectedLocation = new RemoteResourceLocation(
             new RemoteResource(
@@ -246,17 +201,6 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->method('updateOnRemote')
             ->with($expectedLocation->getRemoteResource());
 
-        $this->providerMock
-            ->expects(self::once())
-            ->method('store')
-            ->with($expectedLocation->getRemoteResource())
-            ->willReturn($expectedLocation->getRemoteResource());
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('storeLocation')
-            ->with($expectedLocation);
-
         self::assertRemoteResourceLocationSame(
             $expectedLocation,
             $this->dataTransformer->reverseTransform($data),
@@ -272,6 +216,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'tags' => ['tag2'],
             'cropSettings' => null,
             'source' => 'test',
+            'caption' => 'test caption',
         ];
 
         $location = new RemoteResourceLocation(
@@ -292,70 +237,25 @@ class RemoteMediaTransformerTest extends AbstractTestCase
 
         $this->providerMock
             ->expects(self::once())
+            ->method('loadByRemoteId')
+            ->with('upload|image|media/images/example.jpg')
+            ->willReturn($location->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
             ->method('loadLocation')
             ->with(5)
             ->willReturn($location);
 
         $this->providerMock
             ->expects(self::once())
-            ->method('loadByRemoteId')
-            ->with('upload|image|media/images/example.jpg')
-            ->willReturn($location->getRemoteResource());
-
-        $this->providerMock
-            ->expects(self::once())
             ->method('updateOnRemote')
             ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
 
         $this->providerMock
             ->expects(self::once())
-            ->method('removeLocation')
-            ->with($location);
-
-        self::assertNull($this->dataTransformer->reverseTransform($data));
-    }
-
-    public function testReverseTransformWithResourceNotExistingOnRemoteAnymoreWithoutLocation(): void
-    {
-        $data = [
-            'locationId' => '',
-            'remoteId' => 'upload|image|media/images/example.jpg',
-            'type' => 'image',
-            'tags' => ['tag2'],
-            'cropSettings' => null,
-        ];
-
-        $location = new RemoteResourceLocation(
-            new RemoteResource(
-                remoteId: 'upload|image|media/images/example.jpg',
-                type: 'image',
-                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                name: 'example.jpg',
-                folder: Folder::fromPath('media/images'),
-                tags: ['tag1', 'tag2', 'tag3'],
-            ),
-            null,
-            [
-                new CropSettings('hero_image', 10, 20, 1920, 1080),
-            ],
-        );
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadByRemoteId')
-            ->with('upload|image|media/images/example.jpg')
-            ->willReturn($location->getRemoteResource());
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('updateOnRemote')
-            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
-
-        $this->providerMock
-            ->expects(self::never())
-            ->method('removeLocation')
-            ->with($location);
+            ->method('remove')
+            ->with($location->getRemoteResource());
 
         self::assertNull($this->dataTransformer->reverseTransform($data));
     }
@@ -372,12 +272,6 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'cropSettings' => null,
             'source' => 'test',
         ];
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadLocation')
-            ->with(5)
-            ->willThrowException(new RemoteResourceLocationNotFoundException(5));
 
         $resource = new RemoteResource(
             remoteId: 'upload|image|media/images/example.jpg',
@@ -397,6 +291,12 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->with('upload|image|media/images/example.jpg')
             ->willReturn($resource);
 
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadLocation')
+            ->with(5)
+            ->willThrowException(new RemoteResourceLocationNotFoundException(5));
+
         $expectedLocation = new RemoteResourceLocation(
             new RemoteResource(
                 remoteId: 'upload|image|media/images/example.jpg',
@@ -417,64 +317,10 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->method('updateOnRemote')
             ->with($expectedLocation->getRemoteResource());
 
-        $this->providerMock
-            ->expects(self::once())
-            ->method('store')
-            ->with($expectedLocation->getRemoteResource())
-            ->willReturn($expectedLocation->getRemoteResource());
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('storeLocation')
-            ->with($expectedLocation);
-
         self::assertRemoteResourceLocationSame(
             $expectedLocation,
             $this->dataTransformer->reverseTransform($data),
         );
-    }
-
-    public function testReverseTransformWithDeletingExistingLocation(): void
-    {
-        $data = [
-            'locationId' => 5,
-            'remoteId' => null,
-            'type' => null,
-            'tags' => null,
-            'cropSettings' => null,
-            'source' => null,
-        ];
-
-        $location = new RemoteResourceLocation(
-            new RemoteResource(
-                remoteId: 'upload|image|media/images/example.jpg',
-                type: 'image',
-                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                name: 'example.jpg',
-                folder: Folder::fromPath('media/images'),
-                altText: 'Test alt text',
-                caption: 'Test caption',
-                tags: ['tag1', 'tag2', 'tag3'],
-            ),
-            null,
-            [
-                new CropSettings('hero_image', 10, 20, 1920, 1080),
-            ],
-        );
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadLocation')
-            ->with(5)
-            ->willReturn($location);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('removeLocation')
-            ->with($location);
-
-        self::assertNull($this->dataTransformer->reverseTransform($data));
     }
 
     public function testReverseTransformWithExistingLocationNewResource(): void
@@ -487,30 +333,6 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'cropSettings' => null,
             'source' => 'some source',
         ];
-
-        $location = new RemoteResourceLocation(
-            new RemoteResource(
-                remoteId: 'upload|image|media/images/example.jpg',
-                type: 'image',
-                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                name: 'example.jpg',
-                folder: Folder::fromPath('media/images'),
-                altText: 'Test alt text',
-                caption: 'Test caption',
-                tags: ['tag1', 'tag2', 'tag3'],
-            ),
-            null,
-            [
-                new CropSettings('hero_image', 10, 20, 1920, 1080),
-            ],
-        );
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadLocation')
-            ->with(5)
-            ->willReturn($location);
 
         $newResource = new RemoteResource(
             remoteId: 'upload|image|media/images/new_image.jpg',
@@ -528,72 +350,6 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->with('upload|image|media/images/new_image.jpg')
             ->willReturn($newResource);
 
-        $this->providerMock
-            ->expects(self::once())
-            ->method('removeLocation')
-            ->with($location);
-
-        $expectedLocation = new RemoteResourceLocation($newResource, 'some source');
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('updateOnRemote')
-            ->with($newResource);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('store')
-            ->with($newResource)
-            ->willReturn($newResource);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('storeLocation')
-            ->with($expectedLocation);
-
-        self::assertRemoteResourceLocationSame(
-            $expectedLocation,
-            $this->dataTransformer->reverseTransform($data),
-        );
-    }
-
-    public function testReverseTransformWithResourceNoLongerExistingOnRemote(): void
-    {
-        $data = [
-            'locationId' => null,
-            'remoteId' => 'upload|image|media/images/new_image.jpg',
-            'type' => 'image',
-            'tags' => ['tag2'],
-            'cropSettings' => null,
-            'source' => null,
-        ];
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadByRemoteId')
-            ->with('upload|image|media/images/new_image.jpg')
-            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/new_image.jpg'));
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadFromRemote')
-            ->with('upload|image|media/images/new_image.jpg')
-            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/new_image.jpg'));
-
-        self::assertNull($this->dataTransformer->reverseTransform($data));
-    }
-
-    public function testReverseTransformWithNewResourceNoLongerExistingOnRemote(): void
-    {
-        $data = [
-            'locationId' => 5,
-            'remoteId' => 'upload|image|media/images/new_image.jpg',
-            'type' => 'image',
-            'tags' => ['tag2'],
-            'cropSettings' => null,
-            'source' => null,
-        ];
-
         $location = new RemoteResourceLocation(
             new RemoteResource(
                 remoteId: 'upload|image|media/images/example.jpg',
@@ -618,24 +374,17 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->with(5)
             ->willReturn($location);
 
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadByRemoteId')
-            ->with('upload|image|media/images/new_image.jpg')
-            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/new_image.jpg'));
+        $expectedLocation = new RemoteResourceLocation($newResource, 'some source');
 
         $this->providerMock
             ->expects(self::once())
-            ->method('loadFromRemote')
-            ->with('upload|image|media/images/new_image.jpg')
-            ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/new_image.jpg'));
+            ->method('updateOnRemote')
+            ->with($newResource);
 
-        $this->providerMock
-            ->expects(self::once())
-            ->method('removeLocation')
-            ->with($location);
-
-        self::assertNull($this->dataTransformer->reverseTransform($data));
+        self::assertRemoteResourceLocationSame(
+            $expectedLocation,
+            $this->dataTransformer->reverseTransform($data),
+        );
     }
 
     public static function transformDataProvider(): array

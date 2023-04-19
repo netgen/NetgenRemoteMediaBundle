@@ -42,17 +42,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
     public function reverseTransform($value)
     {
-        try {
-            $remoteResourceLocation = $value['locationId'] !== null && $value['locationId'] !== '' ? $this->provider->loadLocation((int) $value['locationId']) : null;
-        } catch (RemoteResourceLocationNotFoundException $e) {
-            $remoteResourceLocation = null;
-        }
-
         if ($value['remoteId'] === null) {
-            if ($remoteResourceLocation instanceof RemoteResourceLocation) {
-                $this->provider->removeLocation($remoteResourceLocation);
-            }
-
             return null;
         }
 
@@ -62,12 +52,20 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             try {
                 $remoteResource = $this->provider->loadFromRemote((string) $value['remoteId']);
             } catch (RemoteResourceNotFoundException $e) {
-                if ($remoteResourceLocation instanceof RemoteResourceLocation) {
-                    $this->provider->removeLocation($remoteResourceLocation);
-                }
-
                 return null;
             }
+        }
+
+        try {
+            $remoteResourceLocation = $value['locationId'] !== null && $value['locationId'] !== ''
+                ? $this->provider->loadLocation((int) $value['locationId'])
+                : new RemoteResourceLocation($remoteResource);
+        } catch (RemoteResourceLocationNotFoundException $e) {
+            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
+        }
+
+        if ($remoteResourceLocation->getRemoteResource()->getRemoteId() !== $remoteResource->getRemoteId()) {
+            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
         }
 
         $needsUpdateOnRemote = $this->needsUpdateOnRemote($remoteResource, $value);
@@ -80,24 +78,10 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             try {
                 $this->provider->updateOnRemote($remoteResource);
             } catch (RemoteResourceNotFoundException $e) {
-                if ($remoteResourceLocation instanceof RemoteResourceLocation && $value['locationId'] !== null && $value['locationId'] !== '') {
-                    $this->provider->removeLocation($remoteResourceLocation);
-                }
+                $this->provider->remove($remoteResource);
 
                 return null;
             }
-        }
-
-        $remoteResource = $this->provider->store($remoteResource);
-
-        if (!$remoteResourceLocation instanceof RemoteResourceLocation) {
-            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
-        }
-
-        $oldLocation = null;
-        if ($remoteResourceLocation->getRemoteResource()->getRemoteId() !== $remoteResource->getRemoteId()) {
-            $oldLocation = $remoteResourceLocation;
-            $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
         }
 
         $remoteResourceLocation->setSource($value['source'] ?? null);
@@ -105,12 +89,6 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         $remoteResourceLocation->setCropSettings(
             $this->resolveCropSettings($value),
         );
-
-        $this->provider->storeLocation($remoteResourceLocation);
-
-        if ($oldLocation !== null) {
-            $this->provider->removeLocation($oldLocation);
-        }
 
         return $remoteResourceLocation;
     }
