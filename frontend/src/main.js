@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import PortalVue from 'portal-vue';
 import './scss/ngremotemedia.scss';
 import 'cropperjs/dist/cropper.css';
 import Interactions from './components/Interactions';
@@ -7,6 +8,7 @@ import './utility/polyfills';
 import SelectFolderInteraction from "./components/SelectFolderInteraction.vue";
 
 Vue.config.productionTip = false;
+Vue.use(PortalVue);
 
 const initInteractionsVue = (el) => {
     window[`ngrm_interactions_vue_${el.dataset.id}`] = new Vue({
@@ -92,28 +94,28 @@ const initSelectFolderVue = (el) => {
 };
 
 const observerCallback = () => {
-    var containers = document.getElementsByClassName('ngremotemedia-container');
+    const interactionsContainers = document.getElementsByClassName('ngremotemedia-container');
 
-    for(var i=0; i < containers.length; i++) {
-        let el = containers[i];
+    for(let i=0; i < interactionsContainers.length; i++) {
+        const container = interactionsContainers[i];
 
-        if (typeof window[`ngrm_interactions_vue_${el.dataset.id}`] !== 'undefined') {
+        if (container.querySelector('interactions') === null) {
             continue;
         }
 
-        initInteractionsVue(el);
+        initInteractionsVue(container);
     }
 
-    containers = document.getElementsByClassName('ngremotemedia-select-folder-container');
+    const selectFolderContainers = document.getElementsByClassName('ngremotemedia-select-folder-container');
 
-    for(var i=0; i < containers.length; i++) {
-        let el = containers[i];
+    for(let i=0; i < selectFolderContainers.length; i++) {
+        const container = selectFolderContainers[i];
 
-        if (typeof window[`ngrm_select_folder_vue_${el.dataset.id}`] !== 'undefined') {
+        if (container.querySelector('select-folder-interaction') === null) {
             continue;
         }
 
-        initSelectFolderVue(el);
+        initSelectFolderVue(container);
     }
 };
 
@@ -126,7 +128,6 @@ if (
   (document.readyState !== 'loading' && !document.documentElement.doScroll)
 ) {
   observer.observe(targetNode, config);
-
 } else {
   observer.observe(targetNode, config);
 }

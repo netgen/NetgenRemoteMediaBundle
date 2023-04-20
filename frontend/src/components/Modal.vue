@@ -26,8 +26,6 @@ export default {
 };
 </script>
 
->
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 @import "../scss/variables";
@@ -39,17 +37,13 @@ export default {
   left: 0;
   right: 0;
   background-color: rgba(0, 0, 0, .8);
-  z-index: 11;
+  z-index: 9999;
 
   .media-modal {
     background-color: $wild-sand;
     box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.5);
     margin: 32px;
-    height: calc(100vh - 174px);
-
-    .ng-spinner {
-      position: absolute;
-    }
+    height: calc(100vh - 64px);
 
     .title {
       padding: 15px;
@@ -85,181 +79,42 @@ export default {
 </style>
 
 <style lang="scss">
-@import "../scss/variables";
-// Specific targeted styles for Sylius admin version
-.sidebar + div.menu + .pusher {
-  #wrapper {
-    .ngrm-overlay {
-      top: 48px;
-      width: 100%;
-      padding: 32px;
-      top: 48px;
-      transition: all .5s ease;
-
-      .mediaFacets {
-        input.vue-treeselect__input {
-          padding: 0 1em;
-        }
-
-        input.vs__search {
-          height: 34px;
-          padding: 0 .5em;
-        }
-      }
-
-      .media.new-folder {
-        position: relative;
-        bottom: 7px;
-
-        .btn.select-btn {
-          position: relative;
-          top: 7px;
-        }
-      }
-    }
-
-    .input-file-name-wrapper {
-      input[type="checkbox"] {
-        margin-right: 4px;
-      }
-    }
+.ngremotemedia-buttons {
+  input[type="button"] {
+    margin-bottom: 4px;
+    margin-right: 4px;
   }
 }
 
-.sidebar.visible + div.menu + .pusher {
-  #wrapper {
-    .ngrm-overlay {
-      width: calc(100% - 260px);
-    }
-  }
+.help-block.description {
+  margin-right: 6px;
 }
 
-.sidebar.uncover.visible + div.menu + .pusher {
-  #wrapper {
-    .ngrm-overlay {
-      width: calc(100% - 260px);
-    }
-  }
+.btn, .sidebar-crop .buttons {
+  font-size: 14px!important;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.vue-treeselect__input-container input,
-.vs__selected-options input {
-  border: none!important;
-}
-
-.search-wrapper .search input {
-  border-radius: 0!important;
-}
-
-.ngremotemedia-container {
-  .v-select .vs__dropdown-toggle {
-    padding: 0;
-  }
-
-  .sidebar-crop {
-  button.btn {
-      font-size: 14px!important;
-      font-family: Arial;
+.ngremotemedia-tags {
+  .vs__selected-options {
+    input[type="search"].vs__search {
+      border: none;
     }
   }
 
-  .action-strip {
-    button.btn {
-      font-size: 14px!important;
-      font-family: Arial;
-    }
+  select[hidden="hidden"] {
+    display: none;
   }
-
-  .ui.form input[type="text"] {
-    padding: 0 0 0 0.6rem!important;
-    height: 36px;
-    background: green!important;
-  }
-
-  input {
-    cursor: pointer;
-  }
-
-  .search input {
-    cursor: initial;
-  }
-
-  .vs--single .vs__selected {
-    position: absolute;
-    top: 3px;
-  }
-}
-
-.media .btn.select-btn,
-.load-more-wrapper .btn,
-.upload-from-disk label {
-    font-size: 14px!important;
-    font-family: Arial;
-}
+} 
 
 .ngremotemedia-image {
   h3.title {
       word-break: break-word;
   }
 
-  .ngremotemedia-tags {
-    .ngremotemedia-newtags {
-      display: none;
-    }
-  }
-}
-
-#form {
-  label.required {
-    display: block;
-    margin: 0.5rem 0 0.5rem 0;
-    font-weight: 400;
-    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-    font-size: 0.92rem;
-    color: rgba(0, 0, 0, 0.8);
-
-    &::after {
-      margin: -0.2em 0em 0em 0.2em;
-      content: '*';
-      color: $crimson;
-    }
-  }
-}
-
-.ngremotemedia-buttons {
-  input[type="button"] {
-      cursor: pointer;
-      display: inline-block;
-      min-height: 1em;
-      outline: none;
-      border: none;
-      vertical-align: baseline;
-      background: #E0E1E2 none;
-      color: rgba(0, 0, 0, 0.6);
-      font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-      margin-bottom: 4px;
-      margin-right: 4px;
-      padding: 0.78571429em 1.5em 0.78571429em;
-      text-transform: none;
-      text-shadow: none;
-      font-weight: bold;
-      line-height: 1em;
-      font-style: normal;
-      text-align: center;
-      text-decoration: none;
-      border-radius: 0.28571429rem;
-      box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px rgba(34, 36, 38, 0.15) inset;
-      user-select: none;
-      transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
-      will-change: '';
-      -webkit-tap-highlight-color: transparent;
-  }
-}
-
-.mediaFacets {
-  .form-field {
-    input {
-      height: 30px;
+  .image-wrap {
+    img {
+      max-width: 100%;
     }
   }
 }
@@ -267,37 +122,26 @@ export default {
 .input-file-name-wrapper {
   display: flex;
   align-items: center;
-
   input[type=text], .v-select {
     margin-right: 16px;
   }
-
   .v-select.vs--single.vs--searchable {
     margin-right: 10px;
-
     input.vs__search {
       background: transparent;
     }
   }
-
   button.btn {
-    margin-left: 50%;
+    margin-left: 40%;
     font-size: 14px!important;
     font-family: Arial;
   }
-
   .vs__dropdown-toggle {
     height: 37px;
   }
 }
 
-.folder-gallery .items .media.new-folder {
-  input {
-    padding: 3px 6px;
-    margin-top: 0!important;
-    font-size: 12px;
-    position: relative;
-    top: 3px;
-  }
+.media-gallery .items .media {
+  line-height: normal;
 }
 </style>

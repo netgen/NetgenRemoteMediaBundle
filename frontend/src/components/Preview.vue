@@ -31,6 +31,7 @@
           <input type="text"
                :name="this.config.inputFields.altText"
                v-model="selectedImage.alternateText"
+               @input="dispatchChangeEvent"
                class="media-alttext data"
           >
         </div>
@@ -86,7 +87,11 @@ export default {
   methods: {
     handleTagsInput(value) {
       this.allTags = [...new Set([...this.allTags, ...value])];
+      this.dispatchChangeEvent();
     },
+    dispatchChangeEvent() {
+      this.$emit('preview-change');
+    }
   },
   mounted() {
     this.allTags = [...this.selectedImage.tags];

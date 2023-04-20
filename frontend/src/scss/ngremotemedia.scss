@@ -6,11 +6,13 @@
   font-style: normal;
 }
 
+@import './variables';
 @import './iconfont';
+@import 'vue-select/src/scss/vue-select.scss';
 
-.ngremotemedia-container, .ngremotemedia-select-folder-container {
-  @import './variables';
-
+.ngrm-model-portal + form,
+.ngrm-model-portal .ngrm-overlay,
+.ngremotemedia-select-folder-container {
   box-sizing: border-box;
 
   font-family: 'Roboto', sans-serif;
@@ -24,8 +26,67 @@
     box-sizing: inherit;
   }
 
-  @import 'vue-select/src/scss/vue-select.scss';
+  // Element specific styles
+  .btn {
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 18px;
+    color: $white;
+    padding: 8px 16px;
+    border: 1px solid $mercury;
+    background: $white;
+    color: $mine-shaft;
 
+    &:active {
+      background: darken($mercury, 5%);
+    }
+
+    &.btn-blue {
+      background: $netgen-primary;
+      border: 0;
+      color: $white;
+
+      &:active {
+        background: darken($netgen-primary, 10%);
+      }
+    }
+  }
+
+  // Overriding vue-select styles
+  .v-select {
+    font-size: 14px;
+    line-height: 16px;
+    background-color: $white;
+
+    .vs__dropdown-toggle {
+      border-radius: 0;
+      border: 1px solid $mercury;
+      padding: 3px 5px 6px;
+    }
+
+    input::placeholder {
+      color: #333333;
+      font-style: italic;
+    }
+  }
+
+  // Placeholder colors
+  ::-webkit-input-placeholder {
+    color: $dusty-gray;
+  }
+
+  :-ms-input-placeholder {
+    color: $dusty-gray;
+  }
+
+  ::placeholder {
+    color: $dusty-gray;
+  }
+}
+
+
+.ngrm-model-portal .ngrm-overlay {
   .ng-icon {
     font-size: 4.5em;
     font-family: 'ngri';
@@ -128,59 +189,6 @@
     }
   }
 
-  .ngremotemedia-buttons {
-    margin-top: 20px;
-
-    .ngremotemedia-local-file-container {
-      margin: 20px 0 20px 0;
-    }
-  }
-
-  // Element specific styles
-  .btn {
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 18px;
-    color: $white;
-    padding: 8px 16px;
-    border: 1px solid $mercury;
-    background: $white;
-    color: $mine-shaft;
-
-    &:active {
-      background: darken($mercury, 5%);
-    }
-
-    &.btn-blue {
-      background: $netgen-primary;
-      border: 0;
-      color: $white;
-
-      &:active {
-        background: darken($netgen-primary, 10%);
-      }
-    }
-  }
-
-  // Overriding vue-select styles
-  .v-select {
-    font-size: 14px;
-    line-height: 16px;
-    background-color: $white;
-
-    .vs__dropdown-toggle {
-      border-radius: 0;
-      border: 1px solid $mercury;
-      padding: 3px 5px 6px;
-    }
-
-    input::placeholder {
-      color: #333333;
-      font-style: italic;
-    }
-  }
-
   // Overriding vue-treeselect styles
   .vue-treeselect {
     font-size: 14px;
@@ -197,19 +205,6 @@
     }
   }
 
-  // Placeholder colors
-  ::-webkit-input-placeholder {
-    color: $dusty-gray;
-  }
-
-  :-ms-input-placeholder {
-    color: $dusty-gray;
-  }
-
-  ::placeholder {
-    color: $dusty-gray;
-  }
-
   // Keyframes
   @keyframes spinning {
     from {
@@ -219,6 +214,33 @@
     to {
       transform: rotate(360deg);
     }
+  }
+}
+
+.ngremotemedia-buttons {
+  margin-top: 20px;
+
+  .ngremotemedia-local-file-container {
+    margin: 10px 0 10px 0;
+  }
+
+  input[type="button"],
+  .ngremotemedia-local-file.btn.upload-from-disk {
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px!important;
+    line-height: 18px;
+    padding: 8px 16px;
+    border: 1px solid $mercury;
+    background: #F1F4FA;
+    cursor: pointer;
+    color: $mine-shaft;
+    font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  .ngremotemedia-local-file.btn.upload-from-disk {
+    background: $white;
   }
 }
 
