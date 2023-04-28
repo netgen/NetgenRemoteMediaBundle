@@ -28,6 +28,9 @@ ngrm:
                 select_media: 'Odaberi resurs'
                 manage_media: 'Upravljaj resursima'
                 quick_upload: 'Učitaj datoteku'
+            select_folder_interaction:
+                button: 'Odaberi mapu'
+                empty: 'Nije odabrana ni jedna mapa'
             preview:
                 alternate_text: 'Alternativni tekst'
                 alternate_text_info: 'Alternativni tekst se sprema direktno na resurs u oblaku. Ukoliko se promjeni ovdje, promjenit će se i na svim ostalim lokacijama koje koriste taj resurs.'

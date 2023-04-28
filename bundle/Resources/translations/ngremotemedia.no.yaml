@@ -28,6 +28,9 @@ ngrm:
                 select_media: 'Select media'
                 manage_media: 'Manage media'
                 quick_upload: 'Upload file'
+            select_folder_interaction:
+                button: 'Select folder'
+                empty: 'No folder selected'
             preview:
                 alternate_text: 'Alternate text'
                 alternate_text_info: 'Alt text is stored directly to the resource in the cloud. Changing it here will also change it on all other locations which are using that same resource.'
