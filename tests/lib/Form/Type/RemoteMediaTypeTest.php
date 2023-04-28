@@ -128,6 +128,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'tags' => ['example', 'image', 'test'],
                     'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
                     'source' => null,
+                    'watermarkText' => 'This is a watermark',
                 ],
                 [],
                 [
@@ -139,9 +140,10 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'tags' => ['example', 'image', 'test'],
                     'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
                     'source' => null,
+                    'watermarkText' => 'This is a watermark',
                 ],
                 new RemoteResourceLocation(
-                    new RemoteResource(
+                    remoteResource: new RemoteResource(
                         remoteId: 'upload|image|media/images/example.jpg',
                         type: 'image',
                         url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
@@ -149,10 +151,10 @@ class RemoteMediaTypeTest extends TypeTestCase
                         name: 'example.jpg',
                         folder: Folder::fromPath('media/images'),
                     ),
-                    null,
-                    [
+                    cropSettings: [
                         new CropSettings('hero_image', 10, 20, 1920, 1080),
                     ],
+                    watermarkText: 'This is a watermark',
                 ),
                 [
                     'locationId' => null,
@@ -160,6 +162,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => 'Test alt text',
                     'caption' => 'Test caption',
+                    'watermarkText' => 'This is a watermark',
                     'tags' => ['example', 'image', 'test'],
                     'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
                     'source' => null,
@@ -198,6 +201,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'tags' => [],
                     'cropSettings' => null,
                     'source' => 'Test source',
+                    'watermarkText' => null,
                 ],
                 new RemoteResourceLocation(
                     new RemoteResource(
@@ -215,6 +219,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => null,
                     'caption' => null,
+                    'watermarkText' => null,
                     'tags' => [],
                     'cropSettings' => null,
                     'source' => 'Test source',
@@ -262,6 +267,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'tags' => [],
                     'cropSettings' => null,
                     'source' => 'Test source',
+                    'watermarkText' => null,
                 ],
                 new RemoteResourceLocation(
                     new RemoteResource(
@@ -279,6 +285,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'type' => 'image',
                     'altText' => null,
                     'caption' => null,
+                    'watermarkText' => null,
                     'tags' => [],
                     'cropSettings' => null,
                     'source' => 'Test source',

@@ -35,6 +35,8 @@ ngrm:
                 caption_info: 'Caption is stored directly in Cloudinary on a resource so updating it here will also update it on all other locations which are using that same resource.'
                 tags: 'Tags'
                 tags_info: 'Tags are stored directly in Cloudinary on a resource so updating them here will also update them on all other locations which are using that same resource.'
+                watermark_text: 'Watermark text'
+                watermark_text_info: 'In order for the watermark to appear, you have to correctly configure a variation with watermark and use it on the frontend. This is only to provide content for the watermark.'
                 size: 'Size'
             browse:
                 title: 'Select media'

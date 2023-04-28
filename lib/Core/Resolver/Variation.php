@@ -86,7 +86,7 @@ final class Variation
                 }
             }
 
-            if ($transformationIdentifier === 'watermark_text') {
+            if ($transformationIdentifier === 'watermark_text' && $location->getWatermarkText() !== null && $location->getWatermarkText() !== '') {
                 $config['text'] = $location->getWatermarkText();
             }
 

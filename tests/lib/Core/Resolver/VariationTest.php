@@ -96,6 +96,7 @@ final class VariationTest extends TestCase
                 'watermarked' => [
                     'transformations' => [
                         'watermark_text' => [
+                            'text' => 'Fallback watermark',
                             'font_family' => 'Helvetica',
                             'font_size' => 18,
                             'color' => 'red',
@@ -185,7 +186,10 @@ final class VariationTest extends TestCase
             new CropSettings('small', 5, 10, 200, 200),
         ];
 
-        $location = new RemoteResourceLocation($resource, null, $cropSettings);
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            cropSettings: $cropSettings,
+        );
 
         $cropOptions = [
             'x' => 5,
@@ -262,7 +266,10 @@ final class VariationTest extends TestCase
             new CropSettings('large', 5, 10, 800, 800),
         ];
 
-        $location = new RemoteResourceLocation($resource, null, $cropSettings);
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            cropSettings: $cropSettings,
+        );
 
         $formatOptions = ['fetch_format' => 'jpeg'];
 
@@ -330,7 +337,10 @@ final class VariationTest extends TestCase
             new CropSettings('small', 5, 10, 200, 200),
         ];
 
-        $location = new RemoteResourceLocation($resource, null, $cropSettings);
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            cropSettings: $cropSettings,
+        );
 
         $formatOptions = ['fetch_format' => 'jpeg'];
 
@@ -371,7 +381,10 @@ final class VariationTest extends TestCase
             size: 200,
         );
 
-        $location = new RemoteResourceLocation($resource, null, [], 'Test text');
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            watermarkText: 'Test text',
+        );
 
         $transformations = [
             'overlay' => [
@@ -399,6 +412,60 @@ final class VariationTest extends TestCase
                 'align' => 'top',
                 'y' => 20,
                 'text' => 'Test text',
+            ])
+            ->willReturn($transformations);
+
+        self::assertSame(
+            [$transformations],
+            $this->variationResolver->processConfiguredVariation(
+                $location,
+                'cloudinary',
+                'article',
+                'watermarked',
+            ),
+        );
+    }
+
+    public function testProcessConfiguredVariationWithFallbackWatermarkText(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 30,
+            name: 'test_image.jpg',
+            size: 200,
+        );
+
+        $location = new RemoteResourceLocation($resource);
+
+        $transformations = [
+            'overlay' => [
+                'text' => 'Some sample text',
+                'font_family' => 'Helvetica',
+                'font_size' => 18,
+            ],
+            'gravity' => 'north',
+            'color' => 'red',
+            'density' => 400,
+            'opacity' => 50,
+            'align' => 'top',
+            'y' => 20,
+        ];
+
+        $this->watermarkTextHandler
+            ->expects(self::once())
+            ->method('process')
+            ->with([
+                'font_family' => 'Helvetica',
+                'font_size' => 18,
+                'color' => 'red',
+                'density' => 400,
+                'opacity' => 50,
+                'align' => 'top',
+                'y' => 20,
+                'text' => 'Fallback watermark',
             ])
             ->willReturn($transformations);
 
@@ -451,6 +518,7 @@ final class VariationTest extends TestCase
                 'watermarked' => [
                     'transformations' => [
                         'watermark_text' => [
+                            'text' => 'Fallback watermark',
                             'font_family' => 'Helvetica',
                             'font_size' => 18,
                             'color' => 'red',

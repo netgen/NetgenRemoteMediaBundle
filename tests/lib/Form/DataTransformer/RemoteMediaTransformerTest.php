@@ -50,6 +50,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'tags' => null,
             'cropSettings' => null,
             'source' => null,
+            'watermarkText' => null,
         ];
 
         self::assertNull($this->dataTransformer->reverseTransform($data));
@@ -66,6 +67,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'tags' => ['tag1', 'tag2'],
             'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
             'source' => null,
+            'watermarkText' => 'This is a watermark',
         ];
 
         $resource = new RemoteResource(
@@ -90,7 +92,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->willReturn($resource);
 
         $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource(
+            remoteResource: new RemoteResource(
                 remoteId: 'upload|image|media/images/example.jpg',
                 type: 'image',
                 url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
@@ -101,10 +103,10 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                 caption: 'Test caption',
                 tags: ['tag1', 'tag2'],
             ),
-            null,
-            [
+            cropSettings: [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
+            watermarkText: 'This is a watermark',
         );
 
         $this->providerMock
@@ -129,6 +131,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'tags' => ['tag1', 'tag2'],
             'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
             'source' => null,
+            'watermarkText' => null,
         ];
 
         $this->providerMock
@@ -154,10 +157,11 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'type' => 'image',
             'tags' => ['tag2'],
             'cropSettings' => null,
+            'watermarkText' => 'new watermark',
         ];
 
         $location = new RemoteResourceLocation(
-            new RemoteResource(
+            remoteResource: new RemoteResource(
                 remoteId: 'upload|image|media/images/example.jpg',
                 type: 'image',
                 url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
@@ -166,8 +170,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                 folder: Folder::fromPath('media/images'),
                 tags: ['tag1', 'tag2', 'tag3'],
             ),
-            null,
-            [
+            cropSettings: [
                 new CropSettings('hero_image', 10, 20, 1920, 1080),
             ],
         );
@@ -185,7 +188,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->willReturn($location);
 
         $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource(
+            remoteResource: new RemoteResource(
                 remoteId: 'upload|image|media/images/example.jpg',
                 type: 'image',
                 url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
@@ -194,6 +197,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                 folder: Folder::fromPath('media/images'),
                 tags: ['tag2'],
             ),
+            watermarkText: 'new watermark',
         );
 
         $this->providerMock
@@ -217,6 +221,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             'cropSettings' => null,
             'source' => 'test',
             'caption' => 'test caption',
+            'watermarkText' => 'some watermark',
         ];
 
         $location = new RemoteResourceLocation(
@@ -406,7 +411,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ],
             [
                 new RemoteResourceLocation(
-                    new RemoteResource(
+                    remoteResource: new RemoteResource(
                         remoteId: 'upload|image|media/images/example.jpg',
                         type: 'image',
                         url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
@@ -417,8 +422,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                         caption: 'Test caption',
                         tags: ['tag1', 'tag2'],
                     ),
-                    null,
-                    [
+                    cropSettings: [
                         new CropSettings('hero_image', 10, 20, 1920, 1080),
                     ],
                 ),
@@ -431,18 +435,20 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                     'tags' => ['tag1', 'tag2'],
                     'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
                     'source' => null,
+                    'watermarkText' => null,
                 ],
             ],
             [
                 new RemoteResourceLocation(
-                    new RemoteResource(
+                    remoteResource: new RemoteResource(
                         remoteId: 'upload|image|media/images/example.jpg',
                         type: 'image',
                         url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
                         md5: 'e522f43cf89aa0afd03387c37e2b6e29',
                         name: 'example.jpg',
                     ),
-                    'my_source',
+                    source: 'my_source',
+                    watermarkText: 'This is a watermark',
                 ),
                 [
                     'locationId' => null,
@@ -453,6 +459,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                     'tags' => [],
                     'cropSettings' => '[]',
                     'source' => 'my_source',
+                    'watermarkText' => 'This is a watermark',
                 ],
             ],
         ];

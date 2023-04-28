@@ -34,6 +34,7 @@
               {{this.config.translations.preview_alternate_text}}
               <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_alternate_text_info"></i>
           </span>
+
           <input type="text"
                :name="this.config.inputFields.altText"
                v-model="selectedImage.alternateText"
@@ -47,6 +48,7 @@
               {{this.config.translations.preview_caption}}
               <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_caption_info"></i>
           </span>
+
           <input type="text"
                :name="this.config.inputFields.caption"
                v-model="selectedImage.caption"
@@ -61,8 +63,21 @@
           </span>
           <v-select :options="config.allowedTags.length > 0 ? config.allowedTags : allTags" v-model="selectedImage.tags" multiple :taggable="config.allowedTags.length === 0" @input="handleTagsInput"></v-select>
           <select hidden v-model="selectedImage.tags" :name="this.config.inputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
-            <option v-for="tag in allTags" :key = "tag">{{tag}}</option>
+            <option v-for="tag in allTags" :key = "tag">{{ tag }}</option>
           </select>
+        </div>
+
+        <div class="ngremotemedia-watermark-text">
+          <span class="help-block description">
+            {{this.config.translations.preview_watermark_text}}
+            <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_watermark_text_info"></i>
+          </span>
+
+          <input type="text"
+                 :name="this.config.inputFields.watermarkText"
+                 v-model="selectedImage.watermarkText"
+                 class="media-watermarktext data"
+          >
         </div>
       </div>
     </div>

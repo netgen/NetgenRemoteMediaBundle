@@ -35,6 +35,8 @@ ngrm:
                 caption_info: 'Caption is stored directly to the resource in the cloud. Changing it here will also change it on all other locations which are using that same resource.'
                 tags: 'Tags'
                 tags_info: 'Tags are stored directly to the resource in the cloud. Changing them here will also change them on all other locations which are using that same resource.'
+                watermark_text: 'Watermark text'
+                watermark_text_info: 'In order for the watermark to appear, you have to correctly configure a variation with watermark and use it on the frontend. This is only to provide content for the watermark.'
                 size: 'Size'
             browse:
                 title: 'Select media'

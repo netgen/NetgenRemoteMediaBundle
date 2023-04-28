@@ -35,6 +35,8 @@ ngrm:
                 caption_info: 'Naslov se sprema direktno na resurs u oblaku. Ukoliko se promjeni ovdje, promjenit će se i na svim ostalim lokacijama koje koriste taj resurs.'
                 tags: 'Tagovi'
                 tags_info: 'Tagovi se spremaju direktno na resurs u oblaku. Ukoliko se promjene ovdje, promjenit će se i na svim ostalim lokacijama koje koriste taj resurs.'
+                watermark_text: 'Tekst vodenog žiga'
+                watermark_text_info: 'Kako bi se vodeni žig pojavio, potrebno je ispravno konfigurirati varijaciju s vodenim žigom i koristiti ju na frontendu. Ovo je samo sadržaj za vodeni žig.'
                 size: 'Veličina'
             browse:
                 title: 'Odaberi resurs'
