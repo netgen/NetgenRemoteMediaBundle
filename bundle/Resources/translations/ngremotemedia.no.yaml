@@ -29,9 +29,12 @@ ngrm:
                 manage_media: 'Manage media'
                 quick_upload: 'Upload file'
             preview:
-                alternate_text: 'Alternativ tekst'
-                caption: 'Bildetekst'
+                alternate_text: 'Alternate text'
+                alternate_text_info: 'Alt text is stored directly to the resource in the cloud. Changing it here will also change it on all other locations which are using that same resource.'
+                caption: 'Caption'
+                caption_info: 'Caption is stored directly to the resource in the cloud. Changing it here will also change it on all other locations which are using that same resource.'
                 tags: 'Tags'
+                tags_info: 'Tags are stored directly to the resource in the cloud. Changing them here will also change them on all other locations which are using that same resource.'
                 size: 'Size'
             browse:
                 title: 'Select media'

@@ -30,7 +30,10 @@
 
       <div class="image-meta-data">
         <div class="ngremotemedia-alttext">
-          <span class="help-block description">{{this.config.translations.preview_alternate_text}}</span>
+          <span class="help-block description">
+              {{this.config.translations.preview_alternate_text}}
+              <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_alternate_text_info"></i>
+          </span>
           <input type="text"
                :name="this.config.inputFields.altText"
                v-model="selectedImage.alternateText"
@@ -40,7 +43,10 @@
         </div>
 
         <div class="ngremotemedia-caption">
-          <span class="help-block description">{{this.config.translations.preview_caption}}</span>
+          <span class="help-block description">
+              {{this.config.translations.preview_caption}}
+              <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_caption_info"></i>
+          </span>
           <input type="text"
                :name="this.config.inputFields.caption"
                v-model="selectedImage.caption"
@@ -49,7 +55,10 @@
         </div>
 
         <div class="ngremotemedia-tags">
-          <span class="help-block description">{{this.config.translations.preview_tags}}</span>
+          <span class="help-block description">
+              {{this.config.translations.preview_tags}}
+              <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_tags_info"></i>
+          </span>
           <v-select :options="config.allowedTags.length > 0 ? config.allowedTags : allTags" v-model="selectedImage.tags" multiple :taggable="config.allowedTags.length === 0" @input="handleTagsInput"></v-select>
           <select hidden v-model="selectedImage.tags" :name="this.config.inputFields.tags" class="ngremotemedia-newtags" multiple="multiple">
             <option v-for="tag in allTags" :key = "tag">{{tag}}</option>

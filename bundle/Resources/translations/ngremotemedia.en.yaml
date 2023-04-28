@@ -30,8 +30,11 @@ ngrm:
                 quick_upload: 'Upload file'
             preview:
                 alternate_text: 'Alternate text'
+                alternate_text_info: 'Alt text is stored directly in Cloudinary on a resource so updating it here will also update it on all other locations which are using that same resource.'
                 caption: 'Caption'
+                caption_info: 'Caption is stored directly in Cloudinary on a resource so updating it here will also update it on all other locations which are using that same resource.'
                 tags: 'Tags'
+                tags_info: 'Tags are stored directly in Cloudinary on a resource so updating them here will also update them on all other locations which are using that same resource.'
                 size: 'Size'
             browse:
                 title: 'Select media'

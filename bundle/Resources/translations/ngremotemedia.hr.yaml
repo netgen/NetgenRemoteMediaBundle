@@ -30,8 +30,11 @@ ngrm:
                 quick_upload: 'Učitaj datoteku'
             preview:
                 alternate_text: 'Alternativni tekst'
+                alternate_text_info: 'Alternativni tekst se sprema direktno na resurs u oblaku. Ukoliko se promjeni ovdje, promjenit će se i na svim ostalim lokacijama koje koriste taj resurs.'
                 caption: 'Naslov'
+                caption_info: 'Naslov se sprema direktno na resurs u oblaku. Ukoliko se promjeni ovdje, promjenit će se i na svim ostalim lokacijama koje koriste taj resurs.'
                 tags: 'Tagovi'
+                tags_info: 'Tagovi se spremaju direktno na resurs u oblaku. Ukoliko se promjene ovdje, promjenit će se i na svim ostalim lokacijama koje koriste taj resurs.'
                 size: 'Veličina'
             browse:
                 title: 'Odaberi resurs'
