@@ -423,6 +423,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                 [
                     'type' => $remoteId->getType(),
                     'resource_type' => $remoteId->getResourceType(),
+                    'media_metadata' => true,
+                    'image_metadata' => true,
+                    'exif' => true,
                 ],
             )
             ->willReturn($cloudinaryResponse);
@@ -460,6 +463,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                 [
                     'type' => $remoteId->getType(),
                     'resource_type' => $remoteId->getResourceType(),
+                    'media_metadata' => true,
+                    'image_metadata' => true,
+                    'exif' => true,
                 ],
             )
             ->willThrowException(new Api\NotFound());
@@ -760,6 +766,17 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         );
     }
 
+    public function testGetVideoThumbnailAuthenticated(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
+        $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
+
+        self::assertSame(
+            'https://res.cloudinary.com/testcloud/video/upload/media/example.jpg?__cld_token__=exp=1672531200~hmac=62ddaa466e7acbd07699201e33c8c1865b78b91365bd727f7b88ac524f02095b',
+            $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId, [], $token),
+        );
+    }
+
     public function testGetImageTag(): void
     {
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/example');
@@ -767,6 +784,17 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         self::assertSame(
             "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example' />",
             $this->apiGateway->getImageTag($cloudinaryRemoteId),
+        );
+    }
+
+    public function testGetImageTagAuthenticated(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/example');
+        $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
+
+        self::assertSame(
+            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example?__cld_token__=exp=1672531200~hmac=7de9d88403fd7cfa56802fa4a6371d32866df3b23ccfa769e45ce4b7e297045a' />",
+            $this->apiGateway->getImageTag($cloudinaryRemoteId, [], $token),
         );
     }
 
@@ -780,6 +808,20 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.mp4' type='video/mp4'>"
             . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.ogv' type='video/ogg'></video>",
             $this->apiGateway->getVideoTag($cloudinaryRemoteId),
+        );
+    }
+
+    public function testGetVideoTagAuthenticated(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
+        $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
+
+        self::assertSame(
+            "<video poster='https://res.cloudinary.com/testcloud/video/upload/media/example.jpg?__cld_token__=exp=1672531200~hmac=62ddaa466e7acbd07699201e33c8c1865b78b91365bd727f7b88ac524f02095b'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.webm?__cld_token__=exp=1672531200~hmac=a5cfcc4e4decf5525ffd94122b7f8132be63ca59a9abb5daf6b8325c9e26ba4e' type='video/webm'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.mp4?__cld_token__=exp=1672531200~hmac=7537ec69571888e23b74d9ab811da1125bc8683f035b449134557311b5835571' type='video/mp4'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.ogv?__cld_token__=exp=1672531200~hmac=c145ac2c614b225df4fe20525881ee8b2e707febf78c0c927d6e75b0a2decfda' type='video/ogg'></video>",
+            $this->apiGateway->getVideoTag($cloudinaryRemoteId, [], $token),
         );
     }
 

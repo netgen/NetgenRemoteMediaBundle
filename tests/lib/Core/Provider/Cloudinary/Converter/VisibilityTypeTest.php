@@ -60,7 +60,6 @@ final class VisibilityTypeTest extends TestCase
     {
         return [
             ['upload', RemoteResource::VISIBILITY_PUBLIC],
-            ['private', RemoteResource::VISIBILITY_PRIVATE],
             ['authenticated', RemoteResource::VISIBILITY_PROTECTED],
         ];
     }
@@ -69,7 +68,6 @@ final class VisibilityTypeTest extends TestCase
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, 'upload'],
-            [RemoteResource::VISIBILITY_PRIVATE, 'private'],
             [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
         ];
     }
@@ -78,7 +76,6 @@ final class VisibilityTypeTest extends TestCase
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, 'public'],
-            [RemoteResource::VISIBILITY_PRIVATE, 'public'],
             [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
         ];
     }
@@ -87,7 +84,6 @@ final class VisibilityTypeTest extends TestCase
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, ['access_type' => 'anonymous']],
-            [RemoteResource::VISIBILITY_PRIVATE, ['access_type' => 'token']],
             [RemoteResource::VISIBILITY_PROTECTED, ['access_type' => 'token']],
         ];
     }

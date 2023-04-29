@@ -92,10 +92,6 @@ final class SearchExpressionTest extends TestCase
                 '(type:"upload")',
             ],
             [
-                new Query(visibilities: ['private']),
-                '(type:"private")',
-            ],
-            [
                 new Query(visibilities: ['protected']),
                 '(type:"authenticated")',
             ],
@@ -112,7 +108,7 @@ final class SearchExpressionTest extends TestCase
                     query: 'android',
                     types: ['video'],
                     folders: ['root/videos'],
-                    visibilities: ['private', 'public'],
+                    visibilities: ['public'],
                     tags: ['tech'],
                 ),
                 '(resource_type:"video")'
@@ -120,7 +116,7 @@ final class SearchExpressionTest extends TestCase
                 . ' AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))'
                 . ' AND android*'
                 . ' AND (folder:"root/videos")'
-                . ' AND (type:"private" OR type:"upload")'
+                . ' AND (type:"upload")'
                 . ' AND (tags:"tech")',
             ],
             [

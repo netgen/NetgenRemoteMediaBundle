@@ -233,14 +233,14 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         $this->invalidateResourceListCache();
     }
 
-    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token): string
     {
-        return $this->gateway->getAuthenticatedUrl($remoteId, $token, $transformations);
+        return $this->gateway->getAuthenticatedUrl($remoteId, $token);
     }
 
-    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string
+    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations, ?AuthToken $token = null): string
     {
-        return $this->gateway->getVariationUrl($remoteId, $transformations);
+        return $this->gateway->getVariationUrl($remoteId, $transformations, $token);
     }
 
     public function search(Query $query): Result
@@ -322,24 +322,24 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         return $list;
     }
 
-    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
-        return $this->gateway->getVideoThumbnail($remoteId, $options);
+        return $this->gateway->getVideoThumbnail($remoteId, $options, $token);
     }
 
-    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
-        return $this->gateway->getImageTag($remoteId, $options);
+        return $this->gateway->getImageTag($remoteId, $options, $token);
     }
 
-    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
-        return $this->gateway->getVideoTag($remoteId, $options);
+        return $this->gateway->getVideoTag($remoteId, $options, $token);
     }
 
-    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
-        return $this->gateway->getDownloadLink($remoteId, $options);
+        return $this->gateway->getDownloadLink($remoteId, $options, $token);
     }
 
     public function invalidateResourceListCache(): void

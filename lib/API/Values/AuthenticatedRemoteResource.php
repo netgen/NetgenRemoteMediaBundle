@@ -4,23 +4,31 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Values;
 
-class AuthenticatedRemoteResource
+class AuthenticatedRemoteResource extends RemoteResource
 {
     public function __construct(
-        private RemoteResource $remoteResource,
-        private string $url,
-        private AuthToken $token
+        RemoteResource $remoteResource,
+        string $url,
+        private AuthToken $token,
     ) {
-    }
-
-    public function getRemoteResource(): RemoteResource
-    {
-        return $this->remoteResource;
-    }
-
-    public function getUrl(): string
-    {
-        return $this->url;
+        parent::__construct(
+            remoteId: $remoteResource->getRemoteId(),
+            type: $remoteResource->getType(),
+            url: $url,
+            md5: $remoteResource->getMd5(),
+            id: $remoteResource->getId(),
+            name: $remoteResource->getName(),
+            version: $remoteResource->getVersion(),
+            visibility: $remoteResource->getVisibility(),
+            folder: $remoteResource->getFolder(),
+            size: $remoteResource->getSize(),
+            altText: $remoteResource->getAltText(),
+            caption: $remoteResource->getCaption(),
+            tags: $remoteResource->getTags(),
+            metadata: $remoteResource->getMetadata(),
+            context: $remoteResource->getContext(),
+            locations: $remoteResource->getLocations(),
+        );
     }
 
     public function getToken(): AuthToken

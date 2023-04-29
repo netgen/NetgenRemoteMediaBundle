@@ -7,7 +7,6 @@ ngrm:
         other: 'Other'
     supported_visibilities:
         public: 'Public'
-        private: 'Private'
         protected: 'Protected'
     edit:
         form:

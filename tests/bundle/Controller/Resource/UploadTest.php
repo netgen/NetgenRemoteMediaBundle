@@ -332,7 +332,7 @@ final class UploadTest extends TestCase
         $this->providerMock
             ->expects(self::once())
             ->method('getSupportedVisibilities')
-            ->willReturn(['public', 'private', 'protected']);
+            ->willReturn(['public', 'protected']);
 
         $this->translatorMock
             ->expects(self::once())
@@ -341,14 +341,14 @@ final class UploadTest extends TestCase
                 'ngrm.edit.vue.upload.error.invalid_visibility',
                 [
                     '%visibility%' => 'test',
-                    '%supported_visibilities%' => 'public", "private", "protected',
+                    '%supported_visibilities%' => 'public", "protected',
                 ],
                 'ngremotemedia',
             )
-            ->willReturn('Invalid visibility option "test", supported options: "public", "private", "protected".');
+            ->willReturn('Invalid visibility option "test", supported options: "public", "protected".');
 
         self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Invalid visibility option "test", supported options: "public", "private", "protected".');
+        self::expectExceptionMessage('Invalid visibility option "test", supported options: "public", "protected".');
 
         $this->controller->__invoke($request);
     }

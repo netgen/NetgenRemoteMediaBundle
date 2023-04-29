@@ -260,8 +260,8 @@ final class RemoteResourceTest extends AbstractTestCase
                     'resource_type' => 'video',
                     'created_at' => '2013-06-23T13:59:18Z',
                     'bytes' => 12025,
-                    'type' => 'private',
-                    'secure_url' => 'https://res.cloudinary.com/myCloud/private/video/v1371995958/c87hg9xfxrd4itiim3t0.mp3',
+                    'type' => 'authenticated',
+                    'secure_url' => 'https://res.cloudinary.com/myCloud/authenticated/video/v1371995958/c87hg9xfxrd4itiim3t0.mp3',
                     'etag' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     'overwritten' => 'false',
                     'context' => [
@@ -273,13 +273,13 @@ final class RemoteResourceTest extends AbstractTestCase
                     ],
                 ],
                 new RemoteResource(
-                    remoteId: 'private|video|c87hg9xfxrd4itiim3t0',
+                    remoteId: 'authenticated|video|c87hg9xfxrd4itiim3t0',
                     type: 'audio',
-                    url: 'https://res.cloudinary.com/myCloud/video/private/c87hg9xfxrd4itiim3t0',
+                    url: 'https://res.cloudinary.com/myCloud/video/authenticated/c87hg9xfxrd4itiim3t0',
                     md5: 'e522f43cf89aa0afd03387c37e2b6e29',
                     name: 'c87hg9xfxrd4itiim3t0',
                     version: '1371995958',
-                    visibility: 'private',
+                    visibility: 'protected',
                     size: 12025,
                     tags: [],
                     metadata: [

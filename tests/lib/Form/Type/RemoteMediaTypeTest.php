@@ -185,7 +185,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                 ],
                 [
                     'variation_group' => null,
-                    'allowed_visibilities' => ['public', 'private', 'other'],
+                    'allowed_visibilities' => ['public', 'other'],
                     'allowed_types' => ['image', 'video', 'pdf'],
                     'allowed_tags' => ['tag1', 'tag2'],
                     'parent_folder' => 'media/test',
@@ -226,7 +226,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                 ],
                 [
                     'variation_group' => 'default',
-                    'allowed_visibilities' => ['public', 'private'],
+                    'allowed_visibilities' => ['public'],
                     'allowed_types' => ['image', 'video'],
                     'allowed_tags' => ['tag1'],
                     'parent_folder' => [

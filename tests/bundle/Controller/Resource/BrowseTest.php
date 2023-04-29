@@ -247,7 +247,7 @@ final class BrowseTest extends TestCase
             'query' => 'image',
             'type' => ['image', 'video'],
             'folder' => ['media', 'other'],
-            'visibility' => ['private', 'protected'],
+            'visibility' => ['protected'],
             'tags' => 'test',
         ]);
 
@@ -255,7 +255,7 @@ final class BrowseTest extends TestCase
             query: 'image',
             types: ['image', 'video'],
             folders: ['media', 'other'],
-            visibilities: ['private', 'protected'],
+            visibilities: ['protected'],
             tags: [],
         );
 

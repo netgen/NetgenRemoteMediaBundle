@@ -174,13 +174,6 @@ final class RemoteMediaRuntime extends AbstractExtension
         return $this->provider->authenticateRemoteResource($remoteResource, $token);
     }
 
-    public function authenticateRemoteResourceVariation(RemoteResourceVariation $remoteResourceVariation, int $duration): AuthenticatedRemoteResource
-    {
-        $token = AuthToken::fromDuration($duration);
-
-        return $this->provider->authenticateRemoteResourceVariation($remoteResourceVariation, $token);
-    }
-
     public function getNamedRemoteResource(string $name): ?RemoteResource
     {
         try {

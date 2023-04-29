@@ -81,7 +81,7 @@ If provided, only variations from this group + default variations will be availa
 
 #### `allowed_visibilities`
 
-You can specify an array of allowed visibilities (eg. `public`, `private` or `protected` etc.) which will limit the available resources only to those types when browsing. Also, you will be able to select only those visibilities in the visibility filter. If only one visibility is provided, the filter won't show at all.
+You can specify an array of allowed visibilities (eg. `public` or `protected` etc.) which will limit the available resources only to those types when browsing. Also, you will be able to select only those visibilities in the visibility filter. If only one visibility is provided, the filter won't show at all.
 
 This will also affect the upload functionality. You will be able to select only specified visibilities when uploading, and if only one is provided, the selector won't be shown at all.
 

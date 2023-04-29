@@ -23,7 +23,6 @@ class RemoteResource
     public const TYPE_OTHER = 'other';
 
     public const VISIBILITY_PUBLIC = 'public';
-    public const VISIBILITY_PRIVATE = 'private';
     public const VISIBILITY_PROTECTED = 'protected';
 
     public const SUPPORTED_TYPES = [
@@ -36,7 +35,6 @@ class RemoteResource
 
     public const SUPPORTED_VISIBILITIES = [
         self::VISIBILITY_PUBLIC,
-        self::VISIBILITY_PRIVATE,
         self::VISIBILITY_PROTECTED,
     ];
 
@@ -146,11 +144,6 @@ class RemoteResource
     public function isPublic(): bool
     {
         return $this->visibility === self::VISIBILITY_PUBLIC;
-    }
-
-    public function isPrivate(): bool
-    {
-        return $this->visibility === self::VISIBILITY_PRIVATE;
     }
 
     public function isProtected(): bool

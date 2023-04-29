@@ -78,7 +78,6 @@ final class RemoteResourceTest extends AbstractTestCase
         );
 
         self::assertTrue($resource->isPublic());
-        self::assertFalse($resource->isPrivate());
         self::assertFalse($resource->isProtected());
 
         self::assertSame(

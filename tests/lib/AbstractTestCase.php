@@ -84,11 +84,6 @@ abstract class AbstractTestCase extends TestCase
         );
 
         self::assertSame(
-            $expected->isPrivate(),
-            $actual->isPrivate(),
-        );
-
-        self::assertSame(
             $expected->isProtected(),
             $actual->isProtected(),
         );
@@ -163,6 +158,15 @@ abstract class AbstractTestCase extends TestCase
                 ((array) $actual->getLocations())[$key],
             );
         }
+
+        if ($expected instanceof AuthenticatedRemoteResource) {
+            self::assertInstanceOf(AuthenticatedRemoteResource::class, $actual);
+
+            self::authTokenSame(
+                $expected->getToken(),
+                $actual->getToken(),
+            );
+        }
     }
 
     public static function assertRemoteResourceLocationSame(RemoteResourceLocation $expected, RemoteResourceLocation $actual): void
@@ -226,24 +230,6 @@ abstract class AbstractTestCase extends TestCase
         self::assertSame(
             $expected->getIpAddress(),
             $actual->getIpAddress(),
-        );
-    }
-
-    public static function assertAuthenticatedRemoteResourceSame(AuthenticatedRemoteResource $expected, AuthenticatedRemoteResource $actual): void
-    {
-        self::assertRemoteResourceSame(
-            $expected->getRemoteResource(),
-            $actual->getRemoteResource(),
-        );
-
-        self::assertSame(
-            $expected->getUrl(),
-            $actual->getUrl(),
-        );
-
-        self::authTokenSame(
-            $expected->getToken(),
-            $actual->getToken(),
         );
     }
 

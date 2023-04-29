@@ -13,6 +13,7 @@ use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
 use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\AbstractProvider;
@@ -177,6 +178,7 @@ final class CloudinaryProvider extends AbstractProvider
         return $this->gateway->getDownloadLink(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
+            $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
     }
 
@@ -187,15 +189,24 @@ final class CloudinaryProvider extends AbstractProvider
         return new AuthenticatedRemoteResource($resource, $url, $token);
     }
 
-    public function authenticateRemoteResourceVariation(RemoteResourceVariation $variation, AuthToken $token): AuthenticatedRemoteResource
+    public function authenticateRemoteResourceLocation(RemoteResourceLocation $location, AuthToken $token): RemoteResourceLocation
     {
         $url = $this->gateway->getAuthenticatedUrl(
-            CloudinaryRemoteId::fromRemoteId($variation->getRemoteResource()->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($location->getRemoteResource()->getRemoteId()),
             $token,
-            $variation->getTransformations(),
         );
 
-        return new AuthenticatedRemoteResource($variation->getRemoteResource(), $url, $token);
+        return new RemoteResourceLocation(
+            remoteResource: new AuthenticatedRemoteResource(
+                remoteResource: $location->getRemoteResource(),
+                url: $url,
+                token: $token,
+            ),
+            source: $location->getSource(),
+            cropSettings: $location->getCropSettings(),
+            watermarkText: $location->getWatermarkText(),
+            id: $location->getId(),
+        );
     }
 
     protected function internalListFolders(?Folder $parent = null): array
@@ -243,6 +254,7 @@ final class CloudinaryProvider extends AbstractProvider
         $variationUrl = $this->gateway->getVariationUrl(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $transformations,
+            $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
 
         return new RemoteResourceVariation($resource, $variationUrl, $transformations);
@@ -264,6 +276,7 @@ final class CloudinaryProvider extends AbstractProvider
         $thumbnailUrl = $this->gateway->getVideoThumbnail(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
+            $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
 
         return new RemoteResourceVariation($resource, $thumbnailUrl, array_merge(default_poster_options(), $options));
@@ -291,6 +304,7 @@ final class CloudinaryProvider extends AbstractProvider
         return $this->gateway->getImageTag(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
+            $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
     }
 
@@ -318,6 +332,7 @@ final class CloudinaryProvider extends AbstractProvider
         return $this->gateway->getVideoTag(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
+            $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
     }
 
@@ -345,6 +360,7 @@ final class CloudinaryProvider extends AbstractProvider
         $thumbnailTag = $this->gateway->getImageTag(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
+            $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
 
         preg_match('/src=["|\']([^"|\']*)["|\']/', $thumbnailTag, $parts);
@@ -368,6 +384,7 @@ final class CloudinaryProvider extends AbstractProvider
         $tag = $this->gateway->getVideoTag(
             CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
             $options,
+            $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
 
         return str_replace(

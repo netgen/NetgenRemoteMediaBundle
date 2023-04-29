@@ -34,6 +34,7 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Mime\MimeTypesInterface;
 
 use function count;
+use function sprintf;
 
 #[CoversClass(CloudinaryProvider::class)]
 final class CloudinaryProviderTest extends AbstractTestCase
@@ -505,6 +506,43 @@ final class CloudinaryProviderTest extends AbstractTestCase
         );
     }
 
+    public function testGenerateDownloadLinkAuthenticated(): void
+    {
+        $resource = new AuthenticatedRemoteResource(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|media/images/image.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/images/image.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'image.jpg',
+                size: 95,
+            ),
+            url: 'https://cloudinary.com/test/upload/images/image.jpg?token=tds56znwfgi42dwew',
+            token: AuthToken::fromDuration(60),
+        );
+
+        $transformations = [
+            'crop' => 'fit',
+            'width' => 160,
+            'height' => 120,
+        ];
+
+        $expectedOptions = [
+            'transformation' => $transformations,
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getDownloadLink')
+            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $expectedOptions)
+            ->willReturn('https://cloudinary.com/test/upload/images/image.jpg?token=tds56znwfgi42dwew');
+
+        self::assertSame(
+            'https://cloudinary.com/test/upload/images/image.jpg?token=tds56znwfgi42dwew',
+            $this->cloudinaryProvider->generateDownloadLink($resource, $transformations),
+        );
+    }
+
     public function testAuthenticateRemoteResource(): void
     {
         $resource = new RemoteResource(
@@ -529,49 +567,9 @@ final class CloudinaryProviderTest extends AbstractTestCase
             ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token)
             ->willReturn($url);
 
-        self::assertAuthenticatedRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $expectedAuthenticatedResource,
             $this->cloudinaryProvider->authenticateRemoteResource($resource, $token),
-        );
-    }
-
-    public function testAuthenticateRemoteResourceVariation(): void
-    {
-        $resource = new RemoteResource(
-            remoteId: 'authenticated|image|media/images/image.jpg',
-            type: 'image',
-            url: 'https://cloudinary.com/test/authenticated/image/images/image.jpg',
-            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-            name: 'image.jpg',
-            visibility: 'protected',
-            size: 95,
-        );
-
-        $variationUrl = 'https://cloudinary.com/test/authenticated/image/c_120_160/q_auto/images/image.jpg';
-
-        $transformations = [
-            'crop' => 'fit',
-            'width' => 160,
-            'height' => 120,
-        ];
-
-        $variation = new RemoteResourceVariation($resource, $variationUrl, $transformations);
-
-        $token = AuthToken::fromDuration(50);
-
-        $url = 'https://cloudinary.com/test/authenticated/image/c_120_160/images/image.jpg?_token=dwejtri43t98u0vfdjf9420jre9f';
-
-        $expectedAuthenticatedResource = new AuthenticatedRemoteResource($resource, $url, $token);
-
-        $this->gateway
-            ->expects(self::once())
-            ->method('getAuthenticatedUrl')
-            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token, $transformations)
-            ->willReturn($url);
-
-        self::assertAuthenticatedRemoteResourceSame(
-            $expectedAuthenticatedResource,
-            $this->cloudinaryProvider->authenticateRemoteResourceVariation($variation, $token),
         );
     }
 
@@ -836,6 +834,48 @@ final class CloudinaryProviderTest extends AbstractTestCase
         );
     }
 
+    public function testGetVideoThumbnailAuthenticated(): void
+    {
+        $url = 'https://cloudinary.com/test/upload/videos/example.mp4.jpg?token=7cd6988913bc2d89ea8899b72f3ab4b9';
+        $token = AuthToken::fromDuration(60);
+
+        $resource = new AuthenticatedRemoteResource(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|media/videos/example.mp4',
+                type: 'video',
+                url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.mp4',
+                size: 495,
+            ),
+            url: $url,
+            token: $token,
+        );
+
+        $variation = new RemoteResourceVariation($resource, $url);
+
+        $options = [
+            'resource_type' => 'video',
+            'transformation' => [],
+            'start_offset' => 'auto',
+        ];
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoThumbnail')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+                $token,
+            )
+            ->willReturn($url);
+
+        self::assertRemoteResourceVariationSame(
+            $variation,
+            $this->cloudinaryProvider->buildVideoThumbnail($resource),
+        );
+    }
+
     public function testGetVideoThumbnailAudio(): void
     {
         $resource = new RemoteResource(
@@ -910,6 +950,47 @@ final class CloudinaryProviderTest extends AbstractTestCase
             ->with(
                 CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
                 $options,
+            )
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->cloudinaryProvider->generateHtmlTag($resource),
+        );
+    }
+
+    public function testGeneratePictureTagAuthenticated(): void
+    {
+        $url = 'https://cloudinary.com/test/upload/images/image.jpg?token=d44bca9f0a8b02dd023863f2d577d17a';
+        $token = AuthToken::fromDuration(60);
+
+        $resource = new AuthenticatedRemoteResource(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|media/images/image.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/images/image.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'image.jpg',
+                size: 95,
+            ),
+            url: $url,
+            token: $token,
+        );
+
+        $options = [
+            'secure' => true,
+            'attributes' => [],
+        ];
+
+        $tag = sprintf('<picture><img src="%s"></picture>', $url);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getImageTag')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+                $token,
             )
             ->willReturn($tag);
 
@@ -1006,6 +1087,52 @@ final class CloudinaryProviderTest extends AbstractTestCase
             ->with(
                 CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
                 $options,
+            )
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->cloudinaryProvider->generateHtmlTag($resource),
+        );
+    }
+
+    public function testGenerateVideoTagAuthenticated(): void
+    {
+        $url = 'https://cloudinary.com/test/upload/videos/example.mp4?token=33e5f3527d0ffff8bf0508f912b76a6d';
+        $token = AuthToken::fromDuration(60);
+
+        $resource = new AuthenticatedRemoteResource(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|media/videos/example.mp4',
+                type: 'video',
+                url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.mp4',
+                size: 495,
+            ),
+            url: $url,
+            token: $token,
+        );
+
+        $options = [
+            'secure' => true,
+            'fallback_content' => 'Your browser does not support HTML5 video tags',
+            'controls' => true,
+            'poster' => [
+                'secure' => true,
+            ],
+            'attributes' => [],
+        ];
+
+        $tag = sprintf('<video><source src="%s"></video>', $url);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoTag')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+                $token,
             )
             ->willReturn($tag);
 
@@ -1176,6 +1303,82 @@ final class CloudinaryProviderTest extends AbstractTestCase
         );
     }
 
+    public function testGenerateVideoTagThumbnailVariationAuthenticated(): void
+    {
+        $url = 'https://cloudinary.com/test/upload/videos/example.mp4?token=9ce0b407ee070a6865b97a6fc6a5d854';
+        $token = AuthToken::fromDuration(60);
+
+        $resource = new AuthenticatedRemoteResource(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|media/videos/example.mp4',
+                type: 'video',
+                url: 'https://cloudinary.com/test/upload/videos/example.mp4',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.mp4',
+                size: 495,
+                altText: 'Alternate text',
+                caption: 'Test caption',
+            ),
+            url: $url,
+            token: $token,
+        );
+
+        $cropOptions = [
+            'x' => 5,
+            'y' => 10,
+            'width' => 200,
+            'height' => 100,
+            'crop' => 'crop',
+        ];
+
+        $transformations = [$cropOptions];
+
+        $options = [
+            'resource_type' => 'video',
+            'transformation' => $transformations,
+            'start_offset' => 'auto',
+        ];
+
+        $thumbnailUrl = 'https://cloudinary.com/test/c_5_10_200_100/upload/videos/example_thumb.jpg?token=9ce0b407ee070a6865b97a6fc6a5d854';
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoThumbnail')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+            )
+            ->willReturn($thumbnailUrl);
+
+        $options = [
+            'secure' => true,
+            'attributes' => [
+                'alt' => 'Alternate text',
+                'title' => 'Test caption',
+            ],
+            'transformation' => $transformations,
+        ];
+
+        $tag = '<picture><img alt="Alternate text" title="Test caption" src="https://cloudinary.com/test/c_5_10_200_100/upload/videos/example?token=9ce0b407ee070a6865b97a6fc6a5d854"></picture>';
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getImageTag')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+                $token,
+            )
+            ->willReturn($tag);
+
+        $tag = '<picture><img alt="Alternate text" title="Test caption" src="https://cloudinary.com/test/c_5_10_200_100/upload/videos/example_thumb.jpg?token=9ce0b407ee070a6865b97a6fc6a5d854"></picture>';
+
+        self::assertSame(
+            $tag,
+            $this->cloudinaryProvider->generateRawVariationHtmlTag($resource, $transformations, [], false, true),
+        );
+    }
+
     public function testGenerateVideoTagThumbnailVariationInvalid(): void
     {
         $resource = new RemoteResource(
@@ -1272,6 +1475,53 @@ final class CloudinaryProviderTest extends AbstractTestCase
             ->with(
                 CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
                 $options,
+            )
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->cloudinaryProvider->generateRawVariationHtmlTag($resource, [], $htmlAttributes),
+        );
+    }
+
+    public function testGenerateAudioTagAuthenticated(): void
+    {
+        $url = 'https://cloudinary.com/test/upload/songs/example.mp3?c9533334c167b12a99f2ebc71e4de34f';
+        $token = AuthToken::fromDuration(60);
+
+        $resource = new AuthenticatedRemoteResource(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|media/songs/example.mp3',
+                type: 'audio',
+                url: 'https://cloudinary.com/test/upload/songs/example.mp3',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.mp3',
+                size: 105,
+            ),
+            url: $url,
+            token: $token,
+        );
+
+        $htmlAttributes = [
+            'width' => '100%',
+        ];
+
+        $options = [
+            'secure' => true,
+            'fallback_content' => 'Your browser does not support HTML5 audio tags',
+            'controls' => true,
+            'attributes' => $htmlAttributes,
+        ];
+
+        $tag = sprintf('<audio width="100%%"><source src="%s"></audio>', $url);
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getVideoTag')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                $options,
+                $token,
             )
             ->willReturn($tag);
 

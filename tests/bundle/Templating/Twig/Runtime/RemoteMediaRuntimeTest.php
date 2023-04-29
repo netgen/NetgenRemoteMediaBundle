@@ -619,59 +619,9 @@ final class RemoteMediaRuntimeTest extends AbstractTestCase
             ->method('authenticateRemoteResource')
             ->willReturn($authenticatedRemoteResource);
 
-        self::assertAuthenticatedRemoteResourceSame(
+        self::assertRemoteResourceSame(
             $authenticatedRemoteResource,
             $this->runtime->authenticateRemoteResource($resource, 500),
-        );
-    }
-
-    public function testAuthenticateRemoteResourceVariation(): void
-    {
-        $resource = new RemoteResource(
-            remoteId: 'test_video.mp4',
-            type: 'video',
-            url: 'https://cloudinary.com/upload/image/image.jpg',
-            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
-            id: 30,
-            name: 'test_video.mp4',
-            size: 1500,
-        );
-
-        $cropOptions = [
-            'x' => 5,
-            'y' => 10,
-            'width' => 200,
-            'height' => 100,
-            'crop' => 'crop',
-        ];
-
-        $transformations = [$cropOptions];
-
-        $url = 'https://cloudinary.com/test/c_5_10_200_100/upload/image/image.jpg';
-
-        $variation = new RemoteResourceVariation(
-            $resource,
-            $url,
-            $transformations,
-        );
-
-        $duration = 500;
-        $token = AuthToken::fromDuration($duration);
-
-        $authenticatedRemoteResource = new AuthenticatedRemoteResource(
-            $resource,
-            'https://cloudinary.com/upload/video/test_video.mp4?_token=f4t45tgtrig043jtoreigf',
-            $token,
-        );
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('authenticateRemoteResourceVariation')
-            ->willReturn($authenticatedRemoteResource);
-
-        self::assertAuthenticatedRemoteResourceSame(
-            $authenticatedRemoteResource,
-            $this->runtime->authenticateRemoteResourceVariation($variation, 500),
         );
     }
 

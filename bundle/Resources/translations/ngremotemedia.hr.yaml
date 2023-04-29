@@ -7,7 +7,6 @@ ngrm:
         other: 'Ostalo'
     supported_visibilities:
         public: 'Javno'
-        private: 'Privatno'
         protected: 'Zaštićeno'
     edit:
         form:

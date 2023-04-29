@@ -166,5 +166,5 @@ interface ProviderInterface
 
     public function authenticateRemoteResource(RemoteResource $resource, AuthToken $token): AuthenticatedRemoteResource;
 
-    public function authenticateRemoteResourceVariation(RemoteResourceVariation $variation, AuthToken $token): AuthenticatedRemoteResource;
+    public function authenticateRemoteResourceLocation(RemoteResourceLocation $location, AuthToken $token): RemoteResourceLocation;
 }

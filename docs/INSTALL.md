@@ -61,7 +61,7 @@ So that logger logs only direct requests towards the API.
 
 #### Auth token for protected resources (Cloudinary Premium)
 
-This bundle also supports and implements Cloudinary's functionality to have private/protected resources, which are not publicly available by default, but you need to authenticate first and get a signed URL with a token that is valid for a specific amount of time. Read more about this on the Cloudinary site: [Media Access Control and Authentication](https://cloudinary.com/documentation/control_access_to_media).
+This bundle also supports and implements Cloudinary's functionality to have protected resources, which are not publicly available by default, but you need to authenticate first and get a signed URL with a token that is valid for a specific amount of time. Read more about this on the Cloudinary site: [Media Access Control and Authentication](https://cloudinary.com/documentation/control_access_to_media).
 
 For this to work, you need Cloudinary premium account since we use token based authentication for that which is a premium feature (read more: [Token ]()). For this you need an encryption key from Cloudinary (read more on the above link how to get it) which will automatically enable this feature. The key can be configured here:
 

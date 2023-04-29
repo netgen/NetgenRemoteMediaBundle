@@ -12,8 +12,6 @@ final class VisibilityType
     {
         switch ($type) {
             case 'private':
-                return RemoteResource::VISIBILITY_PRIVATE;
-
             case 'authenticated':
                 return RemoteResource::VISIBILITY_PROTECTED;
 
@@ -26,9 +24,6 @@ final class VisibilityType
     public function toCloudinaryType(string $visibility): string
     {
         switch ($visibility) {
-            case RemoteResource::VISIBILITY_PRIVATE:
-                return 'private';
-
             case RemoteResource::VISIBILITY_PROTECTED:
                 return 'authenticated';
 
@@ -45,7 +40,6 @@ final class VisibilityType
                 return 'authenticated';
 
             case RemoteResource::VISIBILITY_PUBLIC:
-            case RemoteResource::VISIBILITY_PRIVATE:
             default:
                 return 'public';
         }
@@ -55,7 +49,6 @@ final class VisibilityType
     {
         switch ($visibility) {
             case RemoteResource::VISIBILITY_PROTECTED:
-            case RemoteResource::VISIBILITY_PRIVATE:
                 return [
                     'access_type' => 'token',
                 ];

@@ -59,9 +59,9 @@ interface GatewayInterface
 
     public function delete(CloudinaryRemoteId $remoteId): void;
 
-    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string;
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token): string;
 
-    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string;
+    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations, ?AuthToken $token = null): string;
 
     public function search(Query $query): Result;
 
@@ -72,11 +72,11 @@ interface GatewayInterface
      */
     public function listTags(): array;
 
-    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = []): string;
+    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string;
 
-    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = []): string;
+    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string;
 
-    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = []): string;
+    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string;
 
-    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string;
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string;
 }

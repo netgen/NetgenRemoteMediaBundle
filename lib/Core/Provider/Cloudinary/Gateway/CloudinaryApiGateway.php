@@ -157,6 +157,9 @@ final class CloudinaryApiGateway implements GatewayInterface
                 [
                     'type' => $remoteId->getType(),
                     'resource_type' => $remoteId->getResourceType(),
+                    'media_metadata' => true,
+                    'image_metadata' => true,
+                    'exif' => true,
                 ],
             );
 
@@ -215,13 +218,12 @@ final class CloudinaryApiGateway implements GatewayInterface
         $this->cloudinaryUploader->destroy($remoteId->getResourceId(), $options);
     }
 
-    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token, array $transformations = []): string
+    public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token): string
     {
         $options = array_merge(
             [
                 'type' => $remoteId->getType(),
                 'resource_type' => $remoteId->getResourceType(),
-                'transformation' => $transformations,
                 'secure' => true,
             ],
             $this->authTokenResolver->resolve($token),
@@ -230,7 +232,7 @@ final class CloudinaryApiGateway implements GatewayInterface
         return cloudinary_url_internal($remoteId->getResourceId(), $options);
     }
 
-    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations): string
+    public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations, ?AuthToken $token = null): string
     {
         $options = [
             'type' => $remoteId->getType(),
@@ -238,6 +240,13 @@ final class CloudinaryApiGateway implements GatewayInterface
             'transformation' => $transformations,
             'secure' => true,
         ];
+
+        if ($token instanceof AuthToken) {
+            $options = array_merge(
+                $options,
+                $this->authTokenResolver->resolve($token),
+            );
+        }
 
         return cloudinary_url_internal($remoteId->getResourceId(), $options);
     }
@@ -290,38 +299,66 @@ final class CloudinaryApiGateway implements GatewayInterface
         return $tags;
     }
 
-    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
         $options['secure'] = true;
+
+        if ($token instanceof AuthToken) {
+            $options = array_merge(
+                $options,
+                $this->authTokenResolver->resolve($token),
+            );
+        }
 
         return cl_video_thumbnail_path($remoteId->getResourceId(), $options);
     }
 
-    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getImageTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
         $options['secure'] = true;
+
+        if ($token instanceof AuthToken) {
+            $options = array_merge(
+                $options,
+                $this->authTokenResolver->resolve($token),
+            );
+        }
 
         return cl_image_tag($remoteId->getResourceId(), $options);
     }
 
-    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
         $options['secure'] = true;
+
+        if ($token instanceof AuthToken) {
+            $options = array_merge(
+                $options,
+                $this->authTokenResolver->resolve($token),
+            );
+        }
 
         return cl_video_tag($remoteId->getResourceId(), $options);
     }
 
-    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = []): string
+    public function getDownloadLink(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
         $options['type'] = $remoteId->getType();
         $options['resource_type'] = $remoteId->getResourceType();
         $options['secure'] = true;
+
+        if ($token instanceof AuthToken) {
+            $options = array_merge(
+                $options,
+                $this->authTokenResolver->resolve($token),
+            );
+        }
 
         return $this->cloudinary->cloudinary_url($remoteId->getResourceId(), $options);
     }

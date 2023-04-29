@@ -25,15 +25,35 @@ final class AuthenticatedRemoteResourceTest extends AbstractTestCase
             folder: Folder::fromPath('image'),
         );
 
-        $authenticatedUrl = 'https://cloudinary.com/test/authenticated/image/images/test.jpg?_token=dsr43t4rerf4345';
+        $authenticatedUrl = 'https://cloudinary.com/test/authenticated/image/images/test.jpg?_token=656e35f16745b3a97f78cb3fc8941abb';
 
         $token = AuthToken::fromDuration(100);
 
         $authenticatedResource = new AuthenticatedRemoteResource($resource, $authenticatedUrl, $token);
 
-        self::assertRemoteResourceSame(
-            $resource,
-            $authenticatedResource->getRemoteResource(),
+        self::assertSame(
+            $resource->getRemoteId(),
+            $authenticatedResource->getRemoteId(),
+        );
+
+        self::assertSame(
+            $resource->getType(),
+            $authenticatedResource->getType(),
+        );
+
+        self::assertSame(
+            $resource->getName(),
+            $authenticatedResource->getName(),
+        );
+
+        self::assertSame(
+            $resource->getMd5(),
+            $authenticatedResource->getMd5(),
+        );
+
+        self::assertFolderSame(
+            $resource->getFolder(),
+            $authenticatedResource->getFolder(),
         );
 
         self::assertSame(
