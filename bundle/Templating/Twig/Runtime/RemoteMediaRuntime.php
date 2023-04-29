@@ -174,6 +174,13 @@ final class RemoteMediaRuntime extends AbstractExtension
         return $this->provider->authenticateRemoteResource($remoteResource, $token);
     }
 
+    public function authenticateRemoteResourceLocation(RemoteResourceLocation $remoteResourceLocation, int $duration): RemoteResourceLocation
+    {
+        $token = AuthToken::fromDuration($duration);
+
+        return $this->provider->authenticateRemoteResourceLocation($remoteResourceLocation, $token);
+    }
+
     public function getNamedRemoteResource(string $name): ?RemoteResource
     {
         try {

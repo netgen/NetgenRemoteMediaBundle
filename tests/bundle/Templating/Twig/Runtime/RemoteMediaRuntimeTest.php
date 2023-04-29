@@ -610,7 +610,7 @@ final class RemoteMediaRuntimeTest extends AbstractTestCase
 
         $authenticatedRemoteResource = new AuthenticatedRemoteResource(
             $resource,
-            'https://cloudinary.com/upload/video/test_video.mp4?_token=f4t45tgtrig043jtoreigf',
+            'https://cloudinary.com/upload/video/test_video.mp4?_token=08c0f6285317dd072adb852914f4e2b8',
             $token,
         );
 
@@ -622,6 +622,43 @@ final class RemoteMediaRuntimeTest extends AbstractTestCase
         self::assertRemoteResourceSame(
             $authenticatedRemoteResource,
             $this->runtime->authenticateRemoteResource($resource, 500),
+        );
+    }
+
+    public function testAuthenticateRemoteResourceLocation(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'test_video.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/test_video.mp4',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            id: 30,
+            name: 'test_video.mp4',
+            size: 1500,
+        );
+
+        $duration = 500;
+        $token = AuthToken::fromDuration($duration);
+        $url = 'https://cloudinary.com/upload/video/test_video.mp4?token=a2b0a07dbe418d45544ba186addf827d';
+
+        $location = new RemoteResourceLocation($resource);
+
+        $authenticatedRemoteResource = new AuthenticatedRemoteResource(
+            remoteResource: $resource,
+            url: $url,
+            token: $token,
+        );
+
+        $authenticatedLocation = new RemoteResourceLocation($authenticatedRemoteResource);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('authenticateRemoteResourceLocation')
+            ->willReturn($authenticatedLocation);
+
+        self::assertRemoteResourceLocationSame(
+            $authenticatedLocation,
+            $this->runtime->authenticateRemoteResourceLocation($location, 500),
         );
     }
 
