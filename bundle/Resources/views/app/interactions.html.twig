@@ -129,12 +129,22 @@
 {% set browse_url = '' %}
 {% set preview_url = '' %}
 {% if location %}
+    {% set authenticated_location = location %}
+    {% set browse_variation_name = 'browse' %}
+    {% set preview_variation_name = 'preview' %}
+
+    {% if location.remoteResource.protected %}
+        {% set authenticated_location = ngrm_authenticate_remote_resource_location(location, 600) %}
+        {% set browse_variation_name = 'browse_protected' %}
+        {% set preview_variation_name = 'preview_protected' %}
+    {% endif %}
+
     {% if location.remoteResource.type == 'image' %}
-        {% set browse_url = ngrm_remote_resource_variation(location, 'ngrm_interface', 'browse').url %}
-        {% set preview_url = ngrm_remote_resource_variation(location, 'ngrm_interface', 'preview').url %}
+        {% set browse_url = ngrm_remote_resource_variation(authenticated_location, 'ngrm_interface', browse_variation_name).url %}
+        {% set preview_url = ngrm_remote_resource_variation(authenticated_location, 'ngrm_interface', preview_variation_name).url %}
     {% elseif location.remoteResource.type == 'video' %}
-        {% set browse_url = ngrm_video_thumbnail_variation(location, 'ngrm_interface', 'browse').url %}
-        {% set preview_url = ngrm_video_thumbnail_variation(location, 'ngrm_interface', 'preview').url %}
+        {% set browse_url = ngrm_video_thumbnail_variation(authenticated_location, 'ngrm_interface', browse_variation_name).url %}
+        {% set preview_url = ngrm_video_thumbnail_variation(authenticated_location, 'ngrm_interface', preview_variation_name).url %}
     {% endif %}
 {% endif %}
 

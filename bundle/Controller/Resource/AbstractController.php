@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\Resource;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Symfony\Component\HttpFoundation\InputBag;
@@ -30,18 +31,6 @@ abstract class AbstractController
      */
     protected function formatResource(RemoteResource $resource): array
     {
-        $location = new RemoteResourceLocation($resource);
-
-        $browseUrl = '';
-        $previewUrl = '';
-        if ($resource->getType() === RemoteResource::TYPE_IMAGE) {
-            $browseUrl = $this->provider->buildVariation($location, 'ngrm_interface', 'browse')->getUrl();
-            $previewUrl = $this->provider->buildVariation($location, 'ngrm_interface', 'preview')->getUrl();
-        } elseif ($resource->getType() === RemoteResource::TYPE_VIDEO) {
-            $browseUrl = $this->provider->buildVideoThumbnailVariation($location, 'ngrm_interface', 'browse')->getUrl();
-            $previewUrl = $this->provider->buildVideoThumbnailVariation($location, 'ngrm_interface', 'preview')->getUrl();
-        }
-
         return [
             'remoteId' => $resource->getRemoteId(),
             'folder' => $resource->getFolder() ? $resource->getFolder()->getPath() : null,
@@ -53,8 +42,8 @@ abstract class AbstractController
             'height' => $resource->getMetadataProperty('height'),
             'filename' => basename($resource->getName()),
             'format' => $resource->getMetadataProperty('format'),
-            'browseUrl' => $browseUrl,
-            'previewUrl' => $previewUrl,
+            'browseUrl' => $this->resolveImageUrl($resource, 'browse'),
+            'previewUrl' => $this->resolveImageUrl($resource, 'preview'),
             'url' => $resource->getUrl(),
             'altText' => $resource->getAltText(),
             'caption' => $resource->getCaption(),
@@ -83,5 +72,23 @@ abstract class AbstractController
         $value = $inputBag->all()[$key] ?? [];
 
         return is_array($value) ? $value : [$value];
+    }
+
+    private function resolveImageUrl(RemoteResource $resource, string $variationName): string
+    {
+        if ($resource->isProtected()) {
+            $token = AuthToken::fromDuration(600);
+
+            $resource = $this->provider->authenticateRemoteResource($resource, $token);
+            $variationName .= '_protected';
+        }
+
+        $location = new RemoteResourceLocation($resource);
+
+        return match ($resource->getType()) {
+            RemoteResource::TYPE_IMAGE => $this->provider->buildVariation($location, 'ngrm_interface', $variationName)->getUrl(),
+            RemoteResource::TYPE_VIDEO => $this->provider->buildVideoThumbnailVariation($location, 'ngrm_interface', $variationName)->getUrl(),
+            default => '',
+        };
     }
 }

@@ -11,6 +11,8 @@ use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
+use Netgen\RemoteMedia\API\Values\AuthenticatedRemoteResource;
+use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
@@ -255,13 +257,26 @@ final class UploadTest extends TestCase
             ->with($resourceStruct)
             ->willReturn($resource);
 
+        $authToken = AuthToken::fromDuration(600);
+
+        $authenticatedResource = new AuthenticatedRemoteResource(
+            remoteResource: $resource,
+            url: 'https://cloudinary.com/test/authenticated/image/media/image/sample_image.jpg?token=c2f306cbe596eafd3e2eaf4d3a820832',
+            token: $authToken,
+        );
+
+        $this->providerMock
+            ->expects(self::exactly(2))
+            ->method('authenticateRemoteResource')
+            ->willReturn($authenticatedResource);
+
         $browseVariation = new RemoteResourceVariation(
-            $resource,
+            $authenticatedResource,
             'https://cloudinary.com/test/c_fit_160_120/authenticated/image/media/image/sample_image.jpg',
         );
 
         $previewVariation = new RemoteResourceVariation(
-            $resource,
+            $authenticatedResource,
             'https://cloudinary.com/test/c_fit_800_600/authenticated/image/media/image/sample_image.jpg',
         );
 
@@ -274,7 +289,7 @@ final class UploadTest extends TestCase
                     string $variationGroup,
                     string $variationName
                 ) => match ($location->getRemoteResource()->getRemoteId()) {
-                    'authenticated|image|media/image/sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
+                    'authenticated|image|media/image/sample_image.jpg' => $variationName === 'browse_protected' ? $browseVariation : $previewVariation,
                     default => null,
                 },
             );

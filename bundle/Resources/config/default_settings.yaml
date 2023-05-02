@@ -20,8 +20,20 @@ image_variations:
             transformations:
                 - { name: limit, params: [500, 500] }
                 - { name: quality, params: ['auto', 'eco'] }
+        preview_protected:
+            transformations:
+                - { name: limit, params: [500, 500] }
+                - { name: quality, params: ['auto', 'eco'] }
+                - { name: effect, params: ['pixelate', 4] }
         browse:
             transformations:
                 - { name: crop, params: [174, 100] }
                 - { name: fill, params: [174, 100] }
                 - { name: quality, params: ['auto', 'eco'] }
+
+        browse_protected:
+            transformations:
+                - { name: crop, params: [174, 100] }
+                - { name: fill, params: [174, 100] }
+                - { name: quality, params: ['auto', 'eco'] }
+                - { name: effect, params: ['pixelate', 1] }
