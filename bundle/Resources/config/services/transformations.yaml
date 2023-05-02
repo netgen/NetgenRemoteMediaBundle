@@ -94,3 +94,9 @@ services:
         public: false
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: watermark_text, provider: cloudinary }
+
+    netgen_remote_media.handler.cloudinary.opacity:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Opacity
+        public: false
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: opacity, provider: cloudinary }
