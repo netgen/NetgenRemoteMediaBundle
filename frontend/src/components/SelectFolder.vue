@@ -2,17 +2,13 @@
   <div class="folderGalery">
     <div :class="loading ? 'items loading' : 'items'">
       <div class="breadcrumbs">
-        <span>{{ this.$root.$data.NgRemoteMediaTranslations.upload_breadcrumbs_info }}</span>
-        <span>
-          <a v-if="breadcrumbs.length" href="#" @click="loadSubFolders(null)">{{ this.$root.$data.NgRemoteMediaTranslations.upload_root_folder }}</a>
-          <span v-else>{{ this.$root.$data.NgRemoteMediaTranslations.upload_root_folder }}</span>
-        </span>
+        <span>{{ this.$root.$data.NgRemoteMediaTranslations.upload_breadcrumbs_info }} </span>
         <span v-for="(folder, index) in breadcrumbs" :key="index">
-          /
-          <a v-if="index !== breadcrumbs.length - 1" href="#" @click="loadSubFolders(folder.id)">
-            {{folder.label}}
-          </a>
-          <span v-else>{{folder.label}}</span>
+        <span v-if="index !== 0"> / </span>
+        <a v-if="index !== breadcrumbs.length - 1" href="#" @click="openFolder(folder.id)">
+          {{folder.label}}
+        </a>
+        <span v-else>{{folder.label}}</span>
         </span>
       </div>
 
@@ -22,7 +18,7 @@
       </div>
 
       <div class="media" v-for="folder in folders" :key="folder.id" :class="{selected: folder.id === selectedFolder}">
-        <div class="media-container" v-on:dblclick="loadSubFolders(folder.id)">
+        <div class="media-container" v-on:dblclick="openFolder(folder.id)">
           <span class="file-placeholder">
             <span class="icon-doc">
               <i class="fa fa-folder"></i>
@@ -56,24 +52,32 @@
 
 import {encodeQueryData} from "@/utility/utility";
 import axios from 'axios';
+import {FOLDER_ROOT} from "../constants/facets";
+
 
 export default {
   name: "SelectFolder",
   props: ["selectedFolder"],
   data() {
     return {
+      folders: [],
       newFolder: null,
       breadcrumbs: [],
       loading: false
     };
   },
   methods: {
+    openFolder(folderPath) {
+      this.$emit('change', folderPath);
+      this.loadSubFolders(folderPath);
+    },
+
     async loadSubFolders(folderPath) {
       this.loading = true;
       var ajaxUrl = this.$root.$data.config.paths.load_folders;
       if (folderPath !== null) {
         const query = {
-          folder: folderPath,
+          folder: folderPath === FOLDER_ROOT ? '' : folderPath,
         };
 
         ajaxUrl += '?' + encodeQueryData(query);
@@ -89,34 +93,55 @@ export default {
     generateBreadcrumbs(folderPath) {
       this.breadcrumbs = [];
 
+      let rootFolder = {
+        'id': null,
+        'label': this.$root.$data.NgRemoteMediaTranslations.upload_root_folder
+      };
+
       if (folderPath === null) {
+        this.breadcrumbs.push(rootFolder);
+
         return;
       }
 
       const folders = folderPath.split('/');
       var pathArray = [];
 
+      let parentFolders = [];
+      if (this.$root.$data.NgRemoteMediaConfig.parentFolder) {
+        parentFolders = this.$root.$data.NgRemoteMediaConfig.parentFolder.id.split('/');
+        rootFolder = {
+          'id': this.$root.$data.NgRemoteMediaConfig.parentFolder.id,
+          'label': this.$root.$data.NgRemoteMediaConfig.parentFolder.label
+        };
+      }
+
+      this.breadcrumbs.push(rootFolder);
+
       folders.forEach((value, index) => {
         pathArray.push(value);
-        this.breadcrumbs.push({
-          'id': pathArray.join('/'),
-          'label': value
-        });
+        if (parentFolders.indexOf(value) < 0) {
+          this.breadcrumbs.push({
+            'id': pathArray.join('/'),
+            'label': value
+          });
+        }
       });
     },
     async createNewFolder() {
       this.loading = true;
-      const parentPath = this.breadcrumbs.length > 0
-          ? this.breadcrumbs[this.breadcrumbs.length - 1].id
-          : null;
 
       var data = new FormData();
-      data.append('parent', parentPath);
+
+      if (this.selectedFolder) {
+        data.append('parent', this.selectedFolder);
+      }
+
       data.append('folder', this.newFolder);
 
       await axios.post(this.$root.$data.config.paths.create_folder, data);
       this.folders.push({
-        'id': parentPath !== null ? parentPath + '/' + this.newFolder : this.newFolder,
+        'id': this.selectedFolder !== null ? this.selectedFolder + '/' + this.newFolder : this.newFolder,
         'label': this.newFolder
       });
       this.newFolder = null;
@@ -124,7 +149,21 @@ export default {
     }
   },
   created() {
-    this.loadSubFolders(null);
+    if (this.$root.$data.NgRemoteMediaConfig.folder) {
+      folder = this.$root.$data.NgRemoteMediaConfig.folder.id;
+      this.allowCreate = false;
+
+      this.$emit('change', folder);
+      this.generateBreadcrumbs(folder);
+
+      return;
+    }
+    let folder = null;
+    if (this.$root.$data.NgRemoteMediaConfig.parentFolder) {
+      folder = this.$root.$data.NgRemoteMediaConfig.parentFolder.id;
+    }
+    this.openFolder(folder);
+
   }
 };
 </script>

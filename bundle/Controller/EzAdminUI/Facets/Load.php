@@ -6,6 +6,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller\EzAdminUI\Facets;
 
 use Netgen\Bundle\RemoteMediaBundle\RemoteMedia\RemoteMediaProvider;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 final class Load
@@ -20,9 +21,16 @@ final class Load
         $this->remoteMediaProvider = $remoteMediaProvider;
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
-        $folders = $this->remoteMediaProvider->listFolders();
+        $parentFolder = $request->query->get('parentFolder', null);
+        $parentFolder = $parentFolder ?? null;
+
+        if ($parentFolder === null) {
+            $folders = $this->remoteMediaProvider->listFolders();
+        } else {
+            $folders = $this->remoteMediaProvider->listSubFolders($parentFolder);
+        }
         $tags = $this->remoteMediaProvider->listTags();
 
         $formattedFolders = [];
