@@ -1,3 +1,10 @@
+{% set parent_folder = null %}
+
+{% if ezpublish.configResolver.hasParameter('content_type.parent_folder', 'netgen_remote_media') %}
+    {% set parent_folder_config = ezpublish.configResolver.parameter('content_type.parent_folder', 'netgen_remote_media') %}
+    {% set parent_folder = parent_folder_config['default'] ?? null %}
+{% endif %}
+
 <script type="text/javascript">
     NgRemoteMediaSelectedImage_{{ field_id }} = {
         id: "",
@@ -30,6 +37,12 @@
 
     NgRemoteMediaAvailableVariations_{{ field_id }} = {{ available_variations|scaling_format|json_encode|raw }};
     NgRemoteMediaAvailableEditorVariations_{{ field_id }} = {{ available_editor_variations|keys|json_encode|raw }};
+    NgRemoteMediaFolderConfig_{{ field_id }} = {
+      'parentFolder': {
+        'id': '{{ parent_folder }}',
+        'label': '{{ parent_folder }}',
+      }
+    };
 </script>
 
 <div class="ngremotemedia-type" data-id="{{ field_id }}" v-init:selected-image="NgRemoteMediaSelectedImage" v-init:config="NgRemoteMediaConfig">
