@@ -108,11 +108,11 @@ export default {
       var pathArray = [];
 
       let parentFolders = [];
-      if (this.$root.$data.NgRemoteMediaConfig.parentFolder) {
-        parentFolders = this.$root.$data.NgRemoteMediaConfig.parentFolder.id.split('/');
+      if (this.$root.$data.NgRemoteMediaFolderConfig.parentFolder) {
+        parentFolders = this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id.split('/');
         rootFolder = {
-          'id': this.$root.$data.NgRemoteMediaConfig.parentFolder.id,
-          'label': this.$root.$data.NgRemoteMediaConfig.parentFolder.label
+          'id': this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id,
+          'label': this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.label
         };
       }
 
@@ -149,8 +149,8 @@ export default {
     }
   },
   created() {
-    if (this.$root.$data.NgRemoteMediaConfig.folder) {
-      folder = this.$root.$data.NgRemoteMediaConfig.folder.id;
+    if (this.$root.$data.NgRemoteMediaFolderConfig.folder) {
+      folder = this.$root.$data.NgRemoteMediaFolderConfig.folder.id;
       this.allowCreate = false;
 
       this.$emit('change', folder);
@@ -159,8 +159,8 @@ export default {
       return;
     }
     let folder = null;
-    if (this.$root.$data.NgRemoteMediaConfig.parentFolder) {
-      folder = this.$root.$data.NgRemoteMediaConfig.parentFolder.id;
+    if (this.$root.$data.NgRemoteMediaFolderConfig.parentFolder) {
+      folder = this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id;
     }
     this.openFolder(folder);
 

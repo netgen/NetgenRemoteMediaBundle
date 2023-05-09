@@ -33,12 +33,12 @@ export default {
   },
   data() {
     let folder = FOLDER_ALL;
-    if (this.$root.$data.NgRemoteMediaConfig.parentFolder) {
-      folder = this.$root.$data.NgRemoteMediaConfig.parentFolder.id;
+    if (this.$root.$data.NgRemoteMediaFolderConfig.parentFolder) {
+      folder = this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id;
     }
 
-    if (this.$root.$data.NgRemoteMediaConfig.folder) {
-      folder = this.$root.$data.NgRemoteMediaConfig.folder.id;
+    if (this.$root.$data.NgRemoteMediaFolderConfig.folder) {
+      folder = this.$root.$data.NgRemoteMediaFolderConfig.folder.id;
     }
 
     return {

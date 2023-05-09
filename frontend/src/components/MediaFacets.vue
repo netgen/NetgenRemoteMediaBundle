@@ -20,7 +20,7 @@
           :options="folders"
           :load-options="loadSubFolders"
           v-model="selectedFolder"
-          :value="this.$root.$data.NgRemoteMediaConfig.parentFolder ? this.$root.$data.NgRemoteMediaConfig.parentFolder.id : ''"
+          :value="this.$root.$data.NgRemoteMediaFolderConfig.parentFolder ? this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id : ''"
           close-on-select="true"
           @input="handleFolderChange"
           :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_loading_folders : this.$root.$data.NgRemoteMediaTranslations.browse_all_folders"
@@ -89,8 +89,8 @@ export default {
       FOLDER_ROOT,
       TAG_ALL,
       folders: [{
-        id: this.$root.$data.NgRemoteMediaConfig.parentFolder ? this.$root.$data.NgRemoteMediaConfig.parentFolder.id : FOLDER_ROOT,
-        label: this.$root.$data.NgRemoteMediaConfig.parentFolder ? this.$root.$data.NgRemoteMediaConfig.parentFolder.label : FOLDER_ROOT,
+        id: this.$root.$data.NgRemoteMediaFolderConfig.parentFolder ? this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id : FOLDER_ROOT,
+        label: this.$root.$data.NgRemoteMediaFolderConfig.parentFolder ? this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.label : FOLDER_ROOT,
         children: null
       }],
       selectedFolder: this.facets.folder,
@@ -108,8 +108,8 @@ export default {
     handleFolderChange(value) {
       this.selectedFolder = value;
       if (typeof value === 'undefined' || !value) {
-        this.selectedFolder = this.$root.$data.NgRemoteMediaConfig.parentFolder
-          ? this.$root.$data.NgRemoteMediaConfig.parentFolder.id
+        this.selectedFolder = this.$root.$data.NgRemoteMediaFolderConfig.parentFolder
+          ? this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id
           : value;
       }
       this.$emit("change", { folder: this.selectedFolder });

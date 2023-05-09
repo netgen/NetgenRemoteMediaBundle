@@ -19,6 +19,7 @@ const handleDOMContentLoaded = function() {
                 NgRemoteMediaTranslations,
                 NgRemoteMediaSelectedImage : window[`NgRemoteMediaSelectedImage_${el.dataset.id}`],
                 NgRemoteMediaConfig,
+                NgRemoteMediaFolderConfig : window[`NgRemoteMediaFolderConfig_${el.dataset.id}`],
                 NgRemoteMediaInputFields : window[`NgRemoteMediaInputFields_${el.dataset.id}`],
                 NgRemoteMediaAvailableVariations : window[`NgRemoteMediaAvailableVariations_${el.dataset.id}`],
                 NgRemoteMediaAvailableEditorVariations : window[`NgRemoteMediaAvailableEditorVariations_${el.dataset.id}`],
