@@ -12,6 +12,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+use function array_keys;
 use function array_merge;
 
 final class Variation
@@ -24,6 +25,17 @@ final class Variation
         $this->logger = $this->logger ?? new NullLogger();
     }
 
+    /**
+     * @return string[]
+     */
+    public function getAvailableVariationGroups(): array
+    {
+        return array_keys($this->variations);
+    }
+
+    /**
+     * @return array<string, array>
+     */
     public function getAvailableVariations(?string $group = null): array
     {
         if ($group === null) {
@@ -36,13 +48,16 @@ final class Variation
         return array_merge($defaultVariations, $contentTypeVariations);
     }
 
+    /**
+     * @return string[]
+     */
     public function getAvailableCroppableVariations(?string $group = null): array
     {
         $variations = $this->getAvailableVariations($group);
 
         $croppableVariations = [];
         foreach ($variations as $variationName => $variationOptions) {
-            if (isset($variationOptions['transformations']['crop'])) {
+            if (($variationOptions['transformations']['crop'] ?? null) !== null) {
                 $croppableVariations[$variationName] = $variationOptions;
             }
         }

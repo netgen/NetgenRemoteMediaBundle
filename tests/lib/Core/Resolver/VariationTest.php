@@ -49,6 +49,19 @@ final class VariationTest extends TestCase
         );
     }
 
+    public function testGetAvailableVariationGroups(): void
+    {
+        self::assertSame(
+            [
+                'default',
+                'article',
+                'blog_post',
+                'embedded',
+            ],
+            $this->variationResolver->getAvailableVariationGroups(),
+        );
+    }
+
     public function testGetAvailableVariations(): void
     {
         self::assertSame(
