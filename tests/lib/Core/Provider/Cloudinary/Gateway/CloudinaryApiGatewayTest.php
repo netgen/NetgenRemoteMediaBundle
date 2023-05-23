@@ -482,7 +482,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/image/upload/folder/test_image.jpg?__cld_token__=exp=1672527600~hmac=59c5e3be84f6000c8da6c7a32014390d77dd4def021dd01529cf59b28116713d',
+            'https://res.cloudinary.com/testcloud/image/upload/folder/test_image.jpg?__cld_token__=exp=1672531200~hmac=2dd3d9ad80b2cd7b02589a11e5a5ccfd8d2fbf75eef8d54b84e89c2dfd951255',
             $this->apiGateway->getAuthenticatedUrl($remoteId, $token),
         );
     }
@@ -844,7 +844,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/video/upload/media/example.jpg?__cld_token__=exp=1672527600~hmac=1313353f4d6cca211a9051e4685e960acd999a45237c5a3b126bdd8643239a40',
+            'https://res.cloudinary.com/testcloud/video/upload/media/example.jpg?__cld_token__=exp=1672531200~hmac=62ddaa466e7acbd07699201e33c8c1865b78b91365bd727f7b88ac524f02095b',
             $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId, [], $token),
         );
     }
@@ -865,7 +865,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example?__cld_token__=exp=1672527600~hmac=ac28dac9b13b119329311c929be7e6f92d68a53897dca0762da81b7d8d8c7c72' />",
+            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example?__cld_token__=exp=1672531200~hmac=7de9d88403fd7cfa56802fa4a6371d32866df3b23ccfa769e45ce4b7e297045a' />",
             $this->apiGateway->getImageTag($cloudinaryRemoteId, [], $token),
         );
     }
@@ -889,10 +889,10 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            "<video poster='https://res.cloudinary.com/testcloud/video/upload/media/example.jpg?__cld_token__=exp=1672527600~hmac=1313353f4d6cca211a9051e4685e960acd999a45237c5a3b126bdd8643239a40'>"
-            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.webm?__cld_token__=exp=1672527600~hmac=a4984ff9f935e55338cff91c27b25c3dc901e66e8ec4a087c7c6523aa6b35c11' type='video/webm'>"
-            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.mp4?__cld_token__=exp=1672527600~hmac=939acf467e15df4b511c4e0125a52ee58796fcd72aadad710452c22efdc25a38' type='video/mp4'>"
-            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.ogv?__cld_token__=exp=1672527600~hmac=5acdb1a386b0cd5b5754e0362829ba747b74ff50dba9b71f0082b668ee9f9ad0' type='video/ogg'></video>",
+            "<video poster='https://res.cloudinary.com/testcloud/video/upload/media/example.jpg?__cld_token__=exp=1672531200~hmac=62ddaa466e7acbd07699201e33c8c1865b78b91365bd727f7b88ac524f02095b'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.webm?__cld_token__=exp=1672531200~hmac=a5cfcc4e4decf5525ffd94122b7f8132be63ca59a9abb5daf6b8325c9e26ba4e' type='video/webm'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.mp4?__cld_token__=exp=1672531200~hmac=7537ec69571888e23b74d9ab811da1125bc8683f035b449134557311b5835571' type='video/mp4'>"
+            . "<source src='https://res.cloudinary.com/testcloud/video/upload/media/example.ogv?__cld_token__=exp=1672531200~hmac=c145ac2c614b225df4fe20525881ee8b2e707febf78c0c927d6e75b0a2decfda' type='video/ogg'></video>",
             $this->apiGateway->getVideoTag($cloudinaryRemoteId, [], $token),
         );
     }
