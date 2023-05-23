@@ -608,7 +608,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
 
         $searchResult = new Result(200, '123', [$resource]);
 
-        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||||created_at=desc');
         $cacheItem->set($searchResult);
         $cacheItem->expiresAfter(1000);
 
@@ -646,7 +646,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
 
         $searchResult = new Result(200, '123', [$resource]);
 
-        $this->taggableCache->delete('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $this->taggableCache->delete('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||||created_at=desc');
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -663,7 +663,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
             'ngremotemedia-cloudinary',
             'ngremotemedia-cloudinary-search',
         ];
-        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||||created_at=desc');
 
         self::assertTrue($cacheItem->isHit());
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
@@ -688,7 +688,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
 
         $searchResult = new Result(200, '123', [$resource]);
 
-        $this->taggableCache->delete('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $this->taggableCache->delete('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||||created_at=desc');
 
         $this->apiGatewayMock
             ->expects(self::once())
@@ -701,7 +701,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
             $this->nonTaggableCachedGateway->search($query),
         );
 
-        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search-test|25||image,video|test_folder||tag1||||created_at=desc');
 
         self::assertTrue($cacheItem->isHit());
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));
@@ -709,7 +709,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
 
     public function testSearchCountCached(): void
     {
-        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||||created_at=desc');
         $cacheItem->set(50);
         $cacheItem->expiresAfter(1000);
 
@@ -730,7 +730,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
 
     public function testSearchCountNonCachedTaggable(): void
     {
-        $this->taggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||type=product_image,type=category_image|created_at=desc');
+        $this->taggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||type=product_image,type=category_image|created_at=desc');
 
         $query = new Query(
             query: 'test',
@@ -755,7 +755,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
             'ngremotemedia-cloudinary',
             'ngremotemedia-cloudinary-search_count',
         ];
-        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||type=product_image,type=category_image|created_at=desc');
+        $cacheItem = $this->taggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||type=product_image,type=category_image|created_at=desc');
 
         self::assertTrue($cacheItem->isHit());
         self::assertSame($tags, array_values($cacheItem->getMetadata()['tags']));
@@ -763,7 +763,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
 
     public function testSearchCountNonCachedNonTaggable(): void
     {
-        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $this->nonTaggableCache->delete('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||||created_at=desc');
 
         $query = new Query(
             query: 'test',
@@ -783,7 +783,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
             $this->nonTaggableCachedGateway->searchCount($query),
         );
 
-        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1|||created_at=desc');
+        $cacheItem = $this->nonTaggableCache->getItem('ngremotemedia-cloudinary-search_count-test|25||image,video|test_folder||tag1||||created_at=desc');
 
         self::assertTrue($cacheItem->isHit());
         self::assertEmpty(array_values($cacheItem->getMetadata()['tags'] ?? []));

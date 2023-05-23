@@ -44,6 +44,7 @@ final class SearchExpression
         $expressions[] = $this->resolveTypes($query);
         $expressions[] = $this->resolveTags($query);
         $expressions[] = $this->resolveResourceIds($query);
+        $expressions[] = $this->resolveMd5s($query);
         $expressions[] = $this->resolveContext($query);
 
         return implode(' AND ', array_filter($expressions));
@@ -262,6 +263,17 @@ final class SearchExpression
         $resourceIds = array_map(static fn ($value) => sprintf('public_id:"%s"', $value), $resourceIds);
 
         return '(' . implode(' OR ', $resourceIds) . ')';
+    }
+
+    private function resolveMd5s(Query $query): ?string
+    {
+        if (count($query->getMd5s()) === 0) {
+            return null;
+        }
+
+        $md5s = array_map(static fn ($value) => sprintf('etag="%s"', $value), $query->getMd5s());
+
+        return '(' . implode(' OR ', $md5s) . ')';
     }
 
     private function resolveContext(Query $query): ?string

@@ -61,6 +61,10 @@ final class SearchExpressionTest extends TestCase
                 '(public_id:"root/test/picture1" OR public_id:"root/test/picture2" OR public_id:"root/test/picture3")',
             ],
             [
+                new Query(md5s: ['hash1', 'hash2']),
+                '(etag="hash1" OR etag="hash2")',
+            ],
+            [
                 new Query(types: ['video']),
                 '(resource_type:"video")'
                 . ' AND (((!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac")'
@@ -140,6 +144,7 @@ final class SearchExpressionTest extends TestCase
                     folders: ['root', 'root/test'],
                     tags: ['tech', 'nature'],
                     remoteIds: ['upload|image|root/test/picture1', 'upload|image|root/test/picture2', 'upload|image|root/test/picture3'],
+                    md5s: ['hash1', 'hash2'],
                     context: ['original_filename' => 'picture_*', 'type' => ['product_image', 'category_image']],
                     limit: 30,
                     nextCursor: 'ko5mjv8205hupoew3',
@@ -150,6 +155,7 @@ final class SearchExpressionTest extends TestCase
                 . ' AND (folder:"root" OR folder:"root/test")'
                 . ' AND (tags:"tech" OR tags:"nature")'
                 . ' AND (public_id:"root/test/picture1" OR public_id:"root/test/picture2" OR public_id:"root/test/picture3")'
+                . ' AND (etag="hash1" OR etag="hash2")'
                 . ' AND ((context.original_filename:"picture_*") AND (context.type:"product_image" OR context.type:"category_image"))',
             ],
         ];

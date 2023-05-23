@@ -27,6 +27,7 @@ final class Query
         private array $visibilities = [],
         private array $tags = [],
         private array $remoteIds = [],
+        private array $md5s = [],
         private array $context = [],
         private int $limit = 25,
         private ?string $nextCursor = null,
@@ -42,6 +43,7 @@ final class Query
         $visibilities = implode(',', $this->visibilities);
         $tags = implode(',', $this->tags);
         $remoteIds = implode(',', $this->remoteIds);
+        $md5s = implode(',', $this->md5s);
         $sort = http_build_query($vars['sortBy'], '', ',');
 
         $context = [];
@@ -63,11 +65,12 @@ final class Query
             $vars['visibilities'],
             $vars['tags'],
             $vars['remoteIds'],
+            $vars['md5s'],
             $vars['context'],
             $vars['sortBy'],
         );
 
-        return implode('|', $vars) . '|' . $types . '|' . $folders . '|' . $visibilities . '|' . $tags . '|' . $remoteIds . '|' . $context . '|' . $sort;
+        return implode('|', $vars) . '|' . $types . '|' . $folders . '|' . $visibilities . '|' . $tags . '|' . $remoteIds . '|' . $md5s . '|' . $context . '|' . $sort;
     }
 
     /**
@@ -131,6 +134,14 @@ final class Query
     public function getRemoteIds(): array
     {
         return $this->remoteIds;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getMd5s(): array
+    {
+        return $this->md5s;
     }
 
     /**

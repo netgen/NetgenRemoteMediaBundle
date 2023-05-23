@@ -20,6 +20,7 @@ final class QueryTest extends TestCase
         array $visibilities,
         array $tags,
         array $remoteIds,
+        array $md5s,
         array $context,
         int $limit,
         ?string $nextCursor,
@@ -33,6 +34,7 @@ final class QueryTest extends TestCase
             visibilities: $visibilities,
             tags: $tags,
             remoteIds: $remoteIds,
+            md5s: $md5s,
             context: $context,
             limit: $limit,
             nextCursor: $nextCursor,
@@ -67,6 +69,11 @@ final class QueryTest extends TestCase
         self::assertSame(
             $remoteIds,
             $query->getRemoteIds(),
+        );
+
+        self::assertSame(
+            $md5s,
+            $query->getMd5s(),
         );
 
         self::assertSame(
@@ -152,6 +159,7 @@ final class QueryTest extends TestCase
         self::assertEmpty($query->getFolders());
         self::assertEmpty($query->getVisibilities());
         self::assertEmpty($query->getTags());
+        self::assertEmpty($query->getMd5s());
         self::assertEmpty($query->getContext());
 
         self::assertSame(
@@ -172,7 +180,7 @@ final class QueryTest extends TestCase
         );
 
         self::assertSame(
-            '|25||||||test/image.jpg||created_at=desc',
+            '|25||||||test/image.jpg|||created_at=desc',
             (string) $query,
         );
     }
@@ -202,10 +210,11 @@ final class QueryTest extends TestCase
                 [],
                 [],
                 [],
+                [],
                 25,
                 null,
                 ['created_at' => 'desc'],
-                'test search|25||||||||created_at=desc',
+                'test search|25|||||||||created_at=desc',
             ],
             [
                 null,
@@ -214,6 +223,7 @@ final class QueryTest extends TestCase
                 ['public', 'private'],
                 ['tag1', 'tag2', 'tag3'],
                 [],
+                ['hash1', 'hash2', 'hash3'],
                 [
                     'type' => ['product_image', 'product_category'],
                     'source' => 'webshop',
@@ -221,7 +231,7 @@ final class QueryTest extends TestCase
                 30,
                 null,
                 ['updated_at' => 'asc'],
-                '|30||audio,video|root/images,root/videos|public,private|tag1,tag2,tag3||type=product_image,type=product_category,source=webshop|updated_at=asc',
+                '|30||audio,video|root/images,root/videos|public,private|tag1,tag2,tag3||hash1,hash2,hash3|type=product_image,type=product_category,source=webshop|updated_at=asc',
             ],
             [
                 null,
@@ -231,10 +241,11 @@ final class QueryTest extends TestCase
                 [],
                 ['root/images/image1.jpg', 'root/videos/example.mp4'],
                 [],
+                [],
                 25,
                 null,
                 ['created_at' => 'desc'],
-                '|25||||||root/images/image1.jpg,root/videos/example.mp4||created_at=desc',
+                '|25||||||root/images/image1.jpg,root/videos/example.mp4|||created_at=desc',
             ],
             [
                 'unix',
@@ -244,10 +255,11 @@ final class QueryTest extends TestCase
                 ['tech'],
                 [],
                 [],
+                [],
                 25,
                 'd395jdgew45nd73kjsijfh',
                 ['created_at' => 'asc'],
-                'unix|25|d395jdgew45nd73kjsijfh|image|root/images|protected|tech|||created_at=asc',
+                'unix|25|d395jdgew45nd73kjsijfh|image|root/images|protected|tech||||created_at=asc',
             ],
         ];
     }
@@ -260,14 +272,14 @@ final class QueryTest extends TestCase
                 100,
                 null,
                 ['created_at' => 'asc'],
-                '|100||||||image.jpg,test/subfolder/document.pdf,videos/example.mp4,media/audio/song.mp3||created_at=asc',
+                '|100||||||image.jpg,test/subfolder/document.pdf,videos/example.mp4,media/audio/song.mp3|||created_at=asc',
             ],
             [
                 ['image.jpg'],
                 25,
                 'ewdsofu439oirejfoi3',
                 ['updated_at' => 'desc'],
-                '|25|ewdsofu439oirejfoi3|||||image.jpg||updated_at=desc',
+                '|25|ewdsofu439oirejfoi3|||||image.jpg|||updated_at=desc',
             ],
         ];
     }
