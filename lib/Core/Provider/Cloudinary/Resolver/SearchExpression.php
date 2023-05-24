@@ -291,7 +291,7 @@ final class SearchExpression
 
         $newContext = [];
         foreach ($context as $key => $values) {
-            $newContext[] = ('(context.' . $key . ':"' . implode('" OR context.' . $key . ':"', $values) . '")');
+            $newContext[] = ('(context.' . $key . '="' . implode('" OR context.' . $key . '="', $values) . '")');
         }
 
         return '(' . implode(' AND ', $newContext) . ')';

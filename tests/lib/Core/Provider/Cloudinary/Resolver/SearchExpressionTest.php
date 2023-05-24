@@ -54,7 +54,7 @@ final class SearchExpressionTest extends TestCase
                     folders: ['root/images/1', 'root/videos/2'],
                     context: ['type' => ['product_image', 'category_image'], 'source' => 'user_upload'],
                 ),
-                '(folder:"root/images/1" OR folder:"root/videos/2") AND ((context.type:"product_image" OR context.type:"category_image") AND (context.source:"user_upload"))',
+                '(folder:"root/images/1" OR folder:"root/videos/2") AND ((context.type="product_image" OR context.type="category_image") AND (context.source="user_upload"))',
             ],
             [
                 new Query(remoteIds: ['upload|image|root/test/picture1', 'upload|image|root/test/picture2', 'upload|image|root/test/picture3']),
@@ -89,7 +89,7 @@ final class SearchExpressionTest extends TestCase
                 . ' AND (((!format="aac") AND (!format="aiff") AND (!format="amr") AND (!format="flac") AND (!format="m4a")'
                 . ' AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav") AND (!format="pdf")'
                 . ' AND (!format="doc") AND (!format="docx") AND (!format="ppt") AND (!format="pptx") AND (!format="txt")))'
-                . ' AND ((context.source:"user_upload"))',
+                . ' AND ((context.source="user_upload"))',
             ],
             [
                 new Query(visibilities: ['public']),
@@ -156,7 +156,7 @@ final class SearchExpressionTest extends TestCase
                 . ' AND (tags:"tech" OR tags:"nature")'
                 . ' AND (public_id:"root/test/picture1" OR public_id:"root/test/picture2" OR public_id:"root/test/picture3")'
                 . ' AND (etag="hash1" OR etag="hash2")'
-                . ' AND ((context.original_filename:"picture_*") AND (context.type:"product_image" OR context.type:"category_image"))',
+                . ' AND ((context.original_filename="picture_*") AND (context.type="product_image" OR context.type="category_image"))',
             ],
         ];
     }
