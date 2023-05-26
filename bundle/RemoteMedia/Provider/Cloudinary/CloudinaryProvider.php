@@ -323,7 +323,7 @@ class CloudinaryProvider extends RemoteMediaProvider
             'poster' => $transformationOptions,
         ];
 
-        if (!array_key_exists('controls', $format) || $format['controls']) {
+        if (!is_array($format) || !array_key_exists('controls', $format) || $format['controls']) {
             $finalOptions['controls'] = true;
         }
 
