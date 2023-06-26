@@ -32,22 +32,13 @@ export default {
     modal: Modal
   },
   data() {
-    let folder = FOLDER_ALL;
-    if (this.$root.$data.NgRemoteMediaFolderConfig.parentFolder) {
-      folder = this.$root.$data.NgRemoteMediaFolderConfig.parentFolder.id;
-    }
-
-    if (this.$root.$data.NgRemoteMediaFolderConfig.folder) {
-      folder = this.$root.$data.NgRemoteMediaFolderConfig.folder.id;
-    }
-
     return {
       media: [],
       canLoadMore: false,
       nextCursor: null,
       loading: true,
       facets: {
-        folder: folder,
+        folder: FOLDER_ROOT,
         searchType: SEARCH_NAME,
         mediaType: "",
         query: "",
