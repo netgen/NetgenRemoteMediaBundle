@@ -103,7 +103,7 @@ export default {
             {
               detail: {
                 inputFields: this.config.inputFields,
-                remoteId: this.selectedImage.id,
+                selectedImage: this.selectedImage,
                 order: this.order,
               }
             }
