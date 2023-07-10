@@ -64,7 +64,7 @@ import {truthy} from "@/utility/predicates";
 
 export default {
   name: "Interactions",
-  props: ["fieldId", "config", "selectedImage", "order"],
+  props: ["fieldId", "config", "selectedImage"],
   components: {
     "preview": Preview,
     'media-modal': MediaModal,
@@ -104,7 +104,7 @@ export default {
               detail: {
                 inputFields: this.config.inputFields,
                 selectedImage: this.selectedImage,
-                order: this.order,
+                fieldId: this.fieldId,
               }
             }
           )
