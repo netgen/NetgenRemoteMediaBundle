@@ -36,7 +36,7 @@
 
         <input v-model="stringifiedVariations" :name="this.config.inputFields.cropSettings" class="media-id"
                type="hidden"/>
-        <portal to="ngrm-body-modal">
+        <portal :to="`ngrm-body-modal-${fieldId}`">
             <crop-modal v-if="cropModalOpen" :available-variations="this.config.availableVariations"
                         :selected-image="selectedImage"
                         :translations="config.translations" @change="handleVariationCropChange"
@@ -49,7 +49,7 @@
                           :visibilities="visibilities" @close="handleUploadModalClose"
                           @uploaded="handleResourceUploaded"></upload-modal>
         </portal>
-        <portal-target class="ngrm-model-portal" name="ngrm-body-modal"></portal-target>
+        <portal-target :class="`ngrm-model-portal-${fieldId}`" :name="`ngrm-body-modal-${fieldId}`"></portal-target>
     </div>
 </template>
 
@@ -264,7 +264,7 @@ export default {
   },
   mounted() {
     this.$nextTick(function () {
-      const modalPortal = document.querySelector('.ngrm-model-portal');
+      const modalPortal = document.querySelector(`.ngrm-model-portal-${this.fieldId}`);
 
       document.body.prepend(modalPortal);
     })
