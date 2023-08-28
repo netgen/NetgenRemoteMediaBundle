@@ -35,7 +35,6 @@ export default {
   },
   methods: {
       handleSelectFolderModalOpen() {
-          console.log(this.selectedFolder);
           this.selectFolderModalOpen = true;
       },
       handleSelectFolderModalClose() {
