@@ -52,6 +52,7 @@
           <input type="text"
                :name="this.config.inputFields.caption"
                v-model="selectedImage.caption"
+               @input="dispatchChangeEvent"
                class="media-caption data"
           >
         </div>
@@ -76,6 +77,7 @@
           <input type="text"
                  :name="this.config.inputFields.watermarkText"
                  v-model="selectedImage.watermarkText"
+                 @input="dispatchChangeEvent"
                  class="media-watermarktext data"
           >
         </div>
