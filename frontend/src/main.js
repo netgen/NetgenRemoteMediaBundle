@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import PortalVue from 'portal-vue';
+import vueDebounce from 'vue-debounce'
 import './scss/ngremotemedia.scss';
 import 'cropperjs/dist/cropper.css';
 import Interactions from './components/Interactions';
@@ -9,6 +10,7 @@ import SelectFolderInteraction from "./components/SelectFolderInteraction.vue";
 
 Vue.config.productionTip = false;
 Vue.use(PortalVue);
+Vue.use(vueDebounce);
 
 const initInteractionsVue = (el) => {
     window[`ngrm_interactions_vue_${el.dataset.id}`] = new Vue({
