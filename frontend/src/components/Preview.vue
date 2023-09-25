@@ -38,7 +38,7 @@
           <input type="text"
                :name="this.config.inputFields.altText"
                v-model="selectedImage.alternateText"
-               @input="dispatchChangeEvent"
+               v-debounce:500ms="dispatchChangeEvent"
                class="media-alttext data"
           >
         </div>
@@ -52,7 +52,7 @@
           <input type="text"
                :name="this.config.inputFields.caption"
                v-model="selectedImage.caption"
-               @input="dispatchChangeEvent"
+               v-debounce:500ms="dispatchChangeEvent"
                class="media-caption data"
           >
         </div>
@@ -77,7 +77,7 @@
           <input type="text"
                  :name="this.config.inputFields.watermarkText"
                  v-model="selectedImage.watermarkText"
-                 @input="dispatchChangeEvent"
+                 v-debounce:500ms="dispatchChangeEvent"
                  class="media-watermarktext data"
           >
         </div>
