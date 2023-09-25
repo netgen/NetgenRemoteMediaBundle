@@ -93,7 +93,6 @@
 <script>
 import { formatByteSize } from '../utility/utility';
 import vSelect from "vue-select";
-import { vue3Debounce } from 'vue-debounce'
 
 export default {
   name: "Preview",
