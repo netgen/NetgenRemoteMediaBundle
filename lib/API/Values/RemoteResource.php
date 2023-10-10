@@ -61,8 +61,7 @@ class RemoteResource
         private array $metadata = [],
         private array $context = [],
         private Collection|array $locations = [],
-    ) {
-    }
+    ) {}
 
     public function getId(): ?int
     {

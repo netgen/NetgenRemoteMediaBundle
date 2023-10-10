@@ -13,8 +13,7 @@ final class Result
         private int $totalCount,
         private ?string $nextCursor = null,
         private array $resources = []
-    ) {
-    }
+    ) {}
 
     public function getTotalCount(): int
     {

@@ -30,8 +30,7 @@ final class SearchExpression
     public function __construct(
         private ResourceTypeConverter $resourceTypeConverter,
         private VisibilityTypeConverter $visibilityTypeConverter,
-    ) {
-    }
+    ) {}
 
     public function resolve(Query $query): string
     {

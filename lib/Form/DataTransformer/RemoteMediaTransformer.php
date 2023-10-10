@@ -19,8 +19,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 {
     public function __construct(
         private ProviderInterface $provider
-    ) {
-    }
+    ) {}
 
     public function transform($value)
     {

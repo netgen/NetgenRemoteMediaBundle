@@ -17,8 +17,7 @@ final class FileStruct
         private string $uri,
         private string $originalFilename,
         private string $originalExtension,
-    ) {
-    }
+    ) {}
 
     public static function fromUri(string $uri): self
     {

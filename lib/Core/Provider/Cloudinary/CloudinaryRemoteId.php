@@ -18,8 +18,7 @@ final class CloudinaryRemoteId
         private string $type,
         private string $resourceType,
         private string $resourceId
-    ) {
-    }
+    ) {}
 
     public static function fromCloudinaryData(array $data): self
     {

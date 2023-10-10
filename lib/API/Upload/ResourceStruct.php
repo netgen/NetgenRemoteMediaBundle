@@ -25,8 +25,7 @@ final class ResourceStruct
         private ?string $caption = null,
         private array $tags = [],
         private array $context = []
-    ) {
-    }
+    ) {}
 
     public function getFileStruct(): FileStruct
     {
