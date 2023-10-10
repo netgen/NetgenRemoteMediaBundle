@@ -305,6 +305,12 @@ final class RemoteResourceTest extends AbstractTestCase
                     'type' => 'test',
                     'secure_url' => 'https://res.cloudinary.com/myCloud/v1371995958/raw/media/raw/new/c87hg9xfxrd4itiim3t0',
                     'etag' => 'e522f43cf89aa0afd03387c38e2b6e29',
+                    'context' => [
+                        'test' => 'test',
+                        'custom' => [
+                            'test2' => 'test2',
+                        ],
+                    ],
                 ],
                 new RemoteResource(
                     remoteId: 'test|raw|media/raw/new/c87hg9xfxrd4itiim3t0',
@@ -321,6 +327,10 @@ final class RemoteResourceTest extends AbstractTestCase
                         'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                         'format' => 'zip',
                         'created_at' => '2011-06-23T13:59:18Z',
+                    ],
+                    context: [
+                        'test' => 'test',
+                        'test2' => 'test2',
                     ],
                 ),
             ],
