@@ -349,4 +349,26 @@ class RemoteResource
     {
         return $this->locations;
     }
+
+    public function refresh(self $remoteResource): self
+    {
+        $this
+            ->setRemoteId($remoteResource->getRemoteId())
+            ->setType($remoteResource->getType())
+            ->setUrl($remoteResource->getUrl())
+            ->setName($remoteResource->getName())
+            ->setOriginalFilename($remoteResource->getOriginalFilename())
+            ->setVersion($remoteResource->getVersion())
+            ->setFolder($remoteResource->getFolder())
+            ->setVisibility($remoteResource->getVisibility())
+            ->setSize($remoteResource->getSize())
+            ->setAltText($remoteResource->getAltText())
+            ->setCaption($remoteResource->getCaption())
+            ->setTags($remoteResource->getTags())
+            ->setMd5($remoteResource->getMd5())
+            ->setMetadata($remoteResource->getMetadata())
+            ->setContext($remoteResource->getContext());
+
+        return $this;
+    }
 }

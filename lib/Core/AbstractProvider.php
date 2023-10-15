@@ -145,15 +145,8 @@ abstract class AbstractProvider implements ProviderInterface
             return $resource;
         }
 
-        $existingResource
-            ->setType($resource->getType())
-            ->setUrl($resource->getUrl())
-            ->setSize($resource->getSize())
-            ->setAltText($resource->getAltText())
-            ->setCaption($resource->getCaption())
-            ->setTags($resource->getTags())
-            ->setMetadata($resource->getMetadata())
-            ->setUpdatedAt($this->dateTimeFactory->createCurrent());
+        $existingResource->refresh($resource);
+        $existingResource->setUpdatedAt($this->dateTimeFactory->createCurrent());
 
         $this->entityManager->persist($existingResource);
         $this->entityManager->flush();
