@@ -74,6 +74,11 @@ abstract class AbstractTestCase extends TestCase
         );
 
         self::assertSame(
+            $expected->getOriginalFilename(),
+            $actual->getOriginalFilename(),
+        );
+
+        self::assertSame(
             $expected->getVersion(),
             $actual->getVersion(),
         );

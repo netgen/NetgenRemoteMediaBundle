@@ -51,6 +51,7 @@ class RemoteResource
         private string $md5,
         private ?int $id = null,
         private ?string $name = null,
+        private ?string $originalFilename = null,
         private ?string $version = null,
         private ?string $visibility = self::VISIBILITY_PUBLIC,
         private ?Folder $folder = null,
@@ -112,6 +113,18 @@ class RemoteResource
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getOriginalFilename(): string
+    {
+        return $this->originalFilename;
+    }
+
+    public function setOriginalFilename(string $originalFilename): self
+    {
+        $this->originalFilename = $originalFilename;
 
         return $this;
     }

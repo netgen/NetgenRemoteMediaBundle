@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use function basename;
 use function json_decode;
 use function pathinfo;
 
@@ -289,52 +290,76 @@ final class Notify extends AbstractController
                 continue;
             }
 
+            $filenameFromUrl = basename($publicId);
+            try {
+                $apiResource = Uploader::explicit(
+                    $requestContent['to_public_id'],
+                    [
+                        'type' => CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getType(),
+                        'resource_type' => CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getResourceType(),
+                    ],
+                );
+
+                basename($apiResource['secure_url']);
+            } catch (NotFound $e) {
+                continue;
+            }
+
             foreach ($resourceData['added'] ?? [] as $value) {
-                if ($value['name'] === 'alt') {
-                    $resource->setAltText($value['value']);
+                switch ($value['name']) {
+                    case 'alt':
+                        $resource->setAltText($value['value']);
+                        break;
 
-                    continue;
+                    case 'caption':
+                        $resource->setCaption($value['value']);
+                        break;
+
+                    case 'original_filename':
+                        $resource->setOriginalFilename($value['value'] ?? $filenameFromUrl);
+                        break;
+
+                    default:
+                        $resource->addContextProperty($value['name'], $value['value']);
                 }
-
-                if ($value['name'] === 'caption') {
-                    $resource->setCaption($value['value']);
-
-                    continue;
-                }
-
-                $resource->addContextProperty($value['name'], $value['value']);
             }
 
             foreach ($resourceData['removed'] ?? [] as $value) {
-                if ($value['name'] === 'alt') {
-                    $resource->setAltText(null);
+                switch ($value['name']) {
+                    case 'alt':
+                        $resource->setAltText(null);
+                        break;
 
-                    continue;
+                    case 'caption':
+                        $resource->setCaption(null);
+                        break;
+
+                    case 'original_filename':
+                        $resource->setOriginalFilename($filenameFromUrl);
+                        break;
+
+                    default:
+                        $resource->removeContextProperty($value['name']);
                 }
-
-                if ($value['name'] === 'caption') {
-                    $resource->setCaption(null);
-
-                    continue;
-                }
-
-                $resource->removeContextProperty($value['name']);
             }
 
             foreach ($resourceData['updated'] ?? [] as $value) {
-                if ($value['name'] === 'alt') {
-                    $resource->setAltText($value['value']);
+                switch ($value['name']) {
+                    case 'alt':
+                        $resource->setAltText($value['value']);
+                        break;
 
-                    continue;
+                    case 'caption':
+                        $resource->setCaption($value['value']);
+                        break;
+
+                    case 'original_filename':
+                        $resource->setOriginalFilename($value['value'] ?? $filenameFromUrl);
+                        break;
+
+                    default:
+                        $resource->addContextProperty($value['name'], $value['value']);
                 }
-
-                if ($value['name'] === 'caption') {
-                    $resource->setCaption($value['value']);
-
-                    continue;
-                }
-
-                $resource->addContextProperty($value['name'], $value['value']);
             }
 
             $this->provider->store($resource);

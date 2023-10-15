@@ -33,7 +33,7 @@ final class UploadOptions
         $clean = preg_replace(
             '#[^\\p{L}|\\p{N}]+#u',
             '_',
-            $resourceStruct->getFilenameOverride() ?? $resourceStruct->getFileStruct()->getOriginalFilename(),
+            $resourceStruct->getFilename(),
         );
 
         $cleanFileName = preg_replace('#[\\p{Z}]{2,}#u', '_', $clean);

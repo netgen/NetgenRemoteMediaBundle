@@ -18,6 +18,7 @@ class AuthenticatedRemoteResource extends RemoteResource
             md5: $remoteResource->getMd5(),
             id: $remoteResource->getId(),
             name: $remoteResource->getName(),
+            originalFilename: $remoteResource->getOriginalFilename(),
             version: $remoteResource->getVersion(),
             visibility: $remoteResource->getVisibility(),
             folder: $remoteResource->getFolder(),

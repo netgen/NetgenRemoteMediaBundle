@@ -14,8 +14,10 @@ use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
 use function array_key_exists;
 use function array_merge;
+use function basename;
 use function cloudinary_url_internal;
 use function in_array;
+use function is_array;
 use function pathinfo;
 
 use const PATHINFO_FILENAME;
@@ -40,6 +42,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             url: $this->resolveCorrectUrl($data),
             md5: $this->resolveMd5($data),
             name: pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
+            originalFilename: $this->resolveOriginalFilename($data),
             version: ($data['version'] ?? null) !== null ? (string) $data['version'] : null,
             visibility: $this->resolveVisibility($data),
             folder: $cloudinaryRemoteId->getFolder(),
@@ -125,6 +128,15 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         return $this->fileHashFactory->createHash($url);
     }
 
+    private function resolveOriginalFilename(array $data): string
+    {
+        if (($data['context']['custom']['original_filename'] ?? null) !== null) {
+            return $data['context']['custom']['original_filename'];
+        }
+
+        return $data['context']['original_filename'] ?? basename($data['secure_url']);
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -156,13 +168,13 @@ final class RemoteResource implements RemoteResourceFactoryInterface
     {
         $context = $data['context'] ?? [];
 
-        if (array_key_exists('custom', $context)) {
-            $context = array_merge($context, $context['custom']);
+        if (is_array($context['custom'] ?? null)) {
+            $context += $context['custom'];
 
             unset($context['custom']);
         }
 
-        unset($context['alt'], $context['caption']);
+        unset($context['alt'], $context['caption'], $context['original_filename']);
 
         return $context;
     }

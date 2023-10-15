@@ -13,6 +13,7 @@
         <field name="type" column="type" type="string" length="100" nullable="false" />
         <field name="url" column="url" type="string" length="255" nullable="false" />
         <field name="name" column="name" type="string" length="255" nullable="false" />
+        <field name="originalFilename" column="original_filename" type="string" length="255" nullable="false" />
         <field name="md5" column="md5" type="string" length="64" nullable="false" />
         <field name="version" column="version" type="string" length="100" nullable="true" />
         <field name="folder" column="folder" type="object" nullable="true" />
