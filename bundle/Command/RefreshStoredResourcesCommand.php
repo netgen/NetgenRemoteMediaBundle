@@ -27,6 +27,8 @@ final class RefreshStoredResourcesCommand extends Command
 
     private ProgressBar $progressBar;
 
+    private int $batchSize = 500;
+
     /** @var \Netgen\RemoteMedia\API\Values\RemoteResource[] */
     private array $resourcesToDelete;
 
@@ -50,7 +52,7 @@ final class RefreshStoredResourcesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $limit = $input->getOption('batch-size');
+        $this->batchSize = $input->getOption('batch-size');
         $delete = $input->getOption('delete');
         $offset = 0;
 
@@ -60,11 +62,11 @@ final class RefreshStoredResourcesCommand extends Command
         $this->resourcesToDelete = [];
 
         do {
-            $resources = $this->getBatch($limit, $offset);
+            $resources = $this->getBatch($this->batchSize, $offset);
 
             $this->refreshResources($resources);
 
-            $offset += $limit;
+            $offset += $this->batchSize;
         } while (count($resources) > 0);
 
         $this->progressBar->finish();
@@ -135,14 +137,19 @@ final class RefreshStoredResourcesCommand extends Command
      */
     private function getRemoteBatch(array $remoteIds): array
     {
-        $query = Query::fromRemoteIds($remoteIds);
-
-        $searchResult = $this->provider->search($query);
+        $query = Query::fromRemoteIds($remoteIds,  $this->batchSize);
 
         $resources = [];
-        foreach ($searchResult->getResources() as $resource) {
-            $resources[$resource->getRemoteId()] = $resource;
-        }
+
+        do {
+            $searchResult = $this->provider->search($query);
+
+            foreach ($searchResult->getResources() as $resource) {
+                $resources[$resource->getRemoteId()] = $resource;
+            }
+
+            $query->setNextCursor($searchResult->getNextCursor());
+        } while($searchResult->getNextCursor() !== null);
 
         return $resources;
     }
