@@ -72,6 +72,7 @@ export default {
       data.append('folder', this.selectedFolder);
       data.append('overwrite', this.overwrite);
       data.append('visibility', this.visibility);
+      data.append('hide_filename', this.config.hideFilename);
 
       for (const [key, value] of Object.entries(this.config.uploadContext)) {
         data.append(`upload_context[${key}]`, value);

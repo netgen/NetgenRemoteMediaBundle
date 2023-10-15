@@ -15,6 +15,7 @@ use function count;
 use function explode;
 use function in_array;
 use function is_string;
+use function md5_file;
 use function preg_replace;
 use function rtrim;
 
@@ -40,6 +41,10 @@ final class UploadOptions
         $fileName = rtrim($cleanFileName, '_');
 
         $publicId = $this->appendExtension($fileName, $resourceStruct->getFileStruct());
+
+        if ($resourceStruct->doHideFilename()) {
+            $publicId = md5_file($resourceStruct->getFileStruct()->getUri());
+        }
 
         if ($resourceStruct->getFolder()) {
             $publicId = $resourceStruct->getFolder()->getPath() . '/' . $publicId;

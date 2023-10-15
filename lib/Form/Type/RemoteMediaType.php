@@ -40,6 +40,7 @@ final class RemoteMediaType extends AbstractType
             'upload_context' => [],
             'location_source' => null,
             'disable_upload' => false,
+            'hide_filename' => false,
         ]);
     }
 
@@ -111,6 +112,7 @@ final class RemoteMediaType extends AbstractType
                 : null,
             'upload_context' => $uploadContext,
             'disable_upload' => $options['disable_upload'] ?? false,
+            'hide_filename' => $options['hide_filename'] ?? false,
         ]);
     }
 }

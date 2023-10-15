@@ -24,7 +24,8 @@ final class ResourceStruct
         private ?string $altText = null,
         private ?string $caption = null,
         private array $tags = [],
-        private array $context = []
+        private array $context = [],
+        private bool $hideFilename = false,
     ) {}
 
     public function getFileStruct(): FileStruct
@@ -91,5 +92,10 @@ final class ResourceStruct
     public function getContext(): array
     {
         return $this->context;
+    }
+
+    public function doHideFilename(): bool
+    {
+        return $this->hideFilename;
     }
 }

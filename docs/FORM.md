@@ -115,6 +115,14 @@ Every location has a string where you can put a descriptive info where this loca
 
 This parameter enables you to override the source text.
 
+#### `disable_upload`
+
+This parameter enables you to disable the upload, which means that users will be able only to select one of the existing resources.
+
+#### `hide_filename`
+
+This parameter enables filename hiding; instead of original filename, it will use file's MD5 hash as a public ID. Original filename will be stored in the context though and can be used, if needed.
+
 ### Example
 
 Let's say that you have a form for digital products in a webshop and you want to limit editors to be able to upload only protected files inside a specific folder. You want to also add some context.

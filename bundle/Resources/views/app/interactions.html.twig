@@ -14,6 +14,7 @@
 {% set folder = folder|default(null) %}
 {% set upload_context = upload_context|default([]) %}
 {% set disable_upload = disable_upload|default(false) %}
+{% set hide_filename = hide_filename|default(false) %}
 
 {% set location = null %}
 {% if location_id %}
@@ -123,7 +124,8 @@
     'parentFolder': parent_folder,
     'folder': folder,
     'uploadContext': upload_context,
-    'disableUpload': disable_upload
+    'disableUpload': disable_upload,
+    'hideFilename': hide_filename,
 } %}
 
 {% set browse_url = '' %}

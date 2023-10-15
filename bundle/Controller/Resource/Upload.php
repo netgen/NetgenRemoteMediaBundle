@@ -99,6 +99,7 @@ final class Upload extends AbstractController
             null,
             [],
             $uploadContext,
+            $request->request->getBoolean('hide_filename'),
         );
 
         try {

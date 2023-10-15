@@ -47,6 +47,7 @@ const initInteractionsVue = (el) => {
                 folder: null,
                 uploadContext: {},
                 disableUpload: false,
+                hideFilename: false,
             },
             selectedImage: {
                 id: '',
