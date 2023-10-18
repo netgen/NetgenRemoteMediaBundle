@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use function count;
@@ -65,6 +66,11 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $this
             ->setName('netgen:ngremotemedia:migrate:ezimage')
             ->setDescription('This command will migrate ezimage field to ngremotemedia field.')
+            ->addArgument(
+                'migrate-field',
+                InputArgument::IS_ARRAY,
+                "Migrate one field: content type identifier, image field type identifier, remote media type identifier"
+            )
             ->addOption(
                 'dry-run',
                 'd',
@@ -263,12 +269,28 @@ class MigrateEzImageCommand extends ContainerAwareCommand
         $dryRun = $input->getOption('dry-run');
         $continueOnError = $input->getOption('continue-on-error');
 
-        $this->listFields();
-        $output->writeln('');
+        $migrateField = $input->getArgument('migrate-field');
+        if (count($migrateField) == 3) {
+            $contentType = $this->contentTypeService->loadContentTypeByIdentifier($migrateField[0]);
 
-        $contentType = $this->getContentType();
-        $ezimageFieldIdentifier = $this->getFieldIdentifier($contentType, 'source');
-        $remoteMediaFieldIdentifier = $this->getFieldIdentifier($contentType, 'destination');
+            $ezimageFieldIdentifier = $migrateField[1];
+            if (!$contentType->getFieldDefinition($ezimageFieldIdentifier)) {
+                throw new \InvalidArgumentException('Could not find the field with the identifier:'. $ezimageFieldIdentifier);
+            }
+            $remoteMediaFieldIdentifier = $migrateField[2];
+            if (!$contentType->getFieldDefinition($remoteMediaFieldIdentifier)) {
+                throw new \InvalidArgumentException('Could not find the field with the identifier:'. $remoteMediaFieldIdentifier);
+            }
+
+        } else {
+            $this->listFields();
+            $output->writeln('');
+
+            $contentType = $this->getContentType();
+            $ezimageFieldIdentifier = $this->getFieldIdentifier($contentType, 'source');
+            $remoteMediaFieldIdentifier = $this->getFieldIdentifier($contentType, 'destination');
+        }
+
         $overwrite = $this->getOverwrite();
 
         $siteaccess = $this->getContainer()->get('ezpublish.siteaccess');
