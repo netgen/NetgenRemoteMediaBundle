@@ -84,7 +84,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('max_results');
         $this->cloudinarySearch
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(3))
             ->method('with_field');
         $this->cloudinarySearch
             ->expects(self::once())
@@ -107,7 +107,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('max_results');
         $this->cloudinarySearch
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(3))
             ->method('with_field');
         $this->cloudinarySearch
             ->expects(self::once())
@@ -130,7 +130,7 @@ class CloudinaryApiGatewayTest extends TestCase
             ->expects(self::once())
             ->method('max_results');
         $this->cloudinarySearch
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(3))
             ->method('with_field');
         $this->cloudinarySearch
             ->expects(self::once())

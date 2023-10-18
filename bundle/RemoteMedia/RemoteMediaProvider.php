@@ -140,6 +140,11 @@ abstract class RemoteMediaProvider
     abstract public function updateTags(string $resourceId, string $tags, string $resourceType = 'image');
 
     /**
+     * Lists metadata fields.
+     */
+    abstract public function listMetadataFields(): array;
+
+    /**
      * Updates the resource context.
      * eg. alt text and caption:
      * context = [

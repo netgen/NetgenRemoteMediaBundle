@@ -39,6 +39,19 @@
         />
       </div>
 
+      <div class="form-field">
+          <label for="metadata">{{ this.$root.$data.NgRemoteMediaTranslations.browse_metadata_fields }}</label>
+          <v-select
+                  :options="metadataFields"
+                  label="label"
+                  v-model="metadata"
+                  @input="handleMetadataChange"
+                  :reduce="option => option.id"
+                  :placeholder="facetsLoading ? this.$root.$data.NgRemoteMediaTranslations.browse_all_metadata_fields : this.$root.$data.NgRemoteMediaTranslations.browse_all_metadata_fields"
+                  :disabled="facetsLoading"
+          />
+      </div>
+
       <div class="search-wrapper">
         <span class="search-label">{{ this.$root.$data.NgRemoteMediaTranslations.search }}</span>
         <div class="search">
@@ -66,6 +79,7 @@ import {
   FOLDER_ALL,
   FOLDER_ROOT,
   TAG_ALL,
+  METADATA_ALL
 } from "../constants/facets";
 
 import vSelect from "vue-select";
@@ -75,7 +89,7 @@ import {encodeQueryData} from "@/utility/utility";
 
 export default {
   name: "MediaFacets",
-  props: ["tags", "facets", "facetsLoading", "mediaTypes"],
+  props: ["tags", "metadataFields", "facets", "facetsLoading", "mediaTypes"],
   data() {
     return {
       TYPE_ALL,
@@ -86,6 +100,7 @@ export default {
       FOLDER_ALL,
       FOLDER_ROOT,
       TAG_ALL,
+      METADATA_ALL,
       folders: [{
         id: FOLDER_ROOT,
         label: FOLDER_ROOT,
@@ -112,6 +127,9 @@ export default {
     },
     handleTagChange() {
       this.$emit("change", { tag: this.tag });
+    },
+    handleMetadataChange() {
+        this.$emit("change", { metadata: this.metadata });
     },
     async loadSubFolders(data) {
       const node = data.parentNode;
