@@ -86,9 +86,10 @@ class RemoteResourceLocation
 
     public function refresh(self $remoteResourceLocation): self
     {
-        $this->remoteResource = $remoteResourceLocation->getRemoteResource();
         $this->setSource($remoteResourceLocation->getSource());
         $this->setCropSettings($remoteResourceLocation->getCropSettings());
         $this->setWatermarkText($remoteResourceLocation->getWatermarkText());
+
+        return $this;
     }
 }
