@@ -293,7 +293,7 @@ final class Notify extends AbstractController
             $filenameFromUrl = basename($publicId);
             try {
                 $apiResource = Uploader::explicit(
-                    $requestContent['to_public_id'],
+                    CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getResourceId(),
                     [
                         'type' => CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getType(),
                         'resource_type' => CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getResourceType(),
