@@ -41,3 +41,5 @@ services:
             - '@netgen_remote_media.provider.cloudinary.verifier.controller.signature'
             - '@doctrine.orm.entity_manager'
             - '@event_dispatcher'
+        calls:
+            - [setContainer, ['@service_container']]
