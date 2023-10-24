@@ -216,7 +216,7 @@ class RemoteResource
      */
     public function getTags(): array
     {
-        return $this->tags;
+        return array_unique(array_values($this->tags));
     }
 
     /**
@@ -249,7 +249,7 @@ class RemoteResource
             return;
         }
 
-        $this->tags = array_diff($this->tags, [$tag]);
+        $this->tags = array_unique(array_values(array_diff($this->tags, [$tag])));
     }
 
     public function getMd5(): string
