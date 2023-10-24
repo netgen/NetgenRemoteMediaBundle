@@ -257,19 +257,26 @@ final class Notify extends AbstractController
                 continue;
             }
 
+            $changed = false;
+
             foreach ($resourceData['added'] ?? [] as $tag) {
                 $resource->addTag($tag);
+                $changed = true;
             }
 
             foreach ($resourceData['removed'] ?? [] as $tag) {
                 $resource->removeTag($tag);
+                $changed = true;
             }
 
             foreach ($resourceData['updated'] ?? [] as $tag) {
                 $resource->addTag($tag);
+                $changed = true;
             }
 
-            $this->provider->store($resource);
+            if ($changed === true) {
+                $this->provider->store($resource);
+            }
         }
     }
 
@@ -305,7 +312,10 @@ final class Notify extends AbstractController
                 continue;
             }
 
+            $changed = false;
+
             foreach ($resourceData['added'] ?? [] as $value) {
+                $changed = true;
                 switch ($value['name']) {
                     case 'alt':
                         $resource->setAltText($value['value']);
@@ -325,6 +335,7 @@ final class Notify extends AbstractController
             }
 
             foreach ($resourceData['removed'] ?? [] as $value) {
+                $changed = true;
                 switch ($value['name']) {
                     case 'alt':
                         $resource->setAltText(null);
@@ -344,13 +355,15 @@ final class Notify extends AbstractController
             }
 
             foreach ($resourceData['updated'] ?? [] as $value) {
+                $changed = true;
                 switch ($value['name']) {
                     case 'alt':
                         $resource->setAltText($value['value']);
                         break;
 
                     case 'caption':
-                        $resource->setCaption($value['value']);
+                        $resource->setCaption($value['value'])
+                        $changed = true;
                         break;
 
                     case 'original_filename':
@@ -362,7 +375,9 @@ final class Notify extends AbstractController
                 }
             }
 
-            $this->provider->store($resource);
+            if ($changed === true) {
+                $this->provider->store($resource);
+            }
         }
     }
 
