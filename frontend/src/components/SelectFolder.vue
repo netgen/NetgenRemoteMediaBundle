@@ -5,7 +5,7 @@
         <span>{{ this.config.translations.upload_breadcrumbs_info }} </span>
         <span v-for="(folder, index) in breadcrumbs" :key="index">
           <span v-if="index !== 0"> / </span>
-          <a v-if="index !== breadcrumbs.length - 1" href="#" @click="openFolder(folder.id)">
+          <a v-if="index !== breadcrumbs.length - 1" href="javascript:void(0);" @click="openFolder(folder.id)">
             {{folder.label}}
           </a>
           <span v-else>{{folder.label}}</span>

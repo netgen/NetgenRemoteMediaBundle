@@ -6,7 +6,7 @@
       <div class="input-file-name-wrapper">
         <div v-if="this.error" class="error">
           {{ this.error }}
-          <a v-if="this.existingResourceButton" href="#" @click="$emit('uploaded', existingResource)">
+          <a v-if="this.existingResourceButton" href="javascript:void(0);" @click="$emit('uploaded', existingResource)">
             {{ this.config.translations.upload_button_use_existing_resource }}
           </a>
         </div>
