@@ -131,7 +131,7 @@ abstract class AbstractProvider implements ProviderInterface
             $resource->setUpdatedAt($this->dateTimeFactory->createCurrent());
 
             $this->entityManager->persist($resource);
-            $this->entityManager->flush();
+            $this->entityManager->flush($resource);
 
             return $resource;
         }
@@ -140,7 +140,7 @@ abstract class AbstractProvider implements ProviderInterface
 
         if (!$existingResource instanceof RemoteResource) {
             $this->entityManager->persist($resource);
-            $this->entityManager->flush();
+            $this->entityManager->flush($resource);
 
             return $resource;
         }
@@ -149,7 +149,7 @@ abstract class AbstractProvider implements ProviderInterface
         $existingResource->setUpdatedAt($this->dateTimeFactory->createCurrent());
 
         $this->entityManager->persist($existingResource);
-        $this->entityManager->flush();
+        $this->entityManager->flush($existingResource);
 
         return $existingResource;
     }
@@ -157,7 +157,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function remove(RemoteResource $resource): void
     {
         $this->entityManager->remove($resource);
-        $this->entityManager->flush();
+        $this->entityManager->flush($resource);
 
         if ($this->shouldDeleteFromRemote && $this->supportsDelete()) {
             $this->deleteFromRemote($resource);
@@ -181,7 +181,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function storeLocation(RemoteResourceLocation $location): RemoteResourceLocation
     {
         $this->entityManager->persist($location);
-        $this->entityManager->flush();
+        $this->entityManager->flush($location);
 
         return $location;
     }
@@ -189,7 +189,7 @@ abstract class AbstractProvider implements ProviderInterface
     public function removeLocation(RemoteResourceLocation $resourceLocation): void
     {
         $this->entityManager->remove($resourceLocation);
-        $this->entityManager->flush();
+        $this->entityManager->flush($resourceLocation);
     }
 
     public function loadNamedRemoteResource(string $name): RemoteResource
