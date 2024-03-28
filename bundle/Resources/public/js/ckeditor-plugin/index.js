@@ -1,1 +1,3 @@
-export * from './plugin';
+import NetgenRemoteMediaPlugin from './plugin';
+
+export default NetgenRemoteMediaPlugin;
