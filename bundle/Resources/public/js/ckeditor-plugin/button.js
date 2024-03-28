@@ -1,7 +1,11 @@
 import { ButtonView } from '@ckeditor/ckeditor5-ui';
+import { pluginKey } from './constants';
 
-export const netgenRemoteMediaToolbarButton = (editor) => {
-  const button = new ButtonView();
+const getNetgenRemoteMediaToolbarButton = (editor, locale) => {
+  const button = new ButtonView(locale);
+  const command = editor.commands.get(pluginKey);
+
+  button.bind('isEnabled').to(command, 'isEnabled');
 
   button.set({
     tooltip: 'Netgen Remote Media',
@@ -9,9 +13,11 @@ export const netgenRemoteMediaToolbarButton = (editor) => {
   });
 
   button.on('execute', () => {
-    console.log("Button press");
-    editor.execute('ngremotemedia');
+    command.execute();
+    editor.editing.view.focus();
   });
 
   return button;
 };
+
+export default getNetgenRemoteMediaToolbarButton;

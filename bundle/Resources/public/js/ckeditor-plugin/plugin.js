@@ -1,12 +1,22 @@
-import { NetgenRemoteMediaCommand } from './command';
-import { netgenRemoteMediaToolbarButton } from './button';
+import { pluginKey } from './constants';
 
-export const NetgenRemoteMedia = (editor) => {
-  console.log("Plugin");
+import NetgenRemoteMediaCommand from './command';
+import getNetgenRemoteMediaToolbarButton from './button';
 
-  editor.config.define('ngremotemedia', {});
+import setupDataCasting from './conversion';
 
-  editor.commands.add('ngremotemedia', new NetgenRemoteMediaCommand(editor));
+const NetgenRemoteMediaPlugin = (editor) => {
+  // editor.config.define(pluginKey, {});
 
-  editor.ui.componentFactory.add('ngremotemedia', () => netgenRemoteMediaToolbarButton(editor));
+  editor.commands.add(pluginKey, new NetgenRemoteMediaCommand(editor));
+  editor.ui.componentFactory.add(pluginKey, () => getNetgenRemoteMediaToolbarButton(editor));
+
+  editor.model.schema.register(pluginKey, {
+    inheritAllFrom: '$blockObject',
+    allowAttributes: ['value'],
+  });
+
+  setupDataCasting(editor);
 };
+
+export default NetgenRemoteMediaPlugin;
