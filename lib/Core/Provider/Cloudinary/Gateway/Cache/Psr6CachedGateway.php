@@ -40,7 +40,8 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         private GatewayInterface $gateway,
         private CacheItemPoolInterface $cache,
         private int $ttl = 7200
-    ) {}
+    ) {
+    }
 
     public function usage(): StatusData
     {

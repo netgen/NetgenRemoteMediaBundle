@@ -137,7 +137,7 @@ final class RefreshStoredResourcesCommand extends Command
      */
     private function getRemoteBatch(array $remoteIds): array
     {
-        $query = Query::fromRemoteIds($remoteIds,  $this->batchSize);
+        $query = Query::fromRemoteIds($remoteIds, $this->batchSize);
 
         $resources = [];
 
@@ -149,7 +149,7 @@ final class RefreshStoredResourcesCommand extends Command
             }
 
             $query->setNextCursor($searchResult->getNextCursor());
-        } while($searchResult->getNextCursor() !== null);
+        } while ($searchResult->getNextCursor() !== null);
 
         return $resources;
     }

@@ -11,7 +11,8 @@ final class AuthToken
 {
     public function __construct(
         private ?string $encryptionKey = null
-    ) {}
+    ) {
+    }
 
     public function resolve(AuthTokenEntity $token): array
     {

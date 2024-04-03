@@ -14,7 +14,8 @@ final class Folder
     public function __construct(
         private string $name,
         private ?self $parent = null
-    ) {}
+    ) {
+    }
 
     public function __toString(): string
     {

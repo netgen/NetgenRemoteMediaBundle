@@ -12,7 +12,8 @@ final class SearchResult implements SearchResultFactoryInterface
 {
     public function __construct(
         private RemoteResourceFactory $remoteResourceFactory,
-    ) {}
+    ) {
+    }
 
     public function create(mixed $data): Result
     {

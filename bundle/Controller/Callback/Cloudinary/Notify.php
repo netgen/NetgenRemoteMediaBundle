@@ -291,6 +291,7 @@ final class Notify extends AbstractController
             }
 
             $filenameFromUrl = basename($publicId);
+
             try {
                 $apiResource = Uploader::explicit(
                     CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getResourceId(),
@@ -309,14 +310,17 @@ final class Notify extends AbstractController
                 switch ($value['name']) {
                     case 'alt':
                         $resource->setAltText($value['value']);
+
                         break;
 
                     case 'caption':
                         $resource->setCaption($value['value']);
+
                         break;
 
                     case 'original_filename':
                         $resource->setOriginalFilename($value['value'] ?? $filenameFromUrl);
+
                         break;
 
                     default:
@@ -328,14 +332,17 @@ final class Notify extends AbstractController
                 switch ($value['name']) {
                     case 'alt':
                         $resource->setAltText(null);
+
                         break;
 
                     case 'caption':
                         $resource->setCaption(null);
+
                         break;
 
                     case 'original_filename':
                         $resource->setOriginalFilename($filenameFromUrl);
+
                         break;
 
                     default:
@@ -347,14 +354,17 @@ final class Notify extends AbstractController
                 switch ($value['name']) {
                     case 'alt':
                         $resource->setAltText($value['value']);
+
                         break;
 
                     case 'caption':
                         $resource->setCaption($value['value']);
+
                         break;
 
                     case 'original_filename':
                         $resource->setOriginalFilename($value['value'] ?? $filenameFromUrl);
+
                         break;
 
                     default:

@@ -13,7 +13,8 @@ final class AuthToken
         private ?DateTimeImmutable $startsAt = null,
         private ?DateTimeImmutable $expiresAt = null,
         private ?string $ipAddress = null
-    ) {}
+    ) {
+    }
 
     public static function fromDuration(int $duration): self
     {

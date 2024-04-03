@@ -12,8 +12,6 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as Resour
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
-use function array_key_exists;
-use function array_merge;
 use function basename;
 use function cloudinary_url_internal;
 use function in_array;
@@ -28,7 +26,8 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         private ResourceTypeConverter $resourceTypeConverter,
         private VisibilityTypeConverter $visibilityTypeConverter,
         private FileHashFactoryInterface $fileHashFactory
-    ) {}
+    ) {
+    }
 
     public function create($data): RemoteResourceValue
     {

@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use function basename;
 use function is_array;
 
 abstract class AbstractController

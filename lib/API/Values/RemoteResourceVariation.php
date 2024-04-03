@@ -10,7 +10,8 @@ final class RemoteResourceVariation
         private RemoteResource $resource,
         private string $url,
         private array $transformations = []
-    ) {}
+    ) {
+    }
 
     public static function fromResource(RemoteResource $resource): self
     {

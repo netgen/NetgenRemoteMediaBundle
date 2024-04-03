@@ -16,7 +16,8 @@ final class CloudinaryInstance
         private string $apiSecret,
         private string $uploadPrefix,
         private bool $useSubdomains = false
-    ) {}
+    ) {
+    }
 
     public function create(): Cloudinary
     {

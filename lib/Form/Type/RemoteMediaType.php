@@ -24,7 +24,8 @@ final class RemoteMediaType extends AbstractType
     public function __construct(
         private DataTransformerInterface $transformer,
         private ProviderInterface $provider,
-    ) {}
+    ) {
+    }
 
     public function configureOptions(OptionsResolver $resolver): void
     {

@@ -32,7 +32,8 @@ final class Query
         private int $limit = 25,
         private ?string $nextCursor = null,
         private array $sortBy = ['created_at' => 'desc']
-    ) {}
+    ) {
+    }
 
     public function __toString(): string
     {
