@@ -12,9 +12,37 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 #[CoversClass(FileStruct::class)]
 final class FileStructTest extends TestCase
 {
-    public function testFromUri(): void
+    public function testFromUrl(): void
     {
-        $fileStruct = FileStruct::fromUri('/var/www/project/media/images/sample_image.jpg');
+        $fileStruct = FileStruct::fromUrl('https://example.com/images/sample.jpg');
+
+        self::assertSame(
+            'https://example.com/images/sample.jpg',
+            $fileStruct->getUri(),
+        );
+
+        self::assertSame(
+            'sample.jpg',
+            $fileStruct->getOriginalFilename(),
+        );
+
+        self::assertSame(
+            'jpg',
+            $fileStruct->getOriginalExtension(),
+        );
+
+        self::assertSame(
+            FileStruct::TYPE_EXTERNAL,
+            $fileStruct->getType(),
+        );
+
+        self::assertFalse($fileStruct->isLocal());
+        self::assertTrue($fileStruct->isExternal());
+    }
+
+    public function testFromPath(): void
+    {
+        $fileStruct = FileStruct::fromPath('/var/www/project/media/images/sample_image.jpg');
 
         self::assertSame(
             '/var/www/project/media/images/sample_image.jpg',
@@ -30,6 +58,14 @@ final class FileStructTest extends TestCase
             'jpg',
             $fileStruct->getOriginalExtension(),
         );
+
+        self::assertSame(
+            FileStruct::TYPE_LOCAL,
+            $fileStruct->getType(),
+        );
+
+        self::assertTrue($fileStruct->isLocal());
+        self::assertFalse($fileStruct->isExternal());
     }
 
     public function testFromUploadedFile(): void
@@ -67,5 +103,13 @@ final class FileStructTest extends TestCase
             'jpg',
             $fileStruct->getOriginalExtension(),
         );
+
+        self::assertSame(
+            FileStruct::TYPE_LOCAL,
+            $fileStruct->getType(),
+        );
+
+        self::assertTrue($fileStruct->isLocal());
+        self::assertFalse($fileStruct->isExternal());
     }
 }

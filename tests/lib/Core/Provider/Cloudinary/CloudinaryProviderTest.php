@@ -722,7 +722,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
         ];
 
         $resourceStruct = new ResourceStruct(
-            FileStruct::fromUri('image.jpg'),
+            FileStruct::fromPath('image.jpg'),
             'image',
             $folder,
             'public',

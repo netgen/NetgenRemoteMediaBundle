@@ -54,7 +54,7 @@ final class UploadOptionsTest extends TestCase
         return [
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('test_image_.jpg'),
+                    FileStruct::fromPath('test_image_.jpg'),
                 ),
                 'image/jpg',
                 [
@@ -76,7 +76,7 @@ final class UploadOptionsTest extends TestCase
             ],
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('_test_!"#$%&()=?*image_.jpg'),
+                    FileStruct::fromPath('_test_!"#$%&()=?*image_.jpg'),
                 ),
                 'image/jpg',
                 [
@@ -98,7 +98,7 @@ final class UploadOptionsTest extends TestCase
             ],
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('/var/storage/backup.zip'),
+                    FileStruct::fromPath('/var/storage/backup.zip'),
                     'raw',
                     Folder::fromPath('files/backups'),
                     'protected',
@@ -137,7 +137,7 @@ final class UploadOptionsTest extends TestCase
             ],
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('/var/storage/backup.zip'),
+                    FileStruct::fromPath('/var/storage/backup.zip'),
                     'raw',
                     Folder::fromPath('files/backups'),
                     'protected',
@@ -169,7 +169,7 @@ final class UploadOptionsTest extends TestCase
             ],
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('/var/storage/backup.zip'),
+                    FileStruct::fromPath('/var/storage/backup.zip'),
                 ),
                 'raw',
                 [
@@ -190,7 +190,7 @@ final class UploadOptionsTest extends TestCase
             ],
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('/var/storage/media/example.mp4'),
+                    FileStruct::fromPath('/var/storage/media/example.mp4'),
                     'video',
                     Folder::fromPath('videos'),
                     'test',
@@ -220,7 +220,7 @@ final class UploadOptionsTest extends TestCase
             ],
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('/var/storage/media/example.mp4'),
+                    FileStruct::fromPath('/var/storage/media/example.mp4'),
                     'auto',
                     Folder::fromPath('videos'),
                     'protected',
@@ -248,7 +248,7 @@ final class UploadOptionsTest extends TestCase
             ],
             [
                 new ResourceStruct(
-                    FileStruct::fromUri('/var/storage/media/no_extension_example'),
+                    FileStruct::fromPath('/var/storage/media/no_extension_example'),
                     'auto',
                     Folder::fromPath('raw'),
                 ),

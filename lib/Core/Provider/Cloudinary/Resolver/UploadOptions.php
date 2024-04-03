@@ -8,11 +8,13 @@ use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
+use Netgen\RemoteMedia\Exception\MimeTypeNotFoundException;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Mime\MimeTypesInterface;
 
 use function count;
 use function explode;
+use function get_headers;
 use function in_array;
 use function is_string;
 use function md5_file;
@@ -73,7 +75,7 @@ final class UploadOptions
         }
 
         try {
-            $mimeCategory = $this->parseMimeCategory($fileStruct->getUri());
+            $mimeCategory = $this->resolveMimeCategory($fileStruct);
         } catch (MimeCategoryParseException $exception) {
             return $publicId;
         }
@@ -86,12 +88,28 @@ final class UploadOptions
         return $publicId;
     }
 
+    private function resolveMimeType(FileStruct $fileStruct): ?string
+    {
+        if ($fileStruct->isExternal()) {
+            $headers = get_headers($fileStruct->getUri(), true);
+
+            return $headers['content-type'] ?? $headers['Content-Type'] ?? null;
+        }
+
+        return $this->mimeTypes->guessMimeType($fileStruct->getUri());
+    }
+
     /**
      * @throws \Netgen\RemoteMedia\Exception\MimeCategoryParseException
      */
-    private function parseMimeCategory(string $path): string
+    private function resolveMimeCategory(FileStruct $fileStruct): string
     {
-        $mimeType = $this->mimeTypes->guessMimeType($path);
+        $mimeType = $this->resolveMimeType($fileStruct);
+
+        if ($mimeType === null) {
+            throw new MimeTypeNotFoundException($fileStruct->getUri(), $fileStruct->getType());
+        }
+
         $parsedMime = explode('/', $mimeType);
 
         if (count($parsedMime) !== 2) {

@@ -972,7 +972,7 @@ final class AbstractProviderTest extends AbstractTestCase
 
     public function testUpload(): void
     {
-        $struct = new ResourceStruct(FileStruct::fromUri('test_image.jpg'));
+        $struct = new ResourceStruct(FileStruct::fromPath('test_image.jpg'));
 
         $resource = new RemoteResource(
             remoteId: 'test_image.jpg',

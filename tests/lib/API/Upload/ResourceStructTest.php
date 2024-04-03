@@ -18,7 +18,7 @@ final class ResourceStructTest extends TestCase
 {
     public function testSimpleCreate(): void
     {
-        $fileStruct = FileStruct::fromUri('var/images/test.jpg');
+        $fileStruct = FileStruct::fromPath('var/images/test.jpg');
         $resourceStruct = new ResourceStruct($fileStruct);
 
         self::assertSame(
@@ -144,7 +144,7 @@ final class ResourceStructTest extends TestCase
     {
         return [
             [
-                FileStruct::fromUri('var/images/test.jpg'),
+                FileStruct::fromPath('var/images/test.jpg'),
                 'image',
                 Folder::fromPath('root/images'),
                 'my_new_image.jpg',
@@ -157,7 +157,7 @@ final class ResourceStructTest extends TestCase
                 [],
             ],
             [
-                FileStruct::fromUri('var/images/test2.jpg'),
+                FileStruct::fromPath('var/images/test2.jpg'),
                 'image',
                 Folder::fromPath('root'),
                 'private',
@@ -172,7 +172,7 @@ final class ResourceStructTest extends TestCase
                 ],
             ],
             [
-                FileStruct::fromUri('var/videos/example.mp4'),
+                FileStruct::fromPath('var/videos/example.mp4'),
                 'video',
                 null,
                 'protected',
