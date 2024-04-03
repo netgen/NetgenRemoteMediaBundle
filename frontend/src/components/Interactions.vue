@@ -95,7 +95,7 @@ export default {
     };
   },
   methods: {
-    dispatchVanillaChangeEvent() {
+    dispatchVanillaChangeEvent(changeReason = 'unknown') {
       this.$nextTick(function () {
         this.$el.dispatchEvent(
           new CustomEvent(
@@ -105,7 +105,9 @@ export default {
                 inputFields: this.config.inputFields,
                 selectedImage: this.selectedImage,
                 fieldId: this.fieldId,
-              }
+                changeReason,
+              },
+              bubbles: true,
             }
           )
         );
@@ -126,16 +128,16 @@ export default {
     handleMediaModalClose() {
       this.mediaModalOpen = false;
       this.resetDomAfterModal();
-      this.dispatchVanillaChangeEvent();
+      this.dispatchVanillaChangeEvent('modal');
     },
     handleCropModalClose() {
       this.cropModalOpen = false;
       this.resetDomAfterModal();
-      this.dispatchVanillaChangeEvent();
+      this.dispatchVanillaChangeEvent('modal');
     },
     handleUploadModalClose() {
       this.uploadModalOpen = false;
-      this.dispatchVanillaChangeEvent();
+      this.dispatchVanillaChangeEvent('modal');
     },
     handleMediaSelected(item) {
       this.selectedImage = {
@@ -157,7 +159,7 @@ export default {
       };
 
       this.mediaModalOpen = false;
-      this.dispatchVanillaChangeEvent();
+      this.dispatchVanillaChangeEvent('modal');
     },
     handleVariationCropChange(newValues) {
       this.selectedImage = {
@@ -168,7 +170,7 @@ export default {
         }
       };
 
-      this.dispatchVanillaChangeEvent();
+      this.dispatchVanillaChangeEvent('modal');
     },
     handleResourceUploaded(item) {
       this.selectedImage = {
@@ -190,7 +192,7 @@ export default {
       };
 
       this.uploadModalOpen = false;
-      this.dispatchVanillaChangeEvent();
+      this.dispatchVanillaChangeEvent('modal');
     },
     handleCropClicked() {
       this.cropModalOpen = true;
@@ -216,7 +218,7 @@ export default {
       };
       this.$refs.fileUploadInput.value = null;
 
-      this.dispatchVanillaChangeEvent();
+      this.dispatchVanillaChangeEvent('modal');
     },
     async fetchFacets() {
       const response = await fetch(this.config.paths.load_facets);

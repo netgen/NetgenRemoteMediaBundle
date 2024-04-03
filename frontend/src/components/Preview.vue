@@ -39,7 +39,7 @@
           <input type="text"
                :name="this.config.inputFields.altText"
                v-model="selectedImage.alternateText"
-               v-debounce:500ms="dispatchChangeEvent"
+               v-debounce:500ms="() => dispatchChangeEvent('altText')"
                class="media-alttext data"
           >
         </div>
@@ -53,7 +53,7 @@
           <input type="text"
                :name="this.config.inputFields.caption"
                v-model="selectedImage.caption"
-               v-debounce:500ms="dispatchChangeEvent"
+               v-debounce:500ms="() => dispatchChangeEvent('caption')"
                class="media-caption data"
           >
         </div>
@@ -78,7 +78,7 @@
           <input type="text"
                  :name="this.config.inputFields.watermarkText"
                  v-model="selectedImage.watermarkText"
-                 v-debounce:500ms="dispatchChangeEvent"
+                 v-debounce:500ms="() => dispatchChangeEvent('watermarkText')"
                  class="media-watermarktext data"
           >
         </div>
@@ -117,10 +117,10 @@ export default {
   methods: {
     handleTagsInput(value) {
       this.allTags = [...new Set([...this.allTags, ...value])];
-      this.dispatchChangeEvent();
+      this.dispatchChangeEvent('tags');
     },
-    dispatchChangeEvent() {
-      this.$emit('preview-change');
+    dispatchChangeEvent(changeReason) {
+      this.$emit('preview-change', changeReason);
     }
   },
   mounted() {
