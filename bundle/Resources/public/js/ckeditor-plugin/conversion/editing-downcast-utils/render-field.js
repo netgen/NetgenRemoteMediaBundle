@@ -1,45 +1,44 @@
 import { createElement } from '@ckeditor/ckeditor5-utils';
+import { attributes, defaultValue, pluginKey } from '../../constants';
 
-const renderField = (domElement) => {
-  // Remove all children;
+const renderField = ({ domElement, model, editor }) => {
   // eslint-disable-next-line no-param-reassign
   domElement.textContent = '';
 
-  console.log({ owner: domElement.ownerDocument, domElement });
-
-  domElement.append(
-    createElement(domElement.ownerDocument, 'input', {
-      type: 'hidden',
-      name: 'form[remoteMedia][locationId]',
-      value: '3446123',
-    }),
-  );
-  domElement.append(
-    createElement(domElement.ownerDocument, 'input', {
-      type: 'hidden',
-      name: 'form[remoteMedia][source]',
-      value: 'what even',
-    }),
-  );
+  const pluginConfig = editor.config.get(pluginKey);
+  const config = JSON.stringify(Object.assign({}, defaultValue.config, pluginConfig.config));
+  const fieldId = model.getAttribute(attributes.fieldId);
+  const focusedField = model.getAttribute(attributes.focusedField);
+  const selectedImage = JSON.stringify(model.getAttribute(attributes.value));
   domElement.append(
     createElement(
       domElement.ownerDocument,
       'div',
       {
         class: 'ngremotemedia-container',
-        'data-id': 'test',
-        'v-init:selected-image': '{test:123}',
-        'v-init:config': '{test:321}',
+        'data-id': fieldId,
+        'v-init:selected-image': selectedImage,
+        'v-init:config': config,
       },
       [
         createElement(domElement.ownerDocument, 'interactions', {
-          'field-id': 'test',
-          ':config': '{test:321}',
-          ':selected-image': '{test:123}',
+          'field-id': fieldId,
+          ':selected-image': selectedImage,
+          ':config': config,
         }),
       ],
     ),
   );
+
+  const observer = new MutationObserver((_, observer) => {
+    if (focusedField !== 'modal') {
+      domElement.querySelector(`input[name="${focusedField}"]`)?.focus();
+    }
+    domElement.scrollIntoView({ behavior: 'smooth' });
+
+    observer.disconnect();
+  });
+  observer.observe(domElement, { childList: true, subtree: true });
 };
 
 export default renderField;
