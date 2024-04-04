@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
-import { dataView, dataModel, attributes, datasetAttributes, defaultValue } from '../constants';
+import { dataView, dataModel, attributes, datasetAttributes, defaultValue, editingView } from '../constants';
 import { dataParamParse } from '../utils/data-param-conversion';
 
 /**
  * Defines the upcast conversion.
- * Upcasting converts the saved view element into the model when loading data into the editor.
+ * Upcasting converts the saved view element (data downcast) into the model when loading the editor.
+ * The model is then used in editing downcast to render the editor field.
  */
 const defineUpcast = (editor) => {
   editor.conversion.for('upcast').elementToElement({
