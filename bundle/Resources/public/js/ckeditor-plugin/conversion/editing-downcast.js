@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
-import { dataView, dataModel, attributes, pluginKey } from '../constants';
+import { dataModel, attributes, pluginKey, editingView } from '../constants';
 import { toWidget } from '@ckeditor/ckeditor5-widget';
 import renderField from './editing-downcast-utils/render-field';
+import handleAlignment from './editing-downcast-utils/operation-handlers/alignment';
 
 /**
  * Defines the editing downcast conversion.
@@ -9,25 +10,16 @@ import renderField from './editing-downcast-utils/render-field';
  */
 const defineEditingDowncast = (editor) => {
   editor.model.document.on('change:data', (event, action) => {
-    if (action.operations[0]?.key !== 'alignment') {
-      return;
-    }
-    
     const selectedElement = event.source.selection.getSelectedElement();
-    if (selectedElement.name !== pluginKey) {
+    if (selectedElement?.name !== pluginKey) {
       return;
     }
 
-    const fieldId = selectedElement.getAttribute(attributes.fieldId)
-    const ngremotemediaParent = editor.sourceElement.nextElementSibling.querySelector(`[${attributes.fieldId}=${fieldId}]`);
+    if (action.operations[0]?.key === 'alignment') {
+      handleAlignment({ selectedElement, editor, action });
 
-    const image = ngremotemediaParent.querySelector('img')?.parentElement;
-
-    if (image === null) {
       return;
     }
-
-    image.style.textAlign = action.operations[0]?.newValue ?? '';
   });
 
   editor.conversion.for('editingDowncast').elementToStructure({
@@ -75,9 +67,9 @@ const defineEditingDowncast = (editor) => {
       writer.setAttribute('data-cke-ignore-events', 'true', viewContentWrapper);
 
       const viewContainer = writer.createContainerElement(
-        dataView.name,
+        editingView.name,
         {
-          class: dataView.classes,
+          class: editingView.classes,
           'data-label': 'Remote media file',
           'field-id': modelElement.getAttribute(attributes.fieldId),
           dir: editor.locale.uiLanguageDirection,

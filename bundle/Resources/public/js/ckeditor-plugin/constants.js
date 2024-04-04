@@ -1,14 +1,5 @@
 export const pluginKey = 'ngremotemedia';
 
-export const dataView = {
-  name: 'div',
-  classes: 'ngremotemedia',
-};
-export const dataModel = {
-  name: 'ngremotemedia',
-  attributes: ['value'],
-};
-
 export const attributes = {
   fieldId: 'field-id',
   selectedImage: 'selected-image',
@@ -17,6 +8,19 @@ export const attributes = {
 export const datasetAttributes = {
   fieldId: 'fieldId',
   selectedImage: 'selectedImage',
+};
+
+export const editingView = {
+  name: 'div',
+  classes: 'ngremotemedia',
+};
+export const dataView = {
+  name: 'div',
+  classes: 'ngremotemedia',
+};
+export const dataModel = {
+  name: 'ngremotemedia',
+  attributes: Object.values(attributes),
 };
 
 export const defaultValue = {
