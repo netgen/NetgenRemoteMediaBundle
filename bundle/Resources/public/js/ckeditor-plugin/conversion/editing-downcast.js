@@ -40,6 +40,10 @@ const defineEditingDowncast = (editor) => {
               if (detail.selectedImage.id !== oldImage.id) {
                 renderField({ domElement, model: modelElement, editor });
               }
+              if (editor.config.get(pluginKey).insertMediaEndpoint) {
+                // TODO: update on backend
+                // writer.setAttribute(attributes.locationId, response.locationId, modelElement);
+              }
             });
           });
 

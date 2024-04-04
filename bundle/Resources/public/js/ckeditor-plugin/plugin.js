@@ -1,4 +1,4 @@
-import { attributes, dataModel, pluginKey } from './constants';
+import { dataModel, pluginKey } from './constants';
 
 import NetgenRemoteMediaCommand from './command';
 import getNetgenRemoteMediaToolbarButton from './button';
@@ -10,6 +10,8 @@ const NetgenRemoteMediaPlugin = (editor) => {
     variationGroup: null,
     fieldId: null,
     config: null,
+    insertMediaEndpoint: null,
+    removeMediaEndpoint: null,
   });
 
   editor.commands.add(pluginKey, new NetgenRemoteMediaCommand(editor));

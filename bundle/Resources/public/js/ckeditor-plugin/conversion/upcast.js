@@ -14,6 +14,7 @@ const defineUpcast = (editor) => {
       return writer.createElement(dataModel.name, {
         [attributes.selectedImage]: dataParamParse(viewElement.getAttribute(`data-${attributes.selectedImage}`)),
         [attributes.fieldId]: viewElement.getAttribute(`data-${attributes.fieldId}`),
+        [attributes.locationId]: viewElement.getAttribute(`data-${attributes.locationId}`),
       });
     },
   });

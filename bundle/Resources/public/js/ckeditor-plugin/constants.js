@@ -4,10 +4,12 @@ export const attributes = {
   fieldId: 'field-id',
   selectedImage: 'selected-image',
   alignment: 'alignment',
+  locationId: 'location-id',
 };
 export const datasetAttributes = {
   fieldId: 'fieldId',
   selectedImage: 'selectedImage',
+  locationId: 'locationId',
 };
 
 export const editingView = {
