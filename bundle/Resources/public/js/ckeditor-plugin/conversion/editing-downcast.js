@@ -2,7 +2,7 @@
 import { dataModel, attributes, pluginKey, editingView } from '../constants';
 import { toWidget } from '@ckeditor/ckeditor5-widget';
 import renderField from './editing-downcast-utils/render-field';
-import handleAlignment from './editing-downcast-utils/operation-handlers/alignment';
+import * as operationHandlers from './editing-downcast-utils/operation-handlers';
 
 /**
  * Defines the editing downcast conversion.
@@ -10,16 +10,13 @@ import handleAlignment from './editing-downcast-utils/operation-handlers/alignme
  */
 const defineEditingDowncast = (editor) => {
   editor.model.document.on('change:data', (event, action) => {
-    const selectedElement = event.source.selection.getSelectedElement();
-    if (selectedElement?.name !== pluginKey) {
-      return;
-    }
-
-    if (action.operations[0]?.key === 'alignment') {
-      handleAlignment({ selectedElement, editor, action });
-
-      return;
-    }
+    action.operations.forEach(operation => {
+      let key = operation.type;
+      if (key === 'changeAttribute') {
+        key = operation.key;
+      }
+      operationHandlers[key]?.({ event, editor, operation });
+    });
   });
 
   editor.conversion.for('editingDowncast').elementToStructure({

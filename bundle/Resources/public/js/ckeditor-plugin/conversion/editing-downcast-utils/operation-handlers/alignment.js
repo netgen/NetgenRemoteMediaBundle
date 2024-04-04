@@ -1,6 +1,11 @@
-import { attributes } from "../../../constants";
+import { attributes, pluginKey } from "../../../constants";
 
-const handleAlignment = ({ selectedElement, editor, action }) => {
+const handleAlignment = ({ event, editor, operation }) => {
+    const selectedElement = event.source.selection.getSelectedElement();
+    if (selectedElement?.name !== pluginKey) {
+        return;
+    }
+
     const fieldId = selectedElement.getAttribute(attributes.fieldId)
     const ngremotemediaParent = editor.sourceElement.nextElementSibling.querySelector(`[${attributes.fieldId}=${fieldId}]`);
 
@@ -10,7 +15,7 @@ const handleAlignment = ({ selectedElement, editor, action }) => {
       return;
     }
 
-    image.style.textAlign = action.operations[0]?.newValue ?? '';
+    image.style.textAlign = operation.newValue ?? '';
 };
 
 export default handleAlignment;
