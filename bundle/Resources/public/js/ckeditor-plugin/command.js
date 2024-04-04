@@ -31,18 +31,18 @@ class NetgenRemoteMediaCommand extends Command {
       });
 
       writer.setAttribute(
+        attributes.fieldId,
+        `${this.editor.config.get(pluginKey).fieldId}_${this.value}`,
+        element
+      );
+      writer.setAttribute(
         attributes.selectedImage,
         defaultValue.selectedImage,
         element
       );
       writer.setAttribute(
-        attributes.focusedField,
+        attributes.locationId,
         null,
-        element
-      );
-      writer.setAttribute(
-        attributes.fieldId,
-        `${this.editor.config.get(pluginKey).fieldId}_${this.value}`,
         element
       );
     });

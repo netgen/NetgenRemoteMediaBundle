@@ -1,5 +1,5 @@
 /* eslint-disable no-console, no-param-reassign */
-import { dataView, dataModel, attributes } from '../constants';
+import { dataView, dataModel, attributes, pluginKey } from '../constants';
 import { dataParamStringify } from '../utils/data-param-conversion';
 
 /**
@@ -18,6 +18,7 @@ const defineDataDowncast = (editor) => {
           class: dataView.classes,
           [`data-${attributes.selectedImage}`]: dataParamStringify(modelElement.getAttribute(attributes.selectedImage)),
           [`data-${attributes.fieldId}`]: modelElement.getAttribute(attributes.fieldId),
+          [`data-${attributes.locationId}`]: modelElement.getAttribute(attributes.locationId),
         },
         [
           writer.createEmptyElement(
