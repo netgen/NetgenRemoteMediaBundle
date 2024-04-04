@@ -216,7 +216,9 @@ export default {
         height: 0,
         width: 0
       };
-      this.$refs.fileUploadInput.value = null;
+      if (!this.config.disableUpload) {
+        this.$refs.fileUploadInput.value = null;
+      }
 
       this.dispatchVanillaChangeEvent('modal');
     },
