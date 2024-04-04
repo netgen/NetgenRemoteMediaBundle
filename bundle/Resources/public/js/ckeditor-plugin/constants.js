@@ -10,14 +10,13 @@ export const dataModel = {
 };
 
 export const attributes = {
-  value: 'value',
   fieldId: 'field-id',
-  focusedField: 'focused-field',
+  selectedImage: 'selected-image',
+  alignment: 'alignment',
 };
 export const datasetAttributes = {
-  value: 'value',
   fieldId: 'fieldId',
-  focusedField: 'focusedField',
+  selectedImage: 'selectedImage',
 };
 
 export const defaultValue = {

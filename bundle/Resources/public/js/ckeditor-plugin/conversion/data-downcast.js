@@ -12,8 +12,8 @@ const defineDataDowncast = (editor) => {
     model: dataModel.name,
     view: (modelElement, { writer }) =>
       writer.createRawElement(dataView.name, { class: dataView.classes }, (domElement) => {
-        domElement.innerHTML = ''; // TODO: render a div with the data params for Vue
-        domElement.dataset[datasetAttributes.value] = dataParamStringify(modelElement.getAttribute(attributes.value));
+        domElement.innerHTML = '';
+        domElement.dataset[datasetAttributes.selectedImage] = dataParamStringify(modelElement.getAttribute(attributes.selectedImage));
         domElement.dataset[datasetAttributes.fieldId] = modelElement.getAttribute(attributes.fieldId);
       }),
   });

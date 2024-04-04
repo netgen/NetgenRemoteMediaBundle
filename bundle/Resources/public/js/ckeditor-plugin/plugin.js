@@ -1,4 +1,4 @@
-import { pluginKey } from './constants';
+import { attributes, pluginKey } from './constants';
 
 import NetgenRemoteMediaCommand from './command';
 import getNetgenRemoteMediaToolbarButton from './button';
@@ -17,7 +17,7 @@ const NetgenRemoteMediaPlugin = (editor) => {
 
   editor.model.schema.register(pluginKey, {
     inheritAllFrom: '$blockObject',
-    allowAttributes: ['value'],
+    allowAttributes: Object.values(attributes),
   });
 
   setupDataCasting(editor);

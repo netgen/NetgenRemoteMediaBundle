@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { dataView, dataModel, attributes } from '../constants';
+import { dataView, dataModel, attributes, pluginKey } from '../constants';
 import { toWidget } from '@ckeditor/ckeditor5-widget';
 import renderField from './editing-downcast-utils/render-field';
 
@@ -8,6 +8,28 @@ import renderField from './editing-downcast-utils/render-field';
  * Editing downcasting converts the model element to the editable view element. Used when editing content.
  */
 const defineEditingDowncast = (editor) => {
+  editor.model.document.on('change:data', (event, action) => {
+    if (action.operations[0]?.key !== 'alignment') {
+      return;
+    }
+    
+    const selectedElement = event.source.selection.getSelectedElement();
+    if (selectedElement.name !== pluginKey) {
+      return;
+    }
+
+    const fieldId = selectedElement.getAttribute(attributes.fieldId)
+    const ngremotemediaParent = editor.sourceElement.nextElementSibling.querySelector(`[${attributes.fieldId}=${fieldId}]`);
+
+    const image = ngremotemediaParent.querySelector('img')?.parentElement;
+
+    if (image === null) {
+      return;
+    }
+
+    image.style.textAlign = action.operations[0]?.newValue ?? '';
+  });
+
   editor.conversion.for('editingDowncast').elementToStructure({
     model: dataModel,
     view(modelElement, { writer }) {
@@ -24,8 +46,11 @@ const defineEditingDowncast = (editor) => {
 
           domContentWrapper.addEventListener('ngrm-change', ({ detail }) => {
             editor.model.change((writer) => {
-              writer.setAttribute(attributes.value, detail.selectedImage, modelElement);
-              writer.setAttribute(attributes.focusedField, detail.changeReason, modelElement);
+              const oldImage = modelElement.getAttribute(attributes.selectedImage);
+              writer.setAttribute(attributes.selectedImage, detail.selectedImage, modelElement);
+              if (detail.selectedImage.id !== oldImage.id) {
+                renderField({ domElement, model: modelElement, editor });
+              }
             });
           });
 
@@ -54,15 +79,18 @@ const defineEditingDowncast = (editor) => {
         {
           class: dataView.classes,
           'data-label': 'Remote media file',
+          'field-id': modelElement.getAttribute(attributes.fieldId),
           dir: editor.locale.uiLanguageDirection,
         },
         viewContentWrapper,
       );
 
-      return toWidget(viewContainer, writer, {
+      const view = toWidget(viewContainer, writer, {
         label: 'Remote media file',
         hasSelectionHandle: true,
       });
+
+      return view;
     },
   });
 };
