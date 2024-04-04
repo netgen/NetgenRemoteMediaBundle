@@ -8,8 +8,7 @@ const renderField = ({ domElement, model, editor }) => {
   const pluginConfig = editor.config.get(pluginKey);
   const config = JSON.stringify(Object.assign({}, defaultValue.config, pluginConfig.config));
   const fieldId = model.getAttribute(attributes.fieldId);
-  const focusedField = model.getAttribute(attributes.focusedField);
-  const selectedImage = JSON.stringify(model.getAttribute(attributes.value));
+  const selectedImage = JSON.stringify(model.getAttribute(attributes.selectedImage));
   domElement.append(
     createElement(
       domElement.ownerDocument,
@@ -31,10 +30,10 @@ const renderField = ({ domElement, model, editor }) => {
   );
 
   const observer = new MutationObserver((_, observer) => {
-    if (focusedField !== 'modal') {
-      domElement.querySelector(`input[name="${focusedField}"]`)?.focus();
+    const image = domElement.querySelector('img');
+    if (image !== null) {
+      image.parentElement.style.textAlign = model.getAttribute('alignment') ?? '';
     }
-    domElement.scrollIntoView({ behavior: 'smooth' });
 
     observer.disconnect();
   });

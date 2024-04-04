@@ -31,7 +31,7 @@ class NetgenRemoteMediaCommand extends Command {
       });
 
       writer.setAttribute(
-        attributes.value,
+        attributes.selectedImage,
         defaultValue.selectedImage,
         element
       );

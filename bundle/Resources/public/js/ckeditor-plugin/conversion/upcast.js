@@ -11,9 +11,8 @@ const defineUpcast = (editor) => {
     view: dataView,
     model(viewElement, { writer }) {
       return writer.createElement(dataModel.name, {
-        [attributes.value]: dataParamParse(viewElement.getAttribute(`data-${datasetAttributes.value}`)),
-        [attributes.fieldId]: viewElement.getAttribute(`data-${datasetAttributes.fieldId}`),
-        [attributes.focusedField]: null,
+        [attributes.selectedImage]: dataParamParse(viewElement.getAttribute(`data-${attributes.selectedImage}`)),
+        [attributes.fieldId]: viewElement.getAttribute(`data-${attributes.fieldId}`),
       });
     },
   });
