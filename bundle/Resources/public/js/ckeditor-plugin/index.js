@@ -1,3 +1,4 @@
-import NetgenRemoteMediaPlugin from './plugin';
+import NetgenRemoteMediaPlugin from "./plugin";
+import { pluginKey } from "./constants";
 
-export default NetgenRemoteMediaPlugin;
+export { NetgenRemoteMediaPlugin, pluginKey as netgenremoteMediaPluginKey };

@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { dataView, dataModel, attributes, datasetAttributes, defaultValue, editingView } from '../constants';
+import { dataView, dataModel, attributes } from '../constants';
 import { dataParamParse } from '../utils/data-param-conversion';
 
 /**
@@ -11,11 +11,15 @@ const defineUpcast = (editor) => {
   editor.conversion.for('upcast').elementToElement({
     view: dataView,
     model(viewElement, { writer }) {
-      return writer.createElement(dataModel.name, {
+      const model = writer.createElement(dataModel.name, {
         [attributes.selectedImage]: dataParamParse(viewElement.getAttribute(`data-${attributes.selectedImage}`)),
         [attributes.fieldId]: viewElement.getAttribute(`data-${attributes.fieldId}`),
         [attributes.locationId]: viewElement.getAttribute(`data-${attributes.locationId}`),
       });
+
+      // get template asynchronously
+
+      return model;
     },
   });
 };

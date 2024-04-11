@@ -32,6 +32,24 @@ services:
             - '@netgen_remote_media.factory.md5_file_hash'
             - '@translator'
 
+    netgen_remote_media.controller.resource.view:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Resource\View
+        public: true
+        calls:
+            - [setContainer, ['@service_container']]
+
+    netgen_remote_media.controller.location.create:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Create
+        public: true
+
+    netgen_remote_media.controller.location.delete:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Delete
+        public: true
+
+    netgen_remote_media.controller.location.update:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Update
+        public: true
+
     netgen_remote_media.controller.callback.cloudinary.notify:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify
         public: true
@@ -41,5 +59,15 @@ services:
             - '@netgen_remote_media.provider.cloudinary.verifier.controller.signature'
             - '@doctrine.orm.entity_manager'
             - '@event_dispatcher'
+        calls:
+            - [setContainer, ['@service_container']]
+
+    netgen_remote_media.controller.configuration:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Configuration
+        public: true
+        arguments:
+            - '@router'
+            - '@translator'
+            - '@netgen_remote_media.resolver.variation'
         calls:
             - [setContainer, ['@service_container']]

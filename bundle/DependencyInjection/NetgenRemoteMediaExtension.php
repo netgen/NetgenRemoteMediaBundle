@@ -44,6 +44,8 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             throw new InvalidArgumentException('The "provider" option must be set');
         }
 
+        $loader->load('templates.yaml');
+
         $container->setParameter('netgen_remote_media.remove_unused_resources', $config['remove_unused']);
         $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.' . $config['provider']);
 
@@ -99,6 +101,16 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             : 'netgen_remote_media.provider.cloudinary.gateway.inner';
 
         $container->setAlias('netgen_remote_media.provider.cloudinary.gateway', $cloudinaryGatewayAlias);
+
+        if (isset($config['templates'])) {
+            if (isset($config['templates']['view_resource'])) {
+                $container->setParameter(
+                    'netgen_remote_media.templates.view_resource',
+                    $config['templates']['view_resource'],
+                );
+
+            }
+        }
 
         $loader->load('default_parameters.yaml');
         $loader->load('services/**/*.yaml', 'glob');
