@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { dataModel, attributes, pluginKey, editingView } from '../constants';
+import { dataModel, attributes, pluginKey, editingView, defaultValue } from '../constants';
 import { toWidget } from '@ckeditor/ckeditor5-widget';
 import renderField from './editing-downcast-utils/render-field';
 import * as operationHandlers from './editing-downcast-utils/operation-handlers';
@@ -34,16 +34,28 @@ const defineEditingDowncast = (editor) => {
           renderField({ domElement, model: modelElement, editor });
 
           domContentWrapper.addEventListener('ngrm-change', ({ detail }) => {
+            const oldImage = modelElement.getAttribute(attributes.selectedImage);
+            if (!oldImage.id) {
+              fetch(defaultValue.endpoints.createLocation, {
+                method: 'post',
+                body: JSON.stringify(detail.selectedImage),
+              }).then(r => r.json()).then(({ locationId }) => {
+                editor.model.change((writer) => {
+                  writer.setAttribute(attributes.locationId, locationId, modelElement);
+                });
+              });
+            } else if (!detail.selectedImage.id) {
+              fetch(defaultValue.endpoints.deleteLocation(modelElement.getAttribute(attributes.locationId)), { method: 'delete' });
+            } else {
+              fetch(defaultValue.endpoints.updateLocation(modelElement.getAttribute(attributes.locationId)), {
+                method: 'put',
+                body: JSON.stringify(detail.selectedImage),
+              });
+            }
+
             editor.model.change((writer) => {
-              const oldImage = modelElement.getAttribute(attributes.selectedImage);
               writer.setAttribute(attributes.selectedImage, detail.selectedImage, modelElement);
-              if (detail.selectedImage.id !== oldImage.id) {
-                renderField({ domElement, model: modelElement, editor });
-              }
-              if (editor.config.get(pluginKey).insertMediaEndpoint) {
-                // TODO: update on backend
-                // writer.setAttribute(attributes.locationId, response.locationId, modelElement);
-              }
+              writer.setAttribute(attributes.changedField, detail.changedField, modelElement);
             });
           });
 

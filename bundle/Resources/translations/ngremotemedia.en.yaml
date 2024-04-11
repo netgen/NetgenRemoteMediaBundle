@@ -39,6 +39,10 @@ ngrm:
                 tags_info: 'Tags are stored directly in Cloudinary on a resource so updating them here will also update them on all other locations which are using that same resource.'
                 watermark_text: 'Watermark text'
                 watermark_text_info: 'In order for the watermark to appear, you have to correctly configure a variation with watermark and use it on the frontend. This is only to provide content for the watermark.'
+                css_class: 'CSS class'
+                css_class_info: 'Custom CSS class for use in the rendered template, local to this field.'
+                selected_variation: 'Variation'
+                selected_variation_info: 'Variation to use for the image rendered in this field.'
                 size: 'Size'
             browse:
                 title: 'Select media'

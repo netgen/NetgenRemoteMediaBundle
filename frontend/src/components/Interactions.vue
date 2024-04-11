@@ -5,6 +5,7 @@
                 :config="config"
                 :field-id="fieldId"
                 :selected-image="selectedImage"
+                :is-croppable="isCroppable"
                 @preview-change="dispatchVanillaChangeEvent"
         ></preview>
 
@@ -95,7 +96,7 @@ export default {
     };
   },
   methods: {
-    dispatchVanillaChangeEvent(changeReason = 'unknown') {
+    dispatchVanillaChangeEvent(inputField = 'modal') {
       this.$nextTick(function () {
         this.$el.dispatchEvent(
           new CustomEvent(
@@ -105,7 +106,7 @@ export default {
                 inputFields: this.config.inputFields,
                 selectedImage: this.selectedImage,
                 fieldId: this.fieldId,
-                changeReason,
+                changedField: inputField
               },
               bubbles: true,
             }
@@ -128,16 +129,16 @@ export default {
     handleMediaModalClose() {
       this.mediaModalOpen = false;
       this.resetDomAfterModal();
-      this.dispatchVanillaChangeEvent('modal');
+      this.dispatchVanillaChangeEvent();
     },
     handleCropModalClose() {
       this.cropModalOpen = false;
       this.resetDomAfterModal();
-      this.dispatchVanillaChangeEvent('modal');
+      this.dispatchVanillaChangeEvent();
     },
     handleUploadModalClose() {
       this.uploadModalOpen = false;
-      this.dispatchVanillaChangeEvent('modal');
+      this.dispatchVanillaChangeEvent();
     },
     handleMediaSelected(item) {
       this.selectedImage = {
@@ -155,11 +156,13 @@ export default {
         size: item.size,
         variations: {},
         height: item.height,
-        width: item.width
+        width: item.width,
+        selectedVariation: null,
+        cssClass: '',
       };
 
       this.mediaModalOpen = false;
-      this.dispatchVanillaChangeEvent('modal');
+      this.dispatchVanillaChangeEvent();
     },
     handleVariationCropChange(newValues) {
       this.selectedImage = {
@@ -170,7 +173,7 @@ export default {
         }
       };
 
-      this.dispatchVanillaChangeEvent('modal');
+      this.dispatchVanillaChangeEvent();
     },
     handleResourceUploaded(item) {
       this.selectedImage = {
@@ -188,11 +191,13 @@ export default {
         size: item.size,
         variations: {},
         height: item.height,
-        width: item.width
+        width: item.width,
+        selectedVariation: null,
+        cssClass: '',
       };
 
       this.uploadModalOpen = false;
-      this.dispatchVanillaChangeEvent('modal');
+      this.dispatchVanillaChangeEvent();
     },
     handleCropClicked() {
       this.cropModalOpen = true;
@@ -214,13 +219,15 @@ export default {
         size: 0,
         variations: {},
         height: 0,
-        width: 0
+        width: 0,
+        selectedVariation: null,
+        cssClass: '',
       };
       if (!this.config.disableUpload) {
         this.$refs.fileUploadInput.value = null;
       }
 
-      this.dispatchVanillaChangeEvent('modal');
+      this.dispatchVanillaChangeEvent();
     },
     async fetchFacets() {
       const response = await fetch(this.config.paths.load_facets);

@@ -1,0 +1,2 @@
+parameters:
+    netgen_remote_media.templates.view_resource: '@@NetgenRemoteMedia/app/view_resource.html.twig'

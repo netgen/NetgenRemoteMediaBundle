@@ -1,4 +1,4 @@
-import { dataModel, pluginKey } from './constants';
+import { dataModel, defaultValue, pluginKey } from './constants';
 
 import NetgenRemoteMediaCommand from './command';
 import getNetgenRemoteMediaToolbarButton from './button';
@@ -7,11 +7,12 @@ import setupDataCasting from './conversion';
 
 const NetgenRemoteMediaPlugin = (editor) => {
   editor.config.define(pluginKey, {
-    variationGroup: null,
+    /** Editor field */
     fieldId: null,
+    /** Netgen Remote Media configuration */
     config: null,
-    insertMediaEndpoint: null,
-    removeMediaEndpoint: null,
+    /** Endpoints for handling resources */
+    endpoints: defaultValue.endpoints,
   });
 
   editor.commands.add(pluginKey, new NetgenRemoteMediaCommand(editor));

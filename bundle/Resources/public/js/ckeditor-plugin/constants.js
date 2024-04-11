@@ -5,6 +5,7 @@ export const attributes = {
   selectedImage: 'selected-image',
   alignment: 'alignment',
   locationId: 'location-id',
+  changedField: 'changed-field',
 };
 export const datasetAttributes = {
   fieldId: 'fieldId',
@@ -28,7 +29,13 @@ export const dataModel = {
 export const defaultValue = {
   locationId: null,
   source: '',
+  endpoints: {
+    createLocation: '/ngremotemedia/ajax/location/create',
+    updateLocation: locationId => `/ngremotemedia/ajax/location/update/${locationId}`,
+    deleteLocation: locationId => `/ngremotemedia/ajax/location/delete/${locationId}`,
+  },
   config: {
+    mode: 'embed',
     paths: {
       browse_resources: '/ngremotemedia/ajax/resource/browse',
       upload_resources: '/ngremotemedia/ajax/resource/upload',
@@ -160,5 +167,7 @@ export const defaultValue = {
     variations: {},
     height: 0,
     width: 0,
+    selectedVariation: null,
+    cssClass: '',
   },
 };
