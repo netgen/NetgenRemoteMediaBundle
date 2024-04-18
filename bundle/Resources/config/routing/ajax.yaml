@@ -46,6 +46,12 @@ netgen_remote_media_ajax_location_delete:
         _controller: netgen_remote_media.controller.location.delete
     methods: [DELETE]
 
+netgen_remote_media_ajax_location_selected_image:
+    path: /location/{locationId}/selected-image
+    defaults:
+        _controller: netgen_remote_media.controller.location.selected_image
+    methods: [GET]
+
 netgen_remote_media_ajax_resource_view:
     path: /resource/view/{locationId}
     defaults:

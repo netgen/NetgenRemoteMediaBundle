@@ -11,6 +11,8 @@ const NetgenRemoteMediaPlugin = (editor) => {
     fieldId: null,
     /** Netgen Remote Media configuration */
     config: null,
+    /** Variation group for view */
+    variationGroup: null,
     /** Endpoints for handling resources */
     endpoints: defaultValue.endpoints,
   });

@@ -1,7 +1,5 @@
 /* eslint-disable no-console, no-param-reassign */
-import { dataView, dataModel, attributes } from '../constants';
-import { dataParamStringify } from '../utils/data-param-conversion';
-import htmlToView from './data-downcast-utils/html-to-view';
+import { dataView, dataModel, attributes, viewAttributes, pluginKey } from '../constants';
 
 /**
  * Defines the data downcast conversion.
@@ -13,22 +11,21 @@ const defineDataDowncast = (editor) => {
     model: dataModel.name,
     view(modelElement, { writer }) {
       const selectedImage = modelElement.getAttribute(attributes.selectedImage);
+      const locationId = modelElement.getAttribute(attributes.locationId);
       const wrapper = writer.createContainerElement(
         dataView.name,
         {
           class: dataView.classes,
-          [`data-${attributes.selectedImage}`]: dataParamStringify(modelElement.getAttribute(attributes.selectedImage)),
-          [`data-${attributes.fieldId}`]: modelElement.getAttribute(attributes.fieldId),
-          [`data-${attributes.locationId}`]: modelElement.getAttribute(attributes.locationId),
+          style: `alignment=${modelElement.getAttribute(attributes.alignment)};`,
+          [viewAttributes.fieldId]: modelElement.getAttribute(attributes.fieldId),
+          [viewAttributes.locationId]: locationId,
+          [viewAttributes.cssClass]: selectedImage.cssClass,
+          [viewAttributes.variationName]: selectedImage.selectedVariation?.label ?? null,
+          [viewAttributes.variationGroup]: editor.config.get(pluginKey).variationGroup,
+          [viewAttributes.viewEndpoint]: editor.config.get(pluginKey).endpoints.viewResource(locationId),
+          [viewAttributes.alignment]: modelElement.getAttribute(attributes.alignment),
         },
       );
-
-      if (selectedImage.id) {
-        wrapper._appendChild(htmlToView(`
-        <div class="ngremotemedia-image">
-          <img src="${selectedImage.url}" width="${selectedImage.width}" height="${selectedImage.height}">
-        </div>`, writer));
-      }
 
       return wrapper;
     },
