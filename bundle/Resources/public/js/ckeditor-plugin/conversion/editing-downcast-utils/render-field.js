@@ -35,7 +35,7 @@ const renderField = ({ domElement, model, editor }) => {
       image.parentElement.style.textAlign = model.getAttribute('alignment') ?? '';
     }
 
-    const changedField = model.getAttribute(attributes.changedField)
+    const changedField = model.getAttribute(attributes.changedField);
     if (changedField && changedField !== 'modal') {
       const field = domElement.querySelector(`[name="${changedField}"]`);
       field?.scrollIntoViewIfNeeded({ behaviour: 'smooth' });

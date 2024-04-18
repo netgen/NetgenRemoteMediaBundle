@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\Location;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Netgen\RemoteMedia\API\ProviderInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
-final class Delete
+final class Delete extends AbstractController
 {
-    public function __invoke(Request $request): Response
-    {
-        dump($request);
+    public function __construct(
+        private ProviderInterface $provider,
+    ) {}
 
-        return new JsonResponse([ 'locationId' => 123 ]);
+    public function __invoke(int $locationId): Response
+    {
+        $this->provider->removeLocation($this->provider->loadLocation($locationId));
+
+        return new Response();
     }
 }

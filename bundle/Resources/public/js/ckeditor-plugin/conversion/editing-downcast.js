@@ -3,6 +3,8 @@ import { dataModel, attributes, pluginKey, editingView, defaultValue } from '../
 import { toWidget } from '@ckeditor/ckeditor5-widget';
 import renderField from './editing-downcast-utils/render-field';
 import * as operationHandlers from './editing-downcast-utils/operation-handlers';
+import createLocation from './editing-downcast-utils/remote-resource-location/create';
+import handleRemoteResourceLocation from './editing-downcast-utils/handle-remote-resource-location';
 
 /**
  * Defines the editing downcast conversion.
@@ -34,24 +36,7 @@ const defineEditingDowncast = (editor) => {
           renderField({ domElement, model: modelElement, editor });
 
           domContentWrapper.addEventListener('ngrm-change', ({ detail }) => {
-            const oldImage = modelElement.getAttribute(attributes.selectedImage);
-            if (!oldImage.id) {
-              fetch(defaultValue.endpoints.createLocation, {
-                method: 'post',
-                body: JSON.stringify(detail.selectedImage),
-              }).then(r => r.json()).then(({ locationId }) => {
-                editor.model.change((writer) => {
-                  writer.setAttribute(attributes.locationId, locationId, modelElement);
-                });
-              });
-            } else if (!detail.selectedImage.id) {
-              fetch(defaultValue.endpoints.deleteLocation(modelElement.getAttribute(attributes.locationId)), { method: 'delete' });
-            } else {
-              fetch(defaultValue.endpoints.updateLocation(modelElement.getAttribute(attributes.locationId)), {
-                method: 'put',
-                body: JSON.stringify(detail.selectedImage),
-              });
-            }
+            handleRemoteResourceLocation({ editor, model: modelElement, eventDetail: detail, domElement })
 
             editor.model.change((writer) => {
               writer.setAttribute(attributes.selectedImage, detail.selectedImage, modelElement);
@@ -59,9 +44,7 @@ const defineEditingDowncast = (editor) => {
             });
           });
 
-          // Since there is a `data-cke-ignore-events` attribute set on the wrapper element in the editable mode,
-          // the explicit `mousedown` handler on the `capture` phase is needed to move the selection onto the whole
-          // widget
+          // Enable selection of widget from inside, needed due to `data-cke-ignore-events` class on raw element
           domContentWrapper.addEventListener(
             'mousedown',
             () => {

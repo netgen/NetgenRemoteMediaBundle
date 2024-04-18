@@ -1,35 +1,11 @@
-{# {% set css_class = params.css_class|default(null) %}
-{% set resource_id = params.resource_id|default(null) %}
-{% set resource_type = params.resource_type|default(null) %}
-{% set coords = params.coords|default('[]') %}
-{% set variation = params.variation|default(null) %}
-{% set caption = params.caption|default(null) %} #}
-
-{# {{dump(params)}} #}
-
-{# 
-{% if resource_id and resource_type %}
-    {% set resource = netgen_remote_media_embed(resource_id, resource_type, coords) %}
-
-    <div class="ez-ngremotemedia remote-image-inline remote-{{ resource.mediaType }}{% if css_class %} {{ css_class }}{% endif %}">
-        {% if resource.mediaType == 'image' %}
-            {% set image_url = resource.secure_url %}
-            {% if variation %}
-                {% set variation = netgen_remote_variation_embed(resource, variation) %}
-                {% set image_url = variation.url %}
-            {% endif %}
-
-            <img src="{{ image_url }}" alt="{{ resource.metaData.alt_text }}">
-        {% elseif resource.mediaType == 'video' %}
-            {{ netgen_remote_video_embed(resource, variation)|raw }}
-        {% else %}
-            <a href="{{ netgen_remote_download(resource) }}">{{ resource.resourceId }}</a>
-        {% endif %}
-
-        {% if caption %}
-            <div class="img-caption">{{ caption }}</div>
-        {% endif %}
+{% if location and location.remoteResource %}
+    {% set classes = "ez-ngremotemedia remote-media-inline remote-{{ location.remoteResource.mediaType }}" %}
+    {% if css_class %}
+        {% set classes = classes ~ " {{ css_class }}" %}
+    {% endif %}
+    <div class="{{ classes }}">
+        {{ ngrm_remote_resource_variation_html_tag(location, variation_group, variation_name)|raw }}
     </div>
-{% else %} #}
-<div>Unset</div>
-{# {% endif %} #}
+{% else %}
+    <div>Unset</div>
+{% endif %}

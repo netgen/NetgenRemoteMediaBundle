@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
-import { dataView, dataModel, attributes } from '../constants';
-import { dataParamParse } from '../utils/data-param-conversion';
+import { dataView, dataModel, attributes, viewAttributes, pluginKey, defaultValue } from '../constants';
 
 /**
  * Defines the upcast conversion.
@@ -11,13 +10,31 @@ const defineUpcast = (editor) => {
   editor.conversion.for('upcast').elementToElement({
     view: dataView,
     model(viewElement, { writer }) {
+      const locationId = viewElement.getAttribute(viewAttributes.locationId);
       const model = writer.createElement(dataModel.name, {
-        [attributes.selectedImage]: dataParamParse(viewElement.getAttribute(`data-${attributes.selectedImage}`)),
-        [attributes.fieldId]: viewElement.getAttribute(`data-${attributes.fieldId}`),
-        [attributes.locationId]: viewElement.getAttribute(`data-${attributes.locationId}`),
+        [attributes.fieldId]: viewElement.getAttribute(viewAttributes.fieldId),
+        [attributes.locationId]: locationId,
+        [attributes.selectedImage]: defaultValue.selectedImage,
       });
 
-      // get template asynchronously
+      fetch(editor.config.get(pluginKey).endpoints.getSelectedImage(locationId))
+        .then(response => response.json())
+        .then((selectedImage) => {
+          editor.model.change((writer) => {
+            const selectedVariationName = viewElement.getAttribute(viewAttributes.variationName);
+            writer.setAttribute(
+              attributes.selectedImage,
+              {
+                ...selectedImage,
+                cssClass: viewElement.getAttribute(viewAttributes.cssClass),
+                selectedVariation: {
+                  label: selectedVariationName,
+                  value: selectedImage.variations[selectedVariationName]},
+              },
+              model,
+            );
+          })
+        });
 
       return model;
     },

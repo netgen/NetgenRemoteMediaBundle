@@ -7,6 +7,16 @@ export const attributes = {
   locationId: 'location-id',
   changedField: 'changed-field',
 };
+export const dataPrefix = 'data-ngrmcke5';
+export const viewAttributes = {
+  alignment: `${dataPrefix}-${attributes.alignment}`,
+  fieldId: `${dataPrefix}-${attributes.fieldId}`,
+  locationId: `${dataPrefix}-${attributes.locationId}`,
+  cssClass: `${dataPrefix}-css-class`,
+  variationName: `${dataPrefix}-variation-name`,
+  variationGroup: `${dataPrefix}-variation-group`,
+  viewEndpoint: `${dataPrefix}-view-endpoint`,
+};
 export const datasetAttributes = {
   fieldId: 'fieldId',
   selectedImage: 'selectedImage',
@@ -19,7 +29,7 @@ export const editingView = {
 };
 export const dataView = {
   name: 'div',
-  classes: 'ngremotemedia',
+  classes: 'ngremotemedia-cke5',
 };
 export const dataModel = {
   name: 'ngremotemedia',
@@ -33,6 +43,8 @@ export const defaultValue = {
     createLocation: '/ngremotemedia/ajax/location/create',
     updateLocation: locationId => `/ngremotemedia/ajax/location/update/${locationId}`,
     deleteLocation: locationId => `/ngremotemedia/ajax/location/delete/${locationId}`,
+    getSelectedImage: locationId => `/ngremotemedia/ajax/location/${locationId}/selected-image`,
+    viewResource: locationId => `/ngremotemedia/ajax/resource/view/${locationId}`,
   },
   config: {
     mode: 'embed',
@@ -140,6 +152,8 @@ export const defaultValue = {
       cropSettings: 'cropSettings',
       source: 'source',
       watermarkText: 'watermarkText',
+      cssClass: 'cssClass',
+      selectedVariation: 'selectedVariation',
     },
     availableVariations: [],
     allowedVisibilities: [],

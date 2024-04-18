@@ -5,20 +5,17 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Form\DataTransformer;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
-use Netgen\RemoteMedia\API\Values\CropSettings;
-use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Utils\RemoteResourceService;
 use Symfony\Component\Form\DataTransformerInterface;
-
-use function json_decode;
-use function json_encode;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
 {
     public function __construct(
-        private ProviderInterface $provider
+        private ProviderInterface $provider,
+        private RemoteResourceService $service,
     ) {}
 
     public function transform($value)
@@ -34,7 +31,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             'altText' => $value->getRemoteResource()->getAltText(),
             'caption' => $value->getRemoteResource()->getCaption(),
             'tags' => $value->getRemoteResource()->getTags(),
-            'cropSettings' => $this->resolveCropSettingsString($value),
+            'cropSettings' => $this->service->resolveCropSettingsString($value),
             'source' => $value->getSource(),
             'watermarkText' => $value->getWatermarkText(),
         ];
@@ -68,7 +65,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
         }
 
-        $needsUpdateOnRemote = $this->needsUpdateOnRemote($remoteResource, $value);
+        $needsUpdateOnRemote = $this->service->needsUpdateOnRemote($remoteResource, $value);
 
         $remoteResource->setAltText($value['altText'] ?? null);
         $remoteResource->setCaption($value['caption'] ?? null);
@@ -88,62 +85,9 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         $remoteResourceLocation->setWatermarkText($value['watermarkText'] ?? null);
 
         $remoteResourceLocation->setCropSettings(
-            $this->resolveCropSettings($value),
+            $this->service->resolveCropSettings($value),
         );
 
         return $remoteResourceLocation;
-    }
-
-    private function resolveCropSettingsString(RemoteResourceLocation $location): string
-    {
-        $cropSettings = [];
-        foreach ($location->getCropSettings() as $cropSetting) {
-            $cropSettings[$cropSetting->getVariationName()] = [
-                'x' => $cropSetting->getX(),
-                'y' => $cropSetting->getY(),
-                'w' => $cropSetting->getWidth(),
-                'h' => $cropSetting->getHeight(),
-            ];
-        }
-
-        return json_encode($cropSettings);
-    }
-
-    /**
-     * @return \Netgen\RemoteMedia\API\Values\CropSettings[]
-     */
-    private function resolveCropSettings(array $data): array
-    {
-        $cropSettingsString = $data['cropSettings'] ?? null;
-
-        if (!$cropSettingsString) {
-            return [];
-        }
-
-        $cropSettingsArray = json_decode($cropSettingsString, true);
-
-        $cropSettings = [];
-        foreach ($cropSettingsArray as $variationName => $variationCropSettings) {
-            $cropSettings[] = CropSettings::fromArray($variationName, $variationCropSettings);
-        }
-
-        return $cropSettings;
-    }
-
-    private function needsUpdateOnRemote(RemoteResource $remoteResource, array $data): bool
-    {
-        if ($remoteResource->getAltText() !== ($data['altText'] ?? null)) {
-            return true;
-        }
-
-        if ($remoteResource->getCaption() !== ($data['caption'] ?? null)) {
-            return true;
-        }
-
-        if ($remoteResource->getTags() !== ($data['tags'] ?? [])) {
-            return true;
-        }
-
-        return false;
     }
 }

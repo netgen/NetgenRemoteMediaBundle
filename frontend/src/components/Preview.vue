@@ -97,7 +97,7 @@
         </div>
 
         <div v-if="this.isEmbed && this.hasVariations" class="ngremotemedia-selected-variation">
-          <input type="hidden" :name="this.config.inputFields.selectedVariation" value="{{selectedImage.selectedVariation}}">
+          <input type="hidden" :name="this.config.inputFields.selectedVariation" :value="selectedImage.selectedVariation">
           <span class="help-block description">
               {{this.config.translations.preview_selected_variation}}
               <i v-if="this.config.translations.preview_selected_variation_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_selected_variation_info"></i>
