@@ -1,5 +1,5 @@
 /* eslint-disable no-console, no-param-reassign */
-import { dataView, dataModel, attributes, viewAttributes, pluginKey } from '../constants';
+import { dataView, dataModel, attributes, viewAttributes, pluginKey, defaultValue } from '../constants';
 
 /**
  * Defines the data downcast conversion.
@@ -12,6 +12,8 @@ const defineDataDowncast = (editor) => {
     view(modelElement, { writer }) {
       const selectedImage = modelElement.getAttribute(attributes.selectedImage);
       const locationId = modelElement.getAttribute(attributes.locationId);
+      const viewResourceEndpoint = editor.config.get(pluginKey).endpoints.viewResource ?? defaultValue.endpoints.viewResource;
+
       const wrapper = writer.createContainerElement(
         dataView.name,
         {
@@ -22,7 +24,7 @@ const defineDataDowncast = (editor) => {
           [viewAttributes.cssClass]: selectedImage.cssClass,
           [viewAttributes.variationName]: selectedImage.selectedVariation?.label ?? null,
           [viewAttributes.variationGroup]: editor.config.get(pluginKey).variationGroup,
-          [viewAttributes.viewEndpoint]: editor.config.get(pluginKey).endpoints.viewResource(locationId),
+          [viewAttributes.viewEndpoint]: viewResourceEndpoint(locationId),
           [viewAttributes.alignment]: modelElement.getAttribute(attributes.alignment),
         },
       );

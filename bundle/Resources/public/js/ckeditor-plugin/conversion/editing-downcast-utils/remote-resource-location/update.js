@@ -1,7 +1,9 @@
-import { attributes, pluginKey } from '../../../constants';
+import { attributes, defaultValue, pluginKey } from '../../../constants';
 
 const updateLocation = ({ editor, model, selectedImage }) => {
-  fetch(editor.config.get(pluginKey).endpoints.updateLocation(model.getAttribute(attributes.locationId)), {
+  const updateLocationEndpoint = editor.config.get(pluginKey).endpoints.updateLocation ?? defaultValue.endpoints.updateLocation;
+
+  fetch(updateLocationEndpoint(model.getAttribute(attributes.locationId)), {
     method: 'PUT',
     body: JSON.stringify(selectedImage),
   });

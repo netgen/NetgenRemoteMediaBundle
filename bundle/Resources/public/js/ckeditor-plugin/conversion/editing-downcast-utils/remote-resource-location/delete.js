@@ -1,7 +1,9 @@
-import { attributes, pluginKey } from '../../../constants';
+import { attributes, defaultValue, pluginKey } from '../../../constants';
 
 const deleteLocation = ({ editor, model }) => {
-  fetch(editor.config.get(pluginKey).endpoints.deleteLocation(model.getAttribute(attributes.locationId)), {
+  const deleteLocationEndpoint = editor.config.get(pluginKey).endpoints.deleteLocation ?? defaultValue.endpoints.deleteLocation;
+
+  fetch(deleteLocationEndpoint(model.getAttribute(attributes.locationId)), {
     method: 'DELETE',
   });
 };
