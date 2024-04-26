@@ -1,4 +1,4 @@
-import { viewAttributes, dataView } from "./constants";
+import { viewAttributes, dataView } from './constants';
 
 const renderViews = () => {
   document.querySelectorAll(`.${dataView.classes}`).forEach(async (ngrmElement) => {
@@ -34,8 +34,8 @@ const renderViews = () => {
 };
 
 const render = () => {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", renderViews);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderViews);
   } else {
     renderViews();
   }

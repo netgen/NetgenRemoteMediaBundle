@@ -1,4 +1,4 @@
-import { attributes, pluginKey } from "../../../constants";
+import { attributes, pluginKey } from '../../../constants';
 
 const handleAlignment = ({ event, editor, operation }) => {
     const selectedElement = event.source.selection.getSelectedElement();
