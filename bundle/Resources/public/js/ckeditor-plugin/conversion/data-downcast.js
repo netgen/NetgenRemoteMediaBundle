@@ -16,7 +16,7 @@ const defineDataDowncast = (editor) => {
         dataView.name,
         {
           class: dataView.classes,
-          style: `alignment=${modelElement.getAttribute(attributes.alignment)};`,
+          style: `text-align=${modelElement.getAttribute(attributes.alignment)};`,
           [viewAttributes.fieldId]: modelElement.getAttribute(attributes.fieldId),
           [viewAttributes.locationId]: locationId,
           [viewAttributes.cssClass]: selectedImage.cssClass,
