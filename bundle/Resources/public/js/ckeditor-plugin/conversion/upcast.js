@@ -16,8 +16,9 @@ const defineUpcast = (editor) => {
         [attributes.locationId]: locationId,
         [attributes.selectedImage]: defaultValue.selectedImage,
       });
+      const getSelectedImageEndpoint = editor.config.get(pluginKey).endpoints.getSelectedImage ?? defaultValue.endpoints.getSelectedImage;
 
-      fetch(editor.config.get(pluginKey).endpoints.getSelectedImage(locationId))
+      fetch(getSelectedImageEndpoint(locationId))
         .then(response => response.json())
         .then((selectedImage) => {
           editor.model.change((writer) => {

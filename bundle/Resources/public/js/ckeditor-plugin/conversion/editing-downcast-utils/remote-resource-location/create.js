@@ -1,7 +1,9 @@
-import { attributes, pluginKey } from '../../../constants';
+import { attributes, defaultValue, pluginKey } from '../../../constants';
 
 const createLocation = ({ editor, model, selectedImage }) => {
-  fetch(editor.config.get(pluginKey).endpoints.createLocation, {
+  const createLocationEndpoint = editor.config.get(pluginKey).endpoints.createLocation ?? defaultValue.endpoints.createLocation;
+
+  fetch(createLocationEndpoint, {
     method: 'POST',
     body: JSON.stringify(selectedImage),
   })
