@@ -1,15 +1,14 @@
-import { defaultValue, pluginKey } from "../../../constants";
+import { attributes, pluginKey } from '../../../constants';
+import deleteLocation from '../remote-resource-location/delete';
 
 const handleRemove = ({ editor, operation }) => {
   if (operation.targetPosition.nodeAfter.name !== pluginKey) {
     return;
   }
-  // if element has location id attribute set
 
-  // TODO: delete from backend
-  console.group("Deleted ngremotemedia element");
-  console.log(operation.targetPosition.nodeAfter);
-  console.groupEnd();
+  if (operation.targetPosition.nodeAfter.getAttribute(attributes.locationId)) {
+    deleteLocation({ editor, model: operation.targetPosition.nodeAfter });
+  }
 };
 
 export default handleRemove;
