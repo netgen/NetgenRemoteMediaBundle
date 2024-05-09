@@ -124,7 +124,7 @@ final class Notify extends AbstractController
         $cloudinaryRemoteId = new CloudinaryRemoteId(
             $requestContent['type'],
             $requestContent['resource_type'],
-            $requestContent['public_id'],
+            (string) $requestContent['public_id'],
         );
 
         if ($this->gateway instanceof CacheableGatewayInterface) {
@@ -162,7 +162,7 @@ final class Notify extends AbstractController
             $cloudinaryRemoteId = new CloudinaryRemoteId(
                 $resourceData['type'],
                 $resourceData['resource_type'],
-                $resourceData['public_id'],
+                (string) $resourceData['public_id'],
             );
 
             $this->gateway->invalidateResourceCache($cloudinaryRemoteId);
@@ -211,7 +211,7 @@ final class Notify extends AbstractController
             $cloudinaryRemoteId = new CloudinaryRemoteId(
                 $apiResource['type'],
                 $apiResource['resource_type'],
-                $apiResource['public_id'],
+                (string) $apiResource['public_id'],
             );
 
             $resource
@@ -227,7 +227,7 @@ final class Notify extends AbstractController
                     new CloudinaryRemoteId(
                         $apiResource['type'],
                         $apiResource['resource_type'],
-                        $requestContent['from_public_id'],
+                        (string) $requestContent['from_public_id'],
                     ),
                 );
             }
@@ -244,7 +244,7 @@ final class Notify extends AbstractController
             $cloudinaryRemoteId = new CloudinaryRemoteId(
                 $resourceData['type'],
                 $resourceData['resource_type'],
-                $resourceData['public_id'],
+                (string) $resourceData['public_id'],
             );
 
             $this->gateway->invalidateResourceCache($cloudinaryRemoteId);
@@ -279,7 +279,7 @@ final class Notify extends AbstractController
             $cloudinaryRemoteId = new CloudinaryRemoteId(
                 $resourceData['type'],
                 $resourceData['resource_type'],
-                $publicId,
+                (string) $publicId,
             );
 
             $this->gateway->invalidateResourceCache($cloudinaryRemoteId);
