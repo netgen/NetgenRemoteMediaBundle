@@ -41,4 +41,6 @@ const render = () => {
   }
 };
 
+render();
+
 export default render;
