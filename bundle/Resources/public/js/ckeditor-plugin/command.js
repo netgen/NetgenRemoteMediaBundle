@@ -1,5 +1,6 @@
 import { Command } from '@ckeditor/ckeditor5-core';
 import { pluginKey, defaultValue, attributes } from './constants';
+import { findElementsInModel } from './utils/find-elements-in-model';
 
 class NetgenRemoteMediaCommand extends Command {
   constructor(editor) {
@@ -14,6 +15,10 @@ class NetgenRemoteMediaCommand extends Command {
     const isRemoteMedia = selectedElement?.name === pluginKey;
 
     this.isEnabled = !this.editor.isReadOnly && !isRemoteMedia;
+
+    if (!this.value) {
+      this.value = findElementsInModel(this.editor.model.document.getRoot(), pluginKey).length;
+    }
   }
 
   execute() {
