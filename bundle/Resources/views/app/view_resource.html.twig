@@ -1,11 +1,15 @@
 {% if location and location.remoteResource %}
-    {% set classes = "ez-ngremotemedia remote-media-inline remote-{{ location.remoteResource.mediaType }}" %}
+    {% set classes = "ngremotemedia remote-media-inline remote-" ~ location.remoteResource.type %}
     {% if css_class %}
-        {% set classes = classes ~ " {{ css_class }}" %}
+        {% set classes = classes ~ " " ~ css_class %}
     {% endif %}
     <div class="{{ classes }}">
+    {% if variation_name %}
         {{ ngrm_remote_resource_variation_html_tag(location, variation_group, variation_name)|raw }}
+    {% else %}
+        {{ ngrm_remote_resource_html_tag(location.remoteResource)|raw }}
+    {% endif %}
     </div>
 {% else %}
-    <div>Unset</div>
+    <div class="ngremotemedia-error">Invalid image data</div>
 {% endif %}
