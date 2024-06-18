@@ -1,4 +1,4 @@
-const findElementsInModel = function (root, type) {
+export const findElementsInModel = function (root, type) {
   const search = [...root.getChildren()];
   const nodes = [];
 
