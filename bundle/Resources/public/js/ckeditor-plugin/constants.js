@@ -162,7 +162,7 @@ export const defaultValue = {
     parentFolder: null,
     folder: null,
     uploadContext: {},
-    disableUpload: true,
+    disableUpload: false,
     hideFilename: false,
   },
   selectedImage: {

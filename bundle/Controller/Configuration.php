@@ -26,7 +26,6 @@ final class Configuration extends AbstractController
             'paths' => $this->resolvePaths(),
             'translations' => $this->resolveTranslations(),
             'availableVariations' => $this->resolveAvailableVariations($request),
-            'baseLocationSource' => $this->resolveBaseLocationSource($request),
             'uploadContext' => $this->resolveUploadContext($request),
         ]);
     }
@@ -157,27 +156,11 @@ final class Configuration extends AbstractController
         return $availableVariations;
     }
 
-    private function resolveBaseLocationSource(Request $request): string
-    {
-        $attributeCode = $request->query->get('attributeCode');
-        $modelType = $request->query->get('modelType');
-
-        return "location_source";
-    }
-
     /**
      * @return array<string, string>
      */
     private function resolveUploadContext(Request $request): array
     {
-        $identifier = $request->query->get('identifier');
-        $attributeCode = $request->query->get('attributeCode');
-        $modelType = $request->query->get('modelType');
-        $scope = $request->query->get('scope');
-        $locale = $request->query->get('locale');
-
-        return [
-            'identifier' => $identifier,
-        ];
+        return $request->query->all();
     }
 }
