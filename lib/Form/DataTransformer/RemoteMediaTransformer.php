@@ -85,7 +85,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         $remoteResourceLocation->setWatermarkText($value['watermarkText'] ?? null);
 
         $remoteResourceLocation->setCropSettings(
-            $this->service->resolveCropSettings($value),
+            $this->service->resolveCropSettings($value['cropSettings']),
         );
 
         return $remoteResourceLocation;
