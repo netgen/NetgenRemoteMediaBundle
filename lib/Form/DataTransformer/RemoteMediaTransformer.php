@@ -8,7 +8,7 @@ use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
-use Netgen\RemoteMedia\Utils\RemoteResourceService;
+use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Symfony\Component\Form\DataTransformerInterface;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
