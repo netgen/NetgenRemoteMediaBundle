@@ -26,6 +26,7 @@ final class Configuration extends AbstractController
             'paths' => $this->resolvePaths(),
             'translations' => $this->resolveTranslations(),
             'availableVariations' => $this->resolveAvailableVariations($request),
+            'allVariations' => $this->resolveAllVariations($request),
             'uploadContext' => $this->resolveUploadContext($request),
         ]);
     }
@@ -154,6 +155,15 @@ final class Configuration extends AbstractController
         }
 
         return $availableVariations;
+    }
+
+    private function resolveAllVariations(Request $request): array
+    {
+        $variationGroup = $request->query->get('variationGroup');
+
+        $variations = $this->variationResolver->getAvailableVariations($variationGroup);
+
+        return array_keys($variations);;
     }
 
     /**
