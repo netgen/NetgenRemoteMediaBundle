@@ -144,10 +144,10 @@ export default {
       return this.config.mode === 'embed';
     },
     hasVariations() {
-      return Object.keys(this.selectedImage.variations).length > 0;
+      return this.config.allVariations.length > 0;
     },
     variationOptions() {
-      return Object.entries(this.selectedImage.variations).map(([label, value]) => ({ label, value }));
+      return this.config.allVariations.map((variationKey) => ({ label: variationKey, value: variationKey }));
     },
   },
   methods: {
