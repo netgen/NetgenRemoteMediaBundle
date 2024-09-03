@@ -35,6 +35,10 @@ use function str_replace;
 
 final class CloudinaryProvider extends AbstractProvider
 {
+    public const FOLDER_MODE_FIXED = 'fixed';
+
+    public const FOLDER_MODE_DYNAMIC = 'dynamic';
+
     private const IDENTIFIER = 'cloudinary';
 
     public function __construct(
