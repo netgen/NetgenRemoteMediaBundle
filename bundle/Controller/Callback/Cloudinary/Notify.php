@@ -290,7 +290,7 @@ final class Notify extends AbstractController
                 continue;
             }
 
-            $filenameFromUrl = basename($publicId);
+            $filenameFromUrl = basename((string) $publicId);
 
             try {
                 $apiResource = Uploader::explicit(

@@ -106,24 +106,24 @@ class RemoteResource
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getOriginalFilename(): string
+    public function getOriginalFilename(): ?string
     {
         return $this->originalFilename;
     }
 
-    public function setOriginalFilename(string $originalFilename): self
+    public function setOriginalFilename(?string $originalFilename): self
     {
         $this->originalFilename = $originalFilename;
 

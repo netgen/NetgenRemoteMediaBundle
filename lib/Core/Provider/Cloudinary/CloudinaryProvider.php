@@ -151,7 +151,7 @@ final class CloudinaryProvider extends AbstractProvider
                 [
                     'alt' => $resource->getAltText(),
                     'caption' => $resource->getCaption(),
-                    'original_filename' => $resource->getOriginalFilename(),
+                    'original_filename' => (string) $resource->getOriginalFilename(),
                 ],
             ),
             'tags' => $resource->getTags(),
