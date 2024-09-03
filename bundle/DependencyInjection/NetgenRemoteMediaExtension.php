@@ -100,6 +100,11 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
 
         $container->setAlias('netgen_remote_media.provider.cloudinary.gateway', $cloudinaryGatewayAlias);
 
+        $container->setParameter(
+            'netgen_remote_media.cloudinary.folder_mode',
+            $config['cloudinary']['folder_mode'],
+        );
+
         $loader->load('default_parameters.yaml');
         $loader->load('services/**/*.yaml', 'glob');
     }
