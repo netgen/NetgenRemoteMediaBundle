@@ -32,7 +32,8 @@ final class Configuration implements ConfigurationInterface
     {
         $rootNode
             ->children()
-                ->scalarNode('provider')
+                ->enumNode('provider')
+                    ->values(['cloudinary'])
                     ->defaultValue('cloudinary')
                 ->end()
                 ->scalarNode('account_name')
