@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver;
 
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Exception\MimeCategoryParseException;
 use Netgen\RemoteMedia\Exception\MimeTypeNotFoundException;
@@ -25,6 +26,7 @@ final class UploadOptions
 {
     public function __construct(
         private VisibilityTypeConverter $visibilityTypeConverter,
+        private string $folderMode,
         private array $noExtensionMimeTypes = ['image', 'video'],
         private ?MimeTypesInterface $mimeTypes = null
     ) {
@@ -48,11 +50,11 @@ final class UploadOptions
             $publicId = md5_file($resourceStruct->getFileStruct()->getUri());
         }
 
-        if ($resourceStruct->getFolder()) {
+        if ($resourceStruct->getFolder() && $this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED) {
             $publicId = $resourceStruct->getFolder()->getPath() . '/' . $publicId;
         }
 
-        return [
+        $options = [
             'public_id' => $publicId,
             'overwrite' => $resourceStruct->doOverwrite(),
             'invalidate' => $resourceStruct->doInvalidate() || $resourceStruct->doOverwrite(),
@@ -64,6 +66,12 @@ final class UploadOptions
             'access_control' => $this->visibilityTypeConverter->toCloudinaryAccessControl($resourceStruct->getVisibility()),
             'tags' => $resourceStruct->getTags(),
         ];
+
+        if ($resourceStruct->getFolder() && $this->folderMode === CloudinaryProvider::FOLDER_MODE_DYNAMIC) {
+            $options['folder'] = $resourceStruct->getFolder()->getPath();
+        }
+
+        return $options;
     }
 
     private function appendExtension(string $publicId, FileStruct $fileStruct): string

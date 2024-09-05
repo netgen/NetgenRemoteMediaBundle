@@ -50,8 +50,9 @@ final class CloudinaryProvider extends AbstractProvider
         private UploadOptionsResolver $uploadOptionsResolver,
         array $namedRemoteResources,
         array $namedRemoteResourceLocations,
+        private string $folderMode,
         ?LoggerInterface $logger = null,
-        bool $shouldDeleteFromRemote = false
+        bool $shouldDeleteFromRemote = false,
     ) {
         parent::__construct(
             $registry,
@@ -121,7 +122,7 @@ final class CloudinaryProvider extends AbstractProvider
     {
         try {
             return $this->gateway->get(
-                CloudinaryRemoteId::fromRemoteId($remoteId),
+                CloudinaryRemoteId::fromRemoteId($remoteId, $this->folderMode),
             );
         } catch (InvalidRemoteIdException $exception) {
             $this->logger->notice('[NGRM][Cloudinary] ' . $exception->getMessage());
@@ -133,7 +134,7 @@ final class CloudinaryProvider extends AbstractProvider
     public function deleteFromRemote(RemoteResource $resource): void
     {
         $this->gateway->delete(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
         );
     }
 
@@ -163,12 +164,12 @@ final class CloudinaryProvider extends AbstractProvider
 
         if (count($resource->getTags()) === 0) {
             $this->gateway->removeAllTagsFromResource(
-                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+                CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             );
         }
 
         $this->gateway->update(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $options,
         );
     }
@@ -181,7 +182,7 @@ final class CloudinaryProvider extends AbstractProvider
         }
 
         return $this->gateway->getDownloadLink(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $options,
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
@@ -189,7 +190,7 @@ final class CloudinaryProvider extends AbstractProvider
 
     public function authenticateRemoteResource(RemoteResource $resource, AuthToken $token): AuthenticatedRemoteResource
     {
-        $url = $this->gateway->getAuthenticatedUrl(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token);
+        $url = $this->gateway->getAuthenticatedUrl(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode), $token);
 
         return new AuthenticatedRemoteResource($resource, $url, $token);
     }
@@ -197,7 +198,7 @@ final class CloudinaryProvider extends AbstractProvider
     public function authenticateRemoteResourceLocation(RemoteResourceLocation $location, AuthToken $token): RemoteResourceLocation
     {
         $url = $this->gateway->getAuthenticatedUrl(
-            CloudinaryRemoteId::fromRemoteId($location->getRemoteResource()->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($location->getRemoteResource()->getRemoteId(), $this->folderMode),
             $token,
         );
 
@@ -257,7 +258,7 @@ final class CloudinaryProvider extends AbstractProvider
     protected function internalBuildVariation(RemoteResource $resource, array $transformations = []): RemoteResourceVariation
     {
         $variationUrl = $this->gateway->getVariationUrl(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $transformations,
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
@@ -279,7 +280,7 @@ final class CloudinaryProvider extends AbstractProvider
         $options['start_offset'] = $startOffset !== null ? $startOffset : 'auto';
 
         $thumbnailUrl = $this->gateway->getVideoThumbnail(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $options,
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
@@ -312,7 +313,7 @@ final class CloudinaryProvider extends AbstractProvider
         }
 
         return $this->gateway->getImageTag(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $options,
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
@@ -340,7 +341,7 @@ final class CloudinaryProvider extends AbstractProvider
         }
 
         return $this->gateway->getVideoTag(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $options,
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
@@ -368,7 +369,7 @@ final class CloudinaryProvider extends AbstractProvider
         }
 
         $thumbnailTag = $this->gateway->getImageTag(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $options,
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
@@ -392,7 +393,7 @@ final class CloudinaryProvider extends AbstractProvider
         ];
 
         $tag = $this->gateway->getVideoTag(
-            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()),
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
             $options,
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
