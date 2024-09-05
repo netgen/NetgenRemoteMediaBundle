@@ -10,7 +10,7 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
 
 * This bundle doesn't depend on eZ anymore and does not contain any eZ related integration
 * This bundle doesn't depend on Netgen Open Graph bundle anymore and does not contain any related integration
-* Minimum supported version of PHP is now PHP 7.4
+* Minimum supported version of PHP is now PHP 8.1
 * Most of the classes in the codebase are now `final` - if you have any overrides in your project, refactor them to use the Decorator pattern instead
 * The main value object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value` which was extending eZ field type value has now been renamed to `Netgen\RemoteMedia\API\Values\RemoteResource` and all methods use or return this new one; methods and properties remained the same; now it's a standalone value object
 * The variation object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation` has been renamed to `Netgen\RemoteMedia\API\Values\Variation` and all methods use or return this new one; methods and properties remained the same
@@ -46,7 +46,7 @@ Old object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia` has been
 * all properties are now private and there are corresponding getters as well as some helper methods to manipulate with the object
 * static constructors have been removed from the value object -> they've been replaced with factory
 * now it contains `id` which represents the ID of the stored resource in the database (via Doctrine) -> can be `null` if the resource has been fetched from remote
-* now it contains `remoteId` which is used to uniquely identify the resource on the cloud -> in case when cloud providers require multiple parameters to uniquely identify the resource (eg. Cloudinary requires `resourceId`, `resourceType` and `type`), each provider is responsible to merge this info into single array which will be used as `remoteId`
+* now it contains `remoteId` which is used to uniquely identify the resource on the cloud -> in case when cloud providers require multiple parameters to uniquely identify the resource (eg. Cloudinary requires `resourceId`, `resourceType` and `type`), each provider is responsible to merge this info into single string which will be used as `remoteId`
 * `mediaType` property has been removed; now we have a single `type` and it's up to the provider to convert this to the appropriate type for cloud provider
 * now it contains two new types: `audio` and `document`
 * now it contains only single `url` property instead of both URL and secure URL - it's up to provider to decide whether it will provide secure or not secure URLs
