@@ -6,6 +6,7 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver;
 
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
@@ -30,6 +31,7 @@ final class SearchExpression
     public function __construct(
         private ResourceTypeConverter $resourceTypeConverter,
         private VisibilityTypeConverter $visibilityTypeConverter,
+        private string $folderMode,
     ) {}
 
     public function resolve(Query $query): string
@@ -230,7 +232,9 @@ final class SearchExpression
             return null;
         }
 
-        $folders = array_map(static fn ($value) => sprintf('folder:"%s"', $value), $query->getFolders());
+        $key = $this->folderMode === CloudinaryProvider::FOLDER_MODE_DYNAMIC ? 'asset_folder' : 'folder';
+
+        $folders = array_map(static fn ($value) => sprintf('%s:"%s"', $key, $value), $query->getFolders());
 
         return '(' . implode(' OR ', $folders) . ')';
     }
@@ -254,7 +258,7 @@ final class SearchExpression
 
         $resourceIds = array_unique(
             array_map(
-                static fn ($remoteId) => CloudinaryRemoteId::fromRemoteId($remoteId)->getResourceId(),
+                static fn ($remoteId) => CloudinaryRemoteId::fromRemoteId($remoteId, $this->folderMode)->getResourceId(),
                 $query->getRemoteIds(),
             ),
         );
