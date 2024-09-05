@@ -144,21 +144,21 @@ final class MonologLoggedGateway implements GatewayInterface
 
     public function getVideoThumbnail(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
-        $this->logger->info("[INTERNAL][FREE] getVideoThumbnail(\"{$remoteId->getRemoteId()}\") -> cl_video_thumbnail_path(\"{$remoteId->getRemoteId()}\")");
+        $this->logger->info("[INTERNAL][FREE] getVideoThumbnail(\"{$remoteId->getRemoteId()}\") -> Image::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         return $this->gateway->getVideoThumbnail($remoteId, $options, $token);
     }
 
     public function getImageTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
-        $this->logger->info("[INTERNAL][FREE] getImageTag(\"{$remoteId->getRemoteId()}\") -> cl_image_tag(\"{$remoteId->getRemoteId()}\")");
+        $this->logger->info("[INTERNAL][FREE] getImageTag(\"{$remoteId->getRemoteId()}\") -> ImageTag::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         return $this->gateway->getImageTag($remoteId, $options, $token);
     }
 
     public function getVideoTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
     {
-        $this->logger->info("[INTERNAL][FREE] getVideoTag(\"{$remoteId->getRemoteId()}\") -> cl_video_tag(\"{$remoteId->getRemoteId()}\")");
+        $this->logger->info("[INTERNAL][FREE] getVideoTag(\"{$remoteId->getRemoteId()}\") -> VideoTag::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         return $this->gateway->getVideoTag($remoteId, $options, $token);
     }

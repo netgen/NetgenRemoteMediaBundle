@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary;
 
+use Cloudinary\Configuration\TagConfig;
 use Doctrine\ORM\EntityManagerInterface;
 use Netgen\RemoteMedia\API\Factory\DateTime as DateTimeFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Query;
@@ -28,7 +29,6 @@ use function array_map;
 use function array_merge;
 use function basename;
 use function count;
-use function default_poster_options;
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -280,7 +280,12 @@ final class CloudinaryProvider extends AbstractProvider
             $resource instanceof AuthenticatedRemoteResource ? $resource->getToken() : null,
         );
 
-        return new RemoteResourceVariation($resource, $thumbnailUrl, array_merge(default_poster_options(), $options));
+        $defaultPosterOptions = [
+            'format' => TagConfig::VIDEO_POSTER_FORMAT,
+            'resource_type' => 'video',
+        ];
+
+        return new RemoteResourceVariation($resource, $thumbnailUrl, array_merge($defaultPosterOptions, $options));
     }
 
     protected function generatePictureTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string

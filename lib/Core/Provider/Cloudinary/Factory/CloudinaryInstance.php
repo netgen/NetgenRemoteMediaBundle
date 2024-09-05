@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
-use Cloudinary;
+use Cloudinary\Cloudinary;
 
 final class CloudinaryInstance
 {
@@ -21,8 +21,7 @@ final class CloudinaryInstance
     public function create(): Cloudinary
     {
         if (!$this->cloudinary instanceof Cloudinary) {
-            $this->cloudinary = new Cloudinary();
-            $this->cloudinary->config(
+            $this->cloudinary = new Cloudinary(
                 [
                     'cloud_name' => $this->cloudName,
                     'api_key' => $this->apiKey,

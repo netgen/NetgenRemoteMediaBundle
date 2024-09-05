@@ -456,7 +456,7 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[INTERNAL][FREE] getVideoThumbnail(\"{$remoteId->getRemoteId()}\") -> cl_video_thumbnail_path(\"{$remoteId->getRemoteId()}\")");
+            ->with("[INTERNAL][FREE] getVideoThumbnail(\"{$remoteId->getRemoteId()}\") -> Image::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         self::assertSame(
             'video_thumbnail.jpg',
@@ -477,7 +477,7 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[INTERNAL][FREE] getImageTag(\"{$remoteId->getRemoteId()}\") -> cl_image_tag(\"{$remoteId->getRemoteId()}\")");
+            ->with("[INTERNAL][FREE] getImageTag(\"{$remoteId->getRemoteId()}\") -> ImageTag::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         self::assertSame(
             '<img src="image.jpg"/>',
@@ -498,7 +498,7 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[INTERNAL][FREE] getVideoTag(\"{$remoteId->getRemoteId()}\") -> cl_video_tag(\"{$remoteId->getRemoteId()}\")");
+            ->with("[INTERNAL][FREE] getVideoTag(\"{$remoteId->getRemoteId()}\") -> VideoTag::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         self::assertSame(
             '<video src="example.mp4"/>',
