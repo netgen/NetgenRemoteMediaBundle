@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
 
 use Cloudinary\Asset\Image;
-use Cloudinary\Cloudinary;
 use Cloudinary\Api\Admin\AdminApi;
 use Cloudinary\Api\Search\SearchApi;
 use Cloudinary\Api\Upload\UploadApi;
 use Cloudinary\Asset\Media;
+use Cloudinary\Configuration\Configuration;
 use Cloudinary\Tag\ImageTag;
 use Cloudinary\Tag\VideoTag;
 use Cloudinary\Api\Exception\NotFound as CloudinaryNotFound;
@@ -49,7 +49,7 @@ final class CloudinaryApiGateway implements GatewayInterface
     private SearchApi $searchApi;
 
     public function __construct(
-        private Cloudinary $cloudinary,
+        private Configuration $configuration,
         private RemoteResourceFactoryInterface $remoteResourceFactory,
         private SearchResultFactoryInterface $searchResultFactory,
         private SearchExpressionResolver $searchExpressionResolver,
@@ -61,12 +61,10 @@ final class CloudinaryApiGateway implements GatewayInterface
     }
 
     public function setServices(
-        Cloudinary $cloudinary,
         UploadApi $uploadApi,
         AdminApi $adminApi,
         SearchApi $searchApi,
     ): void {
-        $this->cloudinary = $cloudinary;
         $this->uploadApi = $uploadApi;
         $this->adminApi = $adminApi;
         $this->searchApi = $searchApi;

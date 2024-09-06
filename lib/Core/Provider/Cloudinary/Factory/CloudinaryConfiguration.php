@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
-use Cloudinary\Cloudinary;
+use Cloudinary\Configuration\Configuration;
 
-final class CloudinaryInstance
+final class CloudinaryConfiguration
 {
-    private ?Cloudinary $cloudinary = null;
+    private ?Configuration $configuration = null;
 
     public function __construct(
         private string $cloudName,
@@ -18,10 +18,10 @@ final class CloudinaryInstance
         private bool $useSubdomains = false
     ) {}
 
-    public function create(): Cloudinary
+    public function create(): Configuration
     {
-        if (!$this->cloudinary instanceof Cloudinary) {
-            $this->cloudinary = new Cloudinary(
+        if (!$this->configuration instanceof Configuration) {
+            $this->configuration = Configuration::instance(
                 [
                     'cloud_name' => $this->cloudName,
                     'api_key' => $this->apiKey,
@@ -33,6 +33,6 @@ final class CloudinaryInstance
             );
         }
 
-        return $this->cloudinary;
+        return $this->configuration;
     }
 }
