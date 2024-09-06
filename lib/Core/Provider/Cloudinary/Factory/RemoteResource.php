@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 
+use Cloudinary\Asset\Media;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource as RemoteResourceValue;
@@ -13,7 +14,6 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as Visi
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 
 use function basename;
-use function cloudinary_url_internal;
 use function in_array;
 use function is_array;
 use function pathinfo;
@@ -79,7 +79,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             'secure' => true,
         ];
 
-        return cloudinary_url_internal($data['public_id'], $options);
+        return (string) Media::fromParams($data['public_id'], $options)->toUrl();
     }
 
     private function resolveResourceType(array $data): string

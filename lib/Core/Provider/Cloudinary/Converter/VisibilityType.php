@@ -50,13 +50,13 @@ final class VisibilityType
         switch ($visibility) {
             case RemoteResource::VISIBILITY_PROTECTED:
                 return [
-                    'access_type' => 'token',
+                    ['access_type' => 'token'],
                 ];
 
             case RemoteResource::VISIBILITY_PUBLIC:
             default:
                 return [
-                    'access_type' => 'anonymous',
+                    ['access_type' => 'anonymous'],
                 ];
         }
     }

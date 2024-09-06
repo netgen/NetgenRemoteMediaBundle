@@ -109,14 +109,14 @@ final class MonologLoggedGateway implements GatewayInterface
 
     public function getAuthenticatedUrl(CloudinaryRemoteId $remoteId, AuthToken $token): string
     {
-        $this->logger->info("[INTERNAL][FREE] getAuthenticatedUrl(\"{$remoteId->getRemoteId()}\") -> cloudinary_url_internal(\"{$remoteId->getRemoteId()}\")");
+        $this->logger->info("[INTERNAL][FREE] getAuthenticatedUrl(\"{$remoteId->getRemoteId()}\") -> Media::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         return $this->gateway->getAuthenticatedUrl($remoteId, $token);
     }
 
     public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations, ?AuthToken $token = null): string
     {
-        $this->logger->info("[INTERNAL][FREE] getVariationUrl(\"{$remoteId->getRemoteId()}\") -> cloudinary_url_internal(\"{$remoteId->getRemoteId()}\")");
+        $this->logger->info("[INTERNAL][FREE] getVariationUrl(\"{$remoteId->getRemoteId()}\") -> Media::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         return $this->gateway->getVariationUrl($remoteId, $transformations, $token);
     }

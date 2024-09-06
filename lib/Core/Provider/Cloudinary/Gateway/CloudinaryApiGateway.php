@@ -76,9 +76,9 @@ final class CloudinaryApiGateway implements GatewayInterface
 
         return new StatusData([
             'plan' => $usage['plan'],
-            'rate_limit_allowed' => $usage->rate_limit_allowed,
-            'rate_limit_remaining' => $usage->rate_limit_remaining,
-            'rate_limit_reset_at' => date('d.m.Y H:i:s', $usage->rate_limit_reset_at),
+            'rate_limit_allowed' => $usage->rateLimitAllowed,
+            'rate_limit_remaining' => $usage->rateLimitRemaining,
+            'rate_limit_reset_at' => date('d.m.Y H:i:s', $usage->rateLimitResetAt),
             'objects' => $usage['objects']['usage'],
             'resources' => $usage['resources'],
             'derived_resources' => $usage['derived_resources'],
@@ -228,7 +228,7 @@ final class CloudinaryApiGateway implements GatewayInterface
             $this->authTokenResolver->resolve($token),
         );
 
-        return Media::fromParams($remoteId->getResourceId(), $options)->toUrl();
+        return (string) Media::fromParams($remoteId->getResourceId(), $options)->toUrl();
     }
 
     public function getVariationUrl(CloudinaryRemoteId $remoteId, array $transformations, ?AuthToken $token = null): string
@@ -247,7 +247,7 @@ final class CloudinaryApiGateway implements GatewayInterface
             );
         }
 
-        return Media::fromParams($remoteId->getResourceId(), $options)->toUrl();
+        return (string) Media::fromParams($remoteId->getResourceId(), $options)->toUrl();
     }
 
     public function search(Query $query): Result
@@ -311,7 +311,7 @@ final class CloudinaryApiGateway implements GatewayInterface
             );
         }
 
-        return Image::fromParams($remoteId->getResourceId(), $options)->toUrl();
+        return (string) Image::fromParams($remoteId->getResourceId(), $options)->toUrl();
     }
 
     public function getImageTag(CloudinaryRemoteId $remoteId, array $options = [], ?AuthToken $token = null): string
@@ -359,7 +359,7 @@ final class CloudinaryApiGateway implements GatewayInterface
             );
         }
 
-        return Media::fromParams($remoteId->getResourceId(), $options)->toUrl();
+        return (string) Media::fromParams($remoteId->getResourceId(), $options)->toUrl();
     }
 
     private function formatBytes(int $bytes, int $precision = 2): string
