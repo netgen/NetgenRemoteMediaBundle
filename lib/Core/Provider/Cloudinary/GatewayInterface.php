@@ -9,6 +9,9 @@ use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Exception\FolderNotFoundException;
+use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 
 /**
  * @internal
@@ -31,29 +34,29 @@ interface GatewayInterface
     /**
      * @return string[]
      *
-     * @throws \Netgen\RemoteMedia\Exception\FolderNotFoundException
+     * @throws FolderNotFoundException
      */
     public function listSubFolders(string $parentFolder): array;
 
     public function createFolder(string $path): void;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function get(CloudinaryRemoteId $remoteId): RemoteResource;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceExistsException
+     * @throws RemoteResourceExistsException
      */
     public function upload(string $fileUri, array $options): RemoteResource;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function update(CloudinaryRemoteId $remoteId, array $options): void;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void;
 

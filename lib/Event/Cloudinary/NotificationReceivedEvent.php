@@ -13,8 +13,7 @@ final class NotificationReceivedEvent extends Event
 
     public function __construct(
         private Request $request,
-    ) {
-    }
+    ) {}
 
     public function getRequest(): Request
     {

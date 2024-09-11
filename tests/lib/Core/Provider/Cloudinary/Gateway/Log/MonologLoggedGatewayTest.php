@@ -25,9 +25,9 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
 {
     protected MonologLoggedGateway $gateway;
 
-    protected MockObject|GatewayInterface $apiGatewayMock;
+    protected GatewayInterface|MockObject $apiGatewayMock;
 
-    protected MockObject|LoggerInterface $loggerMock;
+    protected LoggerInterface|MockObject $loggerMock;
 
     protected function setUp(): void
     {

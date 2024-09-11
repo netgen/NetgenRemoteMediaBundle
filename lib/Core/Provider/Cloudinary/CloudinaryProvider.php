@@ -111,7 +111,7 @@ final class CloudinaryProvider extends AbstractProvider
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function loadFromRemote(string $remoteId): RemoteResource
     {

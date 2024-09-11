@@ -12,6 +12,7 @@ use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,7 +73,7 @@ final class Upload extends AbstractController
             );
         }
 
-        /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $file */
+        /** @var UploadedFile $file */
         $file = $request->files->get('file');
 
         if (!$file->isFile()) {

@@ -21,7 +21,7 @@ use Symfony\Component\Form\Test\TypeTestCase;
 #[CoversClass(RemoteMediaType::class)]
 class RemoteMediaTypeTest extends TypeTestCase
 {
-    private MockObject|DataTransformerInterface $dataTransformerMock;
+    private DataTransformerInterface|MockObject $dataTransformerMock;
 
     private MockObject|ProviderInterface $providerMock;
 

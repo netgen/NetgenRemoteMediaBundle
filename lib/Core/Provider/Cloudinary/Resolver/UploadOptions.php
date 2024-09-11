@@ -34,12 +34,12 @@ final class UploadOptions
     public function resolve(ResourceStruct $resourceStruct): array
     {
         $clean = preg_replace(
-            '#[^\\p{L}|\\p{N}]+#u',
+            '#[^\p{L}|\p{N}]+#u',
             '_',
             $resourceStruct->getFilename(),
         );
 
-        $cleanFileName = preg_replace('#[\\p{Z}]{2,}#u', '_', $clean);
+        $cleanFileName = preg_replace('#[\p{Z}]{2,}#u', '_', $clean);
         $fileName = rtrim($cleanFileName, '_');
 
         $publicId = $this->appendExtension($fileName, $resourceStruct->getFileStruct());
@@ -100,7 +100,7 @@ final class UploadOptions
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\MimeCategoryParseException
+     * @throws MimeCategoryParseException
      */
     private function resolveMimeCategory(FileStruct $fileStruct): string
     {

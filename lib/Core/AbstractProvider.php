@@ -48,7 +48,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @return \Netgen\RemoteMedia\API\Values\Folder[]
      *
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     * @throws NotSupportedException
      */
     public function listFolders(?Folder $parent = null): array
     {
@@ -60,7 +60,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     * @throws NotSupportedException
      */
     public function createFolder(string $name, ?Folder $parent = null): Folder
     {
@@ -72,7 +72,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     * @throws NotSupportedException
      */
     public function countInFolder(Folder $folder): int
     {
@@ -86,7 +86,7 @@ abstract class AbstractProvider implements ProviderInterface
     /**
      * @return string[]
      *
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     * @throws NotSupportedException
      */
     public function listTags(): array
     {
@@ -98,7 +98,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function load(int $id): RemoteResource
     {
@@ -112,7 +112,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function loadByRemoteId(string $remoteId): RemoteResource
     {
@@ -165,7 +165,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException
+     * @throws RemoteResourceLocationNotFoundException
      */
     public function loadLocation(int $id): RemoteResourceLocation
     {
@@ -388,7 +388,7 @@ abstract class AbstractProvider implements ProviderInterface
     abstract protected function generateDownloadTag(RemoteResource $resource, array $transformations = [], array $htmlAttributes = []): string;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException
+     * @throws RemoteResourceLocationNotFoundException
      */
     private function loadLocationBySource(string $source): RemoteResourceLocation
     {

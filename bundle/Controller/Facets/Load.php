@@ -43,7 +43,7 @@ final class Load
 
         $formattedFolders = [];
 
-        /** @var \Netgen\RemoteMedia\API\Values\Folder $folder */
+        /** @var Folder $folder */
         foreach ($folders as $folder) {
             $formattedFolders[] = [
                 'id' => $folder->getPath(),

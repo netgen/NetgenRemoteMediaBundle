@@ -12,8 +12,7 @@ final class CropSettings
         private int $y = 0,
         private int $width = 0,
         private int $height = 0
-    ) {
-    }
+    ) {}
 
     public static function fromArray(string $transformationName, array $coords): self
     {

@@ -16,8 +16,7 @@ class RemoteResourceLocation
         private array $cropSettings = [],
         private ?string $watermarkText = null,
         private ?int $id = null,
-    ) {
-    }
+    ) {}
 
     public function getId(): ?int
     {
@@ -60,7 +59,7 @@ class RemoteResourceLocation
     }
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\CropSettingsNotFoundException
+     * @throws CropSettingsNotFoundException
      */
     public function getCropSettingsForVariation(string $variationName): CropSettings
     {

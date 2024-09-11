@@ -194,7 +194,7 @@ final class Notify extends AbstractController
             ->getQuery()
             ->getResult();
 
-        /** @var \Netgen\RemoteMedia\API\Values\RemoteResource $resource */
+        /** @var RemoteResource $resource */
         foreach ($result as $resource) {
             try {
                 $apiResource = Uploader::explicit(

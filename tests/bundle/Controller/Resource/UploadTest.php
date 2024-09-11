@@ -33,7 +33,7 @@ use function json_encode;
 #[CoversClass(AbstractController::class)]
 final class UploadTest extends TestCase
 {
-    protected MockObject|FileHashFactoryInterface $fileHashFactoryMock;
+    protected FileHashFactoryInterface|MockObject $fileHashFactoryMock;
     private MockObject|ProviderInterface $providerMock;
 
     private MockObject|TranslatorInterface $translatorMock;

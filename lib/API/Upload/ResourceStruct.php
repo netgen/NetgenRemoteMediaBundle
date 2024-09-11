@@ -26,8 +26,7 @@ final class ResourceStruct
         private array $tags = [],
         private array $context = [],
         private bool $hideFilename = false,
-    ) {
-    }
+    ) {}
 
     public function getFileStruct(): FileStruct
     {

@@ -38,15 +38,15 @@ final class AbstractProviderTest extends AbstractTestCase
 {
     private AbstractProvider $provider;
 
-    private MockObject|EntityManagerInterface $entityManager;
+    private EntityManagerInterface|MockObject $entityManager;
 
-    private MockObject|DateTimeFactoryInterface $dateTimeFactory;
+    private DateTimeFactoryInterface|MockObject $dateTimeFactory;
 
-    private MockObject|HandlerInterface $cropHandler;
+    private HandlerInterface|MockObject $cropHandler;
 
-    private MockObject|HandlerInterface $formatHandler;
+    private HandlerInterface|MockObject $formatHandler;
 
-    private MockObject|LoggerInterface $logger;
+    private LoggerInterface|MockObject $logger;
 
     private MockObject|ObjectRepository $resourceRepository;
 
