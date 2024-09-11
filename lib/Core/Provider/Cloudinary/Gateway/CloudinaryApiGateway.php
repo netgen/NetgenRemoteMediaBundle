@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
 
-use Cloudinary\Asset\Image;
 use Cloudinary\Api\Admin\AdminApi;
+use Cloudinary\Api\Exception\NotFound as CloudinaryNotFound;
 use Cloudinary\Api\Search\SearchApi;
 use Cloudinary\Api\Upload\UploadApi;
+use Cloudinary\Asset\Image;
 use Cloudinary\Asset\Media;
 use Cloudinary\Configuration\Configuration;
 use Cloudinary\Tag\ImageTag;
 use Cloudinary\Tag\VideoTag;
-use Cloudinary\Api\Exception\NotFound as CloudinaryNotFound;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
 use Netgen\RemoteMedia\API\Search\Query;
