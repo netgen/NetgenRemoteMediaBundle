@@ -52,7 +52,7 @@ final class Notify extends AbstractController
         ProviderInterface $provider,
         RequestVerifierInterface $signatureVerifier,
         EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
     ) {
         $this->gateway = $gateway;
         $this->provider = $provider;

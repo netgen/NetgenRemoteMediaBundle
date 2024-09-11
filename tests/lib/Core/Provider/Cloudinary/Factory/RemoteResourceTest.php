@@ -145,6 +145,11 @@ final class RemoteResourceTest extends AbstractTestCase
                     'url' => 'http://res.cloudinary.com/myCloud/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
                     'secure_url' => 'https://res.cloudinary.com/myCloud/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
                     'etag' => 'e522f43cf89aa0afd03387c37e2b6e29',
+                    'context' => [
+                        'custom' => [
+                            'original_filename' => 'my_original_image.jpg',
+                        ],
+                    ],
                 ],
                 new RemoteResource(
                     remoteId: 'upload|image|other/c87hg9xfxrd4itiim3t0',
@@ -152,7 +157,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     url: 'https://res.cloudinary.com/myCloud/image/upload/other/c87hg9xfxrd4itiim3t0',
                     md5: 'e522f43cf89aa0afd03387c37e2b6e29',
                     name: 'c87hg9xfxrd4itiim3t0',
-                    originalFilename: 'c87hg9xfxrd4itiim3t0',
+                    originalFilename: 'my_original_image.jpg',
                     visibility: 'public',
                     folder: Folder::fromPath('other'),
                     size: 120253,
@@ -316,6 +321,7 @@ final class RemoteResourceTest extends AbstractTestCase
                         'custom' => [
                             'test2' => 'test2',
                         ],
+                        'original_filename' => 'test.mp4',
                     ],
                 ],
                 new RemoteResource(
@@ -324,7 +330,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     url: 'https://res.cloudinary.com/myCloud/raw/test/media/raw/new/c87hg9xfxrd4itiim3t0',
                     md5: 'e522f43cf89aa0afd03387c38e2b6e29',
                     name: 'c87hg9xfxrd4itiim3t0',
-                    originalFilename: 'c87hg9xfxrd4itiim3t0',
+                    originalFilename: 'test.mp4',
                     version: '1371995958',
                     visibility: 'public',
                     folder: Folder::fromPath('media/raw/new'),

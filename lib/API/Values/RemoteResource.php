@@ -53,7 +53,7 @@ class RemoteResource
         private ?string $name = null,
         private ?string $originalFilename = null,
         private ?string $version = null,
-        private ?string $visibility = self::VISIBILITY_PUBLIC,
+        private string $visibility = self::VISIBILITY_PUBLIC,
         private ?Folder $folder = null,
         private int $size = 0,
         private ?string $altText = null,
