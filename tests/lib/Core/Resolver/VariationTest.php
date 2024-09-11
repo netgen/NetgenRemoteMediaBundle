@@ -22,13 +22,13 @@ final class VariationTest extends TestCase
 {
     protected VariationResolver $variationResolver;
 
-    private MockObject|HandlerInterface $cropHandler;
+    private HandlerInterface|MockObject $cropHandler;
 
-    private MockObject|HandlerInterface $formatHandler;
+    private HandlerInterface|MockObject $formatHandler;
 
-    private MockObject|HandlerInterface $watermarkTextHandler;
+    private HandlerInterface|MockObject $watermarkTextHandler;
 
-    private MockObject|LoggerInterface $logger;
+    private LoggerInterface|MockObject $logger;
 
     protected function setUp(): void
     {

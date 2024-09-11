@@ -41,11 +41,11 @@ final class CloudinaryProviderTest extends AbstractTestCase
 {
     protected CloudinaryProvider $cloudinaryProvider;
 
-    protected MockObject|GatewayInterface $gateway;
+    protected GatewayInterface|MockObject $gateway;
 
-    protected MockObject|LoggerInterface $logger;
+    protected LoggerInterface|MockObject $logger;
 
-    protected MockObject|MimeTypesInterface $mimeTypes;
+    protected MimeTypesInterface|MockObject $mimeTypes;
 
     protected function setUp(): void
     {

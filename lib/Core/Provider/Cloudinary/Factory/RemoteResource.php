@@ -26,8 +26,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         private ResourceTypeConverter $resourceTypeConverter,
         private VisibilityTypeConverter $visibilityTypeConverter,
         private FileHashFactoryInterface $fileHashFactory
-    ) {
-    }
+    ) {}
 
     public function create($data): RemoteResourceValue
     {
@@ -57,7 +56,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
     /**
      * @param mixed $data
      *
-     * @throws \Netgen\RemoteMedia\Exception\Factory\InvalidDataException
+     * @throws InvalidDataException
      */
     private function validateData($data): void
     {

@@ -22,8 +22,7 @@ final class FileStruct
         private string $originalFilename,
         private string $originalExtension,
         private string $type = self::TYPE_LOCAL,
-    ) {
-    }
+    ) {}
 
     public static function fromPath(string $path): self
     {

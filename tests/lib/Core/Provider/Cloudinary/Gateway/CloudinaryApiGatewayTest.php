@@ -47,9 +47,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
 
     protected CloudinaryApiGateway $apiGateway;
 
-    protected MockObject|Cloudinary $cloudinaryMock;
+    protected Cloudinary|MockObject $cloudinaryMock;
 
-    protected MockObject|Api $cloudinaryApiMock;
+    protected Api|MockObject $cloudinaryApiMock;
 
     protected MockObject|Search $cloudinarySearchMock;
 

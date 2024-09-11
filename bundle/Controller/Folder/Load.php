@@ -26,7 +26,7 @@ final class Load
         $folders = $this->provider->listFolders($parent);
         $formattedFolders = [];
 
-        /** @var \Netgen\RemoteMedia\API\Values\Folder $folder */
+        /** @var Folder $folder */
         foreach ($folders as $folder) {
             $formattedFolders[] = [
                 'id' => $folder->getPath(),

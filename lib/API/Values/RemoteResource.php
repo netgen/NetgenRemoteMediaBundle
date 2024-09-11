@@ -42,7 +42,7 @@ class RemoteResource
      * @param string[] $tags
      * @param array<string,mixed> $metadata
      * @param array<string,mixed> $context
-     * @param \Doctrine\Common\Collections\Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[] $locations
+     * @param Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[] $locations
      */
     public function __construct(
         private string $remoteId,
@@ -61,9 +61,8 @@ class RemoteResource
         private array $tags = [],
         private array $metadata = [],
         private array $context = [],
-        private Collection|array $locations = [],
-    ) {
-    }
+        private array|Collection $locations = [],
+    ) {}
 
     public function getId(): ?int
     {
@@ -344,9 +343,9 @@ class RemoteResource
     }
 
     /**
-     * @return \Doctrine\Common\Collections\Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[]
+     * @return Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[]
      */
-    public function getLocations(): Collection|array
+    public function getLocations(): array|Collection
     {
         return $this->locations;
     }

@@ -22,7 +22,7 @@ final class RemoteResourceTest extends AbstractTestCase
 {
     protected RemoteResourceFactory $remoteResourceFactory;
 
-    protected MockObject|FileHashFactoryInterface $fileHashFactoryMock;
+    protected FileHashFactoryInterface|MockObject $fileHashFactoryMock;
 
     protected function setUp(): void
     {

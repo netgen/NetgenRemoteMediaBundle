@@ -35,7 +35,7 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
 
     protected Psr6CachedGateway $nonTaggableCachedGateway;
 
-    protected MockObject|GatewayInterface $apiGatewayMock;
+    protected GatewayInterface|MockObject $apiGatewayMock;
 
     protected CacheItemPoolInterface $taggableCache;
 

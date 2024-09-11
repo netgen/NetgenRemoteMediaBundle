@@ -13,8 +13,7 @@ final class StatusData
      */
     public function __construct(
         private array $properties = []
-    ) {
-    }
+    ) {}
 
     public function has(string $key): bool
     {

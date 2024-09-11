@@ -31,15 +31,15 @@ final class NotifyTest extends TestCase
 {
     private NotifyController $controller;
 
-    private MockObject|CacheableGatewayInterface $gatewayMock;
+    private CacheableGatewayInterface|MockObject $gatewayMock;
 
     private MockObject|ProviderInterface $providerMock;
 
     private MockObject|RequestVerifierInterface $signatureVerifierMock;
 
-    private MockObject|EntityManagerInterface $entityManagerMock;
+    private EntityManagerInterface|MockObject $entityManagerMock;
 
-    private MockObject|EventDispatcherInterface $eventDispatcherMock;
+    private EventDispatcherInterface|MockObject $eventDispatcherMock;
 
     protected function setUp(): void
     {

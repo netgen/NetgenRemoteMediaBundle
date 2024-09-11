@@ -14,6 +14,12 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException;
+use Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Exception\NotSupportedException;
+use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
+use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 
 interface ProviderInterface
 {
@@ -34,12 +40,12 @@ interface ProviderInterface
     public function getSupportedVisibilities(): array;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     * @throws NotSupportedException
      */
     public function listFolders(?Folder $parent = null): array;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     * @throws NotSupportedException
      */
     public function createFolder(string $name, ?Folder $parent = null): Folder;
 
@@ -48,22 +54,22 @@ interface ProviderInterface
     public function countInFolder(Folder $folder): int;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NotSupportedException
+     * @throws NotSupportedException
      */
     public function listTags(): array;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function load(int $id): RemoteResource;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function loadByRemoteId(string $remoteId): RemoteResource;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function loadFromRemote(string $remoteId): RemoteResource;
 
@@ -74,7 +80,7 @@ interface ProviderInterface
     public function deleteFromRemote(RemoteResource $resource): void;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException
+     * @throws RemoteResourceLocationNotFoundException
      */
     public function loadLocation(int $id): RemoteResourceLocation;
 
@@ -83,14 +89,14 @@ interface ProviderInterface
     public function removeLocation(RemoteResourceLocation $resourceLocation): void;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws NamedRemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function loadNamedRemoteResource(string $name): RemoteResource;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws NamedRemoteResourceLocationNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function loadNamedRemoteResourceLocation(string $name): RemoteResourceLocation;
 
@@ -99,12 +105,12 @@ interface ProviderInterface
     public function searchCount(Query $query): int;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceExistsException
+     * @throws RemoteResourceExistsException
      */
     public function upload(ResourceStruct $resourceStruct): RemoteResource;
 
     /**
-     * @throws \Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException
+     * @throws RemoteResourceNotFoundException
      */
     public function updateOnRemote(RemoteResource $resource): void;
 

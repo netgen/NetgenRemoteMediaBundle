@@ -17,7 +17,7 @@ use Symfony\Component\Form\Test\TypeTestCase;
 #[CoversClass(RemoteMediaFolderType::class)]
 class RemoteMediaFolderTypeTest extends TypeTestCase
 {
-    private MockObject|DataTransformerInterface $dataTransformerMock;
+    private DataTransformerInterface|MockObject $dataTransformerMock;
 
     protected function setUp(): void
     {

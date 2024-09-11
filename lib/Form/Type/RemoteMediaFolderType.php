@@ -19,8 +19,7 @@ final class RemoteMediaFolderType extends AbstractType
 {
     public function __construct(
         private DataTransformerInterface $transformer,
-    ) {
-    }
+    ) {}
 
     public function configureOptions(OptionsResolver $resolver): void
     {
