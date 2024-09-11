@@ -64,7 +64,9 @@ final class RefreshStoredResourcesCommand extends Command
         do {
             $resources = $this->getBatch($this->batchSize, $offset);
 
-            $this->refreshResources($resources);
+            if (count($resources) > 0) {
+                $this->refreshResources($resources);
+            }
 
             $offset += $this->batchSize;
         } while (count($resources) > 0);

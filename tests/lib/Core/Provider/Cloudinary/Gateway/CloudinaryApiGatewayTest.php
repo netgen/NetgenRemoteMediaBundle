@@ -45,6 +45,8 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
 
     protected const UPLOAD_PREFIX = 'https://api.cloudinary.com';
 
+    protected const ENCRYPTION_KEY = '38128319a3a49e1d589a31a217e1a3f8';
+
     protected CloudinaryApiGateway $apiGateway;
 
     protected Cloudinary|MockObject $cloudinaryMock;
@@ -80,7 +82,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                 new ResourceTypeConverter(),
                 new VisibilityTypeConverter(),
             ),
-            new AuthTokenResolver('38128319a3a49e1d589a31a217e1a3f8'),
+            new AuthTokenResolver(self::ENCRYPTION_KEY),
         );
 
         $this->apiGateway->setServices(
@@ -501,6 +503,25 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         self::assertSame(
             'https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/folder/test_image.jpg',
             $this->apiGateway->getVariationUrl($remoteId, $transformations),
+        );
+    }
+
+    public function testGetAuthenticatedVariationUrl(): void
+    {
+        $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
+        $transformations = [
+            'x' => 50,
+            'y' => 50,
+            'width' => 300,
+            'height' => 200,
+            'crop' => 'crop',
+        ];
+
+        $authToken = AuthToken::fromExpiresAt(new DateTimeImmutable('2024/1/1'));
+
+        self::assertSame(
+            'https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/folder/test_image.jpg?__cld_token__=exp=1704067200~hmac=2765c0cd57e14670df6c9f1c04088a04ff48ca5f130c006a17057c51832e4b5b',
+            $this->apiGateway->getVariationUrl($remoteId, $transformations, $authToken),
         );
     }
 
