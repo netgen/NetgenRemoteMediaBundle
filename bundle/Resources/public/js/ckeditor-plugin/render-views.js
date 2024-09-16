@@ -29,7 +29,7 @@ const renderViews = () => {
       return response.text();
     });
 
-    ngrmElement.innerHTML = renderedView;
+    ngrmElement.outerHTML = renderedView;
   });
 };
 
