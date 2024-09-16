@@ -171,6 +171,6 @@ final class Configuration extends AbstractController
      */
     private function resolveUploadContext(Request $request): array
     {
-        return $request->query->all();
+        return $request->query->get('uploadContext');
     }
 }
