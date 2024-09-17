@@ -12,6 +12,7 @@ use function array_pop;
 use function count;
 use function explode;
 use function implode;
+use function sprintf;
 
 final class CloudinaryRemoteId
 {
