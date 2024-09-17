@@ -4,13 +4,14 @@ Netgen Remote Media Bundle upgrade instructions
 Upgrade from 2.0 to 3.0
 -----------------------
 
-Version 3.0 is a major release where the whole bundle has been decoupled from eZ and now contains only core features and doesn't depend on eZ anymore. In order to retain all the eZ functionalities (field type, NG admin UI and eZ admin UI), you have to install the new bundle which serves as a connector between Remote Media and eZ (currently WIP).
+Version 3.0 is a major release where the whole bundle has been decoupled from eZ and now contains only core features and doesn't depend on eZ anymore. In order to retain all the eZ functionalities (field type, NG admin UI and eZ admin UI), you have to install the [Netgen Remote Media & Ibexa CMS integration](https://github.com/netgen/remote-media-ibexa) bundle which serves as a connector between Remote Media and eZ.
 
 Also, there were a lot of changes during the decoupling from eZ to make things cleaner so there is a lot of breaking changes.
 
 * This bundle doesn't depend on eZ anymore and does not contain any eZ related integration
 * This bundle doesn't depend on Netgen Open Graph bundle anymore and does not contain any related integration
 * Minimum supported version of PHP is now PHP 8.1
+* This bundle now uses Cloudinary PHP SDK v2 instead of v1
 * Most of the classes in the codebase are now `final` - if you have any overrides in your project, refactor them to use the Decorator pattern instead
 * The main value object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value` which was extending eZ field type value has now been renamed to `Netgen\RemoteMedia\API\Values\RemoteResource` and all methods use or return this new one; methods and properties remained the same; now it's a standalone value object
 * The variation object `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Variation` has been renamed to `Netgen\RemoteMedia\API\Values\Variation` and all methods use or return this new one; methods and properties remained the same
@@ -34,7 +35,7 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
    * `public static function createFromParameters(array $parameters): self`
    * `public static function createFromCloudinaryResponse(array $response): self`
 * The bundle was using eZ's `ezpublish.cache_pool` cache pool for caching while it was depending on eZ. Now it requires cache pool to be provided in order to work. See [Install instructions](INSTALL.md) for more info.
-* Paramter for cache TTL `netgen_remote_media.cloudinary.cache_ttl` has been removed in favour of semantic configuration for cache. See [Install instructions](INSTALL.md) for more info.
+* Parameter for cache TTL `netgen_remote_media.cloudinary.cache_ttl` has been removed in favour of semantic configuration for cache. See [Install instructions](INSTALL.md) for more info.
 
 ### Code changes
 
