@@ -1,8 +1,11 @@
-import { attributes, pluginKey } from '../../../constants';
-import deleteLocation from '../remote-resource-location/delete';
+import { attributes, pluginKey } from "../../../constants";
+import deleteLocation from "../remote-resource-location/delete";
 
 const handleRemove = ({ editor, operation }) => {
-  if (operation.targetPosition.nodeAfter.name !== pluginKey) {
+  if (
+    operation.targetPosition.nodeAfter.name !== pluginKey ||
+    operation.batch.operations[0].type === "detach"
+  ) {
     return;
   }
 
