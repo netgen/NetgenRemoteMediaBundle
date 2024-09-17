@@ -5,7 +5,10 @@ const createLocation = ({ editor, model, selectedImage }) => {
 
   fetch(createLocationEndpoint, {
     method: 'POST',
-    body: JSON.stringify(selectedImage),
+    body: JSON.stringify({
+      ...selectedImage,
+      source: editor.config.get(pluginKey).source
+    }),
   })
     .then(response => response.json())
     .then(({ locationId }) => {
