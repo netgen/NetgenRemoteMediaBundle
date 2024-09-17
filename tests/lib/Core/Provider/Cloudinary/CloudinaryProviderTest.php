@@ -76,11 +76,13 @@ final class CloudinaryProviderTest extends AbstractTestCase
             new DateTimeFactory(),
             new UploadOptionsResolver(
                 new VisibilityTypeConverter(),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
                 ['image', 'video'],
                 $this->mimeTypes,
             ),
             [],
             [],
+            CloudinaryProvider::FOLDER_MODE_FIXED,
             $this->logger,
             false,
         );

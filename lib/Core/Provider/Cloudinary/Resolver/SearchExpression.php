@@ -256,9 +256,10 @@ final class SearchExpression
             return null;
         }
 
+        $folderMode = $this->folderMode;
         $resourceIds = array_unique(
             array_map(
-                static fn ($remoteId) => CloudinaryRemoteId::fromRemoteId($remoteId, $this->folderMode)->getResourceId(),
+                static fn ($remoteId) => CloudinaryRemoteId::fromRemoteId($remoteId, $folderMode)->getResourceId(),
                 $query->getRemoteIds(),
             ),
         );

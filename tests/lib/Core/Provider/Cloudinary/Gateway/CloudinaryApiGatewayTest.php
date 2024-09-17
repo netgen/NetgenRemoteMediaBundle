@@ -18,6 +18,7 @@ use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
@@ -61,6 +62,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             new SearchExpressionResolver(
                 new ResourceTypeConverter(),
                 new VisibilityTypeConverter(),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ),
             new AuthTokenResolver(CloudinaryConfigurationInitializer::ENCRYPTION_KEY),
         );
@@ -239,6 +241,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             new SearchExpressionResolver(
                 new ResourceTypeConverter(),
                 new VisibilityTypeConverter(),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ),
             new AuthTokenResolver(),
         );

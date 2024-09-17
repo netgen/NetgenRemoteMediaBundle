@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Resolver;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
 use Netgen\RemoteMedia\API\Values\Folder;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\UploadOptions as UploadOptionsResolver;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -18,7 +19,9 @@ use Symfony\Component\Mime\MimeTypesInterface;
 #[CoversClass(UploadOptionsResolver::class)]
 final class UploadOptionsTest extends TestCase
 {
-    protected UploadOptionsResolver $resolver;
+    protected UploadOptionsResolver $fixedFolderModeResolver;
+
+    protected UploadOptionsResolver $dynamicFolderModeResolver;
 
     protected MockObject $mimeTypes;
 
@@ -26,16 +29,29 @@ final class UploadOptionsTest extends TestCase
     {
         $this->mimeTypes = $this->createMock(MimeTypesInterface::class);
 
-        $this->resolver = new UploadOptionsResolver(
+        $this->fixedFolderModeResolver = new UploadOptionsResolver(
             new VisibilityTypeConverter(),
+            CloudinaryProvider::FOLDER_MODE_FIXED,
+            ['image', 'video'],
+            $this->mimeTypes,
+        );
+
+        $this->dynamicFolderModeResolver = new UploadOptionsResolver(
+            new VisibilityTypeConverter(),
+            CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ['image', 'video'],
             $this->mimeTypes,
         );
     }
 
     #[DataProvider('dataProvider')]
-    public function testResolve(ResourceStruct $resourceStruct, string $mimeType, array $options, bool $hasExtension = true): void
-    {
+    public function testResolve(
+        ResourceStruct $resourceStruct,
+        string $mimeType,
+        array $options,
+        string $folderMode = CloudinaryProvider::FOLDER_MODE_FIXED,
+        bool $hasExtension = true,
+    ): void {
         if ($hasExtension) {
             $this->mimeTypes
                 ->expects(self::once())
@@ -44,7 +60,9 @@ final class UploadOptionsTest extends TestCase
                 ->willReturn($mimeType);
         }
 
-        $resolvedOptions = $this->resolver->resolve($resourceStruct);
+        $resolvedOptions = $folderMode === CloudinaryProvider::FOLDER_MODE_FIXED
+            ? $this->fixedFolderModeResolver->resolve($resourceStruct)
+            : $this->dynamicFolderModeResolver->resolve($resourceStruct);
 
         self::assertSame($options, $resolvedOptions);
     }
@@ -73,6 +91,7 @@ final class UploadOptionsTest extends TestCase
                     'access_control' => [['access_type' => 'anonymous']],
                     'tags' => [],
                 ],
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ],
             [
                 new ResourceStruct(
@@ -95,6 +114,7 @@ final class UploadOptionsTest extends TestCase
                     'access_control' => [['access_type' => 'anonymous']],
                     'tags' => [],
                 ],
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ],
             [
                 new ResourceStruct(
@@ -134,6 +154,48 @@ final class UploadOptionsTest extends TestCase
                     'access_control' => [['access_type' => 'token']],
                     'tags' => ['backup'],
                 ],
+                CloudinaryProvider::FOLDER_MODE_FIXED,
+            ],
+            [
+                new ResourceStruct(
+                    FileStruct::fromPath('/var/storage/backup.zip'),
+                    'raw',
+                    Folder::fromPath('files/backups'),
+                    'protected',
+                    'latest_backup.zip',
+                    false,
+                    false,
+                    null,
+                    null,
+                    ['backup'],
+                    [
+                        'alt' => 'test',
+                        'original_filename' => 'something.jpg',
+                        'type' => 'product_image',
+                        'test' => 'test_value',
+                    ],
+                ),
+                'application/zip',
+                [
+                    'public_id' => 'latest_backup_zip.zip',
+                    'overwrite' => false,
+                    'invalidate' => false,
+                    'discard_original_filename' => true,
+                    'context' => [
+                        'alt' => '',
+                        'caption' => '',
+                        'original_filename' => 'latest_backup.zip',
+                        'type' => 'product_image',
+                        'test' => 'test_value',
+                    ],
+                    'type' => 'authenticated',
+                    'resource_type' => 'raw',
+                    'access_mode' => 'authenticated',
+                    'access_control' => [['access_type' => 'token']],
+                    'tags' => ['backup'],
+                    'folder' => 'files/backups',
+                ],
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
             [
                 new ResourceStruct(
@@ -166,6 +228,7 @@ final class UploadOptionsTest extends TestCase
                     'access_control' => [['access_type' => 'token']],
                     'tags' => ['backup', 'archive'],
                 ],
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ],
             [
                 new ResourceStruct(
@@ -187,6 +250,7 @@ final class UploadOptionsTest extends TestCase
                     'access_control' => [['access_type' => 'anonymous']],
                     'tags' => [],
                 ],
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
             [
                 new ResourceStruct(
@@ -217,6 +281,7 @@ final class UploadOptionsTest extends TestCase
                     'access_control' => [['access_type' => 'anonymous']],
                     'tags' => [],
                 ],
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ],
             [
                 new ResourceStruct(
@@ -230,7 +295,7 @@ final class UploadOptionsTest extends TestCase
                 ),
                 'video/mp4',
                 [
-                    'public_id' => 'videos/my_video',
+                    'public_id' => 'my_video',
                     'overwrite' => true,
                     'invalidate' => true,
                     'discard_original_filename' => true,
@@ -244,7 +309,9 @@ final class UploadOptionsTest extends TestCase
                     'access_mode' => 'authenticated',
                     'access_control' => [['access_type' => 'token']],
                     'tags' => [],
+                    'folder' => 'videos',
                 ],
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
             [
                 new ResourceStruct(
@@ -269,6 +336,7 @@ final class UploadOptionsTest extends TestCase
                     'access_control' => [['access_type' => 'anonymous']],
                     'tags' => [],
                 ],
+                CloudinaryProvider::FOLDER_MODE_FIXED,
                 false,
             ],
         ];
