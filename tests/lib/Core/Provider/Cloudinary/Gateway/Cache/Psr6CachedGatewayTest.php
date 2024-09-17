@@ -10,6 +10,7 @@ use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\StatusData;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
@@ -51,12 +52,14 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
         $this->taggableCachedGateway = new Psr6CachedGateway(
             $this->apiGatewayMock,
             $this->taggableCache,
+            CloudinaryProvider::FOLDER_MODE_FIXED,
             self::CACHE_TTL,
         );
 
         $this->nonTaggableCachedGateway = new Psr6CachedGateway(
             $this->apiGatewayMock,
             $this->nonTaggableCache,
+            CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             self::CACHE_TTL,
         );
     }

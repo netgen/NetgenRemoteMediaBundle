@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
-use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\Config\Loader\LoaderResolver;
@@ -39,10 +38,6 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
 
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-
-        if (!isset($config['provider'])) {
-            throw new InvalidArgumentException('The "provider" option must be set');
-        }
 
         $container->setParameter('netgen_remote_media.remove_unused_resources', $config['remove_unused']);
         $container->setAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.' . $config['provider']);
