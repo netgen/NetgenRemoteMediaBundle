@@ -83,8 +83,8 @@ final class VisibilityTypeTest extends TestCase
     public static function toCloudinaryAccessControlProvider(): array
     {
         return [
-            [RemoteResource::VISIBILITY_PUBLIC, ['access_type' => 'anonymous']],
-            [RemoteResource::VISIBILITY_PROTECTED, ['access_type' => 'token']],
+            [RemoteResource::VISIBILITY_PUBLIC, [['access_type' => 'anonymous']]],
+            [RemoteResource::VISIBILITY_PROTECTED, [['access_type' => 'token']]],
         ];
     }
 }

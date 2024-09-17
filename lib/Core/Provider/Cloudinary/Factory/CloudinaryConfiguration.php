@@ -8,31 +8,23 @@ use Cloudinary\Configuration\Configuration;
 
 final class CloudinaryConfiguration
 {
-    private ?Configuration $configuration = null;
-
     public function __construct(
         private string $cloudName,
         private string $apiKey,
         private string $apiSecret,
         private string $uploadPrefix,
-        private bool $useSubdomains = false
+        private bool $useSubdomains = false,
     ) {}
 
     public function create(): Configuration
     {
-        if (!$this->configuration instanceof Configuration) {
-            $this->configuration = Configuration::instance(
-                [
-                    'cloud_name' => $this->cloudName,
-                    'api_key' => $this->apiKey,
-                    'api_secret' => $this->apiSecret,
-                    'upload_prefix' => $this->uploadPrefix,
-                    'cdn_subdomain' => $this->useSubdomains,
-                    'force_version' => false,
-                ],
-            );
-        }
-
-        return $this->configuration;
+        return Configuration::instance([
+            'cloud_name' => $this->cloudName,
+            'api_key' => $this->apiKey,
+            'api_secret' => $this->apiSecret,
+            'upload_prefix' => $this->uploadPrefix,
+            'cdn_subdomain' => $this->useSubdomains,
+            'force_version' => false,
+        ]);
     }
 }

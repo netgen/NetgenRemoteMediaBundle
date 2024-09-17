@@ -61,12 +61,12 @@ final class CloudinaryApiGateway implements GatewayInterface
     }
 
     public function setServices(
-        UploadApi $uploadApi,
         AdminApi $adminApi,
+        UploadApi $uploadApi,
         SearchApi $searchApi,
     ): void {
-        $this->uploadApi = $uploadApi;
         $this->adminApi = $adminApi;
+        $this->uploadApi = $uploadApi;
         $this->searchApi = $searchApi;
     }
 
@@ -173,7 +173,7 @@ final class CloudinaryApiGateway implements GatewayInterface
         $response = $this->uploadApi->upload($fileUri, $options);
         $resource = $this->remoteResourceFactory->create((array) $response);
 
-        if ($response['existing'] ?? false) {
+        if (($response['existing'] ?? false) !== false) {
             throw new RemoteResourceExistsException($resource);
         }
 

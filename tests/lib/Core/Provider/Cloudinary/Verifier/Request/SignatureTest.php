@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Verifier\Request;
 
-use Cloudinary;
-use Cloudinary\SignatureVerifier as CloudinarySignatureVerifier;
+use Cloudinary\Utils\SignatureVerifier as CloudinarySignatureVerifier;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Verifier\Request\Signature as SignatureVerifier;
+use Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\CloudinaryConfigurationInitializer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,25 +17,11 @@ use function time;
 #[CoversClass(SignatureVerifier::class)]
 class SignatureTest extends TestCase
 {
-    private const CLOUD_NAME = 'testcloud';
-
-    private const API_KEY = 'apikey';
-
-    private const API_SECRET = 'secret';
-
     private SignatureVerifier $signatureVerifier;
 
     protected function setUp(): void
     {
-        $cloudinary = new Cloudinary();
-        $cloudinary->config(
-            [
-                'cloud_name' => self::CLOUD_NAME,
-                'api_key' => self::API_KEY,
-                'api_secret' => self::API_SECRET,
-                'cdn_subdomain' => true,
-            ],
-        );
+        CloudinaryConfigurationInitializer::getConfiguration();
 
         $this->signatureVerifier = new SignatureVerifier();
     }
@@ -77,7 +63,7 @@ class SignatureTest extends TestCase
 
         $timestamp = time();
         $payloadToSign = $body . $timestamp;
-        $signature = CloudinarySignatureVerifier::generateHmac($payloadToSign, self::API_SECRET);
+        $signature = CloudinarySignatureVerifier::generateHmac($payloadToSign, CloudinaryConfigurationInitializer::API_SECRET);
 
         $request->headers->add(
             [

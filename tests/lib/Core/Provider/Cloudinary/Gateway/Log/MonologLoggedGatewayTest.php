@@ -325,7 +325,7 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with('[INTERNAL][FREE] getAuthenticatedUrl("upload|image|folder/test_image.jpg") -> cloudinary_url_internal("upload|image|folder/test_image.jpg")');
+            ->with('[INTERNAL][FREE] getAuthenticatedUrl("upload|image|folder/test_image.jpg") -> Media::fromParams("upload|image|folder/test_image.jpg")');
 
         self::assertSame(
             $url,
@@ -353,7 +353,7 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[INTERNAL][FREE] getVariationUrl(\"{$remoteId->getRemoteId()}\") -> cloudinary_url_internal(\"{$remoteId->getRemoteId()}\")");
+            ->with("[INTERNAL][FREE] getVariationUrl(\"{$remoteId->getRemoteId()}\") -> Media::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         self::assertSame(
             'https://res.cloudinary.com/testcloud/image/upload/c_crop,h_200,w_300,x_50,y_50/folder/test_image.jpg',
@@ -523,7 +523,7 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[INTERNAL][FREE] getDownloadLink(\"{$remoteId->getRemoteId()}\") -> Cloudinary::cloudinary_url(\"{$remoteId->getRemoteId()}\")");
+            ->with("[INTERNAL][FREE] getDownloadLink(\"{$remoteId->getRemoteId()}\") -> Media::fromParams(\"{$remoteId->getRemoteId()}\")");
 
         self::assertSame(
             'https://cloudinary.com/test.zip',
