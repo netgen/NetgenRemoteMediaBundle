@@ -42,7 +42,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             type: $this->resolveResourceType($data),
             url: $this->resolveCorrectUrl($data),
             md5: $this->resolveMd5($data),
-            name: pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
+            name: $this->resolveName($data),
             originalFilename: $this->resolveOriginalFilename($data),
             version: ($data['version'] ?? null) !== null ? (string) $data['version'] : null,
             visibility: $this->resolveVisibility($data),
@@ -140,6 +140,18 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         $url = $data['secure_url'] ?? $data['url'];
 
         return $this->fileHashFactory->createHash($url);
+    }
+
+    private function resolveName(array $data): string
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromCloudinaryData($data);
+        $nameFromPublicId = pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME);
+
+        if ($this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED) {
+            return $nameFromPublicId;
+        }
+
+        return $data['display_name'] ?? $nameFromPublicId;
     }
 
     private function resolveOriginalFilename(array $data): string
