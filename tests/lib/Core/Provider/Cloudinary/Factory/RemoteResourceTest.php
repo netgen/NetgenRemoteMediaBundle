@@ -157,6 +157,7 @@ final class RemoteResourceTest extends AbstractTestCase
             [
                 [
                     'public_id' => 'other/c87hg9xfxrd4itiim3t0',
+                    'display_name' => 'c87hg9affrd4tthg12a2',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'format' => 'pdf',
                     'resource_type' => 'image',
@@ -196,6 +197,7 @@ final class RemoteResourceTest extends AbstractTestCase
             [
                 [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
+                    'display_name' => 'my_video.mp4',
                     'version' => 13711295958,
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'width' => 864,
@@ -223,7 +225,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     type: 'video',
                     url: 'https://res.cloudinary.com/testcloud/video/upload/c87hg9xfxrd4itiim3t0',
                     md5: 'a522f23sf81aa0afd03387c37e2b6eax',
-                    name: 'c87hg9xfxrd4itiim3t0',
+                    name: 'my_video.mp4',
                     originalFilename: 'c87hg9xfxrd4itiim3t0.mp4',
                     version: '13711295958',
                     size: 120253,
