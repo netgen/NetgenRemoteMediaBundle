@@ -132,7 +132,7 @@ final class RemoteResource implements RemoteResourceFactoryInterface
             return $data['context']['custom']['original_filename'];
         }
 
-        return $data['context']['original_filename'] ?? basename($data['secure_url']);
+        return $data['context']['original_filename'] ?? basename((string) $data['secure_url']);
     }
 
     /**

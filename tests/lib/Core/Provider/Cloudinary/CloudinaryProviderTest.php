@@ -367,6 +367,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
                 'caption' => $resource->getCaption(),
                 'source' => 'user_upload',
                 'type' => 'product_image',
+                'original_filename' => $resource->getOriginalFilename(),
             ],
             'tags' => $resource->getTags(),
         ];
@@ -396,6 +397,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             'context' => [
                 'alt' => $resource->getAltText(),
                 'caption' => $resource->getCaption(),
+                'original_filename' => $resource->getOriginalFilename(),
             ],
             'tags' => $resource->getTags(),
         ];
@@ -431,6 +433,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             'context' => [
                 'alt' => $resource->getAltText(),
                 'caption' => $resource->getCaption(),
+                'original_filename' => $resource->getOriginalFilename(),
             ],
             'tags' => $resource->getTags(),
         ];
