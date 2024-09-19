@@ -191,7 +191,6 @@ final class RemoteResourceTest extends AbstractTestCase
                     'bytes' => 120253,
                     'url' => 'http://res.cloudinary.com/testcloud/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
                     'secure_url' => 'http://res.cloudinary.com/testcloud/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
-                    'url' => 'http://res.cloudinary.com/testcloud/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
                     'tags' => ['tag1', 'tag2'],
                     'overwritten' => 'false',
                     'context' => [
