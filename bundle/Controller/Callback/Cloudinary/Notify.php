@@ -8,8 +8,10 @@ use Cloudinary\Api\Exception\NotFound as CloudinaryNotFound;
 use Cloudinary\Api\Upload\UploadApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Netgen\RemoteMedia\API\ProviderInterface;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CacheableGatewayInterface;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Core\RequestVerifierInterface;
@@ -31,35 +33,23 @@ final class Notify extends AbstractController
 {
     private const RESOURCE_UPLOAD = 'upload';
     private const RESOURCE_DELETE = 'delete';
+    private const RESOURCE_MOVE = 'move';
     private const RESOURCE_TAGS_CHANGED = 'resource_tags_changed';
     private const RESOURCE_CONTEXT_CHANGED = 'resource_context_changed';
     private const RESOURCE_RENAME = 'rename';
+    private const RESOURCE_DISPLAY_NAME_CHANGED = 'resource_display_name_changed';
     private const FOLDER_CREATE = 'create_folder';
     private const FOLDER_DELETE = 'delete_folder';
-
-    private GatewayInterface $gateway;
-
-    private ProviderInterface $provider;
-
-    private RequestVerifierInterface $signatureVerifier;
-
-    private EntityManagerInterface $entityManager;
-
-    private EventDispatcherInterface $eventDispatcher;
+    private const FOLDER_MOVE_RENAME = 'move_or_rename_asset_folder';
 
     public function __construct(
-        GatewayInterface $gateway,
-        ProviderInterface $provider,
-        RequestVerifierInterface $signatureVerifier,
-        EntityManagerInterface $entityManager,
-        EventDispatcherInterface $eventDispatcher,
-    ) {
-        $this->gateway = $gateway;
-        $this->provider = $provider;
-        $this->signatureVerifier = $signatureVerifier;
-        $this->entityManager = $entityManager;
-        $this->eventDispatcher = $eventDispatcher;
-    }
+        private GatewayInterface $gateway,
+        private ProviderInterface $provider,
+        private RequestVerifierInterface $signatureVerifier,
+        private EntityManagerInterface $entityManager,
+        private EventDispatcherInterface $eventDispatcher,
+        private string $folderMode,
+    ) {}
 
     public function __invoke(Request $request): Response
     {
@@ -84,6 +74,11 @@ final class Notify extends AbstractController
 
                 break;
 
+            case self::RESOURCE_MOVE:
+                $this->handleResourceMoved($requestContent);
+
+                break;
+
             case self::RESOURCE_TAGS_CHANGED:
                 $this->handleTagsChanged($requestContent);
 
@@ -99,8 +94,14 @@ final class Notify extends AbstractController
 
                 break;
 
+            case self::RESOURCE_DISPLAY_NAME_CHANGED:
+                $this->handleDisplayNameChanged($requestContent);
+
+                break;
+
             case self::FOLDER_CREATE:
             case self::FOLDER_DELETE:
+            case self::FOLDER_MOVE_RENAME:
                 $this->handleFoldersChanged();
 
                 break;
@@ -140,7 +141,7 @@ final class Notify extends AbstractController
 
             $resource
                 ->setUrl($this->gateway->getDownloadLink($cloudinaryRemoteId))
-                ->setName(pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME))
+                ->setName($this->resolveName($requestContent))
                 ->setVersion((string) $requestContent['version'])
                 ->setSize($requestContent['bytes'])
                 ->setTags($requestContent['tags']);
@@ -173,6 +174,42 @@ final class Notify extends AbstractController
             } catch (RemoteResourceNotFoundException $e) {
                 continue;
             }
+        }
+    }
+
+    private function handleResourceMoved(array $requestContent): void
+    {
+        if ($this->folderMode !== CloudinaryProvider::FOLDER_MODE_DYNAMIC) {
+            return;
+        }
+
+        if ($this->gateway instanceof CacheableGatewayInterface) {
+            $this->gateway->invalidateResourceListCache();
+            $this->gateway->invalidateFoldersCache();
+        }
+
+        foreach ($requestContent['resources'] ?? [] as $publicId => $resourceData) {
+            $cloudinaryRemoteId = new CloudinaryRemoteId(
+                $resourceData['type'],
+                $resourceData['resource_type'],
+                (string) $publicId,
+            );
+
+            $this->gateway->invalidateResourceCache($cloudinaryRemoteId);
+
+            try {
+                $resource = $this->provider->loadByRemoteId($cloudinaryRemoteId->getRemoteId());
+            } catch (RemoteResourceNotFoundException $e) {
+                continue;
+            }
+
+            $resource->setFolder(Folder::fromPath($resourceData['to_asset_folder']));
+
+            if (($resourceData['display_name'] ?? null) !== null) {
+                $resource->setName($resourceData['display_name']);
+            }
+
+            $this->provider->store($resource);
         }
     }
 
@@ -216,7 +253,7 @@ final class Notify extends AbstractController
 
             $resource
                 ->setRemoteId($cloudinaryRemoteId->getRemoteId())
-                ->setName(pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME))
+                ->setName($this->resolveName($requestContent))
                 ->setUrl($this->gateway->getDownloadLink($cloudinaryRemoteId))
                 ->setFolder($cloudinaryRemoteId->getFolder());
 
@@ -231,6 +268,41 @@ final class Notify extends AbstractController
                     ),
                 );
             }
+        }
+    }
+
+    private function handleDisplayNameChanged(array $requestContent): void
+    {
+        if ($this->folderMode !== CloudinaryProvider::FOLDER_MODE_DYNAMIC) {
+            return;
+        }
+
+        if ($this->gateway instanceof CacheableGatewayInterface) {
+            $this->gateway->invalidateResourceListCache();
+        }
+
+        foreach ($requestContent['resources'] ?? [] as $resourceData) {
+            $cloudinaryRemoteId = new CloudinaryRemoteId(
+                $resourceData['type'],
+                $resourceData['resource_type'],
+                (string) $resourceData['public_id'],
+            );
+
+            if ($this->gateway instanceof CacheableGatewayInterface) {
+                $this->gateway->invalidateResourceCache($cloudinaryRemoteId);
+            }
+
+            try {
+                $resource = $this->provider->loadByRemoteId(
+                    $cloudinaryRemoteId->getRemoteId(),
+                );
+            } catch (RemoteResourceNotFoundException $e) {
+                continue;
+            }
+
+            $resource->setName($resourceData['new_display_name']);
+
+            $this->provider->store($resource);
         }
     }
 
@@ -381,5 +453,14 @@ final class Notify extends AbstractController
         if ($this->gateway instanceof CacheableGatewayInterface) {
             $this->gateway->invalidateFoldersCache();
         }
+    }
+
+    private function resolveName(array $data): string
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromCloudinaryData($data);
+
+        return $this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED
+            ? pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME)
+            : $data['display_name'] ?? pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME);
     }
 }
