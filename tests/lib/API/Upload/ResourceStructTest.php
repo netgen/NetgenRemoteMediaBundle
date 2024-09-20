@@ -49,6 +49,7 @@ final class ResourceStructTest extends TestCase
         self::assertNull($resourceStruct->getCaption());
         self::assertEmpty($resourceStruct->getTags());
         self::assertEmpty($resourceStruct->getContext());
+        self::assertFalse($resourceStruct->doHideFilename());
     }
 
     #[DataProvider('dataProvider')]
@@ -63,7 +64,8 @@ final class ResourceStructTest extends TestCase
         ?string $altText,
         ?string $caption,
         array $tags,
-        array $context
+        array $context,
+        bool $hideFilename,
     ): void {
         $resourceStruct = new ResourceStruct(
             $fileStruct,
@@ -155,6 +157,7 @@ final class ResourceStructTest extends TestCase
                 'This is some caption',
                 ['tag1', 'tag2'],
                 [],
+                true,
             ],
             [
                 FileStruct::fromPath('var/images/test2.jpg'),
@@ -170,6 +173,7 @@ final class ResourceStructTest extends TestCase
                 [
                     'type' => 'product_image',
                 ],
+                false,
             ],
             [
                 FileStruct::fromPath('var/videos/example.mp4'),
@@ -183,6 +187,7 @@ final class ResourceStructTest extends TestCase
                 null,
                 ['example'],
                 [],
+                true,
             ],
         ];
     }

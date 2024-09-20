@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use function md5_file;
 
 #[CoversClass(FileHashFactoryInterface::class)]
+#[CoversClass(Md5FileHashFactory::class)]
 final class Md5FileHashTest extends TestCase
 {
     private FileHashFactoryInterface $md5FileHashFactory;

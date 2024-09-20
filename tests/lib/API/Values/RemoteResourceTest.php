@@ -162,6 +162,7 @@ final class RemoteResourceTest extends AbstractTestCase
             md5: 'e522f43cf89aa0afd03387c37e2b6e29',
             id: 56,
             name: 'c87hg9xfxrd4itiim3t0',
+            originalFilename: 'orig_image.jpg',
             version: '1371995958',
             visibility: 'protected',
             folder: Folder::fromPath('media/image'),
@@ -197,6 +198,7 @@ final class RemoteResourceTest extends AbstractTestCase
             ->setType('image')
             ->setUrl('https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg')
             ->setName('c87hg9xfxrd4itiim3t0')
+            ->setOriginalFilename('orig_image.jpg')
             ->setVersion('1371995958')
             ->setFolder(Folder::fromPath('media/image'))
             ->setVisibility('protected')
@@ -360,5 +362,96 @@ final class RemoteResourceTest extends AbstractTestCase
         self::assertEmpty($resource->getContext());
         self::assertFalse($resource->hasContextProperty('type'));
         self::assertNull($resource->getContextProperty('type'));
+    }
+
+    public function testRefresh(): void
+    {
+        $original = new RemoteResource(
+            remoteId: 'upload|image|c87hg9xfxrd4itiim3t0',
+            type: 'image',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/c87hg9xfxrd4itiim3t0.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 56,
+            name: 'c87hg9xfxrd4itiim3t0',
+            originalFilename: 'orig_image.jpg',
+            version: '1371995958',
+            visibility: 'protected',
+            folder: Folder::fromPath('media/image'),
+            size: 120253,
+            altText: 'alt text',
+            caption: 'caption text',
+            tags: ['tag1'],
+            metadata: [
+                'signature' => 'f8645b000be7d717599affc89a068157e4748276',
+                'width' => 864,
+                'height' => 576,
+                'format' => 'jpg',
+                'created_at' => '2013-06-23T13:59:18Z',
+                'etag' => 'test_tag',
+                'overwritten' => 'true',
+            ],
+            context: [
+                'original_filename' => 'c87hg9xfxrd4itiim3t0.jpg',
+                'type' => 'shop_product',
+            ],
+        );
+
+        $new = new RemoteResource(
+            remoteId: 'upload|image|a87hg9xfxrd4itiim3t0',
+            type: 'raw',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/a87hg9xfxrd4itiim3t0.jpg',
+            md5: 'o03jp5093hn3850ds07l35j6043s823h',
+            id: 112,
+            name: 'a87hg9xfxrd4itiim3t0',
+            originalFilename: 'old_image.jpg',
+            version: '1371995958',
+            visibility: 'public',
+            folder: Folder::fromPath('media/images'),
+            size: 157687,
+            tags: ['tag1', 'tag2'],
+            metadata: [
+                'signature' => 'f8645b000be7d717599affc89a068157e4748276',
+                'width' => 864,
+                'height' => 576,
+                'format' => 'jpg',
+                'created_at' => '2013-06-23T13:59:18Z',
+                'etag' => 'test_tag_2',
+                'overwritten' => 'true',
+            ],
+            context: [
+                'original_filename' => 'old_image.jpg',
+                'type' => 'shop_product_variant',
+            ],
+        );
+
+        $expected = new RemoteResource(
+            remoteId: 'upload|image|a87hg9xfxrd4itiim3t0',
+            type: 'raw',
+            url: 'https://res.cloudinary.com/demo/image/upload/media/image/a87hg9xfxrd4itiim3t0.jpg',
+            md5: 'o03jp5093hn3850ds07l35j6043s823h',
+            id: 56,
+            name: 'a87hg9xfxrd4itiim3t0',
+            originalFilename: 'old_image.jpg',
+            version: '1371995958',
+            visibility: 'public',
+            folder: Folder::fromPath('media/images'),
+            size: 157687,
+            tags: ['tag1', 'tag2'],
+            metadata: [
+                'signature' => 'f8645b000be7d717599affc89a068157e4748276',
+                'width' => 864,
+                'height' => 576,
+                'format' => 'jpg',
+                'created_at' => '2013-06-23T13:59:18Z',
+                'etag' => 'test_tag_2',
+                'overwritten' => 'true',
+            ],
+            context: [
+                'original_filename' => 'old_image.jpg',
+                'type' => 'shop_product_variant',
+            ],
+        );
+
+        self::assertRemoteResourceSame($expected, $original->refresh($new));
     }
 }

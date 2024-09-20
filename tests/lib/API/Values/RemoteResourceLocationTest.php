@@ -191,4 +191,46 @@ final class RemoteResourceLocationTest extends AbstractTestCase
 
         $location->getCropSettingsForVariation('large');
     }
+
+    public function testRefresh(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'raw',
+            url: 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_remote_id',
+        );
+
+        $original = new RemoteResourceLocation(
+            $resource,
+            null,
+            [
+                new CropSettings('small', 50, 80, 800, 400),
+            ],
+            'My watermark',
+            324,
+        );
+
+        $new = new RemoteResourceLocation(
+            $resource,
+            'new_source',
+            [
+                new CropSettings('medium', 112, 97, 1200, 800),
+            ],
+            'My new watermark',
+            56453,
+        );
+
+        $expected = new RemoteResourceLocation(
+            $resource,
+            'new_source',
+            [
+                new CropSettings('medium', 112, 97, 1200, 800),
+            ],
+            'My new watermark',
+        );
+
+        self::assertRemoteResourceLocationSame($expected, $original->refresh($new));
+    }
 }

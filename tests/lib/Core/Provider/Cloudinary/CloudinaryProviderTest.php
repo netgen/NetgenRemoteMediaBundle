@@ -351,6 +351,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             url: 'https://cloudinary.com/test/upload/images/image.jpg',
             md5: 'e522f43cf89aa0afd03387c37e2b6e29',
             name: 'image.jpg',
+            originalFilename: 'image.jpg',
             size: 95,
             altText: 'Test alt text',
             caption: 'Test caption',
@@ -423,6 +424,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             url: 'https://cloudinary.com/test/upload/images/image.jpg',
             md5: 'e522f43cf89aa0afd03387c37e2b6e29',
             name: 'image.jpg',
+            originalFilename: 'my_other_image.jpg',
             size: 95,
             altText: 'Test alt text',
             caption: 'Test caption',
@@ -573,6 +575,48 @@ final class CloudinaryProviderTest extends AbstractTestCase
         self::assertRemoteResourceSame(
             $expectedAuthenticatedResource,
             $this->cloudinaryProvider->authenticateRemoteResource($resource, $token),
+        );
+    }
+
+    public function testAuthenticateRemoteResourceLocation(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'authenticated|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/authenticated/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            visibility: 'protected',
+            size: 95,
+        );
+
+        $location = new RemoteResourceLocation(
+            $resource,
+            'my_source',
+            [],
+            'my watermark',
+        );
+
+        $token = AuthToken::fromDuration(50);
+
+        $url = 'https://cloudinary.com/test/authenticated/images/image.jpg?_token=dwejtri43t98u0vfdjf9420jre9f';
+
+        $expectedAuthenticatedLocation = new RemoteResourceLocation(
+            new AuthenticatedRemoteResource($resource, $url, $token),
+            'my_source',
+            [],
+            'my watermark',
+        );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('getAuthenticatedUrl')
+            ->with(CloudinaryRemoteId::fromRemoteId($resource->getRemoteId()), $token)
+            ->willReturn($url);
+
+        self::assertRemoteResourceLocationSame(
+            $expectedAuthenticatedLocation,
+            $this->cloudinaryProvider->authenticateRemoteResourceLocation($location, $token),
         );
     }
 

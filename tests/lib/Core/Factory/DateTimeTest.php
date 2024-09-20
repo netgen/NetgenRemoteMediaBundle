@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(DateTimeFactoryInterface::class)]
+#[CoversClass(DateTimeFactory::class)]
 final class DateTimeTest extends TestCase
 {
     private DateTimeFactoryInterface $dateTimeFactory;
