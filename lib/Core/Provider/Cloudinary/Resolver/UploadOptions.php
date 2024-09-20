@@ -68,7 +68,7 @@ final class UploadOptions
         ];
 
         if ($resourceStruct->getFolder() && $this->folderMode === CloudinaryProvider::FOLDER_MODE_DYNAMIC) {
-            $options['folder'] = $resourceStruct->getFolder()->getPath();
+            $options['asset_folder'] = $resourceStruct->getFolder()->getPath();
         }
 
         return $options;
