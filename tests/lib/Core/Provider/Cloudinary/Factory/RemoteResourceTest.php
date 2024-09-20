@@ -9,7 +9,7 @@ use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryConfiguration;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource as RemoteResourceFactory;
 use Netgen\RemoteMedia\Exception\Factory\InvalidDataException;
 use Netgen\RemoteMedia\Tests\AbstractTestCase;
@@ -28,8 +28,15 @@ final class RemoteResourceTest extends AbstractTestCase
     {
         $this->fileHashFactoryMock = $this->createMock(FileHashFactoryInterface::class);
 
-        $cloudinaryInstanceFactory = new CloudinaryInstance('myCloud', 'myKey', 'mySecret', 'https://api.cloudinary.com');
-        $cloudinaryInstanceFactory->create();
+        $cloudinaryConfigurationFactory = new CloudinaryConfiguration(
+            'testcloud',
+            'apikey',
+            'apisecret',
+            'https://api.cloudinary.com',
+            false,
+        );
+
+        $cloudinaryConfigurationFactory->create();
 
         $this->remoteResourceFactory = new RemoteResourceFactory(
             new ResourceTypeConverter(),
@@ -88,8 +95,8 @@ final class RemoteResourceTest extends AbstractTestCase
                     'created_at' => '2013-06-23T13:59:18Z',
                     'bytes' => 120253,
                     'type' => 'upload',
-                    'url' => 'http://res.cloudinary.com/myCloud/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
-                    'secure_url' => 'https://res.cloudinary.com/myCloud/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                    'url' => 'http://res.cloudinary.com/testcloud/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                    'secure_url' => 'https://res.cloudinary.com/testcloud/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
                     'etag' => 'e522f43cf89aa0afd03387c37e2b6e12',
                     'tags' => ['tag1'],
                     'overwritten' => 'true',
@@ -110,7 +117,7 @@ final class RemoteResourceTest extends AbstractTestCase
                 new RemoteResource(
                     remoteId: 'upload|image|c87hg9xfxrd4itiim3t0',
                     type: 'image',
-                    url: 'https://res.cloudinary.com/myCloud/image/upload/c87hg9xfxrd4itiim3t0',
+                    url: 'https://res.cloudinary.com/testcloud/image/upload/c87hg9xfxrd4itiim3t0',
                     md5: 'e522f43cf89aa0afd03387c37e2b6e12',
                     name: 'c87hg9xfxrd4itiim3t0',
                     originalFilename: 'c87hg9xfxrd4itiim3t0.jpg',
@@ -142,8 +149,8 @@ final class RemoteResourceTest extends AbstractTestCase
                     'created_at' => '2013-06-23T13:59:18Z',
                     'bytes' => 120253,
                     'type' => 'upload',
-                    'url' => 'http://res.cloudinary.com/myCloud/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
-                    'secure_url' => 'https://res.cloudinary.com/myCloud/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
+                    'url' => 'http://res.cloudinary.com/testcloud/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
+                    'secure_url' => 'https://res.cloudinary.com/testcloud/image/upload/v1371995958/other/c87hg9xfxrd4itiim3t0',
                     'etag' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     'context' => [
                         'custom' => [
@@ -154,7 +161,7 @@ final class RemoteResourceTest extends AbstractTestCase
                 new RemoteResource(
                     remoteId: 'upload|image|other/c87hg9xfxrd4itiim3t0',
                     type: 'document',
-                    url: 'https://res.cloudinary.com/myCloud/image/upload/other/c87hg9xfxrd4itiim3t0',
+                    url: 'https://res.cloudinary.com/testcloud/image/upload/other/c87hg9xfxrd4itiim3t0',
                     md5: 'e522f43cf89aa0afd03387c37e2b6e29',
                     name: 'c87hg9xfxrd4itiim3t0',
                     originalFilename: 'my_original_image.jpg',
@@ -182,8 +189,8 @@ final class RemoteResourceTest extends AbstractTestCase
                     'resource_type' => 'video',
                     'created_at' => '2013-06-23T13:59:18Z',
                     'bytes' => 120253,
-                    'url' => 'http://res.cloudinary.com/myCloud/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
-                    'secure_url' => 'http://res.cloudinary.com/myCloud/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
+                    'url' => 'http://res.cloudinary.com/testcloud/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
+                    'secure_url' => 'http://res.cloudinary.com/testcloud/video/upload/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
                     'tags' => ['tag1', 'tag2'],
                     'overwritten' => 'false',
                     'context' => [
@@ -199,7 +206,7 @@ final class RemoteResourceTest extends AbstractTestCase
                 new RemoteResource(
                     remoteId: 'upload|video|c87hg9xfxrd4itiim3t0',
                     type: 'video',
-                    url: 'https://res.cloudinary.com/myCloud/video/upload/c87hg9xfxrd4itiim3t0',
+                    url: 'https://res.cloudinary.com/testcloud/video/upload/c87hg9xfxrd4itiim3t0',
                     md5: 'a522f23sf81aa0afd03387c37e2b6eax',
                     name: 'c87hg9xfxrd4itiim3t0',
                     originalFilename: 'c87hg9xfxrd4itiim3t0.mp4',
@@ -230,8 +237,8 @@ final class RemoteResourceTest extends AbstractTestCase
                     'created_at' => '2013-06-23T13:59:18Z',
                     'bytes' => 120253,
                     'type' => 'authenticated',
-                    'url' => 'http://res.cloudinary.com/myCloud/video/authenticated/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
-                    'secure_url' => 'https://res.cloudinary.com/myCloud/video/authenticated/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
+                    'url' => 'http://res.cloudinary.com/testcloud/video/authenticated/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
+                    'secure_url' => 'https://res.cloudinary.com/testcloud/video/authenticated/v1371995958/c87hg9xfxrd4itiim3t0.mp4',
                     'tags' => ['tag1', 'tag2'],
                     'overwritten' => 'false',
                     'context' => [],
@@ -243,7 +250,7 @@ final class RemoteResourceTest extends AbstractTestCase
                 new RemoteResource(
                     remoteId: 'authenticated|video|c87hg9xfxrd4itiim3t0',
                     type: 'video',
-                    url: 'https://res.cloudinary.com/myCloud/video/authenticated/c87hg9xfxrd4itiim3t0',
+                    url: 'https://res.cloudinary.com/testcloud/video/authenticated/c87hg9xfxrd4itiim3t0',
                     md5: 'a522f23sf81aa0afd03387c37e2b6eax',
                     name: 'c87hg9xfxrd4itiim3t0',
                     originalFilename: 'c87hg9xfxrd4itiim3t0.mp4',
@@ -271,7 +278,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     'created_at' => '2013-06-23T13:59:18Z',
                     'bytes' => 12025,
                     'type' => 'authenticated',
-                    'secure_url' => 'https://res.cloudinary.com/myCloud/authenticated/video/v1371995958/c87hg9xfxrd4itiim3t0.mp3',
+                    'secure_url' => 'https://res.cloudinary.com/testcloud/authenticated/video/v1371995958/c87hg9xfxrd4itiim3t0.mp3',
                     'etag' => 'e522f43cf89aa0afd03387c37e2b6e29',
                     'overwritten' => 'false',
                     'context' => [
@@ -285,7 +292,7 @@ final class RemoteResourceTest extends AbstractTestCase
                 new RemoteResource(
                     remoteId: 'authenticated|video|c87hg9xfxrd4itiim3t0',
                     type: 'audio',
-                    url: 'https://res.cloudinary.com/myCloud/video/authenticated/c87hg9xfxrd4itiim3t0',
+                    url: 'https://res.cloudinary.com/testcloud/video/authenticated/c87hg9xfxrd4itiim3t0',
                     md5: 'e522f43cf89aa0afd03387c37e2b6e29',
                     name: 'c87hg9xfxrd4itiim3t0',
                     originalFilename: 'c87hg9xfxrd4itiim3t0.mp3',
@@ -314,7 +321,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     'created_at' => '2011-06-23T13:59:18Z',
                     'bytes' => 12025,
                     'type' => 'test',
-                    'secure_url' => 'https://res.cloudinary.com/myCloud/v1371995958/raw/media/raw/new/c87hg9xfxrd4itiim3t0',
+                    'secure_url' => 'https://res.cloudinary.com/testcloud/v1371995958/raw/media/raw/new/c87hg9xfxrd4itiim3t0',
                     'etag' => 'e522f43cf89aa0afd03387c38e2b6e29',
                     'context' => [
                         'test' => 'test',
@@ -327,7 +334,7 @@ final class RemoteResourceTest extends AbstractTestCase
                 new RemoteResource(
                     remoteId: 'test|raw|media/raw/new/c87hg9xfxrd4itiim3t0',
                     type: 'other',
-                    url: 'https://res.cloudinary.com/myCloud/raw/test/media/raw/new/c87hg9xfxrd4itiim3t0',
+                    url: 'https://res.cloudinary.com/testcloud/raw/test/media/raw/new/c87hg9xfxrd4itiim3t0',
                     md5: 'e522f43cf89aa0afd03387c38e2b6e29',
                     name: 'c87hg9xfxrd4itiim3t0',
                     originalFilename: 'test.mp4',

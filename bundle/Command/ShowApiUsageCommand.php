@@ -39,7 +39,7 @@ final class ShowApiUsageCommand extends Command
             $output->writeln($this->getPrettyKey($key) . ': <comment>' . $value . '</comment>');
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     private function getPrettyKey(string $key): string

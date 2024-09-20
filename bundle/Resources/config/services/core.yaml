@@ -15,7 +15,7 @@ services:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway
         public: false
         arguments:
-            - '@netgen_remote_media.provider.cloudinary.cloudinary_instance'
+            - '@netgen_remote_media.provider.cloudinary.cloudinary_configuration'
             - '@netgen_remote_media.provider.cloudinary.factory.remote_resource'
             - '@netgen_remote_media.provider.cloudinary.factory.search_result'
             - '@netgen_remote_media.provider.cloudinary.resolver.search_expression'
@@ -58,8 +58,8 @@ services:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType
         public: false
 
-    netgen_remote_media.provider.cloudinary.factory.cloudinary_instance:
-        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance
+    netgen_remote_media.provider.cloudinary.factory.cloudinary_configuration:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryConfiguration
         public: false
         arguments:
             - '%netgen_remote_media.parameters.cloudinary.account_name%'
@@ -68,9 +68,9 @@ services:
             - "%netgen_remote_media.parameters.cloudinary.upload_prefix%"
             - "%netgen_remote_media.parameters.use_subdomains%"
 
-    netgen_remote_media.provider.cloudinary.cloudinary_instance:
-        class: Cloudinary
-        factory: ['@netgen_remote_media.provider.cloudinary.factory.cloudinary_instance', 'create']
+    netgen_remote_media.provider.cloudinary.cloudinary_configuration:
+        class: Configuration
+        factory: ['@netgen_remote_media.provider.cloudinary.factory.cloudinary_configuration', 'create']
 
     netgen_remote_media.provider.cloudinary.factory.remote_resource:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource
