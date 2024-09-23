@@ -50,6 +50,45 @@ final class CloudinaryRemoteIdTest extends AbstractTestCase
         self::assertNull($remoteId->getFolder());
     }
 
+    public function testFromCloudinaryDataRenameNotification(): void
+    {
+        $data = [
+            'from_public_id' => 'folder/my_test_image.jpg',
+            'to_public_id' => 'folder/subfolder/my_test_image_2.jpg',
+            'resource_type' => 'image',
+            'type' => 'upload',
+            'secure_url' => 'https://cloudinary.com/cloudname/upload/image/folder/subfolder/my_test_image_2.jpg',
+            'size' => 23456,
+        ];
+
+        $remoteId = CloudinaryRemoteId::fromCloudinaryData($data);
+
+        self::assertSame(
+            'upload|image|folder/subfolder/my_test_image_2.jpg',
+            $remoteId->getRemoteId(),
+        );
+
+        self::assertSame(
+            'folder/subfolder/my_test_image_2.jpg',
+            $remoteId->getResourceId(),
+        );
+
+        self::assertSame(
+            'image',
+            $remoteId->getResourceType(),
+        );
+
+        self::assertSame(
+            'upload',
+            $remoteId->getType(),
+        );
+
+        self::assertFolderSame(
+            Folder::fromPath('folder/subfolder'),
+            $remoteId->getFolder(),
+        );
+    }
+
     public function testFromRemoteId(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('private|video|media/videos/my_test_video.mp4');
