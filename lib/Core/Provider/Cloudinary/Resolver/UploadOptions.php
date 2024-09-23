@@ -27,7 +27,7 @@ final class UploadOptions
     public function __construct(
         private VisibilityTypeConverter $visibilityTypeConverter,
         private string $folderMode,
-        private array $noExtensionMimeTypes = ['image', 'video'],
+        private array $noExtensionMimeTypes = ['image', 'video', 'audio'],
         private ?MimeTypesInterface $mimeTypes = null
     ) {
         $this->mimeTypes = $this->mimeTypes ?? MimeTypes::getDefault();
