@@ -28,7 +28,7 @@ final class CloudinaryRemoteId
         return new self(
             $data['type'] ?? 'upload',
             $data['resource_type'] ?? 'image',
-            $data['public_id'],
+            $data['public_id'] ?? $data['to_public_id'],
             $folderMode,
         );
     }
