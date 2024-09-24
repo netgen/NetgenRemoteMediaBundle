@@ -24,6 +24,7 @@ final class Configuration implements ConfigurationInterface
         $this->addCacheConfiguration($treeBuilder->getRootNode());
         $this->addCloudinaryConfiguration($treeBuilder->getRootNode());
         $this->addNamedObjectsConfiguration($treeBuilder->getRootNode());
+        $this->addTemplateConfiguration($treeBuilder->getRootNode());
 
         return $treeBuilder;
     }
@@ -223,6 +224,19 @@ final class Configuration implements ConfigurationInterface
                             ->end()
                         ->end()
                     ->end()
+                ->end()
+            ->end();
+    }
+
+    private function addTemplateConfiguration(ArrayNodeDefinition $rootNode): void
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('templates')
+                    ->children()
+                        ->scalarNode('view_resource')
+                            ->cannotBeEmpty()
+                        ->end()
                 ->end()
             ->end();
     }

@@ -38,7 +38,7 @@
           <input type="text"
                :name="this.config.inputFields.altText"
                v-model="selectedImage.alternateText"
-               v-debounce:500ms="dispatchChangeEvent"
+               v-debounce:500ms="() => dispatchChangeEvent(this.config.inputFields.altText)"
                class="media-alttext data"
           >
         </div>
@@ -52,7 +52,7 @@
           <input type="text"
                :name="this.config.inputFields.caption"
                v-model="selectedImage.caption"
-               v-debounce:500ms="dispatchChangeEvent"
+               v-debounce:500ms="() => dispatchChangeEvent(this.config.inputFields.caption)"
                class="media-caption data"
           >
         </div>
@@ -77,9 +77,37 @@
           <input type="text"
                  :name="this.config.inputFields.watermarkText"
                  v-model="selectedImage.watermarkText"
-                 v-debounce:500ms="dispatchChangeEvent"
+                 v-debounce:500ms="() => dispatchChangeEvent(this.config.inputFields.watermarkText)"
                  class="media-watermarktext data"
           >
+        </div>
+
+        <div v-if="this.isEmbed" class="ngremotemedia-css-class">
+          <span class="help-block description">
+            {{this.config.translations.preview_css_class}}
+            <i v-if="this.config.translations.preview_css_class_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_css_class_info"></i>
+          </span>
+
+          <input type="text"
+                :name="this.config.inputFields.cssClass"
+                v-model="selectedImage.cssClass"
+                v-debounce:500ms="() => dispatchChangeEvent(this.config.inputFields.cssClass)"
+                class="media-css-class data"
+          >
+        </div>
+
+        <div v-if="this.isEmbed && this.hasVariations" class="ngremotemedia-selected-variation">
+          <input type="hidden" :name="this.config.inputFields.selectedVariation" :value="selectedImage.selectedVariation">
+          <span class="help-block description">
+              {{this.config.translations.preview_selected_variation}}
+              <i v-if="this.config.translations.preview_selected_variation_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_selected_variation_info"></i>
+          </span>
+
+          <v-select
+            :options="this.variationOptions"
+            v-model="selectedImage.selectedVariation"
+            @input="() => dispatchChangeEvent(this.config.inputFields.selectedVariation)"
+          />
         </div>
       </div>
     </div>
@@ -112,14 +140,23 @@ export default {
     formattedSize() {
       return formatByteSize(this.selectedImage.size);
     },
+    isEmbed() {
+      return this.config.mode === 'embed';
+    },
+    hasVariations() {
+      return this.config.allVariations.length > 0;
+    },
+    variationOptions() {
+      return this.config.allVariations.map((variationKey) => ({ label: variationKey, value: variationKey }));
+    },
   },
   methods: {
     handleTagsInput(value) {
       this.allTags = [...new Set([...this.allTags, ...value])];
-      this.dispatchChangeEvent();
+      this.dispatchChangeEvent(this.config.inputFields.tags);
     },
-    dispatchChangeEvent() {
-      this.$emit('preview-change');
+    dispatchChangeEvent(inputField) {
+      this.$emit('preview-change', inputField);
     }
   },
   mounted() {
