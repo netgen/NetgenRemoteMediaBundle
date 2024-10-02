@@ -137,7 +137,7 @@ final class UploadTest extends TestCase
                     string $variationGroup,
                     string $variationName
                 ) => match ($location->getRemoteResource()->getRemoteId()) {
-                    'upload|image|media/image/sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
+                    'upload|image|media/image/sample_image.jpg' => $variationName === 'browse_image' ? $browseVariation : $previewVariation,
                     default => null,
                 },
             );
@@ -290,7 +290,7 @@ final class UploadTest extends TestCase
                     string $variationGroup,
                     string $variationName
                 ) => match ($location->getRemoteResource()->getRemoteId()) {
-                    'authenticated|image|media/image/sample_image.jpg' => $variationName === 'browse_protected' ? $browseVariation : $previewVariation,
+                    'authenticated|image|media/image/sample_image.jpg' => $variationName === 'browse_protected_image' ? $browseVariation : $previewVariation,
                     default => null,
                 },
             );
@@ -388,7 +388,7 @@ final class UploadTest extends TestCase
         $uploadedFileMock
             ->expects(self::exactly(3))
             ->method('getRealPath')
-            ->willReturn('/var/www/project/sample_image.jpg');
+            ->willReturn('/var/www/project/sample_video.mp4');
 
         $uploadedFileMock
             ->expects(self::exactly(2))
@@ -407,7 +407,7 @@ final class UploadTest extends TestCase
         $this->fileHashFactoryMock
             ->expects(self::once())
             ->method('createHash')
-            ->with('/var/www/project/sample_image.jpg')
+            ->with('/var/www/project/sample_video.mp4')
             ->willReturn('a522f23sf81aa0afd03387c37e2b6eax');
 
         $fileStruct = FileStruct::fromUploadedFile($uploadedFileMock);
@@ -421,13 +421,13 @@ final class UploadTest extends TestCase
         );
 
         $resource = new RemoteResource(
-            remoteId: 'upload|image|sample_image.jpg',
-            type: 'image',
-            url: 'https://cloudinary.com/test/upload/image/sample_image.jpg',
+            remoteId: 'upload|video|sample_video.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/test/upload/video/sample_video.mp4',
             md5: 'a522f23sf81aa0afd03387c37e2b6eax',
-            name: 'sample_image.jpg',
+            name: 'sample_video.mp4',
             folder: null,
-            size: 123,
+            size: 12345,
         );
 
         $this->providerMock
@@ -438,43 +438,41 @@ final class UploadTest extends TestCase
 
         $browseVariation = new RemoteResourceVariation(
             $resource,
-            'https://cloudinary.com/test/c_fit_160_120/upload/image/sample_image.jpg',
+            'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/video/sample_video.mp4',
         );
 
         $previewVariation = new RemoteResourceVariation(
             $resource,
-            'https://cloudinary.com/test/c_fit_800_600/upload/image/sample_image.jpg',
+            'https://cloudinary.com/test/c_fit_800_600/upload/video/sample_video.mp4',
         );
 
         $this->providerMock
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('buildVariation')
-            ->willReturnCallback(
-                static fn (
-                    RemoteResourceLocation $location,
-                    string $variationGroup,
-                    string $variationName
-                ) => match ($location->getRemoteResource()->getRemoteId()) {
-                    'upload|image|sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
-                    default => null,
-                },
-            );
+            ->with(new RemoteResourceLocation($resource), 'ngrm_interface', 'preview')
+            ->willReturn($previewVariation);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('buildVideoThumbnailVariation')
+            ->with(new RemoteResourceLocation($resource), 'ngrm_interface', 'browse')
+            ->willReturn($browseVariation);
 
         $expectedResponseContent = json_encode([
-            'remoteId' => 'upload|image|sample_image.jpg',
+            'remoteId' => 'upload|video|sample_video.mp4',
             'folder' => null,
             'tags' => [],
-            'type' => 'image',
+            'type' => 'video',
             'visibility' => 'public',
-            'size' => 123,
+            'size' => 12345,
             'width' => null,
             'height' => null,
-            'filename' => 'sample_image.jpg',
+            'filename' => 'sample_video.mp4',
             'originalFilename' => null,
             'format' => null,
-            'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/image/sample_image.jpg',
-            'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/image/sample_image.jpg',
-            'url' => 'https://cloudinary.com/test/upload/image/sample_image.jpg',
+            'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/video/sample_video.mp4',
+            'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/video/sample_video.mp4',
+            'url' => 'https://cloudinary.com/test/upload/video/sample_video.mp4',
             'altText' => null,
             'caption' => null,
         ]);
@@ -616,7 +614,7 @@ final class UploadTest extends TestCase
                     string $variationGroup,
                     string $variationName
                 ) => match ($location->getRemoteResource()->getRemoteId()) {
-                    'upload|image|media/image/sample_image.jpg' => $variationName === 'browse' ? $browseVariation : $previewVariation,
+                    'upload|image|media/image/sample_image.jpg' => $variationName === 'browse_image' ? $browseVariation : $previewVariation,
                     default => null,
                 },
             );

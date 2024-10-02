@@ -1,8 +1,6 @@
 # Installation instructions for Netgen Remote Media Bundle
 
-## Installation steps
-
-### Configure the bundle
+## Configure the bundle
 
 In `config.yml` add basic configuration:
 
@@ -16,10 +14,9 @@ netgen_remote_media:
 
 **Note:** Currently `cloudinary` is the only supported provider.
 
-#### Cache configuration
+### Cache configuration
 
-This bundle has a PSR6 compatible remote media provider for Cloudinary which caches all requests towards Cloudinary to prevent breaking the API rate limit and to improve performance. You can manually configure cache pool as well as desired TTOL:
-
+This bundle has a PSR6 compatible remote media provider for Cloudinary which caches all requests towards Cloudinary to prevent breaking the API rate limit and to improve performance. You can manually configure cache pool as well as desired TTL:
 
 ```yaml
 netgen_remote_media:
@@ -30,9 +27,27 @@ netgen_remote_media:
 
 Above shown are the default used parameters. For more information about creating and configuring cache pools, see https://symfony.com/doc/current/cache.html.
 
-**Warning:** the provider uses tagging functionality to be able to invalidate cache on eg. resource upload, edit or delete. In order to support cache tagging, a corresponding tag-aware pool has to be used. If you use a non-tag-aware pool, tagging will be disabled which means that you will experience some issues while using the bundle. Eg. newly uploaded resource might not be visible immediatelly (until the cache doesn't expire) in the browser or search.
+**Warning:** the provider uses tagging functionality to be able to invalidate cache on eg. resource upload, edit or delete. In order to support cache tagging, a corresponding tag-aware pool has to be used. If you use a non-tag-aware pool, tagging will be disabled which means that you will experience some issues while using the bundle. Eg. newly uploaded resource might not be visible immediately (until the cache doesn't expire) in the browser or search.
 
-#### Cloudinary configuration
+### Cloudinary configuration
+
+#### Folder mode
+
+On June 4th, 2024, Cloudinary has introduced a setting called `folder_mode` which changes the connection between folders and resource public ID. This required some changes in how this bundle works. You can read more [here](https://cloudinary.com/documentation/folder_modes).
+
+All new accounts are automatically set to `dynamic` mode and this can't be changed, while old accounts are still in `fixed` mode. This can be changed but once changed to `dynamic`, it can't be switched back.
+
+So in order to support both modes, there's a parameter with the same name here, and it has to be properly configured. You can check your mode in your Cloudinary dashboard.
+
+```yaml
+netgen_remote_media:
+    cloudinary:
+        folder_mode: dynamic
+```
+
+Default value is `dynamic` and another available mode is `fixed` (for old accounts).
+
+#### Caching and logging requests
 
 There are three Cloudinary API gateways implemented:
 
@@ -71,7 +86,7 @@ netgen_remote_media:
         encryption_key: [YOUR_CLOUDINARY_ENCRYPTION_KEY]
 ```
 
-#### Upload prefix
+### Upload prefix
 
 If you need to change Cloudinary API url (to use eg. GEO specific URLs), there's a parameter `upload_prefix` (set to `https://api.cloudinary.com` by default):
 
@@ -80,7 +95,7 @@ netgen_remote_media:
     upload_prefix: 'https://api.cloudinary.com'
 ```
 
-### Require the bundle
+## Require the bundle
 
 Run the following from your website root folder:
 
@@ -88,7 +103,7 @@ Run the following from your website root folder:
 $ composer require netgen/remote-media-bundle:^3.0
 ```
 
-### Activate the bundle
+## Activate the bundle
 
 Activate the bundle in `config/bundles.php` file by adding it to the array:
 
@@ -100,7 +115,7 @@ return [
 ];
 ```
 
-### Add routing
+## Add routing
 
 This bundle has some internal Symfony routes. In order for them to work, include them in your main `config/routes.yaml`:
 
@@ -109,11 +124,11 @@ netgen_remote_media:
     resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
 ```
 
-### Configure Cloudinary webhook notifications (optional)
+## Configure Cloudinary webhook notifications (optional)
 
 If you want to be able to manage resources through Cloudinary interface as well, you might want to configure the [Cloudinary webhook notifications](Cloudinary/WEBHOOK_NOTIFICATIONS.md). Read more on the link.
 
-### Clear the caches
+## Clear the caches
 
 Run the following command:
 
