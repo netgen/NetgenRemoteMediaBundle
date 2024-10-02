@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function is_array;
+use function str_starts_with;
 
 abstract class AbstractController
 {
@@ -83,11 +84,17 @@ abstract class AbstractController
             $variationName .= '_protected';
         }
 
+        if ($resource->getType() === RemoteResource::TYPE_IMAGE) {
+            $variationName .= '_image';
+        }
+
         $location = new RemoteResourceLocation($resource);
 
         return match ($resource->getType()) {
             RemoteResource::TYPE_IMAGE => $this->provider->buildVariation($location, 'ngrm_interface', $variationName)->getUrl(),
-            RemoteResource::TYPE_VIDEO => $this->provider->buildVideoThumbnailVariation($location, 'ngrm_interface', $variationName)->getUrl(),
+            RemoteResource::TYPE_VIDEO => str_starts_with($variationName, 'preview')
+                ? $this->provider->buildVariation($location, 'ngrm_interface', $variationName)->getUrl()
+                : $this->provider->buildVideoThumbnailVariation($location, 'ngrm_interface', $variationName)->getUrl(),
             default => '',
         };
     }

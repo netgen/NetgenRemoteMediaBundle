@@ -1,7 +1,8 @@
 <template>
   <div v-if="selectedImage.id" class="ngremotemedia-image">
     <div class="image-wrap">
-      <img v-if="selectedImage.type==='image' || selectedImage.type==='video'" :src="selectedImage.previewUrl" ref="image" />
+      <img v-if="selectedImage.type==='image'" :src="selectedImage.previewUrl" ref="image" />
+      <video v-else-if="selectedImage.type==='video'" :src="selectedImage.previewUrl" controls></video>
 
       <span v-else class="file-placeholder">
         <span class="icon-doc">

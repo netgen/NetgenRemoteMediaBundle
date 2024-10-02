@@ -827,7 +827,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/video/upload/media/example',
+            'https://res.cloudinary.com/testcloud/video/upload/f_jpg/media/example',
             $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId),
         );
     }
@@ -837,9 +837,15 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
+        $options = [
+            'transformation' => [[
+                'fetch_format' => 'png',
+            ]],
+        ];
+
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/video/upload/media/example?__cld_token__=exp=1672531200~hmac=91194b19360a54349173e96f49135838cdabd3cdb07d97eb2f12b60d8168e5cc',
-            $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId, [], $token),
+            'https://res.cloudinary.com/testcloud/video/upload/f_jpg/media/example?__cld_token__=exp=1672531200~hmac=566ec5046c26254b12b2dc36c84c1392034a9a5e627af0ef9abc853464b4a6ef',
+            $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId, $options, $token),
         );
     }
 

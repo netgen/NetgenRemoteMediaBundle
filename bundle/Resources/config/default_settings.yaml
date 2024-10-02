@@ -20,20 +20,43 @@ image_variations:
             transformations:
                 - { name: limit, params: [500, 500] }
                 - { name: quality, params: ['auto', 'eco'] }
+        preview_image:
+            transformations:
+                - { name: limit, params: [500, 500] }
+                - { name: quality, params: ['auto', 'eco'] }
+                - { name: format, params: ['jpg'] }
         preview_protected:
             transformations:
                 - { name: limit, params: [500, 500] }
                 - { name: quality, params: ['auto', 'eco'] }
+                - { name: effect, params: ['pixelate', 4] }
+        preview_protected_image:
+            transformations:
+                - { name: limit, params: [500, 500] }
+                - { name: quality, params: ['auto', 'eco'] }
+                - { name: format, params: ['jpg'] }
                 - { name: effect, params: ['pixelate', 4] }
         browse:
             transformations:
                 - { name: crop, params: [174, 100] }
                 - { name: fill, params: [174, 100] }
                 - { name: quality, params: ['auto', 'eco'] }
-
+        browse_image:
+            transformations:
+                - { name: crop, params: [174, 100] }
+                - { name: fill, params: [174, 100] }
+                - { name: quality, params: ['auto', 'eco'] }
+                - { name: format, params: ['jpg'] }
         browse_protected:
             transformations:
                 - { name: crop, params: [174, 100] }
                 - { name: fill, params: [174, 100] }
                 - { name: quality, params: ['auto', 'eco'] }
+                - { name: effect, params: ['pixelate', 1] }
+        browse_protected_image:
+            transformations:
+                - { name: crop, params: [174, 100] }
+                - { name: fill, params: [174, 100] }
+                - { name: quality, params: ['auto', 'eco'] }
+                - { name: format, params: ['jpg'] }
                 - { name: effect, params: ['pixelate', 1] }

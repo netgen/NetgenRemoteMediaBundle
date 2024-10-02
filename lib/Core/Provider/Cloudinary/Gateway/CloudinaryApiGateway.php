@@ -34,6 +34,7 @@ use function array_merge;
 use function count;
 use function date;
 use function floor;
+use function is_array;
 use function log;
 use function max;
 use function min;
@@ -310,6 +311,12 @@ final class CloudinaryApiGateway implements GatewayInterface
                 $this->authTokenResolver->resolve($token),
             );
         }
+
+        if (!is_array($options['transformation'] ?? null)) {
+            $options['transformation'] = [];
+        }
+
+        $options['transformation']['fetch_format'] = 'jpg';
 
         return (string) Image::fromParams($remoteId->getResourceId(), $options)->toUrl();
     }
