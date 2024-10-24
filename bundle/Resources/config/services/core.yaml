@@ -72,13 +72,19 @@ services:
         class: Cloudinary
         factory: ['@netgen_remote_media.provider.cloudinary.factory.cloudinary_instance', 'create']
 
+    netgen_remote_media.provider.cloudinary.factory.md5_file_hash:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\Md5FileHash
+        public: false
+        arguments:
+            - '@netgen_remote_media.factory.md5_file_hash'
+
     netgen_remote_media.provider.cloudinary.factory.remote_resource:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\RemoteResource
         public: false
         arguments:
             - '@netgen_remote_media.provider.cloudinary.converter.resource_type'
             - '@netgen_remote_media.provider.cloudinary.converter.visibility_type'
-            - '@netgen_remote_media.factory.md5_file_hash'
+            - '@netgen_remote_media.provider.cloudinary.factory.md5_file_hash'
 
     netgen_remote_media.provider.cloudinary.factory.search_result:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\SearchResult
