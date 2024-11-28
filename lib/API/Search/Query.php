@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Search;
 
+use Netgen\RemoteMedia\API\Values\Folder;
+
 use function get_object_vars;
 use function http_build_query;
 use function implode;
@@ -13,7 +15,7 @@ final class Query
 {
     /**
      * @param string[] $types
-     * @param \Netgen\RemoteMedia\API\Values\Folder[] $folders
+     * @param Folder[] $folders
      * @param string[] $visibilities
      * @param string[] $tags
      * @param string[] $remoteIds

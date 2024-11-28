@@ -109,36 +109,36 @@ final class BrowseTest extends TestCase
 
         $image1BrowseVariation = new RemoteResourceVariation(
             $result->getResources()[0],
-            'https://cloudinary.com/test/c_fit_160_120/upload/images/image.jpg',
+            'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/images/image.jpg',
         );
 
         $image1PreviewVariation = new RemoteResourceVariation(
             $result->getResources()[0],
-            'https://cloudinary.com/test/c_fit_800_600/upload/images/image.jpg',
+            'https://cloudinary.com/test/c_fit_800_600/f_jpg/upload/images/image.jpg',
         );
 
         $image2BrowseVariation = new RemoteResourceVariation(
             $result->getResources()[1],
-            'https://cloudinary.com/test/c_fit_160_120/upload/images/image2.jpg',
+            'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/images/image2.jpg',
         );
 
         $image2PreviewVariation = new RemoteResourceVariation(
             $result->getResources()[1],
-            'https://cloudinary.com/test/c_fit_800_600/upload/images/image2.jpg',
+            'https://cloudinary.com/test/c_fit_800_600/f_jpg/upload/images/image2.jpg',
         );
 
         $videoThumbnailBrowseVariation = new RemoteResourceVariation(
             $result->getResources()[2],
-            'https://cloudinary.com/test/c_fit_160_120/upload/videos/example.mp4.jpg',
+            'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/videos/example.mp4.jpg',
         );
 
-        $videoThumbnailPreviewVariation = new RemoteResourceVariation(
+        $videoPreviewVariation = new RemoteResourceVariation(
             $result->getResources()[2],
             'https://cloudinary.com/test/c_fit_800_600/upload/videos/example.mp4.jpg',
         );
 
         $this->providerMock
-            ->expects(self::exactly(4))
+            ->expects(self::exactly(5))
             ->method('buildVariation')
             ->willReturnCallback(
                 static fn (
@@ -146,25 +146,18 @@ final class BrowseTest extends TestCase
                     string $variationGroup,
                     string $variationName
                 ) => match ($location->getRemoteResource()->getRemoteId()) {
-                    'upload|image|media/images/image.jpg' => $variationName === 'browse' ? $image1BrowseVariation : $image1PreviewVariation,
-                    'upload|image|media/images/image2.jpg' => $variationName === 'browse' ? $image2BrowseVariation : $image2PreviewVariation,
+                    'upload|image|media/images/image.jpg' => $variationName === 'browse_image' ? $image1BrowseVariation : $image1PreviewVariation,
+                    'upload|image|media/images/image2.jpg' => $variationName === 'browse_image' ? $image2BrowseVariation : $image2PreviewVariation,
+                    'upload|image|media/videos/example.mp4' => $videoPreviewVariation,
                     default => null,
                 },
             );
 
         $this->providerMock
-            ->expects(self::exactly(2))
+            ->expects(self::once())
             ->method('buildVideoThumbnailVariation')
-            ->willReturnCallback(
-                static fn (
-                    RemoteResourceLocation $location,
-                    string $variationGroup,
-                    string $variationName
-                ) => match ($location->getRemoteResource()->getRemoteId()) {
-                    'upload|image|media/videos/example.mp4' => $variationName === 'browse' ? $videoThumbnailBrowseVariation : $videoThumbnailPreviewVariation,
-                    default => null,
-                },
-            );
+            ->with(new RemoteResourceLocation($result->getResources()[2]), 'ngrm_interface', 'browse')
+            ->willReturn($videoThumbnailBrowseVariation);
 
         $expectedResponseContent = json_encode([
             'hits' => [
@@ -180,8 +173,8 @@ final class BrowseTest extends TestCase
                     'filename' => 'image.jpg',
                     'originalFilename' => null,
                     'format' => null,
-                    'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/images/image.jpg',
-                    'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/images/image.jpg',
+                    'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/images/image.jpg',
+                    'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/f_jpg/upload/images/image.jpg',
                     'url' => 'https://cloudinary.com/test/upload/images/image.jpg',
                     'altText' => null,
                     'caption' => null,
@@ -198,8 +191,8 @@ final class BrowseTest extends TestCase
                     'filename' => 'image2.jpg',
                     'originalFilename' => 'orig_image2.jpg',
                     'format' => null,
-                    'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/images/image2.jpg',
-                    'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/images/image2.jpg',
+                    'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/images/image2.jpg',
+                    'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/f_jpg/upload/images/image2.jpg',
                     'url' => 'https://cloudinary.com/test/upload/images/image2.jpg',
                     'altText' => 'test alt text',
                     'caption' => 'test caption',
@@ -216,7 +209,7 @@ final class BrowseTest extends TestCase
                     'filename' => 'example.mp4',
                     'originalFilename' => 'example.mp4',
                     'format' => null,
-                    'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/upload/videos/example.mp4.jpg',
+                    'browseUrl' => 'https://cloudinary.com/test/c_fit_160_120/f_jpg/upload/videos/example.mp4.jpg',
                     'previewUrl' => 'https://cloudinary.com/test/c_fit_800_600/upload/videos/example.mp4.jpg',
                     'url' => 'https://cloudinary.com/test/upload/videos/example.mp4',
                     'altText' => 'some alt text',

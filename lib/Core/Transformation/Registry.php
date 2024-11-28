@@ -8,7 +8,7 @@ use Netgen\RemoteMedia\Exception\TransformationHandlerNotFoundException;
 
 final class Registry
 {
-    /** @var \Netgen\RemoteMedia\Core\Transformation\HandlerInterface[] */
+    /** @var HandlerInterface[] */
     private array $transformationHandlers = [];
 
     public function addHandler(string $provider, string $identifier, HandlerInterface $transformationHandler): void

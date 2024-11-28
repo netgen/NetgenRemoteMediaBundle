@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection;
 
-use InvalidArgumentException;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\NetgenRemoteMediaExtension;
 use PHPUnit\Framework\Attributes\CoversClass;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 #[CoversClass(NetgenRemoteMediaExtension::class)]
 final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
@@ -17,10 +17,10 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->setParameter('kernel.bundles', []);
         $this->load();
 
-        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_name', 'testname');
-        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_key', 'testkey');
-        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.account_secret', 'testsecret');
-        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.testprovider.upload_prefix', 'testprefix');
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.cloudinary.account_name', 'testname');
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.cloudinary.account_key', 'testkey');
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.cloudinary.account_secret', 'testsecret');
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.parameters.cloudinary.upload_prefix', 'testprefix');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.remove_unused_resources', false);
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.pool_name', 'cache.app');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.ttl', 3600);
@@ -46,12 +46,12 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider.cloudinary.gateway.inner', 'netgen_remote_media.provider.cloudinary.gateway.api');
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider.cloudinary.gateway', 'netgen_remote_media.provider.cloudinary.gateway.cached');
-        $this->assertContainerBuilderHasAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.testprovider');
+        $this->assertContainerBuilderHasAlias('netgen_remote_media.provider', 'netgen_remote_media.provider.cloudinary');
     }
 
     public function testWithoutProviderParameter(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidConfigurationException::class);
         $this->load(['provider' => null]);
     }
 
@@ -102,7 +102,7 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
     protected function getMinimalConfiguration(): array
     {
         return [
-            'provider' => 'testprovider',
+            'provider' => 'cloudinary',
             'account_name' => 'testname',
             'account_key' => 'testkey',
             'account_secret' => 'testsecret',

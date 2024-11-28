@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\API\Search;
 
+use Netgen\RemoteMedia\API\Values\RemoteResource;
+
 final class Result
 {
     /**
-     * @param \Netgen\RemoteMedia\API\Values\RemoteResource[] $resources
+     * @param RemoteResource[] $resources
      */
     public function __construct(
         private int $totalCount,
@@ -26,7 +28,7 @@ final class Result
     }
 
     /**
-     * @return \Netgen\RemoteMedia\API\Values\RemoteResource[]
+     * @return RemoteResource[]
      */
     public function getResources(): array
     {

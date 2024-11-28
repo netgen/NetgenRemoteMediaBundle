@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Factory;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryConfiguration;
@@ -20,7 +21,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 #[CoversClass(RemoteResourceFactory::class)]
 final class RemoteResourceTest extends AbstractTestCase
 {
-    protected RemoteResourceFactory $remoteResourceFactory;
+    protected RemoteResourceFactory $fixedFolderModeRemoteResourceFactory;
+
+    protected RemoteResourceFactory $dynamicFolderModeRemoteResourceFactory;
 
     protected FileHashFactoryInterface|MockObject $fileHashFactoryMock;
 
@@ -38,15 +41,23 @@ final class RemoteResourceTest extends AbstractTestCase
 
         $cloudinaryConfigurationFactory->create();
 
-        $this->remoteResourceFactory = new RemoteResourceFactory(
+        $this->fixedFolderModeRemoteResourceFactory = new RemoteResourceFactory(
             new ResourceTypeConverter(),
             new VisibilityTypeConverter(),
             $this->fileHashFactoryMock,
+            CloudinaryProvider::FOLDER_MODE_FIXED,
+        );
+
+        $this->dynamicFolderModeRemoteResourceFactory = new RemoteResourceFactory(
+            new ResourceTypeConverter(),
+            new VisibilityTypeConverter(),
+            $this->fileHashFactoryMock,
+            CloudinaryProvider::FOLDER_MODE_DYNAMIC,
         );
     }
 
     #[DataProvider('createDataProvider')]
-    public function testCreate(array $cloudinaryResponse, RemoteResource $expectedResource): void
+    public function testCreate(array $cloudinaryResponse, RemoteResource $expectedResource, string $folderMode = CloudinaryProvider::FOLDER_MODE_FIXED): void
     {
         if (!($cloudinaryResponse['etag'] ?? null)) {
             $this->fileHashFactoryMock
@@ -56,7 +67,9 @@ final class RemoteResourceTest extends AbstractTestCase
                 ->willReturn('a522f23sf81aa0afd03387c37e2b6eax');
         }
 
-        $resource = $this->remoteResourceFactory->create($cloudinaryResponse);
+        $resource = $folderMode === CloudinaryProvider::FOLDER_MODE_FIXED
+            ? $this->fixedFolderModeRemoteResourceFactory->create($cloudinaryResponse)
+            : $this->dynamicFolderModeRemoteResourceFactory->create($cloudinaryResponse);
 
         self::assertRemoteResourceSame(
             $expectedResource,
@@ -69,7 +82,7 @@ final class RemoteResourceTest extends AbstractTestCase
         self::expectException(InvalidDataException::class);
         self::expectExceptionMessage('Missing required "public_id" property!');
 
-        $this->remoteResourceFactory->create(['test' => 'test']);
+        $this->fixedFolderModeRemoteResourceFactory->create(['test' => 'test']);
     }
 
     public function testCreateMissingUrls(): void
@@ -77,7 +90,7 @@ final class RemoteResourceTest extends AbstractTestCase
         self::expectException(InvalidDataException::class);
         self::expectExceptionMessage('Missing required "secure_url" or "url" property!');
 
-        $this->remoteResourceFactory->create(['public_id' => 'test']);
+        $this->dynamicFolderModeRemoteResourceFactory->create(['public_id' => 'test']);
     }
 
     public static function createDataProvider(): array
@@ -139,10 +152,12 @@ final class RemoteResourceTest extends AbstractTestCase
                         'source' => 'user_upload',
                     ],
                 ),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ],
             [
                 [
                     'public_id' => 'other/c87hg9xfxrd4itiim3t0',
+                    'display_name' => 'c87hg9affrd4tthg12a2',
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'format' => 'pdf',
                     'resource_type' => 'image',
@@ -177,10 +192,12 @@ final class RemoteResourceTest extends AbstractTestCase
                         'created_at' => '2013-06-23T13:59:18Z',
                     ],
                 ),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
             ],
             [
                 [
                     'public_id' => 'c87hg9xfxrd4itiim3t0',
+                    'display_name' => 'my_video.mp4',
                     'version' => 13711295958,
                     'signature' => 'f8645b000be7d717599affc89a068157e4748276',
                     'width' => 864,
@@ -208,7 +225,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     type: 'video',
                     url: 'https://res.cloudinary.com/testcloud/video/upload/c87hg9xfxrd4itiim3t0',
                     md5: 'a522f23sf81aa0afd03387c37e2b6eax',
-                    name: 'c87hg9xfxrd4itiim3t0',
+                    name: 'my_video.mp4',
                     originalFilename: 'c87hg9xfxrd4itiim3t0.mp4',
                     version: '13711295958',
                     size: 120253,
@@ -224,6 +241,7 @@ final class RemoteResourceTest extends AbstractTestCase
                         'overwritten' => 'false',
                     ],
                 ),
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
             [
                 [
@@ -246,6 +264,7 @@ final class RemoteResourceTest extends AbstractTestCase
                         'variation1',
                         'variation2',
                     ],
+                    'asset_folder' => 'media/test',
                 ],
                 new RemoteResource(
                     remoteId: 'authenticated|video|c87hg9xfxrd4itiim3t0',
@@ -256,6 +275,7 @@ final class RemoteResourceTest extends AbstractTestCase
                     originalFilename: 'c87hg9xfxrd4itiim3t0.mp4',
                     version: '1371995958',
                     visibility: 'protected',
+                    folder: Folder::fromPath('media/test'),
                     size: 120253,
                     tags: ['tag1', 'tag2'],
                     metadata: [
@@ -267,6 +287,7 @@ final class RemoteResourceTest extends AbstractTestCase
                         'overwritten' => 'false',
                     ],
                 ),
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
             [
                 [
@@ -310,6 +331,7 @@ final class RemoteResourceTest extends AbstractTestCase
                         'test' => 'test',
                     ],
                 ),
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
             [
                 [
@@ -353,6 +375,52 @@ final class RemoteResourceTest extends AbstractTestCase
                         'test2' => 'test2',
                     ],
                 ),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
+            ],
+            [
+                [
+                    'public_id' => 'c87hg9xfxrd4itiim3t0',
+                    'version' => 1371995958,
+                    'signature' => 'f8645b000be7d717599affc89a068157e4748276',
+                    'format' => 'zip',
+                    'resource_type' => 'raw',
+                    'created_at' => '2011-06-23T13:59:18Z',
+                    'bytes' => 12025,
+                    'type' => 'test',
+                    'secure_url' => 'https://res.cloudinary.com/testcloud/v1371995958/raw/media/raw/new/c87hg9xfxrd4itiim3t0',
+                    'etag' => 'e522f43cf89aa0afd03387c38e2b6e29',
+                    'context' => [
+                        'test' => 'test',
+                        'custom' => [
+                            'test2' => 'test2',
+                        ],
+                        'original_filename' => 'test.mp4',
+                    ],
+                    'asset_folder' => 'media/raw/new',
+                ],
+                new RemoteResource(
+                    remoteId: 'test|raw|c87hg9xfxrd4itiim3t0',
+                    type: 'other',
+                    url: 'https://res.cloudinary.com/testcloud/raw/test/c87hg9xfxrd4itiim3t0',
+                    md5: 'e522f43cf89aa0afd03387c38e2b6e29',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    originalFilename: 'test.mp4',
+                    version: '1371995958',
+                    visibility: 'public',
+                    folder: Folder::fromPath('media/raw/new'),
+                    size: 12025,
+                    tags: [],
+                    metadata: [
+                        'signature' => 'f8645b000be7d717599affc89a068157e4748276',
+                        'format' => 'zip',
+                        'created_at' => '2011-06-23T13:59:18Z',
+                    ],
+                    context: [
+                        'test' => 'test',
+                        'test2' => 'test2',
+                    ],
+                ),
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
         ];
     }

@@ -41,7 +41,7 @@ class RemoteResourceLocation
     }
 
     /**
-     * @return \Netgen\RemoteMedia\API\Values\CropSettings[]
+     * @return CropSettings[]
      */
     public function getCropSettings(): array
     {
@@ -49,7 +49,7 @@ class RemoteResourceLocation
     }
 
     /**
-     * @param \Netgen\RemoteMedia\API\Values\CropSettings[] $cropSettings
+     * @param CropSettings[] $cropSettings
      */
     public function setCropSettings(array $cropSettings): self
     {

@@ -7,7 +7,9 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory;
 use Cloudinary\Asset\Media;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
+use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource as RemoteResourceValue;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
@@ -25,25 +27,26 @@ final class RemoteResource implements RemoteResourceFactoryInterface
     public function __construct(
         private ResourceTypeConverter $resourceTypeConverter,
         private VisibilityTypeConverter $visibilityTypeConverter,
-        private FileHashFactoryInterface $fileHashFactory
+        private FileHashFactoryInterface $fileHashFactory,
+        private string $folderMode,
     ) {}
 
     public function create($data): RemoteResourceValue
     {
         $this->validateData($data);
 
-        $cloudinaryRemoteId = CloudinaryRemoteId::fromCloudinaryData($data);
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromCloudinaryData($data, $this->folderMode);
 
         return new RemoteResourceValue(
             remoteId: $cloudinaryRemoteId->getRemoteId(),
             type: $this->resolveResourceType($data),
             url: $this->resolveCorrectUrl($data),
             md5: $this->resolveMd5($data),
-            name: pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME),
+            name: $this->resolveName($data),
             originalFilename: $this->resolveOriginalFilename($data),
             version: ($data['version'] ?? null) !== null ? (string) $data['version'] : null,
             visibility: $this->resolveVisibility($data),
-            folder: $cloudinaryRemoteId->getFolder(),
+            folder: $this->resolveFolder($data),
             size: $data['bytes'] ?? 0,
             altText: $this->resolveAltText($data),
             caption: $this->resolveCaption($data),
@@ -97,6 +100,19 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         return $this->visibilityTypeConverter->fromCloudinaryType($type);
     }
 
+    private function resolveFolder(array $data): ?Folder
+    {
+        if ($this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED) {
+            return CloudinaryRemoteId::fromCloudinaryData($data, $this->folderMode)->getFolder();
+        }
+
+        if (($data['asset_folder'] ?? '') === '') {
+            return null;
+        }
+
+        return Folder::fromPath($data['asset_folder']);
+    }
+
     private function resolveAltText(array $data): ?string
     {
         if (($data['context']['custom']['alt_text'] ?? null) !== null) {
@@ -124,6 +140,18 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         $url = $data['secure_url'] ?? $data['url'];
 
         return $this->fileHashFactory->createHash($url);
+    }
+
+    private function resolveName(array $data): string
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromCloudinaryData($data);
+        $nameFromPublicId = pathinfo($cloudinaryRemoteId->getResourceId(), PATHINFO_FILENAME);
+
+        if ($this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED) {
+            return $nameFromPublicId;
+        }
+
+        return $data['display_name'] ?? $nameFromPublicId;
     }
 
     private function resolveOriginalFilename(array $data): string

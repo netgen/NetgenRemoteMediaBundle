@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\DependencyInjection;
 
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -32,7 +33,8 @@ final class Configuration implements ConfigurationInterface
     {
         $rootNode
             ->children()
-                ->scalarNode('provider')
+                ->enumNode('provider')
+                    ->values(['cloudinary'])
                     ->defaultValue('cloudinary')
                 ->end()
                 ->scalarNode('account_name')
@@ -160,6 +162,10 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                         ->scalarNode('encryption_key')
                             ->defaultNull()
+                        ->end()
+                        ->enumNode('folder_mode')
+                            ->values([CloudinaryProvider::FOLDER_MODE_DYNAMIC, CloudinaryProvider::FOLDER_MODE_FIXED])
+                            ->defaultValue(CloudinaryProvider::FOLDER_MODE_DYNAMIC)
                         ->end()
                     ->end()
                 ->end()

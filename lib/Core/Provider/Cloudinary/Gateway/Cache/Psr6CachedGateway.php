@@ -39,7 +39,8 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
     public function __construct(
         private GatewayInterface $gateway,
         private CacheItemPoolInterface $cache,
-        private int $ttl = 7200
+        private string $folderMode,
+        private int $ttl = 7200,
     ) {}
 
     public function usage(): StatusData
@@ -198,7 +199,7 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
     {
         $uploadResult = $this->gateway->upload($fileUri, $options);
 
-        $this->invalidateResourceCache(CloudinaryRemoteId::fromRemoteId($uploadResult->getRemoteId()));
+        $this->invalidateResourceCache(CloudinaryRemoteId::fromRemoteId($uploadResult->getRemoteId(), $this->folderMode));
         $this->invalidateResourceListCache();
         $this->invalidateFoldersCache();
         $this->invalidateTagsCache();
