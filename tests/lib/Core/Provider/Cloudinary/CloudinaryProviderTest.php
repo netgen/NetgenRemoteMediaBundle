@@ -764,7 +764,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             'type' => 'upload',
             'resource_type' => 'image',
             'access_mode' => 'public',
-            'access_control' => ['access_type' => 'anonymous'],
+            'access_control' => [['access_type' => 'anonymous']],
             'tags' => [],
         ];
 

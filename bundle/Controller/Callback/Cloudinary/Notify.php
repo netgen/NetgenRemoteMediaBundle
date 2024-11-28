@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary;
 
-use Cloudinary\Api\NotFound;
-use Cloudinary\Uploader;
+use Cloudinary\Api\Exception\NotFound as CloudinaryNotFound;
+use Cloudinary\Api\Upload\UploadApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
@@ -197,14 +197,14 @@ final class Notify extends AbstractController
         /** @var RemoteResource $resource */
         foreach ($result as $resource) {
             try {
-                $apiResource = Uploader::explicit(
+                $apiResource = (new UploadApi())->explicit(
                     $requestContent['to_public_id'],
                     [
                         'type' => CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getType(),
                         'resource_type' => CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getResourceType(),
                     ],
                 );
-            } catch (NotFound $e) {
+            } catch (CloudinaryNotFound $e) {
                 continue;
             }
 
@@ -293,7 +293,7 @@ final class Notify extends AbstractController
             $filenameFromUrl = basename((string) $publicId);
 
             try {
-                $apiResource = Uploader::explicit(
+                $apiResource = (new UploadApi())->explicit(
                     CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getResourceId(),
                     [
                         'type' => CloudinaryRemoteId::fromRemoteId($resource->getRemoteId())->getType(),
@@ -302,7 +302,7 @@ final class Notify extends AbstractController
                 );
 
                 basename($apiResource['secure_url']);
-            } catch (NotFound $e) {
+            } catch (CloudinaryNotFound $e) {
                 continue;
             }
 

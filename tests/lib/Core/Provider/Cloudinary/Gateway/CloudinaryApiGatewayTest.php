@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Gateway;
 
 use ArrayObject;
-use Cloudinary;
-use Cloudinary\Api;
-use Cloudinary\Api\Response as CloudinaryApiResponse;
-use Cloudinary\Search;
-use Cloudinary\Uploader as CloudinaryUploader;
+use Cloudinary\Api\Admin\AdminApi;
+use Cloudinary\Api\ApiResponse;
+use Cloudinary\Api\Exception\NotFound;
+use Cloudinary\Api\Search\SearchApi;
+use Cloudinary\Api\Upload\UploadApi;
 use DateTimeImmutable;
 use Netgen\RemoteMedia\API\Factory\RemoteResource as RemoteResourceFactoryInterface;
 use Netgen\RemoteMedia\API\Factory\SearchResult as SearchResultFactoryInterface;
@@ -21,39 +21,26 @@ use Netgen\RemoteMedia\API\Values\StatusData;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\ResourceType as ResourceTypeConverter;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as VisibilityTypeConverter;
-use Netgen\RemoteMedia\Core\Provider\Cloudinary\Factory\CloudinaryInstance;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenResolver;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use Netgen\RemoteMedia\Exception\FolderNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\CloudinaryConfigurationInitializer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
-use stdClass;
-
-use function json_encode;
 
 #[CoversClass(CloudinaryApiGateway::class)]
 class CloudinaryApiGatewayTest extends AbstractTestCase
 {
-    protected const CLOUD_NAME = 'testcloud';
-
-    protected const API_KEY = 'apikey';
-
-    protected const API_SECRET = 'secret';
-
-    protected const UPLOAD_PREFIX = 'https://api.cloudinary.com';
-
-    protected const ENCRYPTION_KEY = '38128319a3a49e1d589a31a217e1a3f8';
-
     protected CloudinaryApiGateway $apiGateway;
 
-    protected Cloudinary|MockObject $cloudinaryMock;
+    protected AdminApi|MockObject $adminApiMock;
 
-    protected Api|MockObject $cloudinaryApiMock;
+    protected MockObject|UploadApi $uploadApiMock;
 
-    protected MockObject|Search $cloudinarySearchMock;
+    protected MockObject|SearchApi $searchApiMock;
 
     protected MockObject|RemoteResourceFactoryInterface $remoteResourceFactoryMock;
 
@@ -61,35 +48,27 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
 
     protected function setUp(): void
     {
-        $this->cloudinaryMock = $this->createMock(Cloudinary::class);
-        $this->cloudinaryApiMock = $this->createMock(Api::class);
-        $this->cloudinarySearchMock = $this->createMock(Search::class);
+        $this->adminApiMock = $this->createMock(AdminApi::class);
+        $this->uploadApiMock = $this->createMock(UploadApi::class);
+        $this->searchApiMock = $this->createMock(SearchApi::class);
         $this->remoteResourceFactoryMock = $this->createMock(RemoteResourceFactoryInterface::class);
         $this->searchResultFactoryMock = $this->createMock(SearchResultFactoryInterface::class);
 
-        $cloudinaryInstanceFactory = new CloudinaryInstance(
-            self::CLOUD_NAME,
-            self::API_KEY,
-            self::API_SECRET,
-            self::UPLOAD_PREFIX,
-        );
-
         $this->apiGateway = new CloudinaryApiGateway(
-            $cloudinaryInstanceFactory->create(),
+            CloudinaryConfigurationInitializer::getConfiguration(),
             $this->remoteResourceFactoryMock,
             $this->searchResultFactoryMock,
             new SearchExpressionResolver(
                 new ResourceTypeConverter(),
                 new VisibilityTypeConverter(),
             ),
-            new AuthTokenResolver(self::ENCRYPTION_KEY),
+            new AuthTokenResolver(CloudinaryConfigurationInitializer::ENCRYPTION_KEY),
         );
 
         $this->apiGateway->setServices(
-            $this->cloudinaryMock,
-            new CloudinaryUploader(),
-            $this->cloudinaryApiMock,
-            $this->cloudinarySearchMock,
+            $this->adminApiMock,
+            $this->uploadApiMock,
+            $this->searchApiMock,
         );
     }
 
@@ -130,17 +109,15 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             ],
         ];
 
-        $response = new stdClass();
-        $response->body = json_encode($data);
-        $response->headers = [
-            'X-FeatureRateLimit-Reset' => '12.11.2021 17:00:00',
-            'X-FeatureRateLimit-Limit' => 1567654320,
-            'X-FeatureRateLimit-Remaining' => 1965,
+        $headers = [
+            'X-FeatureRateLimit-Reset' => ['12.11.2021 17:00:00'],
+            'X-FeatureRateLimit-Limit' => ['1567654320'],
+            'X-FeatureRateLimit-Remaining' => ['1965'],
         ];
 
-        $response = new CloudinaryApiResponse($response);
+        $response = new ApiResponse($data, $headers);
 
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
             ->method('usage')
             ->willReturn($response);
@@ -243,7 +220,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
 
         self::assertTrue($usage->has('credits_limit'));
         self::assertSame(
-            135,
+            135.0,
             $usage->get('credits_limit'),
         );
 
@@ -255,15 +232,8 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
     {
         self::assertTrue($this->apiGateway->isEncryptionEnabled());
 
-        $cloudinaryInstanceFactory = new CloudinaryInstance(
-            self::CLOUD_NAME,
-            self::API_KEY,
-            self::API_SECRET,
-            self::UPLOAD_PREFIX,
-        );
-
         $apiGateway = new CloudinaryApiGateway(
-            $cloudinaryInstanceFactory->create(),
+            CloudinaryConfigurationInitializer::getConfiguration(),
             $this->remoteResourceFactoryMock,
             $this->searchResultFactoryMock,
             new SearchExpressionResolver(
@@ -278,7 +248,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
 
     public function testCountResources(): void
     {
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
             ->method('usage')
             ->willReturn(['resources' => 1200]);
@@ -293,19 +263,19 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
     {
         $expression = 'folder:folderName/*';
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('expression')
             ->with($expression)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
-            ->method('max_results')
+            ->method('maxResults')
             ->with(0)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('execute')
             ->willReturn($this->getSearchResponse());
@@ -329,9 +299,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             ],
         ];
 
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
-            ->method('root_folders')
+            ->method('rootFolders')
             ->willReturn(
                 new ArrayObject(
                     ['folders' => $folders],
@@ -360,7 +330,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             ],
         ];
 
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
             ->method('subfolders')
             ->with('folder_1')
@@ -381,11 +351,11 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
 
     public function testListSubFoldersInNonExistingParent(): void
     {
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
             ->method('subfolders')
             ->with('non_existing_folder/non_existing_subfolder')
-            ->willThrowException(new Api\NotFound());
+            ->willThrowException(new NotFound());
 
         self::expectException(FolderNotFoundException::class);
         self::expectExceptionMessage('Folder with path "non_existing_folder/non_existing_subfolder" was not found on remote.');
@@ -397,9 +367,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
     {
         $path = 'folder/subfolder/my_new_folder';
 
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
-            ->method('create_folder')
+            ->method('createFolder')
             ->with($path);
 
         $this->apiGateway->createFolder($path);
@@ -417,9 +387,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             'secure_url' => 'https://res.cloudinary.com/demo/image/upload/folder/test_image.jpg',
         ];
 
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
-            ->method('resource')
+            ->method('asset')
             ->with(
                 $remoteId->getResourceId(),
                 [
@@ -457,9 +427,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|folder/test_image.jpg');
 
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::once())
-            ->method('resource')
+            ->method('asset')
             ->with(
                 $remoteId->getResourceId(),
                 [
@@ -470,7 +440,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                     'exif' => true,
                 ],
             )
-            ->willThrowException(new Api\NotFound());
+            ->willThrowException(new NotFound());
 
         self::expectException(RemoteResourceNotFoundException::class);
         self::expectExceptionMessage('Remote resource with ID "upload|image|folder/test_image.jpg" not found.');
@@ -534,31 +504,31 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             . ' AND test* AND (folder:"test_folder") AND (tags:"tag1")';
         $limit = 25;
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('expression')
             ->with($expression)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
-            ->method('max_results')
+            ->method('maxResults')
             ->with($limit)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::exactly(2))
-            ->method('with_field')
+            ->method('withField')
             ->willReturnMap(
                 [
-                    ['context', $this->cloudinarySearchMock],
-                    ['tags', $this->cloudinarySearchMock],
+                    ['context', $this->searchApiMock],
+                    ['tags', $this->searchApiMock],
                 ],
             );
 
         $apiResponse = $this->getSearchResponse();
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('execute')
             ->willReturn($apiResponse);
@@ -606,37 +576,37 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $limit = 25;
         $nextCursor = 'gfr566455fdg';
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('expression')
             ->with($expression)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
-            ->method('max_results')
+            ->method('maxResults')
             ->with($limit)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::exactly(2))
-            ->method('with_field')
+            ->method('withField')
             ->willReturnMap(
                 [
-                    ['context', $this->cloudinarySearchMock],
-                    ['tags', $this->cloudinarySearchMock],
+                    ['context', $this->searchApiMock],
+                    ['tags', $this->searchApiMock],
                 ],
             );
 
         $apiResponse = $this->getSearchResponse();
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
-            ->method('next_cursor')
+            ->method('nextCursor')
             ->willReturn($nextCursor)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('execute')
             ->willReturn($apiResponse);
@@ -683,21 +653,21 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             . ' AND (!format="m4a") AND (!format="mp3") AND (!format="ogg") AND (!format="opus") AND (!format="wav")))'
             . ' AND test* AND (folder:"test_folder") AND (tags:"tag1")';
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('expression')
             ->with($expression)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
-            ->method('max_results')
+            ->method('maxResults')
             ->with(0)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
         $apiResponse = $this->getSearchResponse();
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('execute')
             ->willReturn($apiResponse);
@@ -717,7 +687,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
 
     public function testListTags(): void
     {
-        $this->cloudinaryApiMock
+        $this->adminApiMock
             ->expects(self::exactly(3))
             ->method('tags')
             ->willReturnMap(
@@ -786,31 +756,31 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             . ' AND test* AND (folder:"test_folder") AND (etag="e522f43cf89aa0afd03387c37e2b6e29")';
         $limit = 1;
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('expression')
             ->with($expression)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
-            ->method('max_results')
+            ->method('maxResults')
             ->with($limit)
-            ->willReturn($this->cloudinarySearchMock);
+            ->willReturn($this->searchApiMock);
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::exactly(2))
-            ->method('with_field')
+            ->method('withField')
             ->willReturnMap(
                 [
-                    ['context', $this->cloudinarySearchMock],
-                    ['tags', $this->cloudinarySearchMock],
+                    ['context', $this->searchApiMock],
+                    ['tags', $this->searchApiMock],
                 ],
             );
 
         $apiResponse = $this->getSearchResponse();
 
-        $this->cloudinarySearchMock
+        $this->searchApiMock
             ->expects(self::once())
             ->method('execute')
             ->willReturn($apiResponse);
@@ -854,7 +824,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|video|media/example');
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/video/upload/media/example.jpg',
+            'https://res.cloudinary.com/testcloud/video/upload/media/example',
             $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId),
         );
     }
@@ -865,7 +835,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            'https://res.cloudinary.com/testcloud/video/upload/media/example.jpg?__cld_token__=exp=1672531200~hmac=62ddaa466e7acbd07699201e33c8c1865b78b91365bd727f7b88ac524f02095b',
+            'https://res.cloudinary.com/testcloud/video/upload/media/example?__cld_token__=exp=1672531200~hmac=91194b19360a54349173e96f49135838cdabd3cdb07d97eb2f12b60d8168e5cc',
             $this->apiGateway->getVideoThumbnail($cloudinaryRemoteId, [], $token),
         );
     }
@@ -875,7 +845,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/example');
 
         self::assertSame(
-            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example' />",
+            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example'/>",
             $this->apiGateway->getImageTag($cloudinaryRemoteId),
         );
     }
@@ -886,7 +856,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $token = AuthToken::fromExpiresAt(new DateTimeImmutable('2023/1/1'));
 
         self::assertSame(
-            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example?__cld_token__=exp=1672531200~hmac=7de9d88403fd7cfa56802fa4a6371d32866df3b23ccfa769e45ce4b7e297045a' />",
+            "<img src='https://res.cloudinary.com/testcloud/image/upload/media/example?__cld_token__=exp=1672531200~hmac=7de9d88403fd7cfa56802fa4a6371d32866df3b23ccfa769e45ce4b7e297045a'/>",
             $this->apiGateway->getImageTag($cloudinaryRemoteId, [], $token),
         );
     }
@@ -918,21 +888,18 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         );
     }
 
-    private function getCloudinaryResponse(array $data): CloudinaryApiResponse
+    private function getCloudinaryResponse(array $data): ApiResponse
     {
-        $response = new stdClass();
-        $response->body = json_encode($data);
-        $response->responseCode = 200;
-        $response->headers = [
+        $headers = [
             'X-FeatureRateLimit-Reset' => 'test',
             'X-FeatureRateLimit-Limit' => 'test',
             'X-FeatureRateLimit-Remaining' => 'test',
         ];
 
-        return new CloudinaryApiResponse($response);
+        return new ApiResponse($data, $headers);
     }
 
-    private function getSearchResponse(): CloudinaryApiResponse
+    private function getSearchResponse(): ApiResponse
     {
         return $this->getCloudinaryResponse([
             'total_count' => 200,
