@@ -29,7 +29,7 @@ final class RefreshStoredResourcesCommand extends Command
 
     private int $batchSize = 500;
 
-    /** @var \Netgen\RemoteMedia\API\Values\RemoteResource[] */
+    /** @var RemoteResource[] */
     private array $resourcesToDelete;
 
     public function __construct(
@@ -97,7 +97,7 @@ final class RefreshStoredResourcesCommand extends Command
     }
 
     /**
-     * @return \Netgen\RemoteMedia\API\Values\RemoteResource[]
+     * @return RemoteResource[]
      */
     private function getBatch(int $limit, int $offset): array
     {
@@ -105,7 +105,7 @@ final class RefreshStoredResourcesCommand extends Command
     }
 
     /**
-     * @param \Netgen\RemoteMedia\API\Values\RemoteResource[] $resources
+     * @param RemoteResource[] $resources
      */
     private function refreshResources(array $resources): void
     {
@@ -135,7 +135,7 @@ final class RefreshStoredResourcesCommand extends Command
     /**
      * @param string[] $remoteIds
      *
-     * @return array<string, \Netgen\RemoteMedia\API\Values\RemoteResource>
+     * @return array<string, RemoteResource>
      */
     private function getRemoteBatch(array $remoteIds): array
     {

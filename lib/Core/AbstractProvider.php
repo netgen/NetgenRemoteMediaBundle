@@ -46,7 +46,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @return \Netgen\RemoteMedia\API\Values\Folder[]
+     * @return Folder[]
      *
      * @throws NotSupportedException
      */
@@ -356,7 +356,7 @@ abstract class AbstractProvider implements ProviderInterface
     }
 
     /**
-     * @return \Netgen\RemoteMedia\API\Values\Folder[]
+     * @return Folder[]
      */
     abstract protected function internalListFolders(?Folder $parent = null): array;
 

@@ -52,7 +52,7 @@ abstract class AbstractController
     }
 
     /**
-     * @param \Netgen\RemoteMedia\API\Values\RemoteResource[] $resources
+     * @param RemoteResource[] $resources
      */
     protected function formatResources(array $resources): array
     {

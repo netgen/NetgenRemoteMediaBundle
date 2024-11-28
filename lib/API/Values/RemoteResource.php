@@ -42,7 +42,7 @@ class RemoteResource
      * @param string[] $tags
      * @param array<string,mixed> $metadata
      * @param array<string,mixed> $context
-     * @param Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[] $locations
+     * @param Collection|RemoteResourceLocation[] $locations
      */
     public function __construct(
         private string $remoteId,
@@ -343,7 +343,7 @@ class RemoteResource
     }
 
     /**
-     * @return Collection|\Netgen\RemoteMedia\API\Values\RemoteResourceLocation[]
+     * @return Collection|RemoteResourceLocation[]
      */
     public function getLocations(): array|Collection
     {

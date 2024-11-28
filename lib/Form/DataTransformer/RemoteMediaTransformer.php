@@ -110,7 +110,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
     }
 
     /**
-     * @return \Netgen\RemoteMedia\API\Values\CropSettings[]
+     * @return CropSettings[]
      */
     private function resolveCropSettings(array $data): array
     {
