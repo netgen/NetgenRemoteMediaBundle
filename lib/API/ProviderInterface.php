@@ -75,7 +75,11 @@ interface ProviderInterface
 
     public function store(RemoteResource $resource): RemoteResource;
 
+    public function move(RemoteResource $resource, ?Folder $destinationFolder): RemoteResource;
+
     public function remove(RemoteResource $resource): void;
+
+    public function moveOnRemote(RemoteResource $resource, ?Folder $destinationFolder): RemoteResource;
 
     public function deleteFromRemote(RemoteResource $resource): void;
 

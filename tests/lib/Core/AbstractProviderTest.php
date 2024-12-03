@@ -547,6 +547,103 @@ final class AbstractProviderTest extends AbstractTestCase
         );
     }
 
+    public function testMoveWithoutStored(): void
+    {
+        $remoteResource = new RemoteResource(
+            remoteId: 'media/images/test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+            folder: Folder::fromPath('media/images'),
+            size: 250,
+        );
+
+        $newRemoteResource = new RemoteResource(
+            remoteId: 'new/media/images/test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/new/media/images/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'test_image.jpg',
+            folder: Folder::fromPath('new/media/images'),
+            size: 250,
+        );
+
+        $this->provider
+            ->expects(self::once())
+            ->method('moveOnRemote')
+            ->with($remoteResource, Folder::fromPath('new/media/images'))
+            ->willReturn($newRemoteResource);
+
+        $this->resourceRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['remoteId' => $remoteResource->getRemoteId()])
+            ->willReturn(null);
+
+        $returnedRemoteResource = $this->provider->move($remoteResource, Folder::fromPath('new/media/images'));
+
+        self::assertRemoteResourceSame($newRemoteResource, $returnedRemoteResource);
+    }
+
+    public function testMoveWithStored(): void
+    {
+        $remoteResource = new RemoteResource(
+            remoteId: 'media/images/test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 5,
+            name: 'test_image.jpg',
+            folder: Folder::fromPath('media/images'),
+            size: 250,
+        );
+
+        $newRemoteResource = new RemoteResource(
+            remoteId: 'new/media/images/test_image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/new/media/images/test_image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 5,
+            name: 'test_image.jpg',
+            folder: Folder::fromPath('new/media/images'),
+            size: 250,
+        );
+
+        $this->provider
+            ->expects(self::once())
+            ->method('moveOnRemote')
+            ->with($remoteResource, Folder::fromPath('new/media/images'))
+            ->willReturn($newRemoteResource);
+
+        $this->resourceRepository
+            ->expects(self::once())
+            ->method('find')
+            ->with(5)
+            ->willReturn($remoteResource);
+
+        $dateTime = new DateTimeImmutable('now');
+        $newRemoteResource->setUpdatedAt($dateTime);
+
+        $this->dateTimeFactory
+            ->expects(self::once())
+            ->method('createCurrent')
+            ->willReturn($dateTime);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('persist')
+            ->with($newRemoteResource);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('flush');
+
+        $returnedRemoteResource = $this->provider->move($remoteResource, Folder::fromPath('new/media/images'));
+
+        self::assertRemoteResourceSame($newRemoteResource, $returnedRemoteResource);
+    }
+
     public function testRemove(): void
     {
         $remoteResource = new RemoteResource(

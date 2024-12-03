@@ -41,6 +41,8 @@ final class CloudinaryProviderTest extends AbstractTestCase
 {
     protected CloudinaryProvider $cloudinaryProvider;
 
+    protected CloudinaryProvider $cloudinaryProviderDynamic;
+
     protected GatewayInterface|MockObject $gateway;
 
     protected LoggerInterface|MockObject $logger;
@@ -56,7 +58,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
         $entityManager
-            ->expects(self::exactly(2))
+            ->expects(self::exactly(4))
             ->method('getRepository')
             ->willReturnMap(
                 [
@@ -83,6 +85,28 @@ final class CloudinaryProviderTest extends AbstractTestCase
             [],
             [],
             CloudinaryProvider::FOLDER_MODE_FIXED,
+            $this->logger,
+            false,
+        );
+
+        $this->cloudinaryProviderDynamic = new CloudinaryProvider(
+            new Registry(),
+            new VariationResolver(
+                new Registry(),
+                new NullLogger(),
+            ),
+            $entityManager,
+            $this->gateway,
+            new DateTimeFactory(),
+            new UploadOptionsResolver(
+                new VisibilityTypeConverter(),
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+                ['image', 'video'],
+                $this->mimeTypes,
+            ),
+            [],
+            [],
+            CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             $this->logger,
             false,
         );
@@ -234,6 +258,100 @@ final class CloudinaryProviderTest extends AbstractTestCase
         self::expectExceptionMessage('Remote resource with ID "image2.jpg" not found.');
 
         $this->cloudinaryProvider->loadFromRemote('image2.jpg');
+    }
+
+    public function testMoveOnRemoteFixed(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 3,
+            name: 'image.jpg',
+            folder: Folder::fromPath('media/images'),
+            size: 95,
+        );
+
+        $fetchedResource = new RemoteResource(
+            remoteId: 'upload|image|new/media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            folder: Folder::fromPath('new/media/images'),
+            size: 95,
+        );
+
+        $targetResource = new RemoteResource(
+            remoteId: 'upload|image|new/media/images/image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/images/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            id: 3,
+            name: 'image.jpg',
+            folder: Folder::fromPath('new/media/images'),
+            size: 95,
+        );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('rename')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId('upload|image|media/images/image.jpg'),
+                CloudinaryRemoteId::fromRemoteId('upload|image|new/media/images/image.jpg'),
+            );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with(CloudinaryRemoteId::fromRemoteId('upload|image|new/media/images/image.jpg'))
+            ->willReturn($fetchedResource);
+
+        $returnedResource = $this->cloudinaryProvider->moveOnRemote($resource, Folder::fromPath('new/media/images'));
+
+        self::assertRemoteResourceSame($targetResource, $returnedResource);
+    }
+
+    public function testMoveOnRemoteDynamic(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            folder: Folder::fromPath('media/images'),
+            size: 95,
+        );
+
+        $targetResource = new RemoteResource(
+            remoteId: 'upload|image|image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'image.jpg',
+            folder: Folder::fromPath('new/media/images'),
+            size: 95,
+        );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('update')
+            ->with(
+                CloudinaryRemoteId::fromRemoteId('upload|image|image.jpg', CloudinaryProvider::FOLDER_MODE_DYNAMIC),
+                ['asset_folder' => 'new/media/images'],
+            );
+
+        $this->gateway
+            ->expects(self::once())
+            ->method('get')
+            ->with(CloudinaryRemoteId::fromRemoteId('upload|image|image.jpg', CloudinaryProvider::FOLDER_MODE_DYNAMIC))
+            ->willReturn($targetResource);
+
+        $returnedResource = $this->cloudinaryProviderDynamic->moveOnRemote($resource, Folder::fromPath('new/media/images'));
+
+        self::assertRemoteResourceSame($targetResource, $returnedResource);
     }
 
     public function testDeleteFromRemote(): void

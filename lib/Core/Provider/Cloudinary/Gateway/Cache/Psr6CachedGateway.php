@@ -216,6 +216,14 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
         $this->invalidateTagsCache();
     }
 
+    public function rename(CloudinaryRemoteId $fromRemoteId, CloudinaryRemoteId $toRemoteId): void
+    {
+        $this->gateway->rename($fromRemoteId, $toRemoteId);
+
+        $this->invalidateResourceCache($fromRemoteId);
+        $this->invalidateResourceListCache();
+    }
+
     public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void
     {
         $this->gateway->removeAllTagsFromResource($remoteId);

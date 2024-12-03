@@ -154,6 +154,26 @@ abstract class AbstractProvider implements ProviderInterface
         return $existingResource;
     }
 
+    public function move(RemoteResource $resource, ?Folder $destinationFolder): RemoteResource
+    {
+        $newResource = $this->moveOnRemote($resource, $destinationFolder);
+
+        try {
+            $existingResource = $resource->getId() !== null
+                ? $this->load($resource->getId())
+                : $this->loadByRemoteId($resource->getRemoteId());
+
+            $existingResource->refresh($newResource);
+
+            $this->store($existingResource);
+
+            return $existingResource;
+        } catch (RemoteResourceNotFoundException $e) {
+        }
+
+        return $newResource;
+    }
+
     public function remove(RemoteResource $resource): void
     {
         $this->entityManager->remove($resource);

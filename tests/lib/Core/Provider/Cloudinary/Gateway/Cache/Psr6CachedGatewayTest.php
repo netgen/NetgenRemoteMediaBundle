@@ -534,6 +534,19 @@ final class Psr6CachedGatewayTest extends AbstractTestCase
         $this->nonTaggableCachedGateway->update($remoteId, $options);
     }
 
+    public function testRename(): void
+    {
+        $fromRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/images/test_image.jpg');
+        $toRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|new/media/images/test_image.jpg');
+
+        $this->apiGatewayMock
+            ->expects(self::once())
+            ->method('rename')
+            ->with($fromRemoteId, $toRemoteId);
+
+        $this->nonTaggableCachedGateway->rename($fromRemoteId, $toRemoteId);
+    }
+
     public function testRemoveAllTagsFromResource(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');

@@ -193,6 +193,21 @@ final class CloudinaryApiGateway implements GatewayInterface
         }
     }
 
+    public function rename(CloudinaryRemoteId $fromRemoteId, CloudinaryRemoteId $toRemoteId): void
+    {
+        $options = [
+            'type' => $toRemoteId->getType(),
+            'resource_type' => $toRemoteId->getResourceType(),
+            'invalidate' => true,
+        ];
+
+        try {
+            $this->uploadApi->rename($fromRemoteId->getRemoteId(), $toRemoteId->getRemoteId(), $options);
+        } catch (CloudinaryNotFound $e) {
+            throw new RemoteResourceNotFoundException($fromRemoteId->getRemoteId());
+        }
+    }
+
     public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void
     {
         $options = [
