@@ -145,7 +145,7 @@ final class CloudinaryProvider extends AbstractProvider
         }
 
         $options = [
-            'asset_folder' => $destinationFolder?->getPath(),
+            'asset_folder' => $destinationFolder instanceof Folder ? $destinationFolder->getPath() : '/',
         ];
 
         $this->gateway->update(
