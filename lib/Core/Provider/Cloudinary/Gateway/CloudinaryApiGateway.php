@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway;
 
 use Cloudinary\Api\Admin\AdminApi;
+use Cloudinary\Api\Exception\BadRequest as CloudinaryBadRequest;
 use Cloudinary\Api\Exception\NotFound as CloudinaryNotFound;
 use Cloudinary\Api\Search\SearchApi;
 use Cloudinary\Api\Upload\UploadApi;
@@ -202,9 +203,15 @@ final class CloudinaryApiGateway implements GatewayInterface
         ];
 
         try {
-            $this->uploadApi->rename($fromRemoteId->getRemoteId(), $toRemoteId->getRemoteId(), $options);
+            $this->uploadApi->rename($fromRemoteId->getResourceId(), $toRemoteId->getResourceId(), $options);
         } catch (CloudinaryNotFound $e) {
             throw new RemoteResourceNotFoundException($fromRemoteId->getRemoteId());
+        } catch (CloudinaryBadRequest $e) {
+            try {
+                throw new RemoteResourceExistsException($this->get($toRemoteId));
+            } catch (CloudinaryNotFound $e2) {
+                throw $e;
+            }
         }
     }
 
