@@ -276,6 +276,24 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->gateway->update($remoteId, $options);
     }
 
+    public function testRename(): void
+    {
+        $fromRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/images/test_image.jpg');
+        $toRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|new/media/images/test_image.jpg');
+
+        $this->apiGatewayMock
+            ->expects(self::once())
+            ->method('rename')
+            ->with($fromRemoteId, $toRemoteId);
+
+        $this->loggerMock
+            ->expects(self::once())
+            ->method('info')
+            ->with("[API][FREE] rename(\"{$fromRemoteId->getRemoteId()}\", \"{$toRemoteId->getRemoteId()}\") -> Cloudinary\\Uploader::explicit(\"{$fromRemoteId->getRemoteId()}\")");
+
+        $this->gateway->rename($fromRemoteId, $toRemoteId);
+    }
+
     public function testRemoveAllTagsFromResource(): void
     {
         $remoteId = CloudinaryRemoteId::fromRemoteId('upload|image|test_image.jpg');

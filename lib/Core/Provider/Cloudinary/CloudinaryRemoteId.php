@@ -12,7 +12,9 @@ use function array_pop;
 use function count;
 use function explode;
 use function implode;
+use function ltrim;
 use function sprintf;
+use function str_replace;
 
 final class CloudinaryRemoteId
 {
@@ -81,10 +83,7 @@ final class CloudinaryRemoteId
     public function getFolder(): ?Folder
     {
         if ($this->folderMode !== CloudinaryProvider::FOLDER_MODE_FIXED) {
-            throw new NotSupportedException(
-                'Cloudinary',
-                sprintf('fetching folder from path in "%s" folder mode', $this->folderMode),
-            );
+            throw new NotSupportedException('Cloudinary', sprintf('fetching folder from path in "%s" folder mode', $this->folderMode));
         }
 
         $resourceIdParts = explode('/', $this->resourceId);
@@ -95,5 +94,29 @@ final class CloudinaryRemoteId
         }
 
         return Folder::fromPath(implode('/', $resourceIdParts));
+    }
+
+    public function move(?Folder $folder): self
+    {
+        if ($this->folderMode !== CloudinaryProvider::FOLDER_MODE_FIXED) {
+            throw new NotSupportedException('Cloudinary', sprintf('moving to folder via public ID in %s folder mode', $this->folderMode));
+        }
+
+        $this->resourceId = $this->resolveNewResourceId($folder);
+
+        return $this;
+    }
+
+    private function resolveNewResourceId(?Folder $folder): string
+    {
+        $resourceId = $this->getFolder() instanceof Folder
+            ? ltrim(str_replace($this->getFolder()->getPath(), '', $this->resourceId), '/')
+            : $this->resourceId;
+
+        if (!$folder instanceof Folder) {
+            return $resourceId;
+        }
+
+        return sprintf('%s/%s', $folder->getPath(), $resourceId);
     }
 }

@@ -131,6 +131,33 @@ final class CloudinaryProvider extends AbstractProvider
         throw new RemoteResourceNotFoundException($remoteId);
     }
 
+    public function moveOnRemote(RemoteResource $resource, ?Folder $destinationFolder): RemoteResource
+    {
+        if ($this->folderMode === self::FOLDER_MODE_FIXED) {
+            $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode);
+            $newCloudinaryRemoteId = (clone $cloudinaryRemoteId)->move($destinationFolder);
+
+            $this->gateway->rename($cloudinaryRemoteId, $newCloudinaryRemoteId);
+
+            return $resource->refresh(
+                $this->loadFromRemote($newCloudinaryRemoteId->getRemoteId()),
+            );
+        }
+
+        $options = [
+            'asset_folder' => $destinationFolder instanceof Folder ? $destinationFolder->getPath() : '/',
+        ];
+
+        $this->gateway->update(
+            CloudinaryRemoteId::fromRemoteId($resource->getRemoteId(), $this->folderMode),
+            $options,
+        );
+
+        return $resource->refresh(
+            $this->loadFromRemote($resource->getRemoteId()),
+        );
+    }
+
     public function deleteFromRemote(RemoteResource $resource): void
     {
         $this->gateway->delete(

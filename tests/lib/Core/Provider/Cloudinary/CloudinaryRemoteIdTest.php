@@ -165,4 +165,50 @@ final class CloudinaryRemoteIdTest extends AbstractTestCase
 
         CloudinaryRemoteId::fromRemoteId('image|some_image.jpg');
     }
+
+    public function testMove(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/images/some_image.jpg');
+        $cloudinaryRemoteId->move(Folder::fromPath('new/media/images'));
+
+        self::assertSame('upload|image|new/media/images/some_image.jpg', $cloudinaryRemoteId->getRemoteId());
+        self::assertSame('new/media/images/some_image.jpg', $cloudinaryRemoteId->getResourceId());
+        self::assertSame('upload', $cloudinaryRemoteId->getType());
+        self::assertSame('image', $cloudinaryRemoteId->getResourceType());
+        self::assertFolderSame(Folder::fromPath('new/media/images'), $cloudinaryRemoteId->getFolder());
+    }
+
+    public function testMoveToRoot(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|media/images/some_image.jpg');
+        $cloudinaryRemoteId->move(null);
+
+        self::assertSame('upload|image|some_image.jpg', $cloudinaryRemoteId->getRemoteId());
+        self::assertSame('some_image.jpg', $cloudinaryRemoteId->getResourceId());
+        self::assertSame('upload', $cloudinaryRemoteId->getType());
+        self::assertSame('image', $cloudinaryRemoteId->getResourceType());
+        self::assertNull($cloudinaryRemoteId->getFolder());
+    }
+
+    public function testMoveFromRoot(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|some_image.jpg');
+        $cloudinaryRemoteId->move(Folder::fromPath('new/media/images'));
+
+        self::assertSame('upload|image|new/media/images/some_image.jpg', $cloudinaryRemoteId->getRemoteId());
+        self::assertSame('new/media/images/some_image.jpg', $cloudinaryRemoteId->getResourceId());
+        self::assertSame('upload', $cloudinaryRemoteId->getType());
+        self::assertSame('image', $cloudinaryRemoteId->getResourceType());
+        self::assertFolderSame(Folder::fromPath('new/media/images'), $cloudinaryRemoteId->getFolder());
+    }
+
+    public function testMoveDynamicFolder(): void
+    {
+        $cloudinaryRemoteId = CloudinaryRemoteId::fromRemoteId('upload|image|some_image.jpg', CloudinaryProvider::FOLDER_MODE_DYNAMIC);
+
+        self::expectException(NotSupportedException::class);
+        self::expectExceptionMessage('Provider "Cloudinary" does not support "moving to folder via public ID in dynamic folder mode".');
+
+        $cloudinaryRemoteId->move(Folder::fromPath('test'));
+    }
 }

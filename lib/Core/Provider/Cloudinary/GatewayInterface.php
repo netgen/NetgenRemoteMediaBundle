@@ -57,6 +57,12 @@ interface GatewayInterface
 
     /**
      * @throws RemoteResourceNotFoundException
+     * @throws RemoteResourceExistsException
+     */
+    public function rename(CloudinaryRemoteId $fromRemoteId, CloudinaryRemoteId $toRemoteId): void;
+
+    /**
+     * @throws RemoteResourceNotFoundException
      */
     public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void;
 

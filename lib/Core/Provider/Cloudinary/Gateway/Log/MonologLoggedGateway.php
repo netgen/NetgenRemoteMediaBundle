@@ -93,6 +93,13 @@ final class MonologLoggedGateway implements GatewayInterface
         $this->gateway->update($remoteId, $options);
     }
 
+    public function rename(CloudinaryRemoteId $fromRemoteId, CloudinaryRemoteId $toRemoteId): void
+    {
+        $this->logger->info("[API][FREE] rename(\"{$fromRemoteId->getRemoteId()}\", \"{$toRemoteId->getRemoteId()}\") -> Cloudinary\\Uploader::explicit(\"{$fromRemoteId->getRemoteId()}\")");
+
+        $this->gateway->rename($fromRemoteId, $toRemoteId);
+    }
+
     public function removeAllTagsFromResource(CloudinaryRemoteId $remoteId): void
     {
         $this->logger->info("[API][FREE] removeAllTagsFromResource(\"{$remoteId->getRemoteId()}\") -> Cloudinary\\Api::remove_all_tags(\"{$remoteId->getRemoteId()}\")");
