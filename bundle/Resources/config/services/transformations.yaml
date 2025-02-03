@@ -17,6 +17,12 @@ services:
         tags:
             - { name: netgen_remote_media.transformation_handler, alias: fit, provider: cloudinary }
 
+    netgen_remote_media.handler.cloudinary.flags:
+        class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Flags
+        public: false
+        tags:
+            - { name: netgen_remote_media.transformation_handler, alias: flags, provider: cloudinary }
+
     netgen_remote_media.handler.cloudinary.limit:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\Limit
         public: false
