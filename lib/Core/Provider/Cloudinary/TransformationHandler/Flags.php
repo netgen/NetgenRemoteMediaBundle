@@ -6,6 +6,8 @@ namespace Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler;
 
 use Netgen\RemoteMedia\Core\Transformation\HandlerInterface;
 
+use function array_intersect;
+
 /**
  * Class Flags.
  *
