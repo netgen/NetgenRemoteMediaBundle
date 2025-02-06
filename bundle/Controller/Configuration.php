@@ -163,7 +163,7 @@ final class Configuration extends AbstractController
 
         $variations = $this->variationResolver->getAvailableVariations($variationGroup);
 
-        return array_keys($variations);;
+        return array_keys($variations);
     }
 
     /**
