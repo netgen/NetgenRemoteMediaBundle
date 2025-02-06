@@ -11,14 +11,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function array_keys;
+
 final class Configuration extends AbstractController
 {
     public function __construct(
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
         private readonly VariationResolver $variationResolver,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request): JsonResponse
     {
@@ -78,8 +79,8 @@ final class Configuration extends AbstractController
             'media_gallery_upload_media' => $this->translator->trans('ngrm.edit.vue.media_gallery.upload_media', [], 'ngremotemedia'),
             'media_gallery_select' => $this->translator->trans('ngrm.edit.vue.media_gallery.select', [], 'ngremotemedia'),
             'media_gallery_load_more' => $this->translator->trans('ngrm.edit.vue.media_gallery.load_more', [], 'ngremotemedia'),
-            'Search for media' => $this->translator->trans("Search for media", [], 'ngremotemedia'),
-            'Load more' => $this->translator->trans("Load more", [], 'ngremotemedia'),
+            'Search for media' => $this->translator->trans('Search for media', [], 'ngremotemedia'),
+            'Load more' => $this->translator->trans('Load more', [], 'ngremotemedia'),
             'Upload new media' => $this->translator->trans('Upload new media', [], 'ngremotemedia'),
             'No results' => $this->translator->trans('No results', [], 'ngremotemedia'),
             'Alternate text' => $this->translator->trans('Alternate text', [], 'ngremotemedia'),

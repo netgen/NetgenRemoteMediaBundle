@@ -74,7 +74,7 @@ final class RemoteResourceService
     }
 
     /**
-     * @return \Netgen\RemoteMedia\API\Values\CropSettings[]
+     * @return CropSettings[]
      */
     public function resolveCropSettings(?string $cropSettingsString): array
     {

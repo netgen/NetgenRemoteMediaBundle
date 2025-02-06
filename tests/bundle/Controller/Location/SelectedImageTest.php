@@ -71,7 +71,7 @@ final class SelectedImageTest extends TestCase
             $response,
         );
 
-        self::assertEquals($this->getExpectedJsonResponse(), $response);
+        self::assertSame($this->getExpectedJsonResponse(), $response);
     }
 
     public function testPublicImageBrowseAndPreviewUrlSuccess(): void
@@ -92,7 +92,7 @@ final class SelectedImageTest extends TestCase
                 self::onConsecutiveCalls(
                     new RemoteResourceVariation($remoteResource, 'testImageBrowseUrl'),
                     new RemoteResourceVariation($remoteResource, 'testImagePreviewUrl'),
-                )
+                ),
             );
 
         $response = $this->controller->__invoke(1);
@@ -107,7 +107,7 @@ final class SelectedImageTest extends TestCase
             $response,
         );
 
-        self::assertEquals(
+        self::assertSame(
             $this->getExpectedJsonResponse('image', 'testImageBrowseUrl', 'testImagePreviewUrl'),
             $response,
         );
@@ -132,7 +132,7 @@ final class SelectedImageTest extends TestCase
                 self::onConsecutiveCalls(
                     new RemoteResourceVariation($remoteResource, 'testVideoBrowseUrl'),
                     new RemoteResourceVariation($remoteResource, 'testVideoPreviewUrl'),
-                )
+                ),
             );
 
         $response = $this->controller->__invoke(1);
@@ -147,9 +147,9 @@ final class SelectedImageTest extends TestCase
             $response,
         );
 
-        self::assertEquals(
+        self::assertSame(
             $this->getExpectedJsonResponse('video', 'testVideoBrowseUrl', 'testVideoPreviewUrl'),
-            $response
+            $response,
         );
     }
 
@@ -159,7 +159,7 @@ final class SelectedImageTest extends TestCase
             remoteResource: $remoteResource,
             cropSettings: [new CropSettings('testVariation')],
             watermarkText: 'watermarkText',
-            id: 1
+            id: 1,
         );
     }
 
@@ -209,7 +209,7 @@ final class SelectedImageTest extends TestCase
                     'y' => 0,
                     'w' => 0,
                     'h' => 0,
-                ]
+                ],
             ],
             'height' => 0,
             'width' => 0,

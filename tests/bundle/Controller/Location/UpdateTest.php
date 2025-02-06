@@ -66,7 +66,7 @@ final class UpdateTest extends TestCase
                 'alternateText' => 'altText',
                 'caption' => 'caption',
                 'tags' => [],
-            ])
+            ]),
         );
 
         $location = new RemoteResourceLocation($this->getRemoteResource(), id: 1);

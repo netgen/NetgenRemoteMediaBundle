@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class Create extends AbstractController
 {
     public function __construct(
@@ -24,11 +26,11 @@ final class Create extends AbstractController
     public function __invoke(Request $request): Response
     {
         $selectedImage = json_decode($request->getContent(), true);
-        
+
         if ($selectedImage['id'] === null) {
             throw new InvalidArgumentException('No image selected.');
         }
-        
+
         try {
             $remoteResource = $this->provider->loadByRemoteId($selectedImage['id']);
         } catch (RemoteResourceNotFoundException $e) {
@@ -48,6 +50,6 @@ final class Create extends AbstractController
         $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
         $this->service->handleLocationUpdate($remoteResourceLocation, $selectedImage, true);
 
-        return new JsonResponse([ 'locationId' => $remoteResourceLocation->getId() ]);
+        return new JsonResponse(['locationId' => $remoteResourceLocation->getId()]);
     }
 }

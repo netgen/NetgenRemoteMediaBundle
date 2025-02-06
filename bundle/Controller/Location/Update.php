@@ -11,6 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use function json_decode;
+
 final class Update extends AbstractController
 {
     public function __construct(
@@ -21,7 +23,7 @@ final class Update extends AbstractController
     public function __invoke(int $locationId, Request $request): Response
     {
         $selectedImage = json_decode($request->getContent(), true);
-        
+
         if ($selectedImage['id'] === null) {
             throw new InvalidArgumentException('No selected image data.');
         }

@@ -49,7 +49,7 @@ final class CreateTest extends TestCase
                 'alternateText' => 'altText',
                 'caption' => 'caption',
                 'tags' => [],
-            ])
+            ]),
         );
 
         $remoteResource = new RemoteResource(
