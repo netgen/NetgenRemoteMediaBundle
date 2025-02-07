@@ -9,14 +9,13 @@ use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function json_decode;
 
-final class Create extends AbstractController
+final class Create
 {
     public function __construct(
         private ProviderInterface $provider,

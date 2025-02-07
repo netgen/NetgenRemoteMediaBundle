@@ -7,10 +7,9 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller\Location;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-final class SelectedImage extends AbstractController
+final class SelectedImage
 {
     public function __construct(
         private ProviderInterface $provider,

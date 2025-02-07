@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Controller;
 
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -13,7 +12,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function array_keys;
 
-final class Configuration extends AbstractController
+final class Configuration
 {
     public function __construct(
         private readonly RouterInterface $router,

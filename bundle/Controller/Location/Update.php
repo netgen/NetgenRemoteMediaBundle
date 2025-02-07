@@ -7,13 +7,12 @@ namespace Netgen\Bundle\RemoteMediaBundle\Controller\Location;
 use InvalidArgumentException;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function json_decode;
 
-final class Update extends AbstractController
+final class Update
 {
     public function __construct(
         private ProviderInterface $provider,

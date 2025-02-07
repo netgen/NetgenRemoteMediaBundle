@@ -37,8 +37,8 @@ services:
         public: true
         arguments:
             - '@netgen_remote_media.provider'
-        calls:
-            - [setContainer, ['@service_container']]
+            - '@twig'
+            - '@parameter_bag'
 
     netgen_remote_media.controller.location.create:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Create
@@ -46,16 +46,12 @@ services:
         arguments:
             - '@netgen_remote_media.provider'
             - '@netgen_remote_media.service.remote_resource_service'
-        calls:
-            - [setContainer, ['@service_container']]
 
     netgen_remote_media.controller.location.delete:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Delete
         public: true
         arguments:
             - '@netgen_remote_media.provider'
-        calls:
-            - [setContainer, ['@service_container']]
 
     netgen_remote_media.controller.location.update:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Update
@@ -63,8 +59,6 @@ services:
         arguments:
             - '@netgen_remote_media.provider'
             - '@netgen_remote_media.service.remote_resource_service'
-        calls:
-            - [setContainer, ['@service_container']]
 
     netgen_remote_media.controller.location.selected_image:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\SelectedImage
@@ -72,8 +66,6 @@ services:
         arguments:
             - '@netgen_remote_media.provider'
             - '@netgen_remote_media.service.remote_resource_service'
-        calls:
-            - [setContainer, ['@service_container']]
 
     netgen_remote_media.controller.callback.cloudinary.notify:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify
@@ -95,5 +87,3 @@ services:
             - '@router'
             - '@translator'
             - '@netgen_remote_media.resolver.variation'
-        calls:
-            - [setContainer, ['@service_container']]
