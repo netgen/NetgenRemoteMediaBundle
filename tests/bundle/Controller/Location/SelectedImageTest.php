@@ -71,7 +71,7 @@ final class SelectedImageTest extends TestCase
             $response,
         );
 
-        self::assertSame($this->getExpectedJsonResponse(), $response);
+        self::assertSame($this->getExpectedJsonResponse()->getContent(), $response->getContent());
     }
 
     public function testPublicImageBrowseAndPreviewUrlSuccess(): void
@@ -108,8 +108,12 @@ final class SelectedImageTest extends TestCase
         );
 
         self::assertSame(
-            $this->getExpectedJsonResponse('image', 'testImageBrowseUrl', 'testImagePreviewUrl'),
-            $response,
+            $this->getExpectedJsonResponse(
+                'image',
+                'testImageBrowseUrl',
+                'testImagePreviewUrl',
+            )->getContent(),
+            $response->getContent(),
         );
     }
 
@@ -148,8 +152,12 @@ final class SelectedImageTest extends TestCase
         );
 
         self::assertSame(
-            $this->getExpectedJsonResponse('video', 'testVideoBrowseUrl', 'testVideoPreviewUrl'),
-            $response,
+            $this->getExpectedJsonResponse(
+                'video',
+                'testVideoBrowseUrl',
+                'testVideoPreviewUrl',
+            )->getContent(),
+            $response->getContent(),
         );
     }
 
