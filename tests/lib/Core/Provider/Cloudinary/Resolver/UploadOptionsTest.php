@@ -26,11 +26,15 @@ final class UploadOptionsTest extends TestCase
         $this->fixedFolderModeResolver = new UploadOptionsResolver(
             new VisibilityTypeConverter(),
             CloudinaryProvider::FOLDER_MODE_FIXED,
+            true,
+            false,
         );
 
         $this->dynamicFolderModeResolver = new UploadOptionsResolver(
             new VisibilityTypeConverter(),
             CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+            false,
+            true,
         );
     }
 
@@ -58,7 +62,7 @@ final class UploadOptionsTest extends TestCase
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
                     'unique_filename' => false,
-                    'filename_override' => 'test_image_.jpg',
+                    'filename_override' => 'test_image__jpg.jpg',
                     'overwrite' => false,
                     'invalidate' => false,
                     'context' => [
@@ -82,7 +86,7 @@ final class UploadOptionsTest extends TestCase
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
                     'unique_filename' => false,
-                    'filename_override' => '_test_!"#$%&()=?*image_.jpg',
+                    'filename_override' => '_test_!"#$%&()=?*image__jpg.jpg',
                     'overwrite' => false,
                     'invalidate' => false,
                     'context' => [
@@ -121,7 +125,7 @@ final class UploadOptionsTest extends TestCase
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
                     'unique_filename' => false,
-                    'filename_override' => 'latest_backup.zip',
+                    'filename_override' => 'latest_backup_zip.zip',
                     'overwrite' => false,
                     'invalidate' => false,
                     'context' => [
@@ -162,7 +166,7 @@ final class UploadOptionsTest extends TestCase
                 [
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
-                    'unique_filename' => false,
+                    'unique_filename' => true,
                     'filename_override' => 'latest_backup.zip',
                     'overwrite' => false,
                     'invalidate' => false,
@@ -200,7 +204,7 @@ final class UploadOptionsTest extends TestCase
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
                     'unique_filename' => false,
-                    'filename_override' => 'latest_backup.zip',
+                    'filename_override' => 'latest_backup_zip.zip',
                     'overwrite' => true,
                     'invalidate' => true,
                     'context' => [
@@ -224,7 +228,7 @@ final class UploadOptionsTest extends TestCase
                 [
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
-                    'unique_filename' => false,
+                    'unique_filename' => true,
                     'filename_override' => 'backup.zip',
                     'overwrite' => false,
                     'invalidate' => false,
@@ -256,7 +260,7 @@ final class UploadOptionsTest extends TestCase
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
                     'unique_filename' => false,
-                    'filename_override' => 'example.mp4',
+                    'filename_override' => 'example_mp4.mp4',
                     'overwrite' => true,
                     'invalidate' => true,
                     'context' => [
@@ -286,7 +290,7 @@ final class UploadOptionsTest extends TestCase
                 [
                     'use_filename' => true,
                     'use_filename_as_display_name' => true,
-                    'unique_filename' => false,
+                    'unique_filename' => true,
                     'filename_override' => 'my video $%&/',
                     'overwrite' => true,
                     'invalidate' => true,

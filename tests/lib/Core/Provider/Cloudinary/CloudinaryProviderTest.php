@@ -75,6 +75,8 @@ final class CloudinaryProviderTest extends AbstractTestCase
             new UploadOptionsResolver(
                 new VisibilityTypeConverter(),
                 CloudinaryProvider::FOLDER_MODE_FIXED,
+                true,
+                false,
             ),
             [],
             [],
@@ -95,6 +97,8 @@ final class CloudinaryProviderTest extends AbstractTestCase
             new UploadOptionsResolver(
                 new VisibilityTypeConverter(),
                 CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+                false,
+                true,
             ),
             [],
             [],
@@ -867,7 +871,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             'use_filename' => true,
             'use_filename_as_display_name' => true,
             'unique_filename' => false,
-            'filename_override' => 'image_new.jpg',
+            'filename_override' => 'image_new_jpg.jpg',
             'overwrite' => true,
             'invalidate' => true,
             'context' => [

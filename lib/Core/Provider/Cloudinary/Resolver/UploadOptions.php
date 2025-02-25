@@ -10,21 +10,33 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as Visi
 
 use function in_array;
 use function is_string;
+use function pathinfo;
 
 final class UploadOptions
 {
     public function __construct(
         private VisibilityTypeConverter $visibilityTypeConverter,
         private string $folderMode,
+        private bool $appendExtension,
+        private bool $uniqueFilenames,
     ) {}
 
     public function resolve(ResourceStruct $resourceStruct): array
     {
+        $filenameOverride = $resourceStruct->getFilename();
+
+        if ($this->appendExtension === true) {
+            $pathInfo = pathinfo($resourceStruct->getFilename());
+            $filenameOverride = ($pathInfo['extension'] ?? null)
+                ? $pathInfo['filename'] . '_' . $pathInfo['extension'] . '.' . $pathInfo['extension']
+                : $pathInfo['filename'];
+        }
+
         $options = [
             'use_filename' => true,
             'use_filename_as_display_name' => true,
-            'unique_filename' => false,
-            'filename_override' => $resourceStruct->getFilename(),
+            'unique_filename' => $this->uniqueFilenames,
+            'filename_override' => $filenameOverride,
             'overwrite' => $resourceStruct->doOverwrite(),
             'invalidate' => $resourceStruct->doInvalidate() || $resourceStruct->doOverwrite(),
             'context' => $this->resolveContext($resourceStruct),
