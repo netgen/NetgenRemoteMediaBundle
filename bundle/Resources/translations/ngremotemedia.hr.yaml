@@ -86,14 +86,13 @@ ngrm:
                     select: 'Odaberi'
                     create: 'Kreiraj'
                     upload: 'Učitaj'
-                    use_existing_resource: 'koristi postojeći resurs'
                 checkbox:
                     overwrite: 'Prepiši'
                 placeholder:
                     new_folder: 'Ime nove mape'
                 error:
                     missing_file: 'Nedostaje datoteka za učitavanje'
-                    existing_resource: 'Drugi resurs s istim imenom već postoji u ovoj mapi! Promjenite mapu, ime datoteke, odaberite opciju za prepisivanje ili '
+                    existing_resource: 'Drugi resurs s istim imenom već postoji u ovoj mapi! Promjenite mapu, ime datoteke, odaberite opciju za prepisivanje ili upotrijebite postojeći resurs:'
                     unsupported_resource_type: 'Resurs je uspješno učitan no njegov tip nije podržan na ovome mjestu! Podržani tipovi: '
                     invalid_visibility: 'Odabrana je nepodržana vidljivost "%visibility%", podržane vidljivosti: "%supported_visibilities%"'
                     file_upload_failed: 'Učitavanje datoteke neuspješno; datoteka je možda prevelika ili neispravna. Provjerite postavke servera za učitavanje datoteka.'
