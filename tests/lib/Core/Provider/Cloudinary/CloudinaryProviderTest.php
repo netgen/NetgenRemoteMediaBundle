@@ -31,7 +31,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\Mime\MimeTypesInterface;
 
 use function count;
 use function sprintf;
@@ -47,13 +46,10 @@ final class CloudinaryProviderTest extends AbstractTestCase
 
     protected LoggerInterface|MockObject $logger;
 
-    protected MimeTypesInterface|MockObject $mimeTypes;
-
     protected function setUp(): void
     {
         $this->gateway = $this->createMock(GatewayInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->mimeTypes = $this->createMock(MimeTypesInterface::class);
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
 
@@ -79,8 +75,8 @@ final class CloudinaryProviderTest extends AbstractTestCase
             new UploadOptionsResolver(
                 new VisibilityTypeConverter(),
                 CloudinaryProvider::FOLDER_MODE_FIXED,
-                ['image', 'video'],
-                $this->mimeTypes,
+                true,
+                false,
             ),
             [],
             [],
@@ -101,8 +97,8 @@ final class CloudinaryProviderTest extends AbstractTestCase
             new UploadOptionsResolver(
                 new VisibilityTypeConverter(),
                 CloudinaryProvider::FOLDER_MODE_DYNAMIC,
-                ['image', 'video'],
-                $this->mimeTypes,
+                false,
+                true,
             ),
             [],
             [],
@@ -872,10 +868,12 @@ final class CloudinaryProviderTest extends AbstractTestCase
         $folder = Folder::fromPath('upload/images');
 
         $options = [
-            'public_id' => 'upload/images/image_new_jpg',
+            'use_filename' => true,
+            'use_filename_as_display_name' => true,
+            'unique_filename' => false,
+            'filename_override' => 'image_new_jpg.jpg',
             'overwrite' => true,
             'invalidate' => true,
-            'discard_original_filename' => true,
             'context' => [
                 'alt' => '',
                 'caption' => '',
@@ -886,6 +884,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             'access_mode' => 'public',
             'access_control' => [['access_type' => 'anonymous']],
             'tags' => [],
+            'folder' => 'upload/images',
         ];
 
         $resourceStruct = new ResourceStruct(
@@ -897,12 +896,6 @@ final class CloudinaryProviderTest extends AbstractTestCase
             true,
             true,
         );
-
-        $this->mimeTypes
-            ->expects(self::once())
-            ->method('guessMimeType')
-            ->with($resourceStruct->getFileStruct()->getUri())
-            ->willReturn('image/jpg');
 
         $this->gateway
             ->expects(self::once())

@@ -86,6 +86,38 @@ netgen_remote_media:
         encryption_key: [YOUR_CLOUDINARY_ENCRYPTION_KEY]
 ```
 
+#### Append extension to files
+
+Cloudinary by default doesn't add extension to `image` (including also some documents, like PDF) and `video` (including audio) resources. So if you upload eg. `sample.jpg` or `sample.pdf`, it will be uploaded as `sample`. This is because transformations, since those files can be served in different formats (eg. you can serve `sample.jpg` in PNG or WEBP or any other image format, and you can serve PDFs or videos as images, like a screenshot). RAW files don't have this problem, and they are uploaded with an extension.
+
+This can be problematic because, once you upload an extensionless resource, that name will be taken and you can't upload any other file with that name. Eg. if you upload `sample.jpg`, any other file named `sample` (eg. `sample.pdf` or `sample.zip`) will fail to upload because resource with the same name already exists.
+
+In order to avoid that, this bundle appends extension to     files (eg. `sample.jpg` will become `sample_jpg.jpg` before upload). This can be configured with: 
+
+```yaml
+netgen_remote_media:
+    cloudinary:
+        append_extension: true
+```
+
+(default: `true`)
+
+**WARNING:** if you disable it, you have to be careful when eg. uploading resources via scripts, because you will have to handle the existing resource exception and, if you use overwrite flag, you will overwrite the existing resource which can be a completely different file (eg. you can overwrite an image `sample.jpg` with a document `sample.pdf` and break your website).
+
+#### Unique filenames
+
+If you want to avoid all problems related to existing resources, you can enable the flag for unique filenames. This is a Cloudinary's built-in feature which will append a unique string to the filename before the extension. This can be configured with:
+
+```yaml
+netgen_remote_media:
+    cloudinary:
+        unique_filenames: true
+```
+
+(default: `false`)
+
+**WARNING:** if you enable this, all resources will be always unique and you can easily create a mess on your cloud by uploading the same identical file multiple times.
+
 ### Upload prefix
 
 If you need to change Cloudinary API url (to use eg. GEO specific URLs), there's a parameter `upload_prefix` (set to `https://api.cloudinary.com` by default):

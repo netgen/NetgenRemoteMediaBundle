@@ -25,6 +25,8 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.pool_name', 'cache.app');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cache.ttl', 3600);
         $this->assertContainerBuilderHasParameter('netgen_remote_media.encryption_key', 'dsf45z45hh45f43f43f');
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.append_extension', true);
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.unique_filenames', false);
 
         $this->assertContainerBuilderHasParameter(
             'netgen_remote_media.named_remote_resources',
@@ -114,6 +116,8 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
             'cloudinary' => [
                 'cache_requests' => true,
                 'log_requests' => false,
+                'append_extension' => true,
+                'unique_filenames' => false,
                 'encryption_key' => 'dsf45z45hh45f43f43f',
             ],
             'image_variations' => [

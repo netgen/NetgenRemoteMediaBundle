@@ -107,6 +107,8 @@ services:
         arguments:
             - '@netgen_remote_media.provider.cloudinary.converter.visibility_type'
             - '%netgen_remote_media.cloudinary.folder_mode%'
+            - '%netgen_remote_media.cloudinary.append_extension%'
+            - '%netgen_remote_media.cloudinary.unique_filenames%'
 
     netgen_remote_media.provider.cloudinary.resolver.search_expression:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression

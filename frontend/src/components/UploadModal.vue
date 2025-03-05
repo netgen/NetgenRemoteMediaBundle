@@ -7,7 +7,7 @@
         <div v-if="this.error" class="error">
           {{ this.error }}
           <a v-if="this.existingResourceButton" href="javascript:void(0);" @click="$emit('uploaded', existingResource)">
-            {{ this.config.translations.upload_button_use_existing_resource }}
+            {{ existingResource.originalFilename }} ({{ existingResource.type }}/{{ existingResource.format }})
           </a>
         </div>
         <input type="text" :class="error ? 'error' : ''" v-model="filename"/>
