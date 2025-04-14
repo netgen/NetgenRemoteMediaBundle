@@ -32,6 +32,41 @@ services:
             - '@netgen_remote_media.factory.md5_file_hash'
             - '@translator'
 
+    netgen_remote_media.controller.resource.view:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Resource\View
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@twig'
+            - '@parameter_bag'
+
+    netgen_remote_media.controller.location.create:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Create
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@netgen_remote_media.service.remote_resource_service'
+
+    netgen_remote_media.controller.location.delete:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Delete
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+
+    netgen_remote_media.controller.location.update:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\Update
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@netgen_remote_media.service.remote_resource_service'
+
+    netgen_remote_media.controller.location.selected_image:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Location\SelectedImage
+        public: true
+        arguments:
+            - '@netgen_remote_media.provider'
+            - '@netgen_remote_media.service.remote_resource_service'
+
     netgen_remote_media.controller.callback.cloudinary.notify:
         class: Netgen\Bundle\RemoteMediaBundle\Controller\Callback\Cloudinary\Notify
         public: true
@@ -44,3 +79,11 @@ services:
             - '%netgen_remote_media.cloudinary.folder_mode%'
         calls:
             - [setContainer, ['@service_container']]
+
+    netgen_remote_media.controller.configuration:
+        class: Netgen\Bundle\RemoteMediaBundle\Controller\Configuration
+        public: true
+        arguments:
+            - '@router'
+            - '@translator'
+            - '@netgen_remote_media.resolver.variation'

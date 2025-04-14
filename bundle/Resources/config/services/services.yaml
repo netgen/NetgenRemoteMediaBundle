@@ -1,0 +1,7 @@
+services:
+  netgen_remote_media.service.remote_resource_service:
+    class: Netgen\RemoteMedia\Service\RemoteResourceService
+    public: false
+    arguments:
+      - '@netgen_remote_media.provider'
+

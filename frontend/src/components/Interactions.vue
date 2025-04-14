@@ -5,6 +5,7 @@
                 :config="config"
                 :field-id="fieldId"
                 :selected-image="selectedImage"
+                :is-croppable="isCroppable"
                 @preview-change="dispatchVanillaChangeEvent"
         ></preview>
 
@@ -95,7 +96,7 @@ export default {
     };
   },
   methods: {
-    dispatchVanillaChangeEvent() {
+    dispatchVanillaChangeEvent(inputField = 'modal') {
       this.$nextTick(function () {
         this.$el.dispatchEvent(
           new CustomEvent(
@@ -105,7 +106,9 @@ export default {
                 inputFields: this.config.inputFields,
                 selectedImage: this.selectedImage,
                 fieldId: this.fieldId,
-              }
+                changedField: inputField
+              },
+              bubbles: true,
             }
           )
         );
@@ -153,7 +156,9 @@ export default {
         size: item.size,
         variations: {},
         height: item.height,
-        width: item.width
+        width: item.width,
+        selectedVariation: null,
+        cssClass: '',
       };
 
       this.mediaModalOpen = false;
@@ -186,7 +191,9 @@ export default {
         size: item.size,
         variations: {},
         height: item.height,
-        width: item.width
+        width: item.width,
+        selectedVariation: null,
+        cssClass: '',
       };
 
       this.uploadModalOpen = false;
@@ -212,9 +219,13 @@ export default {
         size: 0,
         variations: {},
         height: 0,
-        width: 0
+        width: 0,
+        selectedVariation: null,
+        cssClass: '',
       };
-      this.$refs.fileUploadInput.value = null;
+      if (!this.config.disableUpload) {
+        this.$refs.fileUploadInput.value = null;
+      }
 
       this.dispatchVanillaChangeEvent();
     },

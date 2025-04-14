@@ -95,7 +95,7 @@ export default {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.ngremotemedia-tags {
+.ngremotemedia-tags, .ngremotemedia-selected-variation {
   .vs__selected-options {
     input[type="search"].vs__search {
       border: none;

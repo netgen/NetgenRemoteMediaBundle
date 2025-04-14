@@ -85,6 +85,9 @@
   }
 }
 
+.ngremotemedia-container {
+  text-align: start;
+}
 
 .ngrm-model-portal .ngrm-overlay {
   .ng-icon {
@@ -140,7 +143,7 @@
       color: #737373;
     }
 
-    input.media-alttext, input.media-caption, input.media-watermarktext {
+    input.media-alttext, input.media-caption, input.media-watermarktext, input.media-css-class {
       width: 100%;
       border-radius: 0;
       border: 1px solid #e4e4e4;

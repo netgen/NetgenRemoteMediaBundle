@@ -12,6 +12,7 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer;
+use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Netgen\RemoteMedia\Tests\AbstractTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -28,8 +29,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
     protected function setUp(): void
     {
         $this->providerMock = $this->createMock(ProviderInterface::class);
-
-        $this->dataTransformer = new RemoteMediaTransformer($this->providerMock);
+        $remoteResourceService = new RemoteResourceService($this->providerMock);
+        $this->dataTransformer = new RemoteMediaTransformer($this->providerMock, $remoteResourceService);
     }
 
     #[DataProvider('transformDataProvider')]

@@ -27,3 +27,39 @@ netgen_remote_media_ajax_resource_upload:
     defaults:
         _controller: netgen_remote_media.controller.resource.upload
     methods: [POST]
+
+netgen_remote_media_ajax_location_create:
+    path: /location/create
+    defaults:
+        _controller: netgen_remote_media.controller.location.create
+    methods: [POST]
+
+netgen_remote_media_ajax_location_update:
+    path: /location/update/{locationId}
+    defaults:
+        _controller: netgen_remote_media.controller.location.update
+    methods: [PUT]
+
+netgen_remote_media_ajax_location_delete:
+    path: /location/delete/{locationId}
+    defaults:
+        _controller: netgen_remote_media.controller.location.delete
+    methods: [DELETE]
+
+netgen_remote_media_ajax_location_selected_image:
+    path: /location/{locationId}/selected-image
+    defaults:
+        _controller: netgen_remote_media.controller.location.selected_image
+    methods: [GET]
+
+netgen_remote_media_ajax_resource_view:
+    path: /resource/view/{locationId}
+    defaults:
+        _controller: netgen_remote_media.controller.resource.view
+    methods: [GET]
+
+netgen_remote_media_ajax_configuration:
+    path: /configuration
+    defaults:
+        _controller: netgen_remote_media.controller.configuration
+    methods: [GET]

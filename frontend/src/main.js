@@ -20,6 +20,7 @@ const initInteractionsVue = (el) => {
         },
         data: {
             config: {
+                mode: 'field', // field | embed
                 paths: {
                     browse_resources: '/resource/browse',
                     upload_resources: '/resource/upload',
@@ -38,6 +39,8 @@ const initInteractionsVue = (el) => {
                     'cropSettings': 'cropSettings',
                     'source': 'source',
                     'watermarkText': 'watermarkText',
+                    'cssClass': 'cssClass',
+                    'selectedVariation': 'selectedVariation',
                 },
                 availableVariations: [],
                 allowedVisibilities: [],
@@ -64,7 +67,9 @@ const initInteractionsVue = (el) => {
                 size: '',
                 variations: {},
                 height: 0,
-                width: 0
+                width: 0,
+                selectedVariation: null,
+                cssClass: '',        
             },
         },
         components: {
