@@ -393,7 +393,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         );
     }
 
-    public static function transformDataProvider(): array
+    public static function transformDataProvider(): iterable
     {
         return [
             [

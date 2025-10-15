@@ -115,7 +115,7 @@ class RemoteMediaTypeTest extends TypeTestCase
         }
     }
 
-    public static function submitDataProvider(): array
+    public static function submitDataProvider(): iterable
     {
         return [
             [

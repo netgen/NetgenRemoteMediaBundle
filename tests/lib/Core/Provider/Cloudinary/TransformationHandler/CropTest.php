@@ -37,7 +37,7 @@ final class CropTest extends TestCase
         $this->crop->process($config);
     }
 
-    public static function validDataProvider(): array
+    public static function validDataProvider(): iterable
     {
         return [
             [
@@ -73,7 +73,7 @@ final class CropTest extends TestCase
         ];
     }
 
-    public static function invalidDataProvider(): array
+    public static function invalidDataProvider(): iterable
     {
         return [
             [

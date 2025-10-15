@@ -199,7 +199,7 @@ final class QueryTest extends TestCase
         );
     }
 
-    public static function constructorPropsProvider(): array
+    public static function constructorPropsProvider(): iterable
     {
         return [
             [
@@ -264,7 +264,7 @@ final class QueryTest extends TestCase
         ];
     }
 
-    public static function remoteIdsProvider(): array
+    public static function remoteIdsProvider(): iterable
     {
         return [
             [

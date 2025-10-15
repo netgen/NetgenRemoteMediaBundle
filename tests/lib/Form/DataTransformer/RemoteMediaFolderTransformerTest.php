@@ -45,7 +45,7 @@ class RemoteMediaFolderTransformerTest extends AbstractTestCase
         self::assertNull($this->dataTransformer->reverseTransform($value));
     }
 
-    public static function transformDataProvider(): array
+    public static function transformDataProvider(): iterable
     {
         return [
             [
@@ -75,7 +75,7 @@ class RemoteMediaFolderTransformerTest extends AbstractTestCase
         ];
     }
 
-    public static function reverseTransformDataProvider(): array
+    public static function reverseTransformDataProvider(): iterable
     {
         return [
             [

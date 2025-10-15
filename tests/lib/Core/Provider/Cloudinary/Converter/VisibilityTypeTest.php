@@ -56,7 +56,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    public static function fromCloudinaryTypeProvider(): array
+    public static function fromCloudinaryTypeProvider(): iterable
     {
         return [
             ['upload', RemoteResource::VISIBILITY_PUBLIC],
@@ -64,7 +64,7 @@ final class VisibilityTypeTest extends TestCase
         ];
     }
 
-    public static function toCloudinaryTypeProvider(): array
+    public static function toCloudinaryTypeProvider(): iterable
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, 'upload'],
@@ -72,7 +72,7 @@ final class VisibilityTypeTest extends TestCase
         ];
     }
 
-    public static function toCloudinaryAccessModeProvider(): array
+    public static function toCloudinaryAccessModeProvider(): iterable
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, 'public'],
@@ -80,7 +80,7 @@ final class VisibilityTypeTest extends TestCase
         ];
     }
 
-    public static function toCloudinaryAccessControlProvider(): array
+    public static function toCloudinaryAccessControlProvider(): iterable
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, [['access_type' => 'anonymous']]],

@@ -93,7 +93,7 @@ final class RemoteResourceTest extends AbstractTestCase
         $this->dynamicFolderModeRemoteResourceFactory->create(['public_id' => 'test']);
     }
 
-    public static function createDataProvider(): array
+    public static function createDataProvider(): iterable
     {
         return [
             [
