@@ -135,6 +135,7 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('cache')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('pool')
                             ->cannotBeEmpty()
@@ -154,6 +155,7 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('cloudinary')
+                    ->addDefaultsIfNotSet()
                     ->children()
                         ->booleanNode('cache_requests')
                             ->defaultValue(true)
