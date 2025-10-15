@@ -12,7 +12,7 @@ use function array_pop;
 use function count;
 use function explode;
 use function implode;
-use function mb_ltrim;
+use function ltrim;
 use function sprintf;
 use function str_replace;
 
@@ -110,7 +110,7 @@ final class CloudinaryRemoteId
     private function resolveNewResourceId(?Folder $folder): string
     {
         $resourceId = $this->getFolder() instanceof Folder
-            ? mb_ltrim(str_replace($this->getFolder()->getPath(), '', $this->resourceId), '/')
+            ? ltrim(str_replace($this->getFolder()->getPath(), '', $this->resourceId), '/')
             : $this->resourceId;
 
         if (!$folder instanceof Folder) {

@@ -38,7 +38,7 @@ final class UploadOptionsTest extends TestCase
         );
     }
 
-    #[DataProvider('provideResolveCases')]
+    #[DataProvider('dataProvider')]
     public function testResolve(
         ResourceStruct $resourceStruct,
         array $options,
@@ -51,7 +51,7 @@ final class UploadOptionsTest extends TestCase
         self::assertSame($options, $resolvedOptions);
     }
 
-    public static function provideResolveCases(): iterable
+    public static function dataProvider(): array
     {
         return [
             [

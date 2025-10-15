@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Result::class)]
 final class ResultTest extends TestCase
 {
-    #[DataProvider('provideConstructorCases')]
+    #[DataProvider('dataProvider')]
     public function testConstructor(
         int $totalCount,
         ?string $nextCursor,
@@ -37,7 +37,7 @@ final class ResultTest extends TestCase
         );
     }
 
-    public static function provideConstructorCases(): iterable
+    public static function dataProvider(): array
     {
         return [
             [0, null, []],

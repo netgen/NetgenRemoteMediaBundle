@@ -26,7 +26,7 @@ class RemoteMediaFolderTypeTest extends TypeTestCase
         parent::setUp();
     }
 
-    #[DataProvider('provideSubmitValidDataCases')]
+    #[DataProvider('submitDataProvider')]
     public function testSubmitValidData(
         array $formData,
         array $options,
@@ -88,7 +88,7 @@ class RemoteMediaFolderTypeTest extends TypeTestCase
         }
     }
 
-    public static function provideSubmitValidDataCases(): iterable
+    public static function submitDataProvider(): array
     {
         return [
             [

@@ -27,7 +27,7 @@ final class FitTest extends TestCase
         );
     }
 
-    #[DataProvider('provideCases')]
+    #[DataProvider('dataProvider')]
     public function test(array $config, array $result): void
     {
         self::assertSame(
@@ -36,7 +36,7 @@ final class FitTest extends TestCase
         );
     }
 
-    public static function provideCases(): iterable
+    public static function dataProvider(): array
     {
         return [
             [

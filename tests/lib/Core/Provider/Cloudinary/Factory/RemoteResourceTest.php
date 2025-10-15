@@ -56,7 +56,7 @@ final class RemoteResourceTest extends AbstractTestCase
         );
     }
 
-    #[DataProvider('provideCreateCases')]
+    #[DataProvider('createDataProvider')]
     public function testCreate(array $cloudinaryResponse, RemoteResource $expectedResource, string $folderMode = CloudinaryProvider::FOLDER_MODE_FIXED): void
     {
         if (!($cloudinaryResponse['etag'] ?? null)) {
@@ -77,7 +77,23 @@ final class RemoteResourceTest extends AbstractTestCase
         );
     }
 
-    public static function provideCreateCases(): iterable
+    public function testCreateMissingPublicId(): void
+    {
+        self::expectException(InvalidDataException::class);
+        self::expectExceptionMessage('Missing required "public_id" property!');
+
+        $this->fixedFolderModeRemoteResourceFactory->create(['test' => 'test']);
+    }
+
+    public function testCreateMissingUrls(): void
+    {
+        self::expectException(InvalidDataException::class);
+        self::expectExceptionMessage('Missing required "secure_url" or "url" property!');
+
+        $this->dynamicFolderModeRemoteResourceFactory->create(['public_id' => 'test']);
+    }
+
+    public static function createDataProvider(): array
     {
         return [
             [
@@ -407,21 +423,5 @@ final class RemoteResourceTest extends AbstractTestCase
                 CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             ],
         ];
-    }
-
-    public function testCreateMissingPublicId(): void
-    {
-        self::expectException(InvalidDataException::class);
-        self::expectExceptionMessage('Missing required "public_id" property!');
-
-        $this->fixedFolderModeRemoteResourceFactory->create(['test' => 'test']);
-    }
-
-    public function testCreateMissingUrls(): void
-    {
-        self::expectException(InvalidDataException::class);
-        self::expectExceptionMessage('Missing required "secure_url" or "url" property!');
-
-        $this->dynamicFolderModeRemoteResourceFactory->create(['public_id' => 'test']);
     }
 }

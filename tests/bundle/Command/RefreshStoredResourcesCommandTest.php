@@ -19,7 +19,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 use function array_map;
 use function array_slice;
-use function mb_trim;
+use function trim;
 
 use const PHP_EOL;
 
@@ -109,7 +109,7 @@ final class RefreshStoredResourcesCommandTest extends TestCase
         self::assertSame(
             '0/1 [>---------------------------]   0%'
             . PHP_EOL . ' 1/1 [============================] 100%',
-            mb_trim($this->commandTester->getDisplay()),
+            trim($this->commandTester->getDisplay()),
         );
     }
 
@@ -166,7 +166,7 @@ final class RefreshStoredResourcesCommandTest extends TestCase
             '0/1 [>---------------------------]   0%'
             . PHP_EOL . ' 1/1 [============================] 100%'
             . PHP_EOL . 'There are 1 resources no longer existing on remote. Use --delete to delete them.',
-            mb_trim($this->commandTester->getDisplay()),
+            trim($this->commandTester->getDisplay()),
         );
     }
 
@@ -225,7 +225,7 @@ final class RefreshStoredResourcesCommandTest extends TestCase
             . PHP_EOL . 'Deleting resources that are no longer on remote:'
             . PHP_EOL . ' 0/1 [>---------------------------]   0%'
             . PHP_EOL . ' 1/1 [============================] 100%',
-            mb_trim($this->commandTester->getDisplay()),
+            trim($this->commandTester->getDisplay()),
         );
     }
 
@@ -394,7 +394,7 @@ final class RefreshStoredResourcesCommandTest extends TestCase
             . PHP_EOL . 'Deleting resources that are no longer on remote:'
             . PHP_EOL . ' 0/2 [>---------------------------]   0%'
             . PHP_EOL . ' 2/2 [============================] 100%',
-            mb_trim($this->commandTester->getDisplay()),
+            trim($this->commandTester->getDisplay()),
         );
     }
 }

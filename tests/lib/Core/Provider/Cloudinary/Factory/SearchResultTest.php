@@ -33,7 +33,7 @@ final class SearchResultTest extends AbstractTestCase
         );
     }
 
-    #[DataProvider('provideCreateCases')]
+    #[DataProvider('createDataProvider')]
     public function testCreate(array $data, SearchResult $expectedResult): void
     {
         $this->remoteResourceFactoryMock
@@ -47,7 +47,7 @@ final class SearchResultTest extends AbstractTestCase
         );
     }
 
-    public static function provideCreateCases(): iterable
+    public static function createDataProvider(): array
     {
         return [
             [

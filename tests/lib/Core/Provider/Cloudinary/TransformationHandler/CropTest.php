@@ -20,7 +20,7 @@ final class CropTest extends TestCase
         $this->crop = new Crop();
     }
 
-    #[DataProvider('provideCases')]
+    #[DataProvider('validDataProvider')]
     public function test(array $config, array $result): void
     {
         self::assertSame(
@@ -29,7 +29,15 @@ final class CropTest extends TestCase
         );
     }
 
-    public static function provideCases(): iterable
+    #[DataProvider('invalidDataProvider')]
+    public function testWithException(array $config): void
+    {
+        $this->expectException(TransformationHandlerFailedException::class);
+
+        $this->crop->process($config);
+    }
+
+    public static function validDataProvider(): array
     {
         return [
             [
@@ -65,15 +73,7 @@ final class CropTest extends TestCase
         ];
     }
 
-    #[DataProvider('provideWithExceptionCases')]
-    public function testWithException(array $config): void
-    {
-        $this->expectException(TransformationHandlerFailedException::class);
-
-        $this->crop->process($config);
-    }
-
-    public static function provideWithExceptionCases(): iterable
+    public static function invalidDataProvider(): array
     {
         return [
             [

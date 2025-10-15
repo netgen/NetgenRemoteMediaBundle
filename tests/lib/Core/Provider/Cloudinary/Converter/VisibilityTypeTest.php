@@ -20,7 +20,7 @@ final class VisibilityTypeTest extends TestCase
         $this->converter = new VisibilityTypeConverter();
     }
 
-    #[DataProvider('provideFromCloudinaryTypeCases')]
+    #[DataProvider('fromCloudinaryTypeProvider')]
     public function testFromCloudinaryType(string $type, string $expectedFormat): void
     {
         self::assertSame(
@@ -29,15 +29,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    public static function provideFromCloudinaryTypeCases(): iterable
-    {
-        return [
-            ['upload', RemoteResource::VISIBILITY_PUBLIC],
-            ['authenticated', RemoteResource::VISIBILITY_PROTECTED],
-        ];
-    }
-
-    #[DataProvider('provideToCloudinaryTypeCases')]
+    #[DataProvider('toCloudinaryTypeProvider')]
     public function testToCloudinaryType(string $visibility, string $expectedType): void
     {
         self::assertSame(
@@ -46,15 +38,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    public static function provideToCloudinaryTypeCases(): iterable
-    {
-        return [
-            [RemoteResource::VISIBILITY_PUBLIC, 'upload'],
-            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
-        ];
-    }
-
-    #[DataProvider('provideToCloudinaryAccessModeCases')]
+    #[DataProvider('toCloudinaryAccessModeProvider')]
     public function testToCloudinaryAccessMode(string $visibility, string $expectedMode): void
     {
         self::assertSame(
@@ -63,15 +47,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    public static function provideToCloudinaryAccessModeCases(): iterable
-    {
-        return [
-            [RemoteResource::VISIBILITY_PUBLIC, 'public'],
-            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
-        ];
-    }
-
-    #[DataProvider('provideToCloudinaryAccessControlCases')]
+    #[DataProvider('toCloudinaryAccessControlProvider')]
     public function testToCloudinaryAccessControl(string $visibility, array $expectedSettings): void
     {
         self::assertSame(
@@ -80,7 +56,31 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    public static function provideToCloudinaryAccessControlCases(): iterable
+    public static function fromCloudinaryTypeProvider(): array
+    {
+        return [
+            ['upload', RemoteResource::VISIBILITY_PUBLIC],
+            ['authenticated', RemoteResource::VISIBILITY_PROTECTED],
+        ];
+    }
+
+    public static function toCloudinaryTypeProvider(): array
+    {
+        return [
+            [RemoteResource::VISIBILITY_PUBLIC, 'upload'],
+            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
+        ];
+    }
+
+    public static function toCloudinaryAccessModeProvider(): array
+    {
+        return [
+            [RemoteResource::VISIBILITY_PUBLIC, 'public'],
+            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
+        ];
+    }
+
+    public static function toCloudinaryAccessControlProvider(): array
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, [['access_type' => 'anonymous']]],

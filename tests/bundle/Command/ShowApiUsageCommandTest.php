@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-use function mb_trim;
+use function trim;
 
 use const PHP_EOL;
 
@@ -62,7 +62,7 @@ final class ShowApiUsageCommandTest extends TestCase
                 . PHP_EOL . 'Api rate limit: 1000'
                 . PHP_EOL . 'Resources: 500'
                 . PHP_EOL . 'Variations: 3000',
-            mb_trim($this->commandTester->getDisplay()),
+            trim($this->commandTester->getDisplay()),
         );
     }
 }

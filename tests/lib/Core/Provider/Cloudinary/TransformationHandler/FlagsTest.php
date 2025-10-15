@@ -19,7 +19,7 @@ final class FlagsTest extends TestCase
         $this->flags = new Flags();
     }
 
-    #[DataProvider('provideCases')]
+    #[DataProvider('validDataProvider')]
     public function test(array $input, array $output): void
     {
         self::assertSame(
@@ -28,7 +28,7 @@ final class FlagsTest extends TestCase
         );
     }
 
-    public static function provideCases(): iterable
+    public function validDataProvider(): array
     {
         return [
             [['rasterize', 'test'], ['flags' => ['rasterize']]],
