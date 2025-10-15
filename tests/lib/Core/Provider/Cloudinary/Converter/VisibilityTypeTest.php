@@ -29,6 +29,14 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
+    public static function fromCloudinaryTypeProvider(): iterable
+    {
+        return [
+            ['upload', RemoteResource::VISIBILITY_PUBLIC],
+            ['authenticated', RemoteResource::VISIBILITY_PROTECTED],
+        ];
+    }
+
     #[DataProvider('toCloudinaryTypeProvider')]
     public function testToCloudinaryType(string $visibility, string $expectedType): void
     {
@@ -36,6 +44,14 @@ final class VisibilityTypeTest extends TestCase
             $expectedType,
             $this->converter->toCloudinaryType($visibility),
         );
+    }
+
+    public static function toCloudinaryTypeProvider(): iterable
+    {
+        return [
+            [RemoteResource::VISIBILITY_PUBLIC, 'upload'],
+            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
+        ];
     }
 
     #[DataProvider('toCloudinaryAccessModeProvider')]
@@ -47,6 +63,14 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
+    public static function toCloudinaryAccessModeProvider(): iterable
+    {
+        return [
+            [RemoteResource::VISIBILITY_PUBLIC, 'public'],
+            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
+        ];
+    }
+
     #[DataProvider('toCloudinaryAccessControlProvider')]
     public function testToCloudinaryAccessControl(string $visibility, array $expectedSettings): void
     {
@@ -56,31 +80,7 @@ final class VisibilityTypeTest extends TestCase
         );
     }
 
-    public static function fromCloudinaryTypeProvider(): array
-    {
-        return [
-            ['upload', RemoteResource::VISIBILITY_PUBLIC],
-            ['authenticated', RemoteResource::VISIBILITY_PROTECTED],
-        ];
-    }
-
-    public static function toCloudinaryTypeProvider(): array
-    {
-        return [
-            [RemoteResource::VISIBILITY_PUBLIC, 'upload'],
-            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
-        ];
-    }
-
-    public static function toCloudinaryAccessModeProvider(): array
-    {
-        return [
-            [RemoteResource::VISIBILITY_PUBLIC, 'public'],
-            [RemoteResource::VISIBILITY_PROTECTED, 'authenticated'],
-        ];
-    }
-
-    public static function toCloudinaryAccessControlProvider(): array
+    public static function toCloudinaryAccessControlProvider(): iterable
     {
         return [
             [RemoteResource::VISIBILITY_PUBLIC, [['access_type' => 'anonymous']]],

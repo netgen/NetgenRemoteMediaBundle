@@ -37,7 +37,7 @@ final class ResultTest extends TestCase
         );
     }
 
-    public static function dataProvider(): array
+    public static function dataProvider(): iterable
     {
         return [
             [0, null, []],

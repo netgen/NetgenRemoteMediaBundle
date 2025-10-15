@@ -32,12 +32,7 @@ final class AuthTokenTest extends TestCase
         );
     }
 
-    public function testHasEncryptionKey(): void
-    {
-        self::assertTrue($this->resolver->hasEncryptionKey());
-    }
-
-    public static function dataProvider(): array
+    public static function dataProvider(): iterable
     {
         return [
             [
@@ -104,5 +99,10 @@ final class AuthTokenTest extends TestCase
                 ],
             ],
         ];
+    }
+
+    public function testHasEncryptionKey(): void
+    {
+        self::assertTrue($this->resolver->hasEncryptionKey());
     }
 }

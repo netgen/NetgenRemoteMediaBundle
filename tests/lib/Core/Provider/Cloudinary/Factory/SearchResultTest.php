@@ -47,7 +47,7 @@ final class SearchResultTest extends AbstractTestCase
         );
     }
 
-    public static function createDataProvider(): array
+    public static function createDataProvider(): iterable
     {
         return [
             [
