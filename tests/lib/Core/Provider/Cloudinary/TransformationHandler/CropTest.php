@@ -29,7 +29,15 @@ final class CropTest extends TestCase
         );
     }
 
-    public static function validDataProvider(): iterable
+    #[DataProvider('invalidDataProvider')]
+    public function testWithException(array $config): void
+    {
+        $this->expectException(TransformationHandlerFailedException::class);
+
+        $this->crop->process($config);
+    }
+
+    public static function validDataProvider(): array
     {
         return [
             [
@@ -65,15 +73,7 @@ final class CropTest extends TestCase
         ];
     }
 
-    #[DataProvider('invalidDataProvider')]
-    public function testWithException(array $config): void
-    {
-        $this->expectException(TransformationHandlerFailedException::class);
-
-        $this->crop->process($config);
-    }
-
-    public static function invalidDataProvider(): iterable
+    public static function invalidDataProvider(): array
     {
         return [
             [

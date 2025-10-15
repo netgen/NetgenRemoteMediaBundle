@@ -30,7 +30,22 @@ class RemoteMediaFolderTransformerTest extends AbstractTestCase
         );
     }
 
-    public static function transformDataProvider(): iterable
+    #[DataProvider('reverseTransformDataProvider')]
+    public function testReverseTransform(mixed $value, ?Folder $expectedData): void
+    {
+        if ($expectedData instanceof Folder) {
+            AbstractTestCase::assertFolderSame(
+                $expectedData,
+                $this->dataTransformer->reverseTransform($value),
+            );
+
+            return;
+        }
+
+        self::assertNull($this->dataTransformer->reverseTransform($value));
+    }
+
+    public static function transformDataProvider(): array
     {
         return [
             [
@@ -60,22 +75,7 @@ class RemoteMediaFolderTransformerTest extends AbstractTestCase
         ];
     }
 
-    #[DataProvider('reverseTransformDataProvider')]
-    public function testReverseTransform(mixed $value, ?Folder $expectedData): void
-    {
-        if ($expectedData instanceof Folder) {
-            AbstractTestCase::assertFolderSame(
-                $expectedData,
-                $this->dataTransformer->reverseTransform($value),
-            );
-
-            return;
-        }
-
-        self::assertNull($this->dataTransformer->reverseTransform($value));
-    }
-
-    public static function reverseTransformDataProvider(): iterable
+    public static function reverseTransformDataProvider(): array
     {
         return [
             [

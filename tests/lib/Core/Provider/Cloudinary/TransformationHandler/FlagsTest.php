@@ -28,7 +28,7 @@ final class FlagsTest extends TestCase
         );
     }
 
-    public static function validDataProvider(): iterable
+    public function validDataProvider(): array
     {
         return [
             [['rasterize', 'test'], ['flags' => ['rasterize']]],

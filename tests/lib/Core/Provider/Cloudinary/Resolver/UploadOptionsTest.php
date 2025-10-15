@@ -51,7 +51,7 @@ final class UploadOptionsTest extends TestCase
         self::assertSame($options, $resolvedOptions);
     }
 
-    public static function dataProvider(): iterable
+    public static function dataProvider(): array
     {
         return [
             [

@@ -37,13 +37,12 @@ $config
             'import_functions' => true,
         ],
         'heredoc_indentation' => ['indentation' => 'same_as_start'],
-        //'mb_str_functions' => true,
+        'mb_str_functions' => true,
         'native_constant_invocation' => true,
         'nullable_type_declaration_for_default_null_value' => true,
         'static_lambda' => true,
         'ternary_to_null_coalescing' => true,
         'use_arrow_functions' => true,
-        'php_unit_data_provider_name' => false,
     ])
     ->setFinder(
         PhpCsFixer\Finder::create()

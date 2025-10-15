@@ -29,7 +29,32 @@ final class ResourceTypeTest extends TestCase
         );
     }
 
-    public static function fromCloudinaryDataProvider(): iterable
+    #[DataProvider('toCloudinaryTypeProvider')]
+    public function testToCloudinaryType(string $type, string $expectedType): void
+    {
+        self::assertSame(
+            $expectedType,
+            $this->converter->toCloudinaryType($type),
+        );
+    }
+
+    public function testGetAudioFormats(): void
+    {
+        self::assertSame(
+            ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'],
+            $this->converter->getAudioFormats(),
+        );
+    }
+
+    public function testGetDocumentFormats(): void
+    {
+        self::assertSame(
+            ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'],
+            $this->converter->getDocumentFormats(),
+        );
+    }
+
+    public static function fromCloudinaryDataProvider(): array
     {
         return [
             ['image', null, RemoteResource::TYPE_IMAGE],
@@ -51,16 +76,7 @@ final class ResourceTypeTest extends TestCase
         ];
     }
 
-    #[DataProvider('toCloudinaryTypeProvider')]
-    public function testToCloudinaryType(string $type, string $expectedType): void
-    {
-        self::assertSame(
-            $expectedType,
-            $this->converter->toCloudinaryType($type),
-        );
-    }
-
-    public static function toCloudinaryTypeProvider(): iterable
+    public static function toCloudinaryTypeProvider(): array
     {
         return [
             [RemoteResource::TYPE_IMAGE, 'image'],
@@ -69,21 +85,5 @@ final class ResourceTypeTest extends TestCase
             [RemoteResource::TYPE_AUDIO, 'video'],
             [RemoteResource::TYPE_OTHER, 'raw'],
         ];
-    }
-
-    public function testGetAudioFormats(): void
-    {
-        self::assertSame(
-            ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'],
-            $this->converter->getAudioFormats(),
-        );
-    }
-
-    public function testGetDocumentFormats(): void
-    {
-        self::assertSame(
-            ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'],
-            $this->converter->getDocumentFormats(),
-        );
     }
 }

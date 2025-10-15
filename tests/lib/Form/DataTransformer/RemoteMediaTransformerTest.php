@@ -42,79 +42,6 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         );
     }
 
-    public static function transformDataProvider(): iterable
-    {
-        return [
-            [
-                new RemoteResource(
-                    remoteId: 'upload|image|media/images/example.jpg',
-                    type: 'image',
-                    url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                    name: 'example.jpg',
-                ),
-                null,
-            ],
-            [
-                'test',
-                null,
-            ],
-            [
-                new RemoteResourceLocation(
-                    remoteResource: new RemoteResource(
-                        remoteId: 'upload|image|media/images/example.jpg',
-                        type: 'image',
-                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                        name: 'example.jpg',
-                        folder: Folder::fromPath('media/images'),
-                        altText: 'Test alt text',
-                        caption: 'Test caption',
-                        tags: ['tag1', 'tag2'],
-                    ),
-                    cropSettings: [
-                        new CropSettings('hero_image', 10, 20, 1920, 1080),
-                    ],
-                ),
-                [
-                    'locationId' => null,
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => 'Test alt text',
-                    'caption' => 'Test caption',
-                    'tags' => ['tag1', 'tag2'],
-                    'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
-                    'source' => null,
-                    'watermarkText' => null,
-                ],
-            ],
-            [
-                new RemoteResourceLocation(
-                    remoteResource: new RemoteResource(
-                        remoteId: 'upload|image|media/images/example.jpg',
-                        type: 'image',
-                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                        name: 'example.jpg',
-                    ),
-                    source: 'my_source',
-                    watermarkText: 'This is a watermark',
-                ),
-                [
-                    'locationId' => null,
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => null,
-                    'caption' => null,
-                    'tags' => [],
-                    'cropSettings' => '[]',
-                    'source' => 'my_source',
-                    'watermarkText' => 'This is a watermark',
-                ],
-            ],
-        ];
-    }
-
     public function testReverseTransformWithoutResource(): void
     {
         $data = [
@@ -464,5 +391,78 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             $expectedLocation,
             $this->dataTransformer->reverseTransform($data),
         );
+    }
+
+    public static function transformDataProvider(): array
+    {
+        return [
+            [
+                new RemoteResource(
+                    remoteId: 'upload|image|media/images/example.jpg',
+                    type: 'image',
+                    url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                    name: 'example.jpg',
+                ),
+                null,
+            ],
+            [
+                'test',
+                null,
+            ],
+            [
+                new RemoteResourceLocation(
+                    remoteResource: new RemoteResource(
+                        remoteId: 'upload|image|media/images/example.jpg',
+                        type: 'image',
+                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                        name: 'example.jpg',
+                        folder: Folder::fromPath('media/images'),
+                        altText: 'Test alt text',
+                        caption: 'Test caption',
+                        tags: ['tag1', 'tag2'],
+                    ),
+                    cropSettings: [
+                        new CropSettings('hero_image', 10, 20, 1920, 1080),
+                    ],
+                ),
+                [
+                    'locationId' => null,
+                    'remoteId' => 'upload|image|media/images/example.jpg',
+                    'type' => 'image',
+                    'altText' => 'Test alt text',
+                    'caption' => 'Test caption',
+                    'tags' => ['tag1', 'tag2'],
+                    'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
+                    'source' => null,
+                    'watermarkText' => null,
+                ],
+            ],
+            [
+                new RemoteResourceLocation(
+                    remoteResource: new RemoteResource(
+                        remoteId: 'upload|image|media/images/example.jpg',
+                        type: 'image',
+                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                        name: 'example.jpg',
+                    ),
+                    source: 'my_source',
+                    watermarkText: 'This is a watermark',
+                ),
+                [
+                    'locationId' => null,
+                    'remoteId' => 'upload|image|media/images/example.jpg',
+                    'type' => 'image',
+                    'altText' => null,
+                    'caption' => null,
+                    'tags' => [],
+                    'cropSettings' => '[]',
+                    'source' => 'my_source',
+                    'watermarkText' => 'This is a watermark',
+                ],
+            ],
+        ];
     }
 }

@@ -29,7 +29,16 @@ final class WatermarkTextTest extends TestCase
         );
     }
 
-    public static function validDataProvider(): iterable
+    #[DataProvider('invalidDataProvider')]
+    public function testInvalid(array $config): void
+    {
+        self::expectException(TransformationHandlerFailedException::class);
+        self::expectExceptionMessage('Transformation handler "Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\WatermarkText" identifier failed.');
+
+        $this->watermarkText->process($config);
+    }
+
+    public static function validDataProvider(): array
     {
         return [
             [
@@ -117,16 +126,7 @@ final class WatermarkTextTest extends TestCase
         ];
     }
 
-    #[DataProvider('invalidDataProvider')]
-    public function testInvalid(array $config): void
-    {
-        self::expectException(TransformationHandlerFailedException::class);
-        self::expectExceptionMessage('Transformation handler "Netgen\RemoteMedia\Core\Provider\Cloudinary\TransformationHandler\WatermarkText" identifier failed.');
-
-        $this->watermarkText->process($config);
-    }
-
-    public static function invalidDataProvider(): iterable
+    public static function invalidDataProvider(): array
     {
         return [
             [
