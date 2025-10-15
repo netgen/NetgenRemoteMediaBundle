@@ -136,6 +136,13 @@ abstract class Gateway
     abstract public function removeAllTags($id, $type);
 
     /**
+     * Lists metadata fields.
+     *
+     * @return array
+     */
+    abstract public function listMetadataFields();
+
+    /**
      * Updates the remote resource.
      *
      * @param $id

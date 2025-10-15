@@ -31,11 +31,13 @@ final class BrowseController
         $limit = 25;
         $userQuery = $request->get('q', '');
         $tag = $request->get('tag', 'all');
+        $metadata = $request->get('metadata', 'all');
         $type = $request->get('mediatype', 'all');
         $folder = $request->get('folder', 'all');
         $type = $type !== 'all' ? $type : null;
         $folder = $folder !== 'all' ? $folder : null;
         $tag = $tag !== 'all' ? $tag : null;
+        $metadata = $metadata !== 'all' ? $metadata : null;
 
         switch ($folder) {
             case '(all)':
@@ -60,7 +62,8 @@ final class BrowseController
             $limit,
             $folder,
             $tag,
-            $nextCursor,
+            $metadata,
+            $nextCursor
         );
 
         $results = $this->remoteMediaProvider->searchResources($query);

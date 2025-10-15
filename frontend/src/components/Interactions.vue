@@ -27,7 +27,7 @@
 
     <input type="hidden" :name="this.$root.$data.NgRemoteMediaInputFields.image_variations" v-model="stringifiedVariations" class="media-id"/>
     <crop-modal v-if="cropModalOpen" @change="handleVariationCropChange" @close="handleCropModalClose" :selected-image="selectedImage" :available-variations="this.$root.$data.NgRemoteMediaAvailableVariations"></crop-modal>
-    <media-modal :tags="tags" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
+    <media-modal :tags="tags" :metadataFields="metadataFields" :selected-media-id="selectedImage.id" v-if="mediaModalOpen" @close="handleMediaModalClose" @media-selected="handleMediaSelected" :paths="config.paths"></media-modal>
     <upload-modal v-if="uploadModalOpen" @close="handleUploadModalClose" @save="handleUploadModalSave" :name="selectedImage.name" ></upload-modal>
   </div>
 </template>
@@ -67,6 +67,7 @@ export default {
       uploadModalOpen: false,
       folders: [],
       tags: [],
+      metadataFields: [],
       facetsLoading: true
     };
   },
@@ -108,6 +109,7 @@ export default {
         previewUrl: item.preview_url,
         alternateText: item.alt_text,
         tags: item.tags,
+        metadataFields: item.metadata,
         size: item.filesize,
         variations: {},
         height: item.height,
@@ -148,6 +150,7 @@ export default {
         previewUrl: '',
         alternateText: '',
         tags: [],
+        metadataFields: [],
         size: 0,
         variations: {},
         height: 0,
@@ -159,6 +162,7 @@ export default {
       const response = await fetch(this.config.paths.load_facets);
       const data = await response.json();
       this.tags = data.tags;
+      this.metadataFields = data.metadataFields;
       this.facetsLoading = false;
     },
     async handleBrowseMediaClicked() {
@@ -203,6 +207,7 @@ export default {
           previewUrl: '',
           alternateText: '',
           tags: [],
+          metadataFields: [],
           size: file.size,
           variations: {},
           height: 0,

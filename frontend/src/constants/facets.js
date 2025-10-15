@@ -6,3 +6,4 @@ export const SEARCH_NAME = 'name';
 export const FOLDER_ALL = '(all)';
 export const FOLDER_ROOT = '(root)';
 export const TAG_ALL = 'all';
+export const METADATA_ALL = 'all';
