@@ -33,7 +33,7 @@ class RemoteMediaTypeTest extends TypeTestCase
         parent::setUp();
     }
 
-    #[DataProvider('submitDataProvider')]
+    #[DataProvider('provideSubmitValidDataCases')]
     public function testSubmitValidData(
         array $formData,
         array $options,
@@ -115,7 +115,7 @@ class RemoteMediaTypeTest extends TypeTestCase
         }
     }
 
-    public static function submitDataProvider(): array
+    public static function provideSubmitValidDataCases(): iterable
     {
         return [
             [

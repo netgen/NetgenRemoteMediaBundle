@@ -91,7 +91,7 @@ final class FolderTest extends TestCase
         );
     }
 
-    public static function dataProvider(): array
+    public static function dataProvider(): iterable
     {
         return [
             [

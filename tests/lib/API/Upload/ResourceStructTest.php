@@ -52,7 +52,7 @@ final class ResourceStructTest extends TestCase
         self::assertFalse($resourceStruct->doHideFilename());
     }
 
-    #[DataProvider('dataProvider')]
+    #[DataProvider('provideCreateCases')]
     public function testCreate(
         FileStruct $fileStruct,
         string $resourceType,
@@ -142,7 +142,7 @@ final class ResourceStructTest extends TestCase
         );
     }
 
-    public static function dataProvider(): array
+    public static function provideCreateCases(): iterable
     {
         return [
             [

@@ -20,7 +20,7 @@ final class ResourceTypeTest extends TestCase
         $this->converter = new ResourceTypeConverter();
     }
 
-    #[DataProvider('fromCloudinaryDataProvider')]
+    #[DataProvider('provideFromCloudinaryDataCases')]
     public function testFromCloudinaryData(string $type, ?string $format, string $expectedFormat): void
     {
         self::assertSame(
@@ -29,32 +29,7 @@ final class ResourceTypeTest extends TestCase
         );
     }
 
-    #[DataProvider('toCloudinaryTypeProvider')]
-    public function testToCloudinaryType(string $type, string $expectedType): void
-    {
-        self::assertSame(
-            $expectedType,
-            $this->converter->toCloudinaryType($type),
-        );
-    }
-
-    public function testGetAudioFormats(): void
-    {
-        self::assertSame(
-            ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'],
-            $this->converter->getAudioFormats(),
-        );
-    }
-
-    public function testGetDocumentFormats(): void
-    {
-        self::assertSame(
-            ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'],
-            $this->converter->getDocumentFormats(),
-        );
-    }
-
-    public static function fromCloudinaryDataProvider(): array
+    public static function provideFromCloudinaryDataCases(): iterable
     {
         return [
             ['image', null, RemoteResource::TYPE_IMAGE],
@@ -76,7 +51,16 @@ final class ResourceTypeTest extends TestCase
         ];
     }
 
-    public static function toCloudinaryTypeProvider(): array
+    #[DataProvider('provideToCloudinaryTypeCases')]
+    public function testToCloudinaryType(string $type, string $expectedType): void
+    {
+        self::assertSame(
+            $expectedType,
+            $this->converter->toCloudinaryType($type),
+        );
+    }
+
+    public static function provideToCloudinaryTypeCases(): iterable
     {
         return [
             [RemoteResource::TYPE_IMAGE, 'image'],
@@ -85,5 +69,21 @@ final class ResourceTypeTest extends TestCase
             [RemoteResource::TYPE_AUDIO, 'video'],
             [RemoteResource::TYPE_OTHER, 'raw'],
         ];
+    }
+
+    public function testGetAudioFormats(): void
+    {
+        self::assertSame(
+            ['aac', 'aiff', 'amr', 'flac', 'm4a', 'mp3', 'ogg', 'opus', 'wav'],
+            $this->converter->getAudioFormats(),
+        );
+    }
+
+    public function testGetDocumentFormats(): void
+    {
+        self::assertSame(
+            ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt'],
+            $this->converter->getDocumentFormats(),
+        );
     }
 }

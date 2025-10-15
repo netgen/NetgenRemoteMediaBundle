@@ -152,13 +152,13 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    #[DataProvider('invalidNamedObjectsProvider')]
+    #[DataProvider('provideInvalidNamedObjectsConfigurationCases')]
     public function testInvalidNamedObjectsConfiguration(array $configuration): void
     {
         $this->assertConfigurationIsInvalid($configuration);
     }
 
-    public static function invalidNamedObjectsProvider(): array
+    public static function provideInvalidNamedObjectsConfigurationCases(): iterable
     {
         return [
             [

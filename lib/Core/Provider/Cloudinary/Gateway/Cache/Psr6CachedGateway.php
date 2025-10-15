@@ -21,8 +21,8 @@ use function array_unique;
 use function array_values;
 use function array_walk;
 use function implode;
+use function mb_trim;
 use function str_replace;
-use function trim;
 
 final class Psr6CachedGateway implements CacheableGatewayInterface
 {
@@ -469,7 +469,7 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
     {
         $forbiddenCharacters = ['{', '}', '(', ')', '/', '\\', '@'];
         foreach ($forbiddenCharacters as $char) {
-            $key = str_replace($char, '_', trim($key, $char));
+            $key = str_replace($char, '_', mb_trim($key, $char));
         }
 
         return $key;

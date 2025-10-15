@@ -27,7 +27,7 @@ final class MpadTest extends TestCase
         );
     }
 
-    #[DataProvider('dataProvider')]
+    #[DataProvider('provideCases')]
     public function test(array $config, array $result): void
     {
         self::assertSame(
@@ -36,7 +36,7 @@ final class MpadTest extends TestCase
         );
     }
 
-    public static function dataProvider(): array
+    public static function provideCases(): iterable
     {
         return [
             [

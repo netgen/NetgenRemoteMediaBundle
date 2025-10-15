@@ -36,7 +36,7 @@ final class SearchExpressionTest extends TestCase
         );
     }
 
-    #[DataProvider('dataProvider')]
+    #[DataProvider('provideResolveCases')]
     public function testResolve(Query $query, string $expression, string $folderMode = CloudinaryProvider::FOLDER_MODE_FIXED): void
     {
         $actualExpression = $folderMode === CloudinaryProvider::FOLDER_MODE_FIXED
@@ -49,7 +49,7 @@ final class SearchExpressionTest extends TestCase
         );
     }
 
-    public static function dataProvider(): array
+    public static function provideResolveCases(): iterable
     {
         return [
             [

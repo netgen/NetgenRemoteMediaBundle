@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Query::class)]
 final class QueryTest extends TestCase
 {
-    #[DataProvider('constructorPropsProvider')]
+    #[DataProvider('provideConstructorCases')]
     public function testConstructor(
         ?string $searchQuery,
         array $types,
@@ -102,104 +102,7 @@ final class QueryTest extends TestCase
         );
     }
 
-    #[DataProvider('remoteIdsProvider')]
-    public function testFromRemoteIds(
-        array $remoteIds,
-        int $limit,
-        ?string $nextCursor,
-        array $sortBy,
-        string $toString
-    ): void {
-        $query = Query::fromRemoteIds(
-            $remoteIds,
-            $limit,
-            $nextCursor,
-            $sortBy,
-        );
-
-        self::assertNull($query->getQuery());
-        self::assertEmpty($query->getTypes());
-        self::assertEmpty($query->getFolders());
-        self::assertEmpty($query->getVisibilities());
-        self::assertEmpty($query->getTags());
-        self::assertEmpty($query->getContext());
-
-        self::assertSame(
-            $remoteIds,
-            $query->getRemoteIds(),
-        );
-
-        self::assertSame(
-            $limit,
-            $query->getLimit(),
-        );
-
-        self::assertSame(
-            $nextCursor,
-            $query->getNextCursor(),
-        );
-
-        self::assertSame(
-            $sortBy,
-            $query->getSortBy(),
-        );
-
-        self::assertSame(
-            $toString,
-            (string) $query,
-        );
-    }
-
-    public function testSimpleFromRemoteIds(): void
-    {
-        $query = Query::fromRemoteIds(['test/image.jpg']);
-
-        self::assertNull($query->getQuery());
-        self::assertEmpty($query->getTypes());
-        self::assertEmpty($query->getFolders());
-        self::assertEmpty($query->getVisibilities());
-        self::assertEmpty($query->getTags());
-        self::assertEmpty($query->getMd5s());
-        self::assertEmpty($query->getContext());
-
-        self::assertSame(
-            ['test/image.jpg'],
-            $query->getRemoteIds(),
-        );
-
-        self::assertSame(
-            25,
-            $query->getLimit(),
-        );
-
-        self::assertNull($query->getNextCursor());
-
-        self::assertSame(
-            ['created_at' => 'desc'],
-            $query->getSortBy(),
-        );
-
-        self::assertSame(
-            '|25||||||test/image.jpg|||created_at=desc',
-            (string) $query,
-        );
-    }
-
-    public function testSettingNextCursor(): void
-    {
-        $query = new Query(query: 'tech');
-
-        self::assertNull($query->getNextCursor());
-
-        $query->setNextCursor('f439t04h32dsf3dsfewf');
-
-        self::assertSame(
-            'f439t04h32dsf3dsfewf',
-            $query->getNextCursor(),
-        );
-    }
-
-    public static function constructorPropsProvider(): array
+    public static function provideConstructorCases(): iterable
     {
         return [
             [
@@ -264,7 +167,55 @@ final class QueryTest extends TestCase
         ];
     }
 
-    public static function remoteIdsProvider(): array
+    #[DataProvider('provideFromRemoteIdsCases')]
+    public function testFromRemoteIds(
+        array $remoteIds,
+        int $limit,
+        ?string $nextCursor,
+        array $sortBy,
+        string $toString
+    ): void {
+        $query = Query::fromRemoteIds(
+            $remoteIds,
+            $limit,
+            $nextCursor,
+            $sortBy,
+        );
+
+        self::assertNull($query->getQuery());
+        self::assertEmpty($query->getTypes());
+        self::assertEmpty($query->getFolders());
+        self::assertEmpty($query->getVisibilities());
+        self::assertEmpty($query->getTags());
+        self::assertEmpty($query->getContext());
+
+        self::assertSame(
+            $remoteIds,
+            $query->getRemoteIds(),
+        );
+
+        self::assertSame(
+            $limit,
+            $query->getLimit(),
+        );
+
+        self::assertSame(
+            $nextCursor,
+            $query->getNextCursor(),
+        );
+
+        self::assertSame(
+            $sortBy,
+            $query->getSortBy(),
+        );
+
+        self::assertSame(
+            $toString,
+            (string) $query,
+        );
+    }
+
+    public static function provideFromRemoteIdsCases(): iterable
     {
         return [
             [
@@ -282,5 +233,54 @@ final class QueryTest extends TestCase
                 '|25|ewdsofu439oirejfoi3|||||image.jpg|||updated_at=desc',
             ],
         ];
+    }
+
+    public function testSimpleFromRemoteIds(): void
+    {
+        $query = Query::fromRemoteIds(['test/image.jpg']);
+
+        self::assertNull($query->getQuery());
+        self::assertEmpty($query->getTypes());
+        self::assertEmpty($query->getFolders());
+        self::assertEmpty($query->getVisibilities());
+        self::assertEmpty($query->getTags());
+        self::assertEmpty($query->getMd5s());
+        self::assertEmpty($query->getContext());
+
+        self::assertSame(
+            ['test/image.jpg'],
+            $query->getRemoteIds(),
+        );
+
+        self::assertSame(
+            25,
+            $query->getLimit(),
+        );
+
+        self::assertNull($query->getNextCursor());
+
+        self::assertSame(
+            ['created_at' => 'desc'],
+            $query->getSortBy(),
+        );
+
+        self::assertSame(
+            '|25||||||test/image.jpg|||created_at=desc',
+            (string) $query,
+        );
+    }
+
+    public function testSettingNextCursor(): void
+    {
+        $query = new Query(query: 'tech');
+
+        self::assertNull($query->getNextCursor());
+
+        $query->setNextCursor('f439t04h32dsf3dsfewf');
+
+        self::assertSame(
+            'f439t04h32dsf3dsfewf',
+            $query->getNextCursor(),
+        );
     }
 }

@@ -16,7 +16,7 @@ use function curl_setopt;
 use function explode;
 use function mb_strlen;
 use function mb_strtolower;
-use function trim;
+use function mb_trim;
 
 use const CURLINFO_HTTP_CODE;
 use const CURLOPT_HEADERFUNCTION;
@@ -49,7 +49,7 @@ final class Md5FileHash implements FileHashFactoryInterface
                     return $len;
                 }
 
-                $headers[mb_strtolower(trim($header[0]))][] = trim($header[1]);
+                $headers[mb_strtolower(mb_trim($header[0]))][] = mb_trim($header[1]);
 
                 return $len;
             },
@@ -64,6 +64,6 @@ final class Md5FileHash implements FileHashFactoryInterface
             return null;
         }
 
-        return ($headers['etag'][0] ?? null) ? trim($headers['etag'][0], ' "\'\t\n\r\0\v') : null;
+        return ($headers['etag'][0] ?? null) ? mb_trim($headers['etag'][0], ' "\'\t\n\r\0\v') : null;
     }
 }
