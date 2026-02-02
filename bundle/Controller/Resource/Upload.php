@@ -18,9 +18,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function fclose;
+use function fopen;
+use function fread;
+use function fseek;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_file;
+use function is_readable;
+use function strpos;
+use function strtolower;
+
+use const SEEK_END;
 
 final class Upload extends AbstractController
 {
@@ -88,9 +98,11 @@ final class Upload extends AbstractController
 
         $md5 = $this->fileHashFactory->createHash($file->getRealPath());
         $fileStruct = FileStruct::fromUploadedFile($file);
+
+        $resourceType = $this->isEncryptedPdf($file) ? 'raw' : 'auto';
         $resourceStruct = new ResourceStruct(
             $fileStruct,
-            'auto',
+            $resourceType,
             $folder,
             $visibility,
             $request->request->get('filename'),
@@ -112,5 +124,37 @@ final class Upload extends AbstractController
         }
 
         return new JsonResponse($this->formatResource($resource), $httpCode);
+    }
+
+    private function isEncryptedPdf(UploadedFile $file): bool
+    {
+        if (strtolower((string) $file->getClientOriginalExtension()) !== 'pdf') {
+            return false;
+        }
+
+        $path = (string) $file->getRealPath();
+        if ($path === '' || !is_file($path) || !is_readable($path)) {
+            return false;
+        }
+
+        $fp = @fopen($path, 'r');
+        if ($fp === false) {
+            return false;
+        }
+
+        $head = (string) fread($fp, 4096);
+
+        // Encryption marker may be located anywhere; read also from the end.
+        // Suppress fseek errors (e.g. very small files).
+        @fseek($fp, -16384, SEEK_END);
+        $tail = (string) fread($fp, 16384);
+
+        fclose($fp);
+
+        if (strpos($head, '%PDF-') !== 0) {
+            return false;
+        }
+
+        return strpos($head . $tail, '/Encrypt') !== false;
     }
 }
