@@ -128,7 +128,7 @@ final class Upload extends AbstractController
 
     private function isEncryptedPdf(UploadedFile $file): bool
     {
-        if (strtolower((string) $file->getClientOriginalExtension()) !== 'pdf') {
+        if (strtolower($file->getClientOriginalExtension()) !== 'pdf') {
             return false;
         }
 
@@ -144,8 +144,6 @@ final class Upload extends AbstractController
 
         $head = (string) fread($fp, 4096);
 
-        // Encryption marker may be located anywhere; read also from the end.
-        // Suppress fseek errors (e.g. very small files).
         @fseek($fp, -16384, SEEK_END);
         $tail = (string) fread($fp, 16384);
 
