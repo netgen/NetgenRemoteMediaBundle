@@ -275,9 +275,9 @@ final class UploadTest extends TestCase
         $tmpPdfPath = (string) tempnam(sys_get_temp_dir(), 'ngrm_unencrypted_pdf_metadata_');
         file_put_contents(
             $tmpPdfPath,
-            "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n" .
-            "/Title (/Encrypt)\n" .
-            "%%EOF\n",
+            "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n"
+            . "/Title (/Encrypt)\n"
+            . "%%EOF\n",
         );
 
         $request = new Request();
@@ -361,9 +361,9 @@ final class UploadTest extends TestCase
         $tmpPdfPath = (string) tempnam(sys_get_temp_dir(), 'ngrm_unencrypted_pdf_comment_');
         file_put_contents(
             $tmpPdfPath,
-            "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n" .
-            "%%EOF\n" .
-            "% /Encrypt 2 0 R\n",
+            "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n"
+            . "%%EOF\n"
+            . "% /Encrypt 2 0 R\n",
         );
 
         $request = new Request();
