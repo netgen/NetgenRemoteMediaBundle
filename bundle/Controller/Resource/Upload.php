@@ -27,8 +27,12 @@ use function in_array;
 use function is_array;
 use function is_file;
 use function is_readable;
+use function filesize;
+use function preg_match;
+use function strrpos;
 use function strpos;
 use function strtolower;
+use function substr;
 
 use const SEEK_END;
 
@@ -142,17 +146,36 @@ final class Upload extends AbstractController
             return false;
         }
 
-        $head = (string) fread($fp, 4096);
+        $fileSize = filesize($path);
 
-        @fseek($fp, -16384, SEEK_END);
-        $tail = (string) fread($fp, 16384);
+        // For small PDFs, `head` and `tail` reads can overlap and even fully duplicate the file contents.
+        // This can re-introduce false positives (e.g. `/Encrypt` in a trailing comment after `%%EOF`).
+        // In that case, scan the full content once.
+        if ($fileSize !== false && $fileSize <= 20480) {
+            $content = (string) fread($fp, $fileSize);
+        } else {
+            $head = (string) fread($fp, 4096);
+
+            @fseek($fp, -16384, SEEK_END);
+            $tail = (string) fread($fp, 16384);
+
+            $content = $head . $tail;
+        }
 
         fclose($fp);
 
-        if (strpos($head, '%PDF-') !== 0) {
+        if (strpos($content, '%PDF-') !== 0) {
             return false;
         }
 
-        return strpos($head . $tail, '/Encrypt') !== false;
+        // Ignore anything after the last EOF marker (some tools append non-PDF comments/metadata).
+        $eofPos = strrpos($content, '%%EOF');
+        if ($eofPos !== false) {
+            $content = substr($content, 0, $eofPos + 5);
+        }
+
+        // Detect presence of encryption dictionary reference in PDF object context.
+        // This avoids false positives where `/Encrypt` appears in metadata or trailing comments.
+        return (bool) preg_match('/\/(?:Encrypt)\s+(\d+|<<)/m', $content);
     }
 }

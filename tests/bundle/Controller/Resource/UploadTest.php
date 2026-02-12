@@ -270,6 +270,178 @@ final class UploadTest extends TestCase
         unlink($tmpPdfPath);
     }
 
+    public function testUploadPdfWithEncryptInMetadataIsAuto(): void
+    {
+        $tmpPdfPath = (string) tempnam(sys_get_temp_dir(), 'ngrm_unencrypted_pdf_metadata_');
+        file_put_contents(
+            $tmpPdfPath,
+            "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n" .
+            "/Title (/Encrypt)\n" .
+            "%%EOF\n",
+        );
+
+        $request = new Request();
+        $request->request->add([
+            'folder' => 'media/document',
+        ]);
+
+        $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
+
+        // getRealPath is used for md5 hash + FileStruct + encryption detector
+        $uploadedFileMock
+            ->expects(self::exactly(4))
+            ->method('getRealPath')
+            ->willReturn($tmpPdfPath);
+
+        $uploadedFileMock
+            ->expects(self::exactly(2))
+            ->method('getClientOriginalName')
+            ->willReturn('unencrypted.pdf');
+
+        // getClientOriginalExtension is used for FileStruct + encryption detector
+        $uploadedFileMock
+            ->expects(self::exactly(3))
+            ->method('getClientOriginalExtension')
+            ->willReturn('pdf');
+
+        $request->files->add([
+            'file' => $uploadedFileMock,
+        ]);
+
+        $this->fileHashFactoryMock
+            ->expects(self::once())
+            ->method('createHash')
+            ->with($tmpPdfPath)
+            ->willReturn('md5hash');
+
+        $fileStruct = FileStruct::fromUploadedFile($uploadedFileMock);
+
+        $resourceStruct = new ResourceStruct(
+            $fileStruct,
+            'auto',
+            Folder::fromPath('media/document'),
+            'public',
+            $request->request->get('filename'),
+        );
+
+        $resource = new RemoteResource(
+            remoteId: 'upload|auto|media/document/unencrypted.pdf',
+            type: 'auto',
+            url: 'https://cloudinary.com/test/upload/auto/media/document/unencrypted.pdf',
+            md5: 'md5hash',
+            name: 'unencrypted.pdf',
+            folder: Folder::fromPath('media/document'),
+            size: 123,
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($resourceStruct)
+            ->willReturn($resource);
+
+        $this->providerMock
+            ->expects(self::exactly(0))
+            ->method('buildVariation');
+
+        $response = $this->controller->__invoke($request);
+
+        self::assertInstanceOf(JsonResponse::class, $response);
+
+        unlink($tmpPdfPath);
+    }
+
+    public function testUploadPdfWithEncryptInTrailingCommentAfterEofIsAuto(): void
+    {
+        $tmpPdfPath = (string) tempnam(sys_get_temp_dir(), 'ngrm_unencrypted_pdf_comment_');
+        file_put_contents(
+            $tmpPdfPath,
+            "%PDF-1.7\n1 0 obj\n<< /Type /Catalog >>\nendobj\n" .
+            "%%EOF\n" .
+            "% /Encrypt 2 0 R\n",
+        );
+
+        $request = new Request();
+        $request->request->add([
+            'folder' => 'media/document',
+        ]);
+
+        $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
+
+        // getRealPath is used for md5 hash + FileStruct + encryption detector
+        $uploadedFileMock
+            ->expects(self::exactly(4))
+            ->method('getRealPath')
+            ->willReturn($tmpPdfPath);
+
+        $uploadedFileMock
+            ->expects(self::exactly(2))
+            ->method('getClientOriginalName')
+            ->willReturn('unencrypted.pdf');
+
+        // getClientOriginalExtension is used for FileStruct + encryption detector
+        $uploadedFileMock
+            ->expects(self::exactly(3))
+            ->method('getClientOriginalExtension')
+            ->willReturn('pdf');
+
+        $request->files->add([
+            'file' => $uploadedFileMock,
+        ]);
+
+        $this->fileHashFactoryMock
+            ->expects(self::once())
+            ->method('createHash')
+            ->with($tmpPdfPath)
+            ->willReturn('md5hash');
+
+        $fileStruct = FileStruct::fromUploadedFile($uploadedFileMock);
+
+        $resourceStruct = new ResourceStruct(
+            $fileStruct,
+            'auto',
+            Folder::fromPath('media/document'),
+            'public',
+            $request->request->get('filename'),
+        );
+
+        $resource = new RemoteResource(
+            remoteId: 'upload|auto|media/document/unencrypted.pdf',
+            type: 'auto',
+            url: 'https://cloudinary.com/test/upload/auto/media/document/unencrypted.pdf',
+            md5: 'md5hash',
+            name: 'unencrypted.pdf',
+            folder: Folder::fromPath('media/document'),
+            size: 123,
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($resourceStruct)
+            ->willReturn($resource);
+
+        $this->providerMock
+            ->expects(self::exactly(0))
+            ->method('buildVariation');
+
+        $response = $this->controller->__invoke($request);
+
+        self::assertInstanceOf(JsonResponse::class, $response);
+
+        unlink($tmpPdfPath);
+    }
+
     public function testUploadProtectedWithContext(): void
     {
         $uploadContext = [
