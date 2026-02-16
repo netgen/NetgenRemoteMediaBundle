@@ -18,9 +18,23 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use function fclose;
+use function filesize;
+use function fopen;
+use function fread;
+use function fseek;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_file;
+use function is_readable;
+use function preg_match;
+use function strpos;
+use function strrpos;
+use function strtolower;
+use function substr;
+
+use const SEEK_END;
 
 final class Upload extends AbstractController
 {
@@ -88,9 +102,11 @@ final class Upload extends AbstractController
 
         $md5 = $this->fileHashFactory->createHash($file->getRealPath());
         $fileStruct = FileStruct::fromUploadedFile($file);
+
+        $resourceType = $this->isEncryptedPdf($file) ? 'raw' : 'auto';
         $resourceStruct = new ResourceStruct(
             $fileStruct,
-            'auto',
+            $resourceType,
             $folder,
             $visibility,
             $request->request->get('filename'),
@@ -112,5 +128,48 @@ final class Upload extends AbstractController
         }
 
         return new JsonResponse($this->formatResource($resource), $httpCode);
+    }
+
+    private function isEncryptedPdf(UploadedFile $file): bool
+    {
+        if (strtolower($file->getClientOriginalExtension()) !== 'pdf') {
+            return false;
+        }
+
+        $path = (string) $file->getRealPath();
+        if ($path === '' || !is_file($path) || !is_readable($path)) {
+            return false;
+        }
+
+        $fp = @fopen($path, 'r');
+        if ($fp === false) {
+            return false;
+        }
+
+        $fileSize = filesize($path);
+
+        if ($fileSize !== false && $fileSize <= 20480) {
+            $content = (string) fread($fp, $fileSize);
+        } else {
+            $head = (string) fread($fp, 4096);
+
+            @fseek($fp, -16384, SEEK_END);
+            $tail = (string) fread($fp, 16384);
+
+            $content = $head . $tail;
+        }
+
+        fclose($fp);
+
+        if (strpos($content, '%PDF-') !== 0) {
+            return false;
+        }
+
+        $eofPos = strrpos($content, '%%EOF');
+        if ($eofPos !== false) {
+            $content = substr($content, 0, $eofPos + 5);
+        }
+
+        return (bool) preg_match('/\/(?:Encrypt)\s+(\d+|<<)/m', $content);
     }
 }
