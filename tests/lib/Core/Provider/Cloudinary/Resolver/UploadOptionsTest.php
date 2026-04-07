@@ -28,6 +28,7 @@ final class UploadOptionsTest extends TestCase
             CloudinaryProvider::FOLDER_MODE_FIXED,
             true,
             false,
+            false,
         );
 
         $this->dynamicFolderModeResolver = new UploadOptionsResolver(
@@ -35,6 +36,7 @@ final class UploadOptionsTest extends TestCase
             CloudinaryProvider::FOLDER_MODE_DYNAMIC,
             false,
             true,
+            false,
         );
     }
 
@@ -43,10 +45,25 @@ final class UploadOptionsTest extends TestCase
         ResourceStruct $resourceStruct,
         array $options,
         string $folderMode = CloudinaryProvider::FOLDER_MODE_FIXED,
+        bool $appendFolderPath = false,
     ): void {
-        $resolvedOptions = $folderMode === CloudinaryProvider::FOLDER_MODE_FIXED
-            ? $this->fixedFolderModeResolver->resolve($resourceStruct)
-            : $this->dynamicFolderModeResolver->resolve($resourceStruct);
+        $resolver = $this->fixedFolderModeResolver;
+
+        if ($folderMode === CloudinaryProvider::FOLDER_MODE_DYNAMIC) {
+            $resolver = $this->dynamicFolderModeResolver;
+        }
+
+        if ($appendFolderPath === true) {
+            $resolver = new UploadOptionsResolver(
+                new VisibilityTypeConverter(),
+                $folderMode,
+                $folderMode === CloudinaryProvider::FOLDER_MODE_FIXED,
+                $folderMode === CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+                true,
+            );
+        }
+
+        $resolvedOptions = $resolver->resolve($resourceStruct);
 
         self::assertSame($options, $resolvedOptions);
     }
@@ -334,6 +351,98 @@ final class UploadOptionsTest extends TestCase
                     'folder' => 'raw',
                 ],
                 CloudinaryProvider::FOLDER_MODE_FIXED,
+            ],
+            [
+                new ResourceStruct(
+                    FileStruct::fromPath('test.jpg'),
+                    'image',
+                    Folder::fromPath('a/b/c'),
+                ),
+                [
+                    'use_filename' => false,
+                    'use_filename_as_display_name' => true,
+                    'unique_filename' => true,
+                    'overwrite' => false,
+                    'invalidate' => false,
+                    'context' => [
+                        'alt' => '',
+                        'caption' => '',
+                        'original_filename' => 'test.jpg',
+                    ],
+                    'type' => 'upload',
+                    'resource_type' => 'image',
+                    'access_mode' => 'public',
+                    'access_control' => [['access_type' => 'anonymous']],
+                    'tags' => [],
+                    'asset_folder' => 'a/b/c',
+                    'public_id' => 'a/b/c/test',
+                ],
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+                true,
+            ],
+            [
+                new ResourceStruct(
+                    FileStruct::fromPath('test.jpg'),
+                    'image',
+                    Folder::fromPath('/a//b/'),
+                ),
+                [
+                    'use_filename' => false,
+                    'use_filename_as_display_name' => true,
+                    'unique_filename' => true,
+                    'overwrite' => false,
+                    'invalidate' => false,
+                    'context' => [
+                        'alt' => '',
+                        'caption' => '',
+                        'original_filename' => 'test.jpg',
+                    ],
+                    'type' => 'upload',
+                    'resource_type' => 'image',
+                    'access_mode' => 'public',
+                    'access_control' => [['access_type' => 'anonymous']],
+                    'tags' => [],
+                    'asset_folder' => '/a//b/',
+                    'public_id' => 'a/b/test',
+                ],
+                CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+                true,
+            ],
+            [
+                new ResourceStruct(
+                    FileStruct::fromPath('test.jpg'),
+                    'image',
+                    Folder::fromPath('a'),
+                    'public',
+                    'test.jpg',
+                    false,
+                    false,
+                    null,
+                    null,
+                    [],
+                    [],
+                ),
+                [
+                    'use_filename' => true,
+                    'use_filename_as_display_name' => true,
+                    'unique_filename' => false,
+                    'filename_override' => 'test_jpg.jpg',
+                    'overwrite' => false,
+                    'invalidate' => false,
+                    'context' => [
+                        'alt' => '',
+                        'caption' => '',
+                        'original_filename' => 'test.jpg',
+                    ],
+                    'type' => 'upload',
+                    'resource_type' => 'image',
+                    'access_mode' => 'public',
+                    'access_control' => [['access_type' => 'anonymous']],
+                    'tags' => [],
+                    'folder' => 'a',
+                ],
+                CloudinaryProvider::FOLDER_MODE_FIXED,
+                true,
             ],
         ];
     }

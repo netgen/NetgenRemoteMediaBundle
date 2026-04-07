@@ -11,6 +11,8 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Converter\VisibilityType as Visi
 use function in_array;
 use function is_string;
 use function pathinfo;
+use function preg_replace;
+use function trim;
 
 final class UploadOptions
 {
@@ -19,6 +21,7 @@ final class UploadOptions
         private string $folderMode,
         private bool $appendExtension,
         private bool $uniqueFilenames,
+        private bool $appendFolderPath,
     ) {}
 
     public function resolve(ResourceStruct $resourceStruct): array
@@ -49,6 +52,15 @@ final class UploadOptions
 
         if ($resourceStruct->getFolder() && $this->folderMode === CloudinaryProvider::FOLDER_MODE_DYNAMIC) {
             $options['asset_folder'] = $resourceStruct->getFolder()->getPath();
+
+            if ($this->appendFolderPath === true) {
+                $normalized = $this->normalizeFolderPath($resourceStruct->getFolder()->getPath());
+                if ($normalized !== '') {
+                    $options['public_id'] = $normalized . '/' . $filenameOverride;
+                    unset($options['filename_override']);
+                    $options['use_filename'] = false;
+                }
+            }
         }
 
         if ($resourceStruct->getFolder() && $this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED) {
@@ -56,6 +68,11 @@ final class UploadOptions
         }
 
         return $options;
+    }
+
+    private function normalizeFolderPath(string $path): string
+    {
+        return trim(preg_replace('#/+#', '/', $path), '/');
     }
 
     /**

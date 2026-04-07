@@ -39,6 +39,13 @@ All new accounts are automatically set to `dynamic` mode and this can't be chang
 
 So in order to support both modes, there's a parameter with the same name here, and it has to be properly configured. You can check your mode in your Cloudinary dashboard.
 
+**WARNING:** Since folder is now just a metadata in `dynamic` mode, if you change the folder of an existing resource, its public ID will remain the same, which means that the URL to access that resource will also remain the same. This means that you can't upload the same file to a different folder because the public ID will be the same and Cloudinary will throw an error that resource with the same public ID already exists. If you want to upload the same file to a different folder, you have to rename it first.
+
+If that's an issue in your project, and you want to be able to upload the same file to different folders without manual renaming, you have two options:
+
+ * enable `unique_filenames` option ([see below](#unique-filenames))
+ * enable `append_folder_path` option ([see below](#append-folder-path-to-public-id))
+
 ```yaml
 netgen_remote_media:
     cloudinary:
@@ -117,6 +124,28 @@ netgen_remote_media:
 (default: `false`)
 
 **WARNING:** if you enable this, all resources will be always unique and you can easily create a mess on your cloud by uploading the same identical file multiple times.
+
+#### Append folder path to public ID
+
+In Cloudinary's `dynamic` folder mode, the folder is just metadata — the public ID is independent of the folder. This means that uploading the same file to different folders will fail because the public ID already exists.
+
+`append_folder_path` option prefixes the public ID with the folder path (`folder/filename`), so the same file in different folders gets different public IDs, while real duplicates inside the same folder still fail (which is the desired behavior).
+
+This can be configured with:
+
+```yaml
+netgen_remote_media:
+    cloudinary:
+        append_folder_path: true
+```
+
+(default: `false`)
+
+**Note:** this option only applies in `dynamic` folder mode — in `fixed` mode it is silently ignored because Cloudinary already includes the folder in the public ID.
+
+**WARNING:** if a resource is later moved to another folder via the Cloudinary UI, its public ID is not rewritten by Cloudinary, so the folder prefix in the public ID becomes stale (reflects the original upload folder, not the current one). URLs keep working, but the public ID no longer matches the actual folder.
+
+**WARNING:** combining with `unique_filenames: true` is allowed but redundant — both flags will be active.
 
 ### Upload prefix
 

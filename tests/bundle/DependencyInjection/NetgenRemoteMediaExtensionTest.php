@@ -27,6 +27,7 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('netgen_remote_media.encryption_key', 'dsf45z45hh45f43f43f');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.append_extension', true);
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.unique_filenames', false);
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.append_folder_path', false);
 
         $this->assertContainerBuilderHasParameter(
             'netgen_remote_media.named_remote_resources',
@@ -94,6 +95,17 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasAlias('netgen_remote_media.provider.cloudinary.gateway', 'netgen_remote_media.provider.cloudinary.gateway.inner');
     }
 
+    public function testWithEnabledAppendFolderPath(): void
+    {
+        $this->load([
+            'cloudinary' => [
+                'append_folder_path' => true,
+            ],
+        ]);
+
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.append_folder_path', true);
+    }
+
     protected function getContainerExtensions(): array
     {
         return [
@@ -118,6 +130,7 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
                 'log_requests' => false,
                 'append_extension' => true,
                 'unique_filenames' => false,
+                'append_folder_path' => false,
                 'encryption_key' => 'dsf45z45hh45f43f43f',
             ],
             'image_variations' => [

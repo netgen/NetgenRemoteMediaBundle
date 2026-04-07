@@ -87,3 +87,5 @@ services:
             - '@router'
             - '@translator'
             - '@netgen_remote_media.resolver.variation'
+            - '%netgen_remote_media.cloudinary.folder_mode%'
+            - '%netgen_remote_media.cloudinary.append_folder_path%'

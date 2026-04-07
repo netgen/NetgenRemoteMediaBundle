@@ -88,7 +88,9 @@ export default {
           }
         }).catch(error => {
           if (error.response.status === 409) {
-            this.error = this.config.translations.upload_error_existing_resource;
+            this.error = this.config.folderScopedUploads
+              ? this.config.translations.upload_error_existing_resource_in_folder.replace('%folder%', this.selectedFolder)
+              : this.config.translations.upload_error_existing_resource;
             this.existingResourceButton = true;
             this.existingResource = error.response.data;
             this.loading = false;
