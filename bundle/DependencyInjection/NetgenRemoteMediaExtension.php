@@ -112,6 +112,11 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['cloudinary']['unique_filenames'],
         );
 
+        $container->setParameter(
+            'netgen_remote_media.cloudinary.append_folder_path',
+            $config['cloudinary']['append_folder_path'],
+        );
+
         if (isset($config['templates'])) {
             if (isset($config['templates']['view_resource'])) {
                 $container->setParameter(

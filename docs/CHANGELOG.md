@@ -1,5 +1,11 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.0.0
+
+### Added
+
+* Added `cloudinary.append_folder_path` option to avoid public ID collisions in dynamic folder mode
+
 ## 1.1.11
 
 ### Fixed
