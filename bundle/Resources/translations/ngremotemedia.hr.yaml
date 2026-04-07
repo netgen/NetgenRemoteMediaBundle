@@ -92,7 +92,8 @@ ngrm:
                     new_folder: 'Ime nove mape'
                 error:
                     missing_file: 'Nedostaje datoteka za učitavanje'
-                    existing_resource: 'Drugi resurs s istim imenom već postoji u ovoj mapi! Promjenite mapu, ime datoteke, odaberite opciju za prepisivanje ili upotrijebite postojeći resurs:'
+                    existing_resource: 'Drugi resurs s istim imenom već postoji! Promjenite ime datoteke, odaberite opciju za prepisivanje ili upotrijebite postojeći resurs:'
+                    existing_resource_in_folder: 'Drugi resurs s istim imenom već postoji u ovoj mapi! Promjenite mapu, ime datoteke, odaberite opciju za prepisivanje ili upotrijebite postojeći resurs:'
                     unsupported_resource_type: 'Resurs je uspješno učitan no njegov tip nije podržan na ovome mjestu! Podržani tipovi: '
                     invalid_visibility: 'Odabrana je nepodržana vidljivost "%visibility%", podržane vidljivosti: "%supported_visibilities%"'
                     file_upload_failed: 'Učitavanje datoteke neuspješno; datoteka je možda prevelika ili neispravna. Provjerite postavke servera za učitavanje datoteka.'

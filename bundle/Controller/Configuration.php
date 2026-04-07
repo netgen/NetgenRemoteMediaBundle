@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Controller;
 
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\Provider as CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +19,8 @@ final class Configuration
         private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
         private readonly VariationResolver $variationResolver,
+        private readonly string $folderMode,
+        private bool $appendFolderPath,
     ) {}
 
     public function __invoke(Request $request): JsonResponse
@@ -28,6 +31,7 @@ final class Configuration
             'availableVariations' => $this->resolveAvailableVariations($request),
             'allVariations' => $this->resolveAllVariations($request),
             'uploadContext' => $this->resolveUploadContext($request),
+            'folderScopedUploads' => $this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED || $this->appendFolderPath,
         ]);
     }
 
@@ -133,6 +137,7 @@ final class Configuration
             'upload_checkbox_overwrite' => $this->translator->trans('ngrm.edit.vue.upload.checkbox.overwrite', [], 'ngremotemedia'),
             'upload_placeholder_new_folder' => $this->translator->trans('ngrm.edit.vue.upload.placeholder.new_folder', [], 'ngremotemedia'),
             'upload_error_existing_resource' => $this->translator->trans('ngrm.edit.vue.upload.error.existing_resource', [], 'ngremotemedia'),
+            'upload_error_existing_resource_in_folder' => $this->translator->trans('ngrm.edit.vue.upload.error.existing_resource_in_folder', [], 'ngremotemedia'),
             'upload_error_unsupported_resource_type' => $this->translator->trans('ngrm.edit.vue.upload.error.unsupported_resource_type', [], 'ngremotemedia'),
         ];
     }
