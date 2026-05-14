@@ -20,6 +20,8 @@ services:
             - '@netgen_remote_media.provider.cloudinary.factory.search_result'
             - '@netgen_remote_media.provider.cloudinary.resolver.search_expression'
             - '@netgen_remote_media.provider.cloudinary.resolver.auth_token'
+            - '%netgen_remote_media.cloudinary.large_upload_threshold%'
+            - '%netgen_remote_media.cloudinary.upload_chunk_size%'
 
     netgen_remote_media.provider.cloudinary.gateway.cached:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Cache\Psr6CachedGateway

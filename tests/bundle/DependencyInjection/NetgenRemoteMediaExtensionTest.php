@@ -27,6 +27,20 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasParameter('netgen_remote_media.encryption_key', 'dsf45z45hh45f43f43f');
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.append_extension', true);
         $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.unique_filenames', false);
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.large_upload_threshold', 100_000_000);
+        $this->assertContainerBuilderHasParameter('netgen_remote_media.cloudinary.upload_chunk_size', 20_000_000);
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'netgen_remote_media.provider.cloudinary.gateway.api',
+            5,
+            '%netgen_remote_media.cloudinary.large_upload_threshold%',
+        );
+
+        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
+            'netgen_remote_media.provider.cloudinary.gateway.api',
+            6,
+            '%netgen_remote_media.cloudinary.upload_chunk_size%',
+        );
 
         $this->assertContainerBuilderHasParameter(
             'netgen_remote_media.named_remote_resources',

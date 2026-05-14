@@ -112,6 +112,16 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['cloudinary']['unique_filenames'],
         );
 
+        $container->setParameter(
+            'netgen_remote_media.cloudinary.large_upload_threshold',
+            $config['cloudinary']['large_upload_threshold'],
+        );
+
+        $container->setParameter(
+            'netgen_remote_media.cloudinary.upload_chunk_size',
+            $config['cloudinary']['upload_chunk_size'],
+        );
+
         if (isset($config['templates'])) {
             if (isset($config['templates']['view_resource'])) {
                 $container->setParameter(

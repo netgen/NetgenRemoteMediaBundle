@@ -26,9 +26,11 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\CloudinaryApiGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\AuthToken as AuthTokenResolver;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression as SearchExpressionResolver;
 use Netgen\RemoteMedia\Exception\FolderNotFoundException;
+use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Tests\AbstractTestCase;
 use Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\CloudinaryConfigurationInitializer;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -65,6 +67,8 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                 CloudinaryProvider::FOLDER_MODE_FIXED,
             ),
             new AuthTokenResolver(CloudinaryConfigurationInitializer::ENCRYPTION_KEY),
+            100_000_000,
+            20_000_000,
         );
 
         $this->apiGateway->setServices(
@@ -244,6 +248,8 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                 CloudinaryProvider::FOLDER_MODE_FIXED,
             ),
             new AuthTokenResolver(),
+            100_000_000,
+            20_000_000,
         );
 
         self::assertFalse($apiGateway->isEncryptionEnabled());
@@ -449,6 +455,265 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         self::expectExceptionMessage('Remote resource with ID "upload|image|folder/test_image.jpg" not found.');
 
         $this->apiGateway->get($remoteId);
+    }
+
+    public function testUploadSmallLocalFileDoesNotSetChunkSize(): void
+    {
+        $media = vfsStream::setup('media');
+        $file = vfsStream::newFile('small.jpg')->withContent('tiny')->at($media);
+        $fileUri = $file->url();
+
+        $options = ['public_id' => 'small'];
+        $cloudinaryResponse = ['public_id' => 'small.jpg'];
+
+        $this->uploadApiMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, $options)
+            ->willReturn($cloudinaryResponse);
+
+        $remoteResource = new RemoteResource(
+            remoteId: 'upload|image|small.jpg',
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/small.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'small.jpg',
+        );
+
+        $this->remoteResourceFactoryMock
+            ->expects(self::once())
+            ->method('create')
+            ->with($cloudinaryResponse)
+            ->willReturn($remoteResource);
+
+        self::assertRemoteResourceSame(
+            $remoteResource,
+            $this->apiGateway->upload($fileUri, $options),
+        );
+    }
+
+    public function testUploadLargeLocalFileSetsChunkSize(): void
+    {
+        $apiGateway = new CloudinaryApiGateway(
+            CloudinaryConfigurationInitializer::getConfiguration(),
+            $this->remoteResourceFactoryMock,
+            $this->searchResultFactoryMock,
+            new SearchExpressionResolver(
+                new ResourceTypeConverter(),
+                new VisibilityTypeConverter(),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
+            ),
+            new AuthTokenResolver(CloudinaryConfigurationInitializer::ENCRYPTION_KEY),
+            10,
+            5,
+        );
+
+        $apiGateway->setServices(
+            $this->adminApiMock,
+            $this->uploadApiMock,
+            $this->searchApiMock,
+        );
+
+        $media = vfsStream::setup('media');
+        $file = vfsStream::newFile('big.epub')->withContent('this payload is larger than ten bytes')->at($media);
+        $fileUri = $file->url();
+
+        $options = ['public_id' => 'big'];
+        $cloudinaryResponse = ['public_id' => 'big.epub'];
+
+        $this->uploadApiMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, $options + ['chunk_size' => 5])
+            ->willReturn($cloudinaryResponse);
+
+        $remoteResource = new RemoteResource(
+            remoteId: 'upload|raw|big.epub',
+            type: RemoteResource::TYPE_OTHER,
+            url: 'https://res.cloudinary.com/demo/raw/upload/big.epub',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'big.epub',
+        );
+
+        $this->remoteResourceFactoryMock
+            ->expects(self::once())
+            ->method('create')
+            ->with($cloudinaryResponse)
+            ->willReturn($remoteResource);
+
+        self::assertRemoteResourceSame(
+            $remoteResource,
+            $apiGateway->upload($fileUri, $options),
+        );
+    }
+
+    public function testUploadExternalUrlDoesNotSetChunkSize(): void
+    {
+        $apiGateway = new CloudinaryApiGateway(
+            CloudinaryConfigurationInitializer::getConfiguration(),
+            $this->remoteResourceFactoryMock,
+            $this->searchResultFactoryMock,
+            new SearchExpressionResolver(
+                new ResourceTypeConverter(),
+                new VisibilityTypeConverter(),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
+            ),
+            new AuthTokenResolver(CloudinaryConfigurationInitializer::ENCRYPTION_KEY),
+            1,
+            5,
+        );
+
+        $apiGateway->setServices(
+            $this->adminApiMock,
+            $this->uploadApiMock,
+            $this->searchApiMock,
+        );
+
+        $fileUri = 'https://example.com/large_video.mp4';
+        $options = ['public_id' => 'external'];
+        $cloudinaryResponse = ['public_id' => 'external'];
+
+        $this->uploadApiMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, $options)
+            ->willReturn($cloudinaryResponse);
+
+        $remoteResource = new RemoteResource(
+            remoteId: 'upload|video|external',
+            type: RemoteResource::TYPE_VIDEO,
+            url: 'https://res.cloudinary.com/demo/video/upload/external',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'external',
+        );
+
+        $this->remoteResourceFactoryMock
+            ->expects(self::once())
+            ->method('create')
+            ->with($cloudinaryResponse)
+            ->willReturn($remoteResource);
+
+        $apiGateway->upload($fileUri, $options);
+    }
+
+    public function testUploadMissingFileDoesNotSetChunkSize(): void
+    {
+        $fileUri = '/nonexistent/path/does/not/exist.jpg';
+        $options = ['public_id' => 'missing'];
+        $cloudinaryResponse = ['public_id' => 'missing'];
+
+        $this->uploadApiMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, $options)
+            ->willReturn($cloudinaryResponse);
+
+        $remoteResource = new RemoteResource(
+            remoteId: 'upload|image|missing',
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/missing',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'missing',
+        );
+
+        $this->remoteResourceFactoryMock
+            ->expects(self::once())
+            ->method('create')
+            ->with($cloudinaryResponse)
+            ->willReturn($remoteResource);
+
+        $this->apiGateway->upload($fileUri, $options);
+    }
+
+    public function testUploadExistingResponseRaisesException(): void
+    {
+        $fileUri = 'https://example.com/already_uploaded.jpg';
+        $options = ['public_id' => 'duplicate'];
+        $cloudinaryResponse = [
+            'public_id' => 'duplicate',
+            'existing' => true,
+        ];
+
+        $this->uploadApiMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, $options)
+            ->willReturn($cloudinaryResponse);
+
+        $remoteResource = new RemoteResource(
+            remoteId: 'upload|image|duplicate',
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/duplicate',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'duplicate',
+        );
+
+        $this->remoteResourceFactoryMock
+            ->expects(self::once())
+            ->method('create')
+            ->with($cloudinaryResponse)
+            ->willReturn($remoteResource);
+
+        self::expectException(RemoteResourceExistsException::class);
+
+        $this->apiGateway->upload($fileUri, $options);
+    }
+
+    public function testUploadExistingResponseOnChunkedPathRaisesException(): void
+    {
+        $apiGateway = new CloudinaryApiGateway(
+            CloudinaryConfigurationInitializer::getConfiguration(),
+            $this->remoteResourceFactoryMock,
+            $this->searchResultFactoryMock,
+            new SearchExpressionResolver(
+                new ResourceTypeConverter(),
+                new VisibilityTypeConverter(),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
+            ),
+            new AuthTokenResolver(CloudinaryConfigurationInitializer::ENCRYPTION_KEY),
+            10,
+            5,
+        );
+
+        $apiGateway->setServices(
+            $this->adminApiMock,
+            $this->uploadApiMock,
+            $this->searchApiMock,
+        );
+
+        $media = vfsStream::setup('media');
+        $file = vfsStream::newFile('duplicate.epub')->withContent('this payload is larger than ten bytes')->at($media);
+        $fileUri = $file->url();
+
+        $options = ['public_id' => 'duplicate'];
+        $cloudinaryResponse = [
+            'public_id' => 'duplicate.epub',
+            'existing' => true,
+        ];
+
+        $this->uploadApiMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, $options + ['chunk_size' => 5])
+            ->willReturn($cloudinaryResponse);
+
+        $remoteResource = new RemoteResource(
+            remoteId: 'upload|raw|duplicate.epub',
+            type: RemoteResource::TYPE_OTHER,
+            url: 'https://res.cloudinary.com/demo/raw/upload/duplicate.epub',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'duplicate.epub',
+        );
+
+        $this->remoteResourceFactoryMock
+            ->expects(self::once())
+            ->method('create')
+            ->with($cloudinaryResponse)
+            ->willReturn($remoteResource);
+
+        self::expectException(RemoteResourceExistsException::class);
+
+        $apiGateway->upload($fileUri, $options);
     }
 
     public function testGetAuthenticatedUrl(): void

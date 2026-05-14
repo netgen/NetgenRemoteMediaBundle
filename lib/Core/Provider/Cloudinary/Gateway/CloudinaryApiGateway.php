@@ -34,8 +34,11 @@ use function array_map;
 use function array_merge;
 use function count;
 use function date;
+use function filesize;
 use function floor;
 use function is_array;
+use function is_file;
+use function is_readable;
 use function log;
 use function max;
 use function min;
@@ -55,7 +58,9 @@ final class CloudinaryApiGateway implements GatewayInterface
         private RemoteResourceFactoryInterface $remoteResourceFactory,
         private SearchResultFactoryInterface $searchResultFactory,
         private SearchExpressionResolver $searchExpressionResolver,
-        private AuthTokenResolver $authTokenResolver
+        private AuthTokenResolver $authTokenResolver,
+        private int $largeUploadThreshold,
+        private int $uploadChunkSize,
     ) {
         $this->adminApi = new AdminApi();
         $this->uploadApi = new UploadApi();
@@ -172,6 +177,10 @@ final class CloudinaryApiGateway implements GatewayInterface
 
     public function upload(string $fileUri, array $options): RemoteResource
     {
+        if ($this->shouldChunk($fileUri)) {
+            $options += ['chunk_size' => $this->uploadChunkSize];
+        }
+
         $response = $this->uploadApi->upload($fileUri, $options);
         $resource = $this->remoteResourceFactory->create((array) $response);
 
@@ -389,6 +398,13 @@ final class CloudinaryApiGateway implements GatewayInterface
         }
 
         return (string) Media::fromParams($remoteId->getResourceId(), $options)->toUrl();
+    }
+
+    private function shouldChunk(string $fileUri): bool
+    {
+        return is_file($fileUri)
+            && is_readable($fileUri)
+            && filesize($fileUri) > $this->largeUploadThreshold;
     }
 
     private function formatBytes(int $bytes, int $precision = 2): string

@@ -6,6 +6,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection;
 
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -147,6 +148,95 @@ final class ConfigurationTest extends TestCase
                     'provider' => 'cloudinary',
                     'account_name' => 'examplename',
                     'account_secret' => 'examplesecret',
+                ],
+            ],
+        );
+    }
+
+    public function testLargeUploadConfigurationDefaults(): void
+    {
+        $this->assertProcessedConfigurationEquals(
+            [
+                [
+                    'provider' => 'cloudinary',
+                    'account_name' => 'examplename',
+                    'account_key' => 'examplekey',
+                    'account_secret' => 'examplesecret',
+                ],
+            ],
+            [
+                'provider' => 'cloudinary',
+                'account_name' => 'examplename',
+                'account_key' => 'examplekey',
+                'account_secret' => 'examplesecret',
+                'upload_prefix' => 'https://api.cloudinary.com',
+                'remove_unused' => false,
+                'cache' => [
+                    'pool' => 'cache.app',
+                    'ttl' => 7200,
+                ],
+                'cloudinary' => [
+                    'cache_requests' => true,
+                    'log_requests' => false,
+                    'append_extension' => true,
+                    'unique_filenames' => false,
+                    'encryption_key' => null,
+                    'folder_mode' => CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+                    'large_upload_threshold' => 100_000_000,
+                    'upload_chunk_size' => 20_000_000,
+                ],
+                'image_variations' => [],
+            ],
+        );
+    }
+
+    public function testLargeUploadConfigurationOverrides(): void
+    {
+        $this->assertConfigurationIsValid(
+            [
+                'netgen_remote_media' => [
+                    'provider' => 'cloudinary',
+                    'account_name' => 'examplename',
+                    'account_key' => 'examplekey',
+                    'account_secret' => 'examplesecret',
+                    'cloudinary' => [
+                        'large_upload_threshold' => 50_000_000,
+                        'upload_chunk_size' => 10_000_000,
+                    ],
+                ],
+            ],
+        );
+    }
+
+    public function testZeroLargeUploadThresholdIsInvalid(): void
+    {
+        $this->assertConfigurationIsInvalid(
+            [
+                'netgen_remote_media' => [
+                    'provider' => 'cloudinary',
+                    'account_name' => 'examplename',
+                    'account_key' => 'examplekey',
+                    'account_secret' => 'examplesecret',
+                    'cloudinary' => [
+                        'large_upload_threshold' => 0,
+                    ],
+                ],
+            ],
+        );
+    }
+
+    public function testZeroUploadChunkSizeIsInvalid(): void
+    {
+        $this->assertConfigurationIsInvalid(
+            [
+                'netgen_remote_media' => [
+                    'provider' => 'cloudinary',
+                    'account_name' => 'examplename',
+                    'account_key' => 'examplekey',
+                    'account_secret' => 'examplesecret',
+                    'cloudinary' => [
+                        'upload_chunk_size' => 0,
+                    ],
                 ],
             ],
         );
