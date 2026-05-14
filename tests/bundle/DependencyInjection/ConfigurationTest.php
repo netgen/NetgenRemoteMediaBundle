@@ -208,38 +208,42 @@ final class ConfigurationTest extends TestCase
         );
     }
 
-    public function testZeroLargeUploadThresholdIsInvalid(): void
+    #[DataProvider('invalidLargeUploadConfigurationProvider')]
+    public function testInvalidLargeUploadConfiguration(array $configuration): void
     {
-        $this->assertConfigurationIsInvalid(
-            [
-                'netgen_remote_media' => [
-                    'provider' => 'cloudinary',
-                    'account_name' => 'examplename',
-                    'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret',
-                    'cloudinary' => [
-                        'large_upload_threshold' => 0,
-                    ],
-                ],
-            ],
-        );
+        $this->assertConfigurationIsInvalid($configuration);
     }
 
-    public function testZeroUploadChunkSizeIsInvalid(): void
+    public static function invalidLargeUploadConfigurationProvider(): iterable
     {
-        $this->assertConfigurationIsInvalid(
-            [
-                'netgen_remote_media' => [
-                    'provider' => 'cloudinary',
-                    'account_name' => 'examplename',
-                    'account_key' => 'examplekey',
-                    'account_secret' => 'examplesecret',
-                    'cloudinary' => [
-                        'upload_chunk_size' => 0,
+        return [
+            'zero threshold' => [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'cloudinary' => [
+                            'large_upload_threshold' => 0,
+                        ],
                     ],
                 ],
             ],
-        );
+            'zero chunk size' => [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'cloudinary' => [
+                            'upload_chunk_size' => 0,
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     #[DataProvider('invalidNamedObjectsProvider')]
