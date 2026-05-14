@@ -14,11 +14,17 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+use function filesize;
+use function is_file;
+use function is_readable;
+
 final class MonologLoggedGateway implements GatewayInterface
 {
     public function __construct(
         private GatewayInterface $gateway,
-        private ?LoggerInterface $logger
+        private ?LoggerInterface $logger,
+        private int $largeUploadThreshold,
+        private int $uploadChunkSize,
     ) {
         $this->logger = $this->logger ?? new NullLogger();
     }
@@ -81,7 +87,15 @@ final class MonologLoggedGateway implements GatewayInterface
 
     public function upload(string $fileUri, array $options): RemoteResource
     {
-        $this->logger->info("[API][FREE] upload(\"{$fileUri}\") -> Cloudinary\\Uploader::upload(\"{$fileUri}\")");
+        if (is_file($fileUri) && is_readable($fileUri)) {
+            $size = filesize($fileUri);
+            $chunked = $size > $this->largeUploadThreshold ? 'yes' : 'no';
+            $sizeInfo = "size={$size}B, chunked={$chunked} (threshold={$this->largeUploadThreshold}B, chunk_size={$this->uploadChunkSize}B)";
+        } else {
+            $sizeInfo = 'size=external/unknown, chunked=no';
+        }
+
+        $this->logger->info("[API][FREE] upload(\"{$fileUri}\") [{$sizeInfo}] -> Cloudinary\\Uploader::upload(\"{$fileUri}\")");
 
         return $this->gateway->upload($fileUri, $options);
     }

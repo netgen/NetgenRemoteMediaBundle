@@ -38,6 +38,8 @@ services:
         arguments:
             - "@netgen_remote_media.provider.cloudinary.gateway.api"
             - "@monolog.logger.cloudinary"
+            - '%netgen_remote_media.cloudinary.large_upload_threshold%'
+            - '%netgen_remote_media.cloudinary.upload_chunk_size%'
 
     netgen_remote_media.provider.cloudinary:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider

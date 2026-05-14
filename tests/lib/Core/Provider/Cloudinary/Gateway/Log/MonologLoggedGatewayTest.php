@@ -14,11 +14,13 @@ use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryRemoteId;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\Gateway\Log\MonologLoggedGateway;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\GatewayInterface;
 use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 
 use function count;
+use function filesize;
 
 #[CoversClass(MonologLoggedGateway::class)]
 final class MonologLoggedGatewayTest extends AbstractTestCase
@@ -37,6 +39,8 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->gateway = new MonologLoggedGateway(
             $this->apiGatewayMock,
             $this->loggerMock,
+            100_000_000,
+            20_000_000,
         );
     }
 
@@ -248,11 +252,82 @@ final class MonologLoggedGatewayTest extends AbstractTestCase
         $this->loggerMock
             ->expects(self::once())
             ->method('info')
-            ->with("[API][FREE] upload(\"{$fileUri}\") -> Cloudinary\\Uploader::upload(\"{$fileUri}\")");
+            ->with("[API][FREE] upload(\"{$fileUri}\") [size=external/unknown, chunked=no] -> Cloudinary\\Uploader::upload(\"{$fileUri}\")");
 
         self::assertRemoteResourceSame(
             $resource,
             $this->gateway->upload($fileUri, $options),
+        );
+    }
+
+    public function testUploadLogsChunkedForLargeLocalFile(): void
+    {
+        $gateway = new MonologLoggedGateway(
+            $this->apiGatewayMock,
+            $this->loggerMock,
+            10,
+            5,
+        );
+
+        $media = vfsStream::setup('media');
+        $file = vfsStream::newFile('big.epub')->withContent('this payload is larger than ten bytes')->at($media);
+        $fileUri = $file->url();
+        $size = filesize($fileUri);
+
+        $resource = new RemoteResource(
+            remoteId: 'upload|raw|big.epub',
+            type: RemoteResource::TYPE_OTHER,
+            url: 'https://res.cloudinary.com/demo/raw/upload/big.epub',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'big.epub',
+        );
+
+        $this->apiGatewayMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, [])
+            ->willReturn($resource);
+
+        $this->loggerMock
+            ->expects(self::once())
+            ->method('info')
+            ->with("[API][FREE] upload(\"{$fileUri}\") [size={$size}B, chunked=yes (threshold=10B, chunk_size=5B)] -> Cloudinary\\Uploader::upload(\"{$fileUri}\")");
+
+        self::assertRemoteResourceSame(
+            $resource,
+            $gateway->upload($fileUri, []),
+        );
+    }
+
+    public function testUploadLogsNotChunkedForSmallLocalFile(): void
+    {
+        $media = vfsStream::setup('media');
+        $file = vfsStream::newFile('small.jpg')->withContent('tiny')->at($media);
+        $fileUri = $file->url();
+        $size = filesize($fileUri);
+
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|small.jpg',
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://res.cloudinary.com/demo/image/upload/small.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'small.jpg',
+        );
+
+        $this->apiGatewayMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($fileUri, [])
+            ->willReturn($resource);
+
+        $this->loggerMock
+            ->expects(self::once())
+            ->method('info')
+            ->with("[API][FREE] upload(\"{$fileUri}\") [size={$size}B, chunked=no (threshold=100000000B, chunk_size=20000000B)] -> Cloudinary\\Uploader::upload(\"{$fileUri}\")");
+
+        self::assertRemoteResourceSame(
+            $resource,
+            $this->gateway->upload($fileUri, []),
         );
     }
 
