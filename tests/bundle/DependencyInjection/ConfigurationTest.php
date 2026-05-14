@@ -6,6 +6,7 @@ namespace Netgen\Bundle\RemoteMediaBundle\Tests\DependencyInjection;
 
 use Matthias\SymfonyConfigTest\PhpUnit\ConfigurationTestCaseTrait;
 use Netgen\Bundle\RemoteMediaBundle\DependencyInjection\Configuration;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -150,6 +151,99 @@ final class ConfigurationTest extends TestCase
                 ],
             ],
         );
+    }
+
+    public function testLargeUploadConfigurationDefaults(): void
+    {
+        $this->assertProcessedConfigurationEquals(
+            [
+                [
+                    'provider' => 'cloudinary',
+                    'account_name' => 'examplename',
+                    'account_key' => 'examplekey',
+                    'account_secret' => 'examplesecret',
+                ],
+            ],
+            [
+                'provider' => 'cloudinary',
+                'account_name' => 'examplename',
+                'account_key' => 'examplekey',
+                'account_secret' => 'examplesecret',
+                'upload_prefix' => 'https://api.cloudinary.com',
+                'remove_unused' => false,
+                'cache' => [
+                    'pool' => 'cache.app',
+                    'ttl' => 7200,
+                ],
+                'cloudinary' => [
+                    'cache_requests' => true,
+                    'log_requests' => false,
+                    'append_extension' => true,
+                    'unique_filenames' => false,
+                    'encryption_key' => null,
+                    'folder_mode' => CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+                    'large_upload_threshold' => 100_000_000,
+                    'upload_chunk_size' => 20_000_000,
+                ],
+                'image_variations' => [],
+            ],
+        );
+    }
+
+    public function testLargeUploadConfigurationOverrides(): void
+    {
+        $this->assertConfigurationIsValid(
+            [
+                'netgen_remote_media' => [
+                    'provider' => 'cloudinary',
+                    'account_name' => 'examplename',
+                    'account_key' => 'examplekey',
+                    'account_secret' => 'examplesecret',
+                    'cloudinary' => [
+                        'large_upload_threshold' => 50_000_000,
+                        'upload_chunk_size' => 10_000_000,
+                    ],
+                ],
+            ],
+        );
+    }
+
+    #[DataProvider('invalidLargeUploadConfigurationProvider')]
+    public function testInvalidLargeUploadConfiguration(array $configuration): void
+    {
+        $this->assertConfigurationIsInvalid($configuration);
+    }
+
+    public static function invalidLargeUploadConfigurationProvider(): iterable
+    {
+        return [
+            'zero threshold' => [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'cloudinary' => [
+                            'large_upload_threshold' => 0,
+                        ],
+                    ],
+                ],
+            ],
+            'zero chunk size' => [
+                [
+                    'netgen_remote_media' => [
+                        'provider' => 'cloudinary',
+                        'account_name' => 'examplename',
+                        'account_key' => 'examplekey',
+                        'account_secret' => 'examplesecret',
+                        'cloudinary' => [
+                            'upload_chunk_size' => 0,
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 
     #[DataProvider('invalidNamedObjectsProvider')]

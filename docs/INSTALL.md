@@ -118,6 +118,21 @@ netgen_remote_media:
 
 **WARNING:** if you enable this, all resources will be always unique and you can easily create a mess on your cloud by uploading the same identical file multiple times.
 
+#### Large file uploads
+
+Cloudinary's single-request upload API is capped at 100 MB per file. Files strictly larger than `large_upload_threshold` are uploaded in chunks of `upload_chunk_size` bytes each, by passing the `chunk_size` option to the Cloudinary SDK. Both values are in bytes.
+
+```yaml
+netgen_remote_media:
+    cloudinary:
+        large_upload_threshold: 100000000
+        upload_chunk_size: 20000000
+```
+
+(defaults: `large_upload_threshold: 100000000`, `upload_chunk_size: 20000000`)
+
+**Note:** uploading files larger than 100 MB also requires raising your webserver and PHP body-size limits (eg. nginx `client_max_body_size`, PHP `upload_max_filesize` and `post_max_size`). The bundle itself imposes no such limits. Also check your Cloudinary plan's per-file raw upload cap (40 MB by default); contact Cloudinary support to raise it if needed.
+
 ### Upload prefix
 
 If you need to change Cloudinary API url (to use eg. GEO specific URLs), there's a parameter `upload_prefix` (set to `https://api.cloudinary.com` by default):
