@@ -11,6 +11,8 @@ use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Symfony\Component\Form\DataTransformerInterface;
 
+use function is_array;
+
 final class RemoteMediaTransformer implements DataTransformerInterface
 {
     public function __construct(
@@ -41,7 +43,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
     public function reverseTransform($value)
     {
-        if ($value['remoteId'] === null) {
+        if (!is_array($value) || ($value['remoteId'] ?? null) === null || ($value['remoteId'] ?? '') === '') {
             return null;
         }
 
@@ -55,9 +57,11 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             }
         }
 
+        $locationId = $value['locationId'] ?? null;
+
         try {
-            $remoteResourceLocation = $value['locationId'] !== null && $value['locationId'] !== ''
-                ? $this->provider->loadLocation((int) $value['locationId'])
+            $remoteResourceLocation = $locationId !== null && $locationId !== ''
+                ? $this->provider->loadLocation((int) $locationId)
                 : new RemoteResourceLocation($remoteResource);
         } catch (RemoteResourceLocationNotFoundException $e) {
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
@@ -71,7 +75,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
         $remoteResource->setAltText($value['altText'] ?? null);
         $remoteResource->setCaption($value['caption'] ?? null);
-        $remoteResource->setTags($value['tags']);
+        $remoteResource->setTags($value['tags'] ?? []);
 
         if ($needsUpdateOnRemote) {
             try {

@@ -7,8 +7,12 @@
         :canLoadMore="canLoadMore"
         :selectedMediaId="selectedMediaId"
         :loading="loading"
+        :multi-select="multiSelect"
+        :selection-limit="selectionLimit"
+        :current-count="currentCount"
         @loadMore="handleLoadMore"
         @media-selected="item => $emit('media-selected', item)"
+        @media-multi-selected="items => $emit('media-multi-selected', items)"
     />
     <i v-if="loading" class="ng-icon ng-spinner" />
   </modal>
@@ -25,7 +29,27 @@ const NUMBER_OF_ITEMS = 25;
 
 export default {
   name: "MediaModal",
-  props: ["config", "tags", "types", "visibilities", "facetsLoading", "selectedMediaId", "paths"],
+  props: {
+    config: Object,
+    tags: Array,
+    types: Array,
+    visibilities: Array,
+    facetsLoading: Boolean,
+    selectedMediaId: String,
+    paths: Object,
+    multiSelect: {
+      type: Boolean,
+      default: false
+    },
+    selectionLimit: {
+      type: Number,
+      default: 0
+    },
+    currentCount: {
+      type: Number,
+      default: 0
+    }
+  },
   components: {
     "media-facets": MediaFacets,
     "media-gallery": MediaGallery,

@@ -30,6 +30,7 @@ const initInteractionsVue = (el) => {
                 },
                 translations: {},
                 inputFields: {
+                    '_collection': 'remoteMedia',
                     'locationId': 'locationId',
                     'remoteId': 'remoteId',
                     'type': 'type',
@@ -40,6 +41,7 @@ const initInteractionsVue = (el) => {
                     'tags': 'tags[]',
                     'cropSettings': 'cropSettings',
                     'source': 'source',
+                    'collectionPayload': 'collectionPayload',
                     'watermarkText': 'watermarkText',
                     'cssClass': 'cssClass',
                     'selectedVariation': 'selectedVariation',
@@ -53,13 +55,18 @@ const initInteractionsVue = (el) => {
                 uploadContext: {},
                 disableUpload: false,
                 hideFilename: false,
+                uploadLimit: 1,
+                isCollection: false,
+                locationSource: null,
             },
             selectedImage: {
                 id: '',
+                locationId: '',
                 name: '',
                 type: 'image',
                 format: '',
                 url: '',
+                browseUrl: '',
                 browse_url: '',
                 previewUrl: '',
                 alternateText: '',
@@ -74,6 +81,7 @@ const initInteractionsVue = (el) => {
                 width: 0,
                 selectedVariation: null,
                 cssClass: '',        
+                uploadedResources: [],
             },
         },
         components: {
@@ -142,6 +150,8 @@ if (
   (document.readyState !== 'loading' && !document.documentElement.doScroll)
 ) {
   observer.observe(targetNode, config);
+  observerCallback();
 } else {
   observer.observe(targetNode, config);
+  document.addEventListener('DOMContentLoaded', observerCallback, { once: true });
 }

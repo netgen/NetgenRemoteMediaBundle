@@ -6,6 +6,20 @@
 
 * `generateLocationHtmlTag()` is added to `ProviderInterface` (it was declared with `@method` since 3.1), custom providers which don't extend `AbstractProvider` must implement it, the TWIG runtime no longer falls back to `generateHtmlTag()`
 
+### Added
+
+* new `RemoteMediaCollectionType` form type for ordered multi-resource values; it always submits/returns an `ArrayCollection` of `RemoteResourceLocation` objects and supports an `upload_limit` option (`null` = unlimited, positive integer = cap).
+* multi-upload admin interface with drag-and-drop reordering, per-resource metadata editing and a folder tree selector.
+
+### Changed
+
+* `RemoteMediaType` keeps its strict single-resource contract (one `RemoteResourceLocation` or `null`); the `upload_limit` option introduced during development was moved to `RemoteMediaCollectionType`.
+* the canonical wire format for collection submissions is the JSON `collectionPayload` field; indexed per-field submissions are deprecated fallbacks.
+
+### Fixed
+
+* upload limits are propagated to the Vue widget and enforced server-side during form submission, independently of client-submitted values.
+
 ## 3.1.0
 
 ### Added

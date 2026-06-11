@@ -50,6 +50,8 @@ export const defaultValue = {
   },
   config: {
     mode: 'embed',
+    isCollection: false,
+    uploadLimit: 1,
     paths: {
       browse_resources: '/ngremotemedia/ajax/resource/browse',
       upload_resources: '/ngremotemedia/ajax/resource/upload',
@@ -91,6 +93,9 @@ export const defaultValue = {
       'media_gallery_upload_media': 'media_gallery_upload_media',
       'media_gallery_select': 'media_gallery_select',
       'media_gallery_load_more': 'media_gallery_load_more',
+      'multi_select_add_selected': 'multi_select_add_selected',
+      'multi_select_deselect': 'multi_select_deselect',
+      'limit_reached': 'limit_reached',
       'Search for media': 'Search for media',
       'Load more': 'Load more',
       'Upload new media': 'Upload new media',
@@ -179,6 +184,7 @@ export const defaultValue = {
     type: 'image',
     format: '',
     url: '',
+    browseUrl: '',
     browse_url: '',
     previewUrl: '',
     alternateText: '',
