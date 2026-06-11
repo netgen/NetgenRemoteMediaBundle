@@ -36,7 +36,7 @@ final class RemoteMediaFolderType extends AbstractType
         $builder->addModelTransformer($this->transformer);
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $parentFolder = null;
         if ($options['parent_folder'] !== null) {

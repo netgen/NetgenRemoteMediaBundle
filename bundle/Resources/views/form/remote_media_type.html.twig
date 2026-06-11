@@ -1,5 +1,5 @@
 {% block remote_media_widget %}
-    {% set input_fields = {} %}
+    {% set input_fields = {'_collection': form.vars.full_name} %}
     {% for child in form.children %}
         {% if child.vars.name == 'tags' %}
             {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name ~ '[]'}) %}
@@ -8,8 +8,21 @@
         {% endif %}
     {% endfor %}
 
-    {{ form_widget(form.locationId) }}
-    {{ form_widget(form.source) }}
+    {% if form.uploadLimit is defined %}
+        {{ form_widget(form.uploadLimit) }}
+    {% endif %}
+    {% do form.locationId.setRendered %}
+    {% do form.remoteId.setRendered %}
+    {% do form.type.setRendered %}
+    {% do form.altText.setRendered %}
+    {% do form.caption.setRendered %}
+    {% do form.watermarkText.setRendered %}
+    {% do form.tags.setRendered %}
+    {% do form.cropSettings.setRendered %}
+    {% do form.source.setRendered %}
+    {% if form.collectionPayload is defined %}
+        {% do form.collectionPayload.setRendered %}
+    {% endif %}
 
     {% set available_variations = [] %}
     {% set allowed_variations = form.vars.allowed_variations|default([]) %}
@@ -28,7 +41,6 @@
         'field_id': id,
         'location_id': form.children.locationId.vars.value,
         'variation_group': form.vars.variation_group ?: 'default',
-        'variation_settings_json': form.vars.value ? form.vars.value.cropSettings : '{}',
         'input_fields': input_fields,
         'available_variations': available_variations,
         'allowed_visibilities': form.vars.allowed_visibilities|default([]),
@@ -38,6 +50,10 @@
         'folder': form.vars.folder,
         'upload_context': form.vars.upload_context|default([]),
         'disable_upload': form.vars.disable_upload|default(false),
-        'hide_filename': form.vars.hide_filename|default(false)
+        'hide_filename': form.vars.hide_filename|default(false),
+        'upload_limit': form.vars.upload_limit is defined ? form.vars.upload_limit : 1,
+        'is_collection': form.vars.is_collection|default(false),
+        'location_source': form.children.source.vars.value|default(null),
+        'locations': form.vars.remote_media_locations|default([])
     } %}
 {% endblock %}

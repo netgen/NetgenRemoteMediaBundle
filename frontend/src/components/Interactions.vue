@@ -1,127 +1,292 @@
 <template>
-    <div>
-        <preview
-                ref="preview"
-                :config="config"
-                :field-id="fieldId"
-                :selected-image="selectedImage"
-                :is-croppable="isCroppable"
-                @preview-change="dispatchVanillaChangeEvent"
-        ></preview>
+  <div>
+    <preview
+      ref="preview"
+      :config="config"
+      :field-id="fieldId"
+      :selected-image="selectedImage"
+      :is-croppable="hasCroppableVariations"
+      @preview-change="dispatchVanillaChangeEvent"
+      @remove-resource="handleRemoveResource"
+      @reorder-resources="handleReorderResources"
+      @update-resource="handleUpdateResource"
+      @move-resource="handleMoveResource"
+      @crop-resource="handleCropClicked"
+    >
+    </preview>
 
-        <div :id="'ngremotemedia-buttons-'+fieldId" :data-id="fieldId" class="ngremotemedia-buttons">
-            <input v-model="selectedImage.id" :name="this.config.inputFields.remoteId" class="media-id" type="hidden"/>
-
-            <input v-if="isCroppable" :value="this.config.translations.interactions_scale"
-                   class="ngremotemedia-scale hid btn" type="button"
-                   @click="handleCropClicked">
-            <input v-if="!!selectedImage.id" :value="this.config.translations.interactions_remove_media"
-                   class="ngremotemedia-remove-file btn"
-                   type="button" @click="handleRemoveMediaClicked"/>
-
-            <input :value="this.selectedImage.id ? this.config.translations.interactions_manage_media : this.config.translations.interactions_select_media"
-                   class="ngremotemedia-remote-file btn" type="button"
-                   @click="handleBrowseMediaClicked"/>
-
-            <div v-if="!this.config.disableUpload" class="ngremotemedia-local-file-container">
-                <button class="btn btn-default ngremotemedia-local-file btn upload-from-disk" type="button">
-                    <Label :for="fieldId + '_file_upload'">
-                        {{ this.config.translations.interactions_quick_upload }}
-                    </Label>
-                    <input :id="fieldId + '_file_upload'" ref="fileUploadInput" :name="this.config.inputFields.new_file"
-                           hidden
-                           type="file" @change="handleFileInputChange">
-                </button>
-            </div>
-        </div>
-
-        <input v-model="stringifiedVariations" :name="this.config.inputFields.cropSettings" class="media-id"
-               type="hidden"/>
-        <portal :to="`ngrm-body-modal-${fieldId}`">
-            <crop-modal v-if="cropModalOpen" :available-variations="this.config.availableVariations"
-                        :selected-image="selectedImage"
-                        :translations="config.translations" @change="handleVariationCropChange"
-                        @close="handleCropModalClose"></crop-modal>
-            <media-modal v-if="mediaModalOpen" :config="config" :paths="config.paths"
-                         :selected-media-id="selectedImage.id"
-                         :tags="tags" :types="types" :visibilities="visibilities"
-                         @close="handleMediaModalClose" @media-selected="handleMediaSelected"></media-modal>
-            <upload-modal v-if="uploadModalOpen" :config="config" :file="newFile"
-                          :visibilities="visibilities" @close="handleUploadModalClose"
-                          @uploaded="handleResourceUploaded"></upload-modal>
-        </portal>
-        <portal-target :class="`ngrm-model-portal-${fieldId}`" :name="`ngrm-body-modal-${fieldId}`"></portal-target>
+    <div
+      v-if="limitNotice"
+      class="limit-indicator limit-reached"
+      role="alert"
+    >
+      <i class="fa fa-info-circle"></i>
+      <span>{{ limitNotice }}</span>
     </div>
+
+    <div
+      :id="'ngremotemedia-buttons-' + fieldId"
+      :data-id="fieldId"
+      class="ngremotemedia-buttons"
+    >
+      <input
+        :value="getBrowseButtonLabel()"
+        class="ngremotemedia-remote-file btn"
+        type="button"
+        @click="handleBrowseMediaClicked"
+      />
+    </div>
+
+    <multi-upload-inline
+      v-if="!config.disableUpload"
+      :config="config"
+      :visibilities="visibilities"
+      :upload-limit="uploadLimit"
+      :current-count="currentFileCount"
+      @all-uploaded="handleMultiResourcesUploaded"
+    >
+    </multi-upload-inline>
+
+    <portal :to="`ngrm-body-modal-${fieldId}`">
+      <crop-modal
+        v-if="cropModalOpen"
+        :available-variations="config.availableVariations"
+        :selected-image="cropTargetImage"
+        :translations="config.translations"
+        @change="handleVariationCropChange"
+        @close="handleCropModalClose"
+      >
+      </crop-modal>
+
+      <media-modal
+        v-if="mediaModalOpen"
+        :config="config"
+        :paths="config.paths"
+        :selected-media-id="selectedImage.id"
+        :tags="tags"
+        :types="types"
+        :visibilities="visibilities"
+        :facets-loading="facetsLoading"
+        :multi-select="isCollectionMode"
+        :selection-limit="uploadLimit"
+        :current-count="currentFileCount"
+        @close="handleMediaModalClose"
+        @media-selected="handleMediaSelected"
+        @media-multi-selected="handleMediaMultiSelected"
+      >
+      </media-modal>
+    </portal>
+    <portal-target
+      :class="`ngrm-model-portal-${fieldId}`"
+      :name="`ngrm-body-modal-${fieldId}`"
+    >
+    </portal-target>
+  </div>
 </template>
 
 <script>
-
 import Preview from "./Preview";
 import MediaModal from "./MediaModal";
 import CropModal from "./CropModal";
-import UploadModal from "./UploadModal";
-import {objectFilter} from "@/utility/functional";
-import {truthy} from "@/utility/predicates";
+import MultiUploadInline from "./MultiUploadInline";
+
+let resourceUidCounter = 0;
+const nextResourceUid = () => `ngrm-r-${Date.now().toString(36)}-${++resourceUidCounter}`;
 
 export default {
   name: "Interactions",
   props: ["fieldId", "config", "selectedImage"],
   components: {
-    "preview": Preview,
-    'media-modal': MediaModal,
-    'crop-modal': CropModal,
-    'upload-modal': UploadModal,
+    preview: Preview,
+    "media-modal": MediaModal,
+    "crop-modal": CropModal,
+    "multi-upload-inline": MultiUploadInline,
   },
   computed: {
-    isCroppable() {
-      return !!this.selectedImage.id && this.selectedImage.type === "image" && Object.keys(this.config.availableVariations).length > 0;
+    uploadLimit() {
+      return Number(this.config.uploadLimit || 0);
     },
-    stringifiedVariations() {
-      return JSON.stringify(
-        objectFilter(truthy)(this.selectedImage.variations)
-      );
+    isCollectionMode() {
+      if (this.config.isCollection !== undefined && this.config.isCollection !== null) {
+        return !!this.config.isCollection;
+      }
+
+      return this.uploadLimit !== 1;
+    },
+    resources() {
+      return this.selectedImage.uploadedResources || [];
+    },
+    currentFileCount() {
+      return this.resources.length;
+    },
+    hasCroppableVariations() {
+      return Object.keys(this.config.availableVariations).length > 0;
+    },
+    cropTargetImage() {
+      return this.resources[this.cropTargetIndex] || this.selectedImage;
     },
   },
   data() {
     return {
       mediaModalOpen: false,
       cropModalOpen: false,
-      uploadModalOpen: false,
       types: [],
-      folders: [],
       tags: [],
       visibilities: [],
       facetsLoading: true,
-      newFile: null,
+      cropTargetIndex: 0,
+      limitNotice: null,
+      limitNoticeTimer: null,
     };
   },
   methods: {
-    dispatchVanillaChangeEvent(inputField = 'modal') {
-      this.$nextTick(function () {
+    getBrowseButtonLabel() {
+      return this.config.translations.interactions_manage_media;
+    },
+
+    handleRemoveResource(index) {
+      const resources = [...this.resources];
+      resources.splice(index, 1);
+      this.setResources(resources);
+      this.dispatchVanillaChangeEvent();
+    },
+
+    handleReorderResources(newList) {
+      const ordered = Array.isArray(newList) ? newList : this.resources;
+      this.setResources(ordered);
+      this.dispatchVanillaChangeEvent();
+    },
+
+    handleUpdateResource({ index, field, value }) {
+      if (index < 0 || index >= this.resources.length) return;
+      const resources = this.resources.map((resource, i) =>
+        i === index ? { ...resource, [field]: value } : resource
+      );
+      this.setResources(resources);
+      this.dispatchVanillaChangeEvent();
+    },
+
+    handleMoveResource({ from, to }) {
+      const resources = [...this.resources];
+      if (from < 0 || from >= resources.length || to < 0 || to >= resources.length) {
+        return;
+      }
+
+      const [movedItem] = resources.splice(from, 1);
+      resources.splice(to, 0, movedItem);
+      this.setResources(resources);
+      this.dispatchVanillaChangeEvent();
+    },
+
+    handleMediaMultiSelected(items) {
+      const newResources = items.map((item) => this.normalizeResource(item));
+      this.setResources([...this.resources, ...newResources]);
+      this.mediaModalOpen = false;
+      this.dispatchVanillaChangeEvent();
+    },
+
+    normalizeSelectedImageForCollectionMode() {
+      if (this.resources.length > 0) {
+        this.setResources(this.resources.map((item) => this.normalizeResource(item)));
+        return;
+      }
+
+      if (!this.selectedImage.id) {
+        return;
+      }
+
+      this.setResources([this.normalizeResource(this.selectedImage)]);
+    },
+
+    getEmptyImageState() {
+      return {
+        id: "",
+        locationId: "",
+        name: "",
+        type: "image",
+        format: "",
+        url: "",
+        previewUrl: "",
+        browseUrl: "",
+        alternateText: "",
+        caption: "",
+        watermarkText: "",
+        tags: [],
+        size: 0,
+        variations: {},
+        height: 0,
+        width: 0,
+        selectedVariation: null,
+        cssClass: "",
+        uploadedResources: [],
+      };
+    },
+
+    normalizeResource(item) {
+      return {
+        uid: item.uid || nextResourceUid(),
+        id: item.remoteId || item.remote_id || item.id || "",
+        locationId: item.locationId || item.location_id || "",
+        name: item.filename || item.name || "",
+        type: item.type || "image",
+        format: item.format || "",
+        url: item.url || "",
+        previewUrl: item.previewUrl || item.preview_url || "",
+        browseUrl: item.browseUrl || item.browse_url || item.previewUrl || item.preview_url || item.url || "",
+        alternateText: item.altText || item.alt_text || item.alternateText || item.alternate_text || "",
+        caption: item.caption || "",
+        watermarkText: item.watermarkText || "",
+        tags: item.tags || [],
+        size: item.size || 0,
+        variations: item.variations || {},
+        height: item.height || 0,
+        width: item.width || 0,
+        source: item.source || this.config.locationSource || "",
+      };
+    },
+
+    setResources(resources) {
+      if (resources.length === 0) {
+        this.selectedImage = this.getEmptyImageState();
+        return;
+      }
+
+      const normalizedResources = resources.map((item) => this.normalizeResource(item));
+      const firstResource = normalizedResources[0];
+
+      this.selectedImage = {
+        ...this.selectedImage,
+        ...firstResource,
+        selectedVariation: this.selectedImage.selectedVariation || null,
+        cssClass: this.selectedImage.cssClass || "",
+        uploadedResources: normalizedResources,
+      };
+    },
+
+    dispatchVanillaChangeEvent(inputField = "modal") {
+      this.$nextTick(function() {
         this.$el.dispatchEvent(
-          new CustomEvent(
-            'ngrm-change',
-            {
-              detail: {
-                inputFields: this.config.inputFields,
-                selectedImage: this.selectedImage,
-                fieldId: this.fieldId,
-                changedField: inputField
-              },
-              bubbles: true,
-            }
-          )
+          new CustomEvent("ngrm-change", {
+            detail: {
+              inputFields: this.config.inputFields,
+              selectedImage: this.selectedImage,
+              fieldId: this.fieldId,
+              changedField: inputField,
+              config: this.config,
+            },
+            bubbles: true,
+          })
         );
-      })
+      });
     },
     prepareDomForModal() {
-      const query = document.querySelector('.ez-page-builder-wrapper')
+      const query = document.querySelector(".ez-page-builder-wrapper");
       if (query) {
         query.style.transform = "none";
       }
     },
     resetDomAfterModal() {
-      const query = document.querySelector('.ez-page-builder-wrapper')
+      const query = document.querySelector(".ez-page-builder-wrapper");
       if (query) {
         query.removeAttribute("style");
       }
@@ -136,149 +301,132 @@ export default {
       this.resetDomAfterModal();
       this.dispatchVanillaChangeEvent();
     },
-    handleUploadModalClose() {
-      this.uploadModalOpen = false;
-      this.dispatchVanillaChangeEvent();
-    },
     handleMediaSelected(item) {
-      this.selectedImage = {
-        id: item.remoteId,
-        name: item.filename,
-        type: item.type,
-        format: item.format,
-        url: item.url,
-        previewUrl: item.previewUrl,
-        browseUrl: item.browseUrl,
-        alternateText: item.altText,
-        caption: item.caption,
-        watermarkText: this.selectedImage.watermarkText,
-        tags: item.tags,
-        size: item.size,
-        variations: {},
-        height: item.height,
-        width: item.width,
-        selectedVariation: null,
-        cssClass: '',
-      };
+      // Enforce upload limit (uploadLimit === 0 means unlimited; uploadLimit === 1 replaces).
+      if (this.uploadLimit > 1 && this.currentFileCount >= this.uploadLimit) {
+        const template = this.config.translations.limit_reached || 'File limit reached (%limit% maximum)';
+        this.showLimitNotice(template.replace('%limit%', this.uploadLimit));
+        this.mediaModalOpen = false;
+        this.resetDomAfterModal();
+        return;
+      }
+
+      const newResource = this.normalizeResource(item);
+      const allResources =
+        this.uploadLimit === 1 ? [newResource] : [...this.resources, newResource];
+
+      this.setResources(allResources);
 
       this.mediaModalOpen = false;
+      this.resetDomAfterModal();
       this.dispatchVanillaChangeEvent();
+    },
+    showLimitNotice(message) {
+      this.limitNotice = message;
+      if (this.limitNoticeTimer) clearTimeout(this.limitNoticeTimer);
+      this.limitNoticeTimer = setTimeout(() => { this.limitNotice = null; }, 5000);
     },
     handleVariationCropChange(newValues) {
-      this.selectedImage = {
-        ...this.selectedImage,
+      const resources = [...this.resources];
+      const target = resources[this.cropTargetIndex] || this.selectedImage;
+      const updatedTarget = {
+        ...target,
         variations: {
-          ...this.selectedImage.variations,
-          ...newValues
-        }
+          ...(target.variations || {}),
+          ...newValues,
+        },
       };
 
-      this.dispatchVanillaChangeEvent();
-    },
-    handleResourceUploaded(item) {
-      this.selectedImage = {
-        id: item.remoteId,
-        name: item.filename,
-        type: item.type,
-        format: item.format,
-        url: item.url,
-        previewUrl: item.previewUrl,
-        browseUrl: item.browseUrl,
-        alternateText: item.altText,
-        caption: item.caption,
-        watermarkText: this.selectedImage.watermarkText,
-        tags: item.tags,
-        size: item.size,
-        variations: {},
-        height: item.height,
-        width: item.width,
-        selectedVariation: null,
-        cssClass: '',
-      };
-
-      this.uploadModalOpen = false;
-      this.dispatchVanillaChangeEvent();
-    },
-    handleCropClicked() {
-      this.cropModalOpen = true;
-      this.prepareDomForModal();
-    },
-    handleRemoveMediaClicked() {
-      this.selectedImage = {
-        id: '',
-        name: '',
-        type: 'image',
-        format: '',
-        url: '',
-        previewUrl: '',
-        browseUrl: '',
-        alternateText: '',
-        caption: '',
-        watermarkText: this.selectedImage.watermarkText,
-        tags: [],
-        size: 0,
-        variations: {},
-        height: 0,
-        width: 0,
-        selectedVariation: null,
-        cssClass: '',
-      };
-      if (!this.config.disableUpload) {
-        this.$refs.fileUploadInput.value = null;
+      if (resources[this.cropTargetIndex]) {
+        resources.splice(this.cropTargetIndex, 1, updatedTarget);
+        this.setResources(resources);
+      } else {
+        this.selectedImage = updatedTarget;
       }
 
       this.dispatchVanillaChangeEvent();
     },
+    handleCropClicked(index = 0) {
+      this.cropTargetIndex = index;
+      this.cropModalOpen = true;
+      this.prepareDomForModal();
+    },
     async fetchFacets() {
-      const response = await fetch(this.config.paths.load_facets);
-      const data = await response.json();
-      this.types = [];
-      this.tags = [];
-      this.visibilities = [];
+      this.facetsLoading = true;
 
-      data.types.forEach((type) => {
-        if (this.config.allowedTypes.indexOf(type.id) !== -1 || this.config.allowedTypes.length === 0) {
-          this.types.push(type);
-        }
-      });
+      try {
+        const response = await fetch(this.config.paths.load_facets);
+        const data = await response.json();
 
-      data.tags.forEach((tag) => {
-        if (this.config.allowedTags.indexOf(tag.id) !== -1 || this.config.allowedTags.length === 0) {
-          this.tags.push(tag);
-        }
-      });
+        this.types = [];
+        this.tags = [];
+        this.visibilities = [];
 
-      data.visibilities.forEach((visibility) => {
-        if (this.config.allowedVisibilities.indexOf(visibility.id) !== -1 || this.config.allowedVisibilities.length === 0) {
-          this.visibilities.push(visibility);
-        }
-      });
+        data.types.forEach((type) => {
+          if (this.config.allowedTypes.indexOf(type.id) !== -1 || this.config.allowedTypes.length === 0) {
+            this.types.push(type);
+          }
+        });
 
-      this.facetsLoading = false;
+        data.tags.forEach((tag) => {
+          if (this.config.allowedTags.indexOf(tag.id) !== -1 || this.config.allowedTags.length === 0) {
+            this.tags.push(tag);
+          }
+        });
+
+        data.visibilities.forEach((visibility) => {
+          if (this.config.allowedVisibilities.indexOf(visibility.id) !== -1 || this.config.allowedVisibilities.length === 0) {
+            this.visibilities.push(visibility);
+          }
+        });
+      } catch (error) {
+        this.types = this.config.allowedTypes.map((id) => ({ id, name: id }));
+        this.tags = this.config.allowedTags.map((id) => ({ id, name: id }));
+        this.visibilities = this.config.allowedVisibilities.map((id) => ({ id, name: id }));
+      } finally {
+        this.facetsLoading = false;
+      }
     },
     async handleBrowseMediaClicked() {
       this.mediaModalOpen = true;
       this.prepareDomForModal();
       this.fetchFacets();
     },
-    handleFileInputChange() {
-      this.fetchFacets();
-      this.uploadModalOpen = true;
+    handleMultiResourcesUploaded(resources) {
+      if (resources.length > 0) {
+        const uploadedResources = resources.map((item) => this.normalizeResource(item));
+        const allResources =
+          this.uploadLimit === 1
+            ? (uploadedResources.length > 0 ? [uploadedResources[0]] : [])
+            : [...this.resources, ...uploadedResources];
 
-      this.newFile = this.$refs.fileUploadInput.files.item(0);
-    }
+        this.setResources(allResources);
+      }
+
+      this.dispatchVanillaChangeEvent();
+    },
   },
   watch: {
-    selectedImage: function () {
+    selectedImage: function() {
       this.$emit("selectedImageChanged", this.selectedImage);
-    }
+    },
   },
   mounted() {
-    this.$nextTick(function () {
-      const modalPortal = document.querySelector(`.ngrm-model-portal-${this.fieldId}`);
+    this.normalizeSelectedImageForCollectionMode();
+
+    this.$nextTick(function() {
+      const modalPortal = document.querySelector(
+        `.ngrm-model-portal-${this.fieldId}`
+      );
 
       document.body.prepend(modalPortal);
-    })
+    });
+
+    // Fetch facets on mount (always needed for browse functionality)
+    this.fetchFacets();
+  },
+  beforeDestroy() {
+    if (this.limitNoticeTimer) clearTimeout(this.limitNoticeTimer);
   },
 };
 </script>
