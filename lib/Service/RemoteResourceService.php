@@ -10,6 +10,8 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 
+use function is_array;
+use function is_string;
 use function json_decode;
 use function json_encode;
 
@@ -83,9 +85,16 @@ final class RemoteResourceService
         }
 
         $cropSettingsArray = json_decode($cropSettingsString, true);
+        if (!is_array($cropSettingsArray)) {
+            return [];
+        }
 
         $cropSettings = [];
         foreach ($cropSettingsArray as $variationName => $variationCropSettings) {
+            if (!is_string($variationName) || !is_array($variationCropSettings)) {
+                continue;
+            }
+
             $cropSettings[] = CropSettings::fromArray($variationName, $variationCropSettings);
         }
 

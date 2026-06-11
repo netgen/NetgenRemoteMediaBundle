@@ -123,6 +123,20 @@ This parameter enables you to disable the upload, which means that users will be
 
 This parameter enables filename hiding; instead of original filename, it will use file's MD5 hash as a public ID. Original filename will be stored in the context though and can be used, if needed.
 
+### Multi-resource collections: `RemoteMediaCollectionType`
+
+`RemoteMediaType` always submits and returns a single `RemoteResourceLocation` (or `null`).
+
+For ordered multi-resource values use `Netgen\RemoteMedia\Form\Type\RemoteMediaCollectionType` instead. It supports all of the options above and always submits/returns a Doctrine `ArrayCollection` of `RemoteResourceLocation` objects (possibly empty), preserving the order chosen in the interface — it never collapses to a bare location.
+
+#### `upload_limit` (collection type only)
+
+Controls how many resources the collection accepts. The default value is `null`, which means unlimited. Set it to a positive integer to cap the collection at that many resources. The legacy value `0` is still accepted and normalized to `null`.
+
+Submitted collections are validated server-side. If the payload contains more resources than the configured positive limit, the form is invalid.
+
+The canonical wire format for collection submissions is the JSON `collectionPayload` field rendered by the widget; indexed per-field submissions are deprecated fallbacks kept for backwards compatibility.
+
 ### Example
 
 Let's say that you have a form for digital products in a webshop and you want to limit editors to be able to upload only protected files inside a specific folder. You want to also add some context.
