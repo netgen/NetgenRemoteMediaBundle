@@ -12,6 +12,7 @@ use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Symfony\Component\Form\DataTransformerInterface;
 
 use function is_array;
+use function sort;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
 {
@@ -73,17 +74,14 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
         $needsUpdateOnRemote = $this->service->needsUpdateOnRemote($remoteResource, $value);
 
-        $remoteResource->setAltText($value['altText'] ?? null);
-        $remoteResource->setCaption($value['caption'] ?? null);
-        $remoteResource->setTags($value['tags'] ?? []);
+        $remoteResource->setAltText($this->normalizeNullableString($value['altText'] ?? null));
+        $remoteResource->setCaption($this->normalizeNullableString($value['caption'] ?? null));
+        $remoteResource->setTags($this->normalizeTags($value['tags'] ?? []));
 
         if ($needsUpdateOnRemote) {
             try {
                 $this->provider->updateOnRemote($remoteResource);
-            } catch (RemoteResourceNotFoundException $e) {
-                $this->provider->remove($remoteResource);
-
-                return null;
+            } catch (RemoteResourceNotFoundException) {
             }
         }
 
@@ -97,5 +95,28 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         );
 
         return $remoteResourceLocation;
+    }
+
+    private function normalizeNullableString(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (string) $value;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function normalizeTags(mixed $tags): array
+    {
+        if (!is_array($tags)) {
+            return [];
+        }
+
+        sort($tags);
+
+        return $tags;
     }
 }

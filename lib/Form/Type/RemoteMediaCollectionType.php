@@ -10,13 +10,19 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use function array_flip;
+use function array_key_exists;
+use function array_map;
 use function array_replace;
 use function is_array;
 use function json_encode;
+
+use const JSON_INVALID_UTF8_SUBSTITUTE;
 
 /**
  * Ordered multi-resource remote media form type.
@@ -71,24 +77,35 @@ final class RemoteMediaCollectionType extends AbstractRemoteMediaType
             // The limit is server state; never trust the submitted value.
             $data['uploadLimit'] = (string) ($options['upload_limit'] ?? 0);
 
-            // Canonical wire format is the JSON `collectionPayload`. The indexed
-            // forms are deprecated fallbacks kept for one release; when present
-            // they win so stale clients keep working.
-            $entries = RemoteMediaCollectionEntryExtractor::fromRootIndexed($data);
-            if ($entries === []) {
-                $entries = RemoteMediaCollectionEntryExtractor::fromFieldIndexed($data);
+            $payloadIsSubmitted = array_key_exists('collectionPayload', $data);
+
+            if ($payloadIsSubmitted) {
+                try {
+                    $entries = RemoteMediaCollectionEntryExtractor::fromPayload($data);
+                } catch (TransformationFailedException) {
+                    $entries = null;
+                }
+            } else {
+                $entries = RemoteMediaCollectionEntryExtractor::fromRootIndexed($data);
+                if ($entries === []) {
+                    $entries = RemoteMediaCollectionEntryExtractor::fromFieldIndexed($data);
+                }
             }
 
-            // Always strip numeric keys so malformed indexed entries cannot leak
-            // through to the scalar HiddenType children (which expect non-array values).
             $data = RemoteMediaCollectionEntryExtractor::stripNumericKeys($data);
 
-            if ($entries !== []) {
-                $encodedEntries = json_encode($entries);
+            if (is_array($entries)) {
+                $entries = self::filterSubmittedLocationIds($entries, $event->getForm()->getData());
+
+                $encodedEntries = json_encode($entries, JSON_INVALID_UTF8_SUBSTITUTE);
                 if ($encodedEntries !== false) {
                     $data['collectionPayload'] = $encodedEntries;
                 }
+            } elseif (!$payloadIsSubmitted) {
+                $data['collectionPayload'] = '[]';
+            }
 
+            if (is_array($entries) && $entries !== []) {
                 $firstEntry = $entries[0];
                 $data['locationId'] = $firstEntry['locationId'];
                 $data['remoteId'] = $firstEntry['remoteId'];
@@ -120,5 +137,28 @@ final class RemoteMediaCollectionType extends AbstractRemoteMediaType
         // Reuse the remote_media form theme block; the widget switches on
         // the is_collection / upload_limit view vars.
         return 'remote_media';
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $entries
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private static function filterSubmittedLocationIds(array $entries, mixed $data): array
+    {
+        $allowedIds = array_flip(self::extractExistingLocationIds($data));
+
+        return array_map(
+            static function (array $entry) use ($allowedIds): array {
+                $locationId = $entry['locationId'] ?? null;
+
+                if ($locationId === null || $locationId === '' || !array_key_exists((string) $locationId, $allowedIds)) {
+                    $entry['locationId'] = null;
+                }
+
+                return $entry;
+            },
+            $entries,
+        );
     }
 }

@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Form\DataTransformer;
 
+use Symfony\Component\Form\Exception\TransformationFailedException;
+
 use function array_filter;
 use function array_key_exists;
 use function array_values;
 use function ctype_digit;
 use function is_array;
 use function is_int;
+use function is_scalar;
 use function is_string;
 use function json_decode;
+use function json_last_error;
+use function json_last_error_msg;
+
+use const JSON_ERROR_NONE;
 
 /**
  * Shared extraction/normalization helpers for RemoteMedia collection submissions.
@@ -31,14 +38,28 @@ final class RemoteMediaCollectionEntryExtractor
      */
     public static function fromPayload(array $data): array
     {
-        $payload = $data['collectionPayload'] ?? null;
-        if (!is_string($payload) || $payload === '') {
+        if (!array_key_exists('collectionPayload', $data)) {
             return [];
         }
 
-        $decoded = json_decode($payload, true);
-        if (!is_array($decoded)) {
+        $payload = $data['collectionPayload'];
+        if ($payload === '') {
             return [];
+        }
+
+        if (!is_string($payload)) {
+            throw new TransformationFailedException('The remote media collection payload must be a JSON array.');
+        }
+
+        $decoded = json_decode($payload, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new TransformationFailedException(
+                'The remote media collection payload is not valid JSON: ' . json_last_error_msg(),
+            );
+        }
+
+        if (!is_array($decoded)) {
+            throw new TransformationFailedException('The remote media collection payload must be a JSON array.');
         }
 
         $entries = [];
@@ -166,8 +187,13 @@ final class RemoteMediaCollectionEntryExtractor
             return null;
         }
 
+        $locationId = $entry['locationId'] ?? null;
+        if ($locationId !== null && (!is_scalar($locationId) || $locationId === '')) {
+            $locationId = null;
+        }
+
         return [
-            'locationId' => $entry['locationId'] ?? null,
+            'locationId' => $locationId,
             'remoteId' => $remoteId,
             'type' => (string) ($entry['type'] ?? ''),
             'altText' => (string) ($entry['altText'] ?? $entry['alternateText'] ?? ''),

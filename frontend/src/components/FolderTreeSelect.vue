@@ -65,6 +65,8 @@ import { encodeQueryData } from "@/utility/utility";
 import { FOLDER_ROOT } from "../constants/facets";
 import axios from 'axios';
 
+const CREATE_ACTION_PREFIX = '\u0000ngrm-create-folder:';
+
 export default {
   name: "FolderTreeSelect",
   props: {
@@ -114,6 +116,10 @@ export default {
   },
   methods: {
     getFullPath(folderId) {
+      if (typeof folderId !== 'string' || this.isCreateActionValue(folderId)) {
+        return this.config.translations.upload_root_folder || '(root)';
+      }
+
       // Handle root folder
       if (!folderId || folderId === FOLDER_ROOT || folderId === '(root)') {
         return this.config.translations.upload_root_folder || '(root)';
@@ -144,12 +150,9 @@ export default {
     },
     handleFolderChange(value) {
       // Check if user selected the "Create new folder" action
-      if (value && value.startsWith('__create_')) {
-        // Extract parent node ID from the action ID
-        const parentId = value.replace('__create_', '');
-
+      if (this.isCreateActionValue(value)) {
         // Find the parent node
-        const parentNode = this.findNodeById(this.folders, parentId);
+        const parentNode = this.findNodeById(this.folders, this.parseCreateActionId(value).parentId);
         if (parentNode) {
           this.showCreateFolder(parentNode);
         }
@@ -158,13 +161,34 @@ export default {
         return;
       }
 
-      this.internalSelectedFolder = value;
-      if (typeof value === 'undefined' || !value) {
-        this.internalSelectedFolder = this.config.parentFolder
-          ? this.config.parentFolder.id
-          : value;
+      const normalizedValue = this.normalizeFolderValue(value);
+      this.internalSelectedFolder = normalizedValue || (this.config.parentFolder ? this.config.parentFolder.id : FOLDER_ROOT);
+      this.$emit('change', normalizedValue);
+    },
+    createActionId(parentId) {
+      return CREATE_ACTION_PREFIX + JSON.stringify({
+        action: 'create-folder',
+        parentId,
+      });
+    },
+    isCreateActionValue(value) {
+      return typeof value === 'string'
+        && value.startsWith(CREATE_ACTION_PREFIX)
+        && this.parseCreateActionId(value).action === 'create-folder';
+    },
+    parseCreateActionId(value) {
+      try {
+        return JSON.parse(value.slice(CREATE_ACTION_PREFIX.length));
+      } catch (error) {
+        return {};
       }
-      this.$emit('change', this.internalSelectedFolder);
+    },
+    normalizeFolderValue(value) {
+      if (value === null || typeof value === 'undefined' || value === FOLDER_ROOT || value === '(root)') {
+        return '';
+      }
+
+      return value;
     },
     findNodeById(nodes, id) {
       for (const node of nodes) {
@@ -196,7 +220,7 @@ export default {
 
       // Add "Create new folder" action as the last item
       folderNodes.push({
-        id: '__create_' + node.id,
+        id: this.createActionId(node.id),
         label: this.config.translations.upload_button_create,
         isCreateAction: true,
         parentNode: node,
@@ -214,7 +238,7 @@ export default {
 
       // Select the parent folder
       this.internalSelectedFolder = node.id;
-      this.$emit('change', node.id);
+      this.$emit('change', this.normalizeFolderValue(node.id));
 
       // Focus input in next tick
       this.$nextTick(() => {
@@ -262,7 +286,7 @@ export default {
 
           // Re-add the "Create new folder" action at the end
           this.creatingFolderParent.children.push({
-            id: '__create_' + this.creatingFolderParent.id,
+            id: this.createActionId(this.creatingFolderParent.id),
             label: this.config.translations.upload_button_create,
             isCreateAction: true,
             parentNode: this.creatingFolderParent,
