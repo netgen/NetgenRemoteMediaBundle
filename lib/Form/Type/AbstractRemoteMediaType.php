@@ -16,7 +16,9 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use function array_filter;
 use function array_intersect;
+use function array_map;
 use function array_replace;
 use function is_iterable;
 use function is_string;
@@ -144,5 +146,22 @@ abstract class AbstractRemoteMediaType extends AbstractType
         }
 
         return $locations;
+    }
+
+    /**
+     * Persisted location ids present in the form's pre-set data. Used to reject
+     * client-supplied locationIds that do not belong to this form.
+     *
+     * @return array<int, string>
+     */
+    protected static function extractExistingLocationIds(mixed $data): array
+    {
+        return array_map(
+            static fn (RemoteResourceLocation $location): string => (string) $location->getId(),
+            array_filter(
+                static::extractRemoteMediaLocations($data),
+                static fn (RemoteResourceLocation $location): bool => $location->getId() !== null,
+            ),
+        );
     }
 }

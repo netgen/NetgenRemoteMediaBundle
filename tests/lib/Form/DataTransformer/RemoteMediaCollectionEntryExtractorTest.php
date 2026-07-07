@@ -7,6 +7,7 @@ namespace Netgen\RemoteMedia\Tests\Form\DataTransformer;
 use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaCollectionEntryExtractor;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 
 use function json_encode;
 
@@ -62,6 +63,26 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
         self::assertSame('a', $entries[0]['altText']);
         self::assertSame('r2', $entries[1]['remoteId']);
         self::assertSame('form_source', $entries[0]['source']);
+    }
+
+    public function testFromPayloadRejectsMalformedJson(): void
+    {
+        $this->expectException(TransformationFailedException::class);
+
+        RemoteMediaCollectionEntryExtractor::fromPayload([
+            'collectionPayload' => '{"remoteId":',
+        ]);
+    }
+
+    public function testNormalizeEntryDropsNonScalarLocationId(): void
+    {
+        $entries = RemoteMediaCollectionEntryExtractor::fromPayload([
+            'collectionPayload' => json_encode([
+                ['locationId' => ['nested'], 'remoteId' => 'r1'],
+            ]),
+        ]);
+
+        self::assertNull($entries[0]['locationId']);
     }
 
     public function testFromRootIndexedSkipsEntriesWithoutRemoteId(): void

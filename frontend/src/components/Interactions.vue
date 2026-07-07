@@ -4,7 +4,7 @@
       ref="preview"
       :config="config"
       :field-id="fieldId"
-      :selected-image="selectedImage"
+      :selected-image="localSelectedImage"
       :is-croppable="hasCroppableVariations"
       @preview-change="dispatchVanillaChangeEvent"
       @remove-resource="handleRemoveResource"
@@ -62,7 +62,7 @@
         v-if="mediaModalOpen"
         :config="config"
         :paths="config.paths"
-        :selected-media-id="selectedImage.id"
+        :selected-media-id="localSelectedImage.id"
         :tags="tags"
         :types="types"
         :visibilities="visibilities"
@@ -92,6 +92,28 @@ import MultiUploadInline from "./MultiUploadInline";
 
 let resourceUidCounter = 0;
 const nextResourceUid = () => `ngrm-r-${Date.now().toString(36)}-${++resourceUidCounter}`;
+const createEmptyImageState = (source = null) => ({
+  id: "",
+  locationId: "",
+  name: "",
+  type: "image",
+  format: "",
+  url: "",
+  previewUrl: "",
+  browseUrl: "",
+  alternateText: "",
+  caption: "",
+  watermarkText: "",
+  tags: [],
+  size: 0,
+  variations: {},
+  height: 0,
+  width: 0,
+  selectedVariation: null,
+  cssClass: "",
+  source,
+  uploadedResources: [],
+});
 
 export default {
   name: "Interactions",
@@ -114,7 +136,7 @@ export default {
       return this.uploadLimit !== 1;
     },
     resources() {
-      return this.selectedImage.uploadedResources || [];
+      return this.localSelectedImage.uploadedResources || [];
     },
     currentFileCount() {
       return this.resources.length;
@@ -123,11 +145,12 @@ export default {
       return Object.keys(this.config.availableVariations).length > 0;
     },
     cropTargetImage() {
-      return this.resources[this.cropTargetIndex] || this.selectedImage;
+      return this.resources[this.cropTargetIndex] || this.localSelectedImage;
     },
   },
   data() {
     return {
+      localSelectedImage: this.normalizeSelectedImage(this.selectedImage),
       mediaModalOpen: false,
       cropModalOpen: false,
       types: [],
@@ -182,6 +205,7 @@ export default {
       const newResources = items.map((item) => this.normalizeResource(item));
       this.setResources([...this.resources, ...newResources]);
       this.mediaModalOpen = false;
+      this.resetDomAfterModal();
       this.dispatchVanillaChangeEvent();
     },
 
@@ -191,35 +215,11 @@ export default {
         return;
       }
 
-      if (!this.selectedImage.id) {
-        return;
-      }
-
-      this.setResources([this.normalizeResource(this.selectedImage)]);
+      this.localSelectedImage = this.normalizeSelectedImage(this.localSelectedImage);
     },
 
     getEmptyImageState() {
-      return {
-        id: "",
-        locationId: "",
-        name: "",
-        type: "image",
-        format: "",
-        url: "",
-        previewUrl: "",
-        browseUrl: "",
-        alternateText: "",
-        caption: "",
-        watermarkText: "",
-        tags: [],
-        size: 0,
-        variations: {},
-        height: 0,
-        width: 0,
-        selectedVariation: null,
-        cssClass: "",
-        uploadedResources: [],
-      };
+      return createEmptyImageState(this.config.locationSource || null);
     },
 
     normalizeResource(item) {
@@ -245,20 +245,60 @@ export default {
       };
     },
 
+    normalizeSelectedImage(image) {
+      const selectedImage = image || this.getEmptyImageState();
+      const uploadedResources = Array.isArray(selectedImage.uploadedResources)
+        ? selectedImage.uploadedResources
+        : [];
+
+      if (uploadedResources.length > 0) {
+        const resources = uploadedResources.map((item) => this.normalizeResource(item));
+        const firstResource = resources[0];
+
+        return {
+          ...this.getEmptyImageState(),
+          ...selectedImage,
+          ...firstResource,
+          selectedVariation: selectedImage.selectedVariation || null,
+          cssClass: selectedImage.cssClass || "",
+          uploadedResources: resources,
+        };
+      }
+
+      if (selectedImage.id) {
+        const resource = this.normalizeResource(selectedImage);
+
+        return {
+          ...this.getEmptyImageState(),
+          ...selectedImage,
+          ...resource,
+          selectedVariation: selectedImage.selectedVariation || null,
+          cssClass: selectedImage.cssClass || "",
+          uploadedResources: [resource],
+        };
+      }
+
+      return {
+        ...this.getEmptyImageState(),
+        ...selectedImage,
+        uploadedResources: [],
+      };
+    },
+
     setResources(resources) {
       if (resources.length === 0) {
-        this.selectedImage = this.getEmptyImageState();
+        this.localSelectedImage = this.getEmptyImageState();
         return;
       }
 
       const normalizedResources = resources.map((item) => this.normalizeResource(item));
       const firstResource = normalizedResources[0];
 
-      this.selectedImage = {
-        ...this.selectedImage,
+      this.localSelectedImage = {
+        ...this.localSelectedImage,
         ...firstResource,
-        selectedVariation: this.selectedImage.selectedVariation || null,
-        cssClass: this.selectedImage.cssClass || "",
+        selectedVariation: this.localSelectedImage.selectedVariation || null,
+        cssClass: this.localSelectedImage.cssClass || "",
         uploadedResources: normalizedResources,
       };
     },
@@ -269,7 +309,7 @@ export default {
           new CustomEvent("ngrm-change", {
             detail: {
               inputFields: this.config.inputFields,
-              selectedImage: this.selectedImage,
+              selectedImage: this.localSelectedImage,
               fieldId: this.fieldId,
               changedField: inputField,
               config: this.config,
@@ -328,7 +368,7 @@ export default {
     },
     handleVariationCropChange(newValues) {
       const resources = [...this.resources];
-      const target = resources[this.cropTargetIndex] || this.selectedImage;
+      const target = resources[this.cropTargetIndex] || this.localSelectedImage;
       const updatedTarget = {
         ...target,
         variations: {
@@ -341,7 +381,7 @@ export default {
         resources.splice(this.cropTargetIndex, 1, updatedTarget);
         this.setResources(resources);
       } else {
-        this.selectedImage = updatedTarget;
+        this.localSelectedImage = updatedTarget;
       }
 
       this.dispatchVanillaChangeEvent();
@@ -408,7 +448,8 @@ export default {
   },
   watch: {
     selectedImage: function() {
-      this.$emit("selectedImageChanged", this.selectedImage);
+      this.localSelectedImage = this.normalizeSelectedImage(this.selectedImage);
+      this.$emit("selectedImageChanged", this.localSelectedImage);
     },
   },
   mounted() {

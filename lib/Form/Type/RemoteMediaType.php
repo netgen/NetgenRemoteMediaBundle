@@ -11,8 +11,11 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
+use function array_flip;
+use function array_key_exists;
 use function array_replace;
 use function is_array;
+use function is_scalar;
 
 /**
  * Single-resource remote media form type.
@@ -53,6 +56,16 @@ final class RemoteMediaType extends AbstractRemoteMediaType
                 $data['tags'] = $firstEntry['tags'];
                 $data['cropSettings'] = $firstEntry['cropSettings'];
                 $data['source'] = $firstEntry['source'];
+            }
+
+            // Only reuse a locationId that belongs to this form's pre-set data;
+            // a foreign id (even with a matching remoteId) creates a fresh
+            // location instead of re-pointing another entity's placement.
+            if (array_key_exists('locationId', $data) && is_scalar($data['locationId']) && $data['locationId'] !== '') {
+                $allowedIds = array_flip(self::extractExistingLocationIds($event->getForm()->getData()));
+                if (!array_key_exists((string) $data['locationId'], $allowedIds)) {
+                    $data['locationId'] = null;
+                }
             }
 
             $event->setData($data);
