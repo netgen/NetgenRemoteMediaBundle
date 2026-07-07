@@ -91,6 +91,106 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
         self::assertSame([$firstLocation, $secondLocation], $data->toArray());
     }
 
+    #[DataProvider('emptyPayloadDataProvider')]
+    public function testSubmitEmptyPayloadWithPresetDataClearsCollection(array $submittedData): void
+    {
+        $firstLocation = new RemoteResourceLocation(
+            new RemoteResource('remote-1', RemoteResource::TYPE_IMAGE, 'https://example.test/1', 'md5-1'),
+        );
+        $secondLocation = new RemoteResourceLocation(
+            new RemoteResource('remote-2', RemoteResource::TYPE_IMAGE, 'https://example.test/2', 'md5-2'),
+        );
+
+        $this->innerTransformerMock
+            ->expects(self::never())
+            ->method('reverseTransform');
+
+        $form = $this->factory->create(
+            RemoteMediaCollectionType::class,
+            new ArrayCollection([$firstLocation, $secondLocation]),
+        );
+
+        $form->submit($submittedData);
+
+        self::assertTrue($form->isSynchronized());
+
+        $data = $form->getData();
+        self::assertInstanceOf(ArrayCollection::class, $data);
+        self::assertTrue($data->isEmpty());
+    }
+
+    public function testSubmitMalformedPayloadIsNotSynchronized(): void
+    {
+        $form = $this->factory->create(RemoteMediaCollectionType::class);
+
+        $form->submit([
+            'collectionPayload' => '{"remoteId":',
+        ]);
+
+        self::assertTrue($form->isSubmitted());
+        self::assertFalse($form->isSynchronized());
+    }
+
+    public function testSubmitRootIndexedFallbackIsConvertedToPayload(): void
+    {
+        $location = new RemoteResourceLocation(
+            new RemoteResource('remote-1', RemoteResource::TYPE_IMAGE, 'https://example.test/1', 'md5-1'),
+        );
+
+        $this->innerTransformerMock
+            ->expects(self::once())
+            ->method('reverseTransform')
+            ->with(self::callback(static fn (array $entry): bool => $entry['remoteId'] === 'remote-1'))
+            ->willReturn($location);
+
+        $form = $this->factory->create(RemoteMediaCollectionType::class);
+
+        $form->submit([
+            [
+                'remoteId' => 'remote-1',
+                'type' => 'image',
+            ],
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame([$location], $form->getData()->toArray());
+    }
+
+    public function testSubmitUnknownLocationIdCreatesFreshLocation(): void
+    {
+        $existingLocation = new RemoteResourceLocation(
+            new RemoteResource('remote-1', RemoteResource::TYPE_IMAGE, 'https://example.test/1', 'md5-1'),
+            id: 10,
+        );
+        $resultLocation = new RemoteResourceLocation(
+            new RemoteResource('remote-2', RemoteResource::TYPE_IMAGE, 'https://example.test/2', 'md5-2'),
+        );
+
+        $this->innerTransformerMock
+            ->expects(self::once())
+            ->method('reverseTransform')
+            ->with(self::callback(static fn (array $entry): bool => $entry['locationId'] === null))
+            ->willReturn($resultLocation);
+
+        $form = $this->factory->create(
+            RemoteMediaCollectionType::class,
+            new ArrayCollection([$existingLocation]),
+        );
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                [
+                    'locationId' => '999',
+                    'remoteId' => 'remote-2',
+                    'type' => 'image',
+                ],
+            ]),
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame([$resultLocation], $form->getData()->toArray());
+    }
+
     public function testSubmitOverLimitPayloadIsRejected(): void
     {
         $form = $this->factory->create(RemoteMediaCollectionType::class, null, [
@@ -194,6 +294,18 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
         return [
             'negative' => [-1],
             'string' => ['invalid'],
+        ];
+    }
+
+    public static function emptyPayloadDataProvider(): iterable
+    {
+        return [
+            'empty payload' => [
+                ['collectionPayload' => ''],
+            ],
+            'omitted payload' => [
+                [],
+            ],
         ];
     }
 

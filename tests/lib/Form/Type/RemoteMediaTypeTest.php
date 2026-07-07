@@ -153,6 +153,61 @@ class RemoteMediaTypeTest extends TypeTestCase
         self::assertSame($expectedLocation, $form->getData());
     }
 
+    public function testSubmitForeignLocationIdCreatesFreshLocation(): void
+    {
+        $existingLocation = new RemoteResourceLocation(
+            new RemoteResource('upload|image|owned.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/owned.jpg', 'md5-owned'),
+            id: 5,
+        );
+        $resultLocation = new RemoteResourceLocation(
+            new RemoteResource('upload|image|foreign.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/foreign.jpg', 'md5-foreign'),
+        );
+
+        $this->dataTransformerMock
+            ->expects(self::once())
+            ->method('reverseTransform')
+            ->with(self::callback(static fn (array $data): bool => $data['locationId'] === null
+                && $data['remoteId'] === 'upload|image|foreign.jpg'))
+            ->willReturn($resultLocation);
+
+        $form = $this->factory->create(RemoteMediaType::class, $existingLocation);
+
+        $form->submit([
+            'locationId' => '999',
+            'remoteId' => 'upload|image|foreign.jpg',
+            'type' => 'image',
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame($resultLocation, $form->getData());
+    }
+
+    public function testSubmitOwnLocationIdIsPreserved(): void
+    {
+        $existingLocation = new RemoteResourceLocation(
+            new RemoteResource('upload|image|owned.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/owned.jpg', 'md5-owned'),
+            id: 5,
+        );
+
+        $this->dataTransformerMock
+            ->expects(self::once())
+            ->method('reverseTransform')
+            ->with(self::callback(static fn (array $data): bool => $data['locationId'] === '5'
+                && $data['remoteId'] === 'upload|image|owned.jpg'))
+            ->willReturn($existingLocation);
+
+        $form = $this->factory->create(RemoteMediaType::class, $existingLocation);
+
+        $form->submit([
+            'locationId' => '5',
+            'remoteId' => 'upload|image|owned.jpg',
+            'type' => 'image',
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame($existingLocation, $form->getData());
+    }
+
     public function testBuildViewExposesSingleLocationAndCollectionFlags(): void
     {
         $location = new RemoteResourceLocation(

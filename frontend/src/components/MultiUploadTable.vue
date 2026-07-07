@@ -19,7 +19,7 @@
           <!-- Preview -->
           <td class="preview-cell">
             <div class="file-preview">
-              <img v-if="isImage(fileData.file)" :src="getPreviewUrl(fileData.file)" :alt="fileData.filename">
+              <img v-if="isImage(fileData.file)" :src="getPreviewUrl(fileData)" :alt="fileData.filename">
               <span v-else class="file-icon">
                 <i class="fa fa-file"></i>
               </span>
@@ -30,9 +30,9 @@
           <td class="filename-cell">
             <input
               type="text"
-              v-model="fileData.filename"
-              :disabled="fileData.status !== 'pending'"
-              @input="handleFilenameChange(fileData)"
+              :value="fileData.filename"
+              :disabled="fileData.status !== 'pending' || batchUploading"
+              @input="handleFilenameChange(fileData, $event.target.value)"
               class="filename-input"
             />
             <div class="file-size">{{ formatFileSize(fileData.file.size) }}</div>
@@ -55,10 +55,10 @@
               v-if="fileData.status === 'pending'"
               :options="visibilities"
               label="name"
-              v-model="fileData.visibility"
+              :value="fileData.visibility"
               :reduce="option => option.id"
               :clearable="false"
-              @input="handleVisibilityChange(fileData)"
+              @input="handleVisibilityChange(fileData, $event)"
             />
             <span v-else>{{ getVisibilityName(fileData.visibility) }}</span>
           </td>
@@ -67,9 +67,9 @@
           <td class="overwrite-cell">
             <input
               type="checkbox"
-              v-model="fileData.overwrite"
-              :disabled="fileData.status !== 'pending'"
-              @change="handleOverwriteChange(fileData)"
+              :checked="fileData.overwrite"
+              :disabled="fileData.status !== 'pending' || batchUploading"
+              @change="handleOverwriteChange(fileData, $event.target.checked)"
               class="overwrite-checkbox"
             />
           </td>
@@ -103,6 +103,7 @@
               type="button"
               class="btn btn-sm btn-primary"
               @click="handleUpload(fileData)"
+              :disabled="batchUploading"
               :title="uploadFileLabel"
             >
               <i class="fa fa-upload"></i>
@@ -112,6 +113,7 @@
               type="button"
               class="btn btn-sm btn-default"
               @click="handleUseExisting(fileData)"
+              :disabled="batchUploading"
               :title="useExistingLabel"
             >
               <i class="fa fa-link"></i> {{ useExistingLabel }}
@@ -120,7 +122,7 @@
               type="button"
               class="btn btn-sm btn-danger"
               @click="handleRemove(fileData)"
-              :disabled="fileData.status === 'uploading'"
+              :disabled="fileData.status === 'uploading' || batchUploading"
               :title="removeFileLabel"
             >
               <i class="fa fa-trash"></i>
@@ -149,6 +151,10 @@ export default {
     uploadLimit: {
       type: Number,
       default: 0
+    },
+    batchUploading: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -205,11 +211,11 @@ export default {
     isImage(file) {
       return file.type.startsWith('image/');
     },
-    getPreviewUrl(file) {
-      if (!this.previewUrls[file.name]) {
-        this.previewUrls[file.name] = URL.createObjectURL(file);
+    getPreviewUrl(fileData) {
+      if (!this.previewUrls[fileData.id]) {
+        this.previewUrls[fileData.id] = URL.createObjectURL(fileData.file);
       }
-      return this.previewUrls[file.name];
+      return this.previewUrls[fileData.id];
     },
     formatFileSize(bytes) {
       if (bytes === 0) return '0 Bytes';
@@ -222,18 +228,17 @@ export default {
       const visibility = this.visibilities.find(v => v.id === visibilityId);
       return visibility ? visibility.name : visibilityId;
     },
-    handleFilenameChange(fileData) {
-      this.$emit('update-file', fileData.id, { filename: fileData.filename });
+    handleFilenameChange(fileData, filename) {
+      this.$emit('update-file', fileData.id, { filename });
     },
     handleFolderChange(fileData, folder) {
-      fileData.folder = folder;
       this.$emit('update-file', fileData.id, { folder: folder });
     },
-    handleVisibilityChange(fileData) {
-      this.$emit('update-file', fileData.id, { visibility: fileData.visibility });
+    handleVisibilityChange(fileData, visibility) {
+      this.$emit('update-file', fileData.id, { visibility });
     },
-    handleOverwriteChange(fileData) {
-      this.$emit('update-file', fileData.id, { overwrite: fileData.overwrite });
+    handleOverwriteChange(fileData, overwrite) {
+      this.$emit('update-file', fileData.id, { overwrite });
     },
     handleUpload(fileData) {
       this.$emit('upload-single', fileData);
@@ -243,9 +248,9 @@ export default {
     },
     handleRemove(fileData) {
       // Revoke preview URL if exists
-      if (this.previewUrls[fileData.file.name]) {
-        URL.revokeObjectURL(this.previewUrls[fileData.file.name]);
-        delete this.previewUrls[fileData.file.name];
+      if (this.previewUrls[fileData.id]) {
+        URL.revokeObjectURL(this.previewUrls[fileData.id]);
+        delete this.previewUrls[fileData.id];
       }
       this.$emit('remove-file', fileData.id);
     }

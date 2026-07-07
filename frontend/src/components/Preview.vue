@@ -1,31 +1,32 @@
 <template>
-  <!-- Always use array view when uploadedResources exists -->
-  <div
-    v-if="
-      selectedImage.uploadedResources &&
-        selectedImage.uploadedResources.length > 0
-    "
-    class="ngremotemedia-multi-gallery"
-  >
-    <!-- Canonical wire format in collection mode: a single JSON payload field -->
+  <div>
     <input
       v-if="isCollectionMode"
       type="hidden"
       :name="config.inputFields.collectionPayload"
       :value="collectionPayloadJson"
     />
-    <draggable
-      :value="resources"
-      @input="handleDraggableInput"
-      :options="{ handle: '.drag-handle', animation: 200 }"
-      :disabled="resources.length <= 1"
-      class="gallery-draggable-container"
-    >
+
+    <!-- Always use array view when uploadedResources exists -->
     <div
-      v-for="(resource, index) in selectedImage.uploadedResources"
-      :key="resource.uid || resource.id || index"
-      class="ngremotemedia-image"
+      v-if="
+        selectedImage.uploadedResources &&
+          selectedImage.uploadedResources.length > 0
+      "
+      class="ngremotemedia-multi-gallery"
     >
+      <draggable
+        :value="resources"
+        @input="handleDraggableInput"
+        :options="{ handle: '.drag-handle', animation: 200 }"
+        :disabled="resources.length <= 1"
+        class="gallery-draggable-container"
+      >
+      <div
+        v-for="(resource, index) in selectedImage.uploadedResources"
+        :key="resource.uid || resource.id || index"
+        class="ngremotemedia-image"
+      >
       <!-- Drag handle and position indicator - only show when multiple items -->
       <div class="image-header" v-if="selectedImage.uploadedResources.length > 1">
         <span class="drag-handle" :title="config.translations.reorder_drag || 'Drag to reorder'">
@@ -207,12 +208,13 @@
           </button>
         </div>
       </div>
+      </div>
+      </draggable>
     </div>
-    </draggable>
-  </div>
 
-  <div v-else>
-    <i>{{ this.config.translations.interactions_no_media_selected }}</i>
+    <div v-else>
+      <i>{{ this.config.translations.interactions_no_media_selected }}</i>
+    </div>
   </div>
 </template>
 

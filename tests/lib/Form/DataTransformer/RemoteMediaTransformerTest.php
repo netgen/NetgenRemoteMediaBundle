@@ -212,7 +212,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         );
     }
 
-    public function testReverseTransformWithResourceNotExistingOnRemoteAnymore(): void
+    public function testReverseTransformWithResourceNotExistingOnRemoteAnymoreDoesNotRemoveLocalResource(): void
     {
         $data = [
             'locationId' => 5,
@@ -259,11 +259,79 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
 
         $this->providerMock
-            ->expects(self::once())
-            ->method('remove')
-            ->with($location->getRemoteResource());
+            ->expects(self::never())
+            ->method('remove');
 
-        self::assertNull($this->dataTransformer->reverseTransform($data));
+        $expectedLocation = new RemoteResourceLocation(
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                folder: Folder::fromPath('media/images'),
+                caption: 'test caption',
+                tags: ['tag2'],
+            ),
+            'test',
+            [],
+            'some watermark',
+        );
+
+        self::assertRemoteResourceLocationSame(
+            $expectedLocation,
+            $this->dataTransformer->reverseTransform($data),
+        );
+    }
+
+    public function testReverseTransformSkipsRemoteUpdateForEquivalentMetadata(): void
+    {
+        $data = [
+            'locationId' => null,
+            'remoteId' => 'upload|image|media/images/example.jpg',
+            'type' => 'image',
+            'altText' => '',
+            'caption' => '',
+            'tags' => ['tag2', 'tag1'],
+            'cropSettings' => null,
+            'source' => null,
+            'watermarkText' => null,
+        ];
+
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/example.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            name: 'example.jpg',
+            tags: ['tag1', 'tag2'],
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadByRemoteId')
+            ->with('upload|image|media/images/example.jpg')
+            ->willReturn($resource);
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('updateOnRemote');
+
+        $expectedLocation = new RemoteResourceLocation(
+            new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                tags: ['tag1', 'tag2'],
+            ),
+        );
+
+        self::assertRemoteResourceLocationSame(
+            $expectedLocation,
+            $this->dataTransformer->reverseTransform($data),
+        );
     }
 
     public function testReverseTransformWithExistingLocationMissingInDatabase(): void

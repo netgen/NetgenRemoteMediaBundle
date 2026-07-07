@@ -13,6 +13,9 @@ use function count;
 use function is_array;
 use function is_iterable;
 use function is_numeric;
+use function json_encode;
+
+use const JSON_INVALID_UTF8_SUBSTITUTE;
 
 /**
  * Model transformer for RemoteMediaCollectionType.
@@ -35,12 +38,12 @@ final class RemoteMediaCollectionTransformer implements DataTransformerInterface
     /**
      * @param mixed $value
      *
-     * @return array<int, array<string, mixed>>
+     * @return array<string, mixed>
      */
     public function transform($value): array
     {
         if (!is_iterable($value)) {
-            return [];
+            return ['collectionPayload' => '[]'];
         }
 
         $entries = [];
@@ -55,7 +58,27 @@ final class RemoteMediaCollectionTransformer implements DataTransformerInterface
             }
         }
 
-        return $entries;
+        $data = [
+            'collectionPayload' => json_encode($entries, JSON_INVALID_UTF8_SUBSTITUTE) ?: '[]',
+        ];
+
+        if ($entries === []) {
+            return $data;
+        }
+
+        $firstEntry = $entries[0];
+
+        return $data + [
+            'locationId' => $firstEntry['locationId'] ?? null,
+            'remoteId' => $firstEntry['remoteId'] ?? null,
+            'type' => $firstEntry['type'] ?? null,
+            'altText' => $firstEntry['altText'] ?? null,
+            'caption' => $firstEntry['caption'] ?? null,
+            'watermarkText' => $firstEntry['watermarkText'] ?? null,
+            'tags' => $firstEntry['tags'] ?? [],
+            'cropSettings' => $firstEntry['cropSettings'] ?? null,
+            'source' => $firstEntry['source'] ?? null,
+        ];
     }
 
     /**
@@ -69,7 +92,7 @@ final class RemoteMediaCollectionTransformer implements DataTransformerInterface
             return new ArrayCollection();
         }
 
-        $entries = RemoteMediaCollectionEntryExtractor::extractAny($value);
+        $entries = RemoteMediaCollectionEntryExtractor::fromPayload($value);
 
         $uploadLimit = $this->resolveUploadLimit($value);
         if ($uploadLimit > 0 && count($entries) > $uploadLimit) {

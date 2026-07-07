@@ -91,6 +91,7 @@
       :visibilities="visibilities"
       :is-over-limit="isOverLimit"
       :upload-limit="uploadLimit"
+      :batch-uploading="uploading"
       @update-file="handleFileUpdate"
       @remove-file="handleFileRemove"
       @upload-single="uploadSingleFile"
@@ -348,7 +349,7 @@ export default {
           id: this.nextId++,
           file: file,
           filename: file.name,
-          folder: this.config.folder ? this.config.folder.id : this.globalFolder,
+          folder: this.config.folder ? this.config.folder.id : this.normalizeFolderValue(this.globalFolder),
           visibility: this.defaultVisibility,
           overwrite: this.globalOverwrite,
           status: 'pending', // pending, uploading, success, error
@@ -361,12 +362,19 @@ export default {
     canUpload() {
       return !this.isOverLimit && this.files.some(f => f.status === 'pending');
     },
+    normalizeFolderValue(folder) {
+      if (folder === null || typeof folder === 'undefined' || folder === '(root)' || folder === 'null') {
+        return '';
+      }
+
+      return folder;
+    },
     handleGlobalFolderChange(folder) {
-      this.globalFolder = folder;
+      this.globalFolder = this.normalizeFolderValue(folder);
       // Update all pending files to use the new global folder
       this.files.forEach(fileData => {
         if (fileData.status === 'pending') {
-          this.$set(fileData, 'folder', folder);
+          this.$set(fileData, 'folder', this.globalFolder);
         }
       });
     },
@@ -394,6 +402,8 @@ export default {
       }
     },
     handleFileRemove(fileId) {
+      if (this.uploading) return;
+
       const index = this.files.findIndex(f => f.id === fileId);
       if (index !== -1) {
         this.files.splice(index, 1);
@@ -405,13 +415,25 @@ export default {
     async uploadAll() {
       this.uploading = true;
 
-      const pendingFiles = this.files.filter(f => f.status === 'pending');
-      this.totalFiles = pendingFiles.length;
+      const pendingFileIds = this.files
+        .filter(f => f.status === 'pending')
+        .map(f => f.id);
+      this.totalFiles = pendingFileIds.length;
       this.currentFileIndex = 0;
+      const resources = [];
 
-      for (const fileData of pendingFiles) {
+      for (const fileId of pendingFileIds) {
+        const fileData = this.files.find(f => f.id === fileId);
+        if (!fileData || fileData.status !== 'pending') {
+          continue;
+        }
+
         this.currentFileIndex++;
         await this.uploadSingleFile(fileData, false);
+
+        if (fileData.status === 'success' && fileData.resource && this.files.includes(fileData)) {
+          resources.push(fileData.resource);
+        }
       }
 
       this.uploading = false;
@@ -423,10 +445,6 @@ export default {
       // form value, otherwise a retry duplicates them. Failed rows stay in
       // the table for retry. Scoped to this batch so resources emitted by an
       // earlier run are not added twice.
-      const resources = pendingFiles
-        .filter(f => f.status === 'success')
-        .map(f => f.resource);
-
       if (resources.length > 0) {
         resources.forEach(resource => {
           this.$emit('uploaded', resource);
@@ -436,6 +454,8 @@ export default {
       }
     },
     useExistingResource(fileData) {
+      if (this.uploading) return;
+
       // A 409 response carries the already-existing remote resource; let the
       // user attach it instead of re-uploading with overwrite.
       if (!fileData.resource) return;
@@ -448,6 +468,10 @@ export default {
       this.$emit('all-uploaded', [fileData.resource]);
     },
     async uploadSingleFile(fileData, emitUpload = true) {
+      if (!this.files.includes(fileData) || fileData.status !== 'pending') {
+        return;
+      }
+
       fileData.status = 'uploading';
       fileData.progress = 0;
       fileData.error = null;
@@ -455,9 +479,11 @@ export default {
       const data = new FormData();
       data.append('file', fileData.file);
       data.append('filename', fileData.filename);
-      data.append('folder', fileData.folder);
+      data.append('folder', this.normalizeFolderValue(fileData.folder));
       data.append('overwrite', fileData.overwrite);
-      data.append('visibility', fileData.visibility);
+      if (fileData.visibility) {
+        data.append('visibility', fileData.visibility);
+      }
       data.append('hide_filename', this.config.hideFilename);
 
       for (const [key, value] of Object.entries(this.config.uploadContext)) {

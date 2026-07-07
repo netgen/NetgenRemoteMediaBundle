@@ -137,6 +137,8 @@ Submitted collections are validated server-side. If the payload contains more re
 
 The canonical wire format for collection submissions is the JSON `collectionPayload` field rendered by the widget; indexed per-field submissions are deprecated fallbacks kept for backwards compatibility.
 
+Because the collection type reuses the scalar children of `RemoteMediaType` for the first submitted entry, constraints attached directly to those scalar children only validate that first entry. Put per-entry validation on the collection model value or validate the `RemoteResourceLocation` objects after transformation when every entry must be checked.
+
 ### Example
 
 Let's say that you have a form for digital products in a webshop and you want to limit editors to be able to upload only protected files inside a specific folder. You want to also add some context.
