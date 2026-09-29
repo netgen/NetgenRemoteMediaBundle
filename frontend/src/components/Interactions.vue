@@ -202,8 +202,7 @@ export default {
     },
 
     handleMediaMultiSelected(items) {
-      const newResources = items.map((item) => this.normalizeResource(item));
-      this.setResources([...this.resources, ...newResources]);
+      this.appendResources(items.map((item) => this.normalizeResource(item)));
       this.mediaModalOpen = false;
       this.resetDomAfterModal();
       this.dispatchVanillaChangeEvent();
@@ -220,6 +219,27 @@ export default {
 
     getEmptyImageState() {
       return createEmptyImageState(this.config.locationSource || null);
+    },
+
+    // Skips resources already in the gallery (they share alt text and caption)
+    // and stops at the upload limit instead of letting the save fail server-side.
+    appendResources(newResources) {
+      const knownIds = new Set(this.resources.map((resource) => resource.id));
+      const uniqueResources = newResources.filter((resource) => {
+        if (knownIds.has(resource.id)) {
+          return false;
+        }
+        knownIds.add(resource.id);
+        return true;
+      });
+
+      const freeSlots = this.uploadLimit > 1 ? Math.max(this.uploadLimit - this.currentFileCount, 0) : uniqueResources.length;
+      if (uniqueResources.length > freeSlots) {
+        const template = this.config.translations.limit_reached || 'File limit reached (%limit% maximum)';
+        this.showLimitNotice(template.replace('%limit%', this.uploadLimit));
+      }
+
+      this.setResources([...this.resources, ...uniqueResources.slice(0, freeSlots)]);
     },
 
     normalizeResource(item) {
@@ -352,6 +372,9 @@ export default {
       }
 
       const newResource = this.normalizeResource(item);
+      if (this.uploadLimit === 1 && !newResource.watermarkText) {
+        newResource.watermarkText = this.localSelectedImage.watermarkText || "";
+      }
       const allResources =
         this.uploadLimit === 1 ? [newResource] : [...this.resources, newResource];
 
@@ -435,12 +458,11 @@ export default {
     handleMultiResourcesUploaded(resources) {
       if (resources.length > 0) {
         const uploadedResources = resources.map((item) => this.normalizeResource(item));
-        const allResources =
-          this.uploadLimit === 1
-            ? (uploadedResources.length > 0 ? [uploadedResources[0]] : [])
-            : [...this.resources, ...uploadedResources];
-
-        this.setResources(allResources);
+        if (this.uploadLimit === 1) {
+          this.setResources([uploadedResources[0]]);
+        } else {
+          this.appendResources(uploadedResources);
+        }
       }
 
       this.dispatchVanillaChangeEvent();
