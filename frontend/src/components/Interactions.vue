@@ -29,6 +29,13 @@
       :data-id="fieldId"
       class="ngremotemedia-buttons"
     >
+      <!-- Posts an empty id when a single field is emptied, so the server clears it. -->
+      <input
+        v-if="!isCollectionMode && currentFileCount === 0"
+        :name="config.inputFields.remoteId"
+        type="hidden"
+        value=""
+      />
       <input
         :value="getBrowseButtonLabel()"
         class="ngremotemedia-remote-file btn"
