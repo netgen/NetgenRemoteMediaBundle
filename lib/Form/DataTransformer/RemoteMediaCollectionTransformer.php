@@ -58,8 +58,9 @@ final class RemoteMediaCollectionTransformer implements DataTransformerInterface
             }
         }
 
+        $payload = json_encode($entries, JSON_INVALID_UTF8_SUBSTITUTE);
         $data = [
-            'collectionPayload' => json_encode($entries, JSON_INVALID_UTF8_SUBSTITUTE) ?: '[]',
+            'collectionPayload' => $payload !== false ? $payload : '[]',
         ];
 
         if ($entries === []) {
