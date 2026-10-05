@@ -290,7 +290,7 @@ final class SearchExpression
 
         array_walk(
             $context,
-            static function (&$value, $key) { $value = is_array($value) ? $value : [$value]; },
+            static function (&$value, $key): void { $value = is_array($value) ? $value : [$value]; },
         );
 
         $newContext = [];

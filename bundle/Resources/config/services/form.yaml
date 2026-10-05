@@ -4,11 +4,25 @@ services:
         arguments:
             - "@netgen_remote_media.provider"
             - "@netgen_remote_media.service.remote_resource_service"
+            - "@?logger"
+
+    netgen_remote_media.form.data_transformer.remote_media_collection:
+        class: Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaCollectionTransformer
+        arguments:
+            - "@netgen_remote_media.form.data_transformer.remote_media"
 
     netgen_remote_media.form.type.remote_media:
         class: Netgen\RemoteMedia\Form\Type\RemoteMediaType
         arguments:
             - "@netgen_remote_media.form.data_transformer.remote_media"
+            - "@netgen_remote_media.provider"
+        tags:
+            - { name: form.type }
+
+    netgen_remote_media.form.type.remote_media_collection:
+        class: Netgen\RemoteMedia\Form\Type\RemoteMediaCollectionType
+        arguments:
+            - "@netgen_remote_media.form.data_transformer.remote_media_collection"
             - "@netgen_remote_media.provider"
         tags:
             - { name: form.type }

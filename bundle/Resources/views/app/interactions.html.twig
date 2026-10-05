@@ -4,7 +4,6 @@
 {% set variation_group = variation_group|default('default') %}
 {% set selected_image = selected_image|default(null) %}
 {% set location_id = location_id|default(null) %}
-{% set variation_settings_json = variation_settings_json|default('{}') %}
 {% set input_fields = input_fields|default([]) %}
 {% set available_variations = available_variations|default([]) %}
 {% set allowed_visibilities = allowed_visibilities|default([]) %}
@@ -15,10 +14,18 @@
 {% set upload_context = upload_context|default([]) %}
 {% set disable_upload = disable_upload|default(false) %}
 {% set hide_filename = hide_filename|default(false) %}
+{% set upload_limit = upload_limit is defined ? upload_limit : 1 %}
+{% set upload_limit_for_vue = upload_limit is same as(null) ? 0 : upload_limit %}
+{% set is_collection = is_collection|default(false) %}
+{% set location_source = location_source|default(null) %}
+{% set locations = locations|default([]) %}
 
 {% set location = null %}
-{% if location_id %}
+{% if locations|length == 0 and location_id %}
     {% set location = ngrm_remote_resource_location(location_id) %}
+{% endif %}
+{% if locations|length == 0 and location %}
+    {% set locations = [location] %}
 {% endif %}
 
 {% set config = {
@@ -69,7 +76,7 @@
         'No results': 'No results',
         'Alternate text': 'Alternate text',
         'Class': 'CSS class',
-        'Create new folder?': 'Create new folder?',
+        'Create new folder?': 'ngrm.edit.vue.upload.button.create'|trans,
         'Folder': 'Folder',
         'All': 'All',
         'Add tag': 'Add tag',
@@ -77,7 +84,7 @@
         'Image': 'Image and documents',
         'Video': 'Video',
         'Loading...': 'Loading...',
-        'Cancel': 'Cancel',
+        'Cancel': 'ngrm.edit.vue.upload.button.cancel'|trans,
         'Save all': 'Save all',
         'Generate': 'Generate',
         'Caption': 'Caption',
@@ -110,10 +117,47 @@
         'upload_button_select': 'ngrm.edit.vue.upload.button.select'|trans,
         'upload_button_create': 'ngrm.edit.vue.upload.button.create'|trans,
         'upload_button_upload': 'ngrm.edit.vue.upload.button.upload'|trans,
+        'upload_button_cancel': 'ngrm.edit.vue.upload.button.cancel'|trans,
         'upload_checkbox_overwrite': 'ngrm.edit.vue.upload.checkbox.overwrite'|trans,
         'upload_placeholder_new_folder': 'ngrm.edit.vue.upload.placeholder.new_folder'|trans,
         'upload_error_existing_resource': 'ngrm.edit.vue.upload.error.existing_resource'|trans,
-        'upload_error_unsupported_resource_type': 'ngrm.edit.vue.upload.error.unsupported_resource_type'|trans
+        'upload_error_unsupported_resource_type': 'ngrm.edit.vue.upload.error.unsupported_resource_type'|trans,
+        'multi_upload_title': 'ngrm.edit.vue.multi_upload.title'|trans,
+        'multi_upload_drop_zone': 'ngrm.edit.vue.multi_upload.drop_zone'|trans,
+        'multi_upload_drop_zone_single': 'ngrm.edit.vue.multi_upload.drop_zone_single'|trans,
+        'multi_upload_browse': 'ngrm.edit.vue.multi_upload.browse'|trans,
+        'multi_upload_browse_single': 'ngrm.edit.vue.multi_upload.browse_single'|trans,
+        'multi_upload_files_pending': 'ngrm.edit.vue.multi_upload.files_pending'|trans,
+        'multi_upload_files_success': 'ngrm.edit.vue.multi_upload.files_success'|trans,
+        'multi_upload_files_error': 'ngrm.edit.vue.multi_upload.files_error'|trans,
+        'multi_upload_uploading': 'ngrm.edit.vue.multi_upload.uploading'|trans,
+        'multi_upload_button_upload_all': 'ngrm.edit.vue.multi_upload.button_upload_all'|trans,
+        'multi_upload_clear_completed': 'ngrm.edit.vue.multi_upload.clear_completed'|trans,
+        'multi_upload_global_folder': 'ngrm.edit.vue.multi_upload.global_folder'|trans,
+        'multi_upload_global_visibility': 'ngrm.edit.vue.multi_upload.global_visibility'|trans,
+        'multi_upload_global_apply_to_all': 'ngrm.edit.vue.multi_upload.global_apply_to_all'|trans,
+        'multi_upload_table_preview': 'ngrm.edit.vue.multi_upload.table.preview'|trans,
+        'multi_upload_table_filename': 'ngrm.edit.vue.multi_upload.table.filename'|trans,
+        'multi_upload_table_folder': 'ngrm.edit.vue.multi_upload.table.folder'|trans,
+        'multi_upload_table_visibility': 'ngrm.edit.vue.multi_upload.table.visibility'|trans,
+        'multi_upload_table_status': 'ngrm.edit.vue.multi_upload.table.status'|trans,
+        'multi_upload_table_actions': 'ngrm.edit.vue.multi_upload.table.actions'|trans,
+        'multi_upload_table_upload_file': 'ngrm.edit.vue.multi_upload.table.upload_file'|trans,
+        'multi_upload_table_remove_file': 'ngrm.edit.vue.multi_upload.table.remove_file'|trans,
+        'multi_upload_use_existing': 'ngrm.edit.vue.multi_upload.use_existing'|trans,
+        'multi_upload_status_pending': 'ngrm.edit.vue.multi_upload.status.pending'|trans,
+        'multi_upload_status_uploading': 'ngrm.edit.vue.multi_upload.status.uploading'|trans,
+        'multi_upload_status_success': 'ngrm.edit.vue.multi_upload.status.success'|trans,
+        'multi_upload_status_error': 'ngrm.edit.vue.multi_upload.status.error'|trans,
+        'multi_gallery_remove': 'ngrm.edit.vue.multi_gallery_remove'|trans,
+        'multi_select_add_selected': 'ngrm.edit.vue.multi_select_add_selected'|trans,
+        'multi_select_deselect': 'ngrm.edit.vue.multi_select_deselect'|trans,
+        'reorder_drag': 'ngrm.edit.vue.reorder.drag'|trans,
+        'reorder_move_previous': 'ngrm.edit.vue.reorder.move_previous'|trans,
+        'reorder_move_next': 'ngrm.edit.vue.reorder.move_next'|trans,
+        'limit_reached': 'ngrm.edit.vue.limit_reached'|trans,
+        'limit_exceeded': 'ngrm.edit.vue.limit_exceeded'|trans,
+        'limit_remaining': 'ngrm.edit.vue.limit_remaining'|trans
     },
     'inputFields': input_fields,
     'availableVariations': available_variations,
@@ -125,11 +169,15 @@
     'uploadContext': upload_context,
     'disableUpload': disable_upload,
     'hideFilename': hide_filename,
+    'uploadLimit': upload_limit_for_vue,
+    'isCollection': is_collection,
+    'locationSource': location_source,
 } %}
 
-{% set browse_url = '' %}
-{% set preview_url = '' %}
-{% if location %}
+{% set selected_resources = [] %}
+{% for location in locations %}
+    {% set browse_url = '' %}
+    {% set preview_url = '' %}
     {% set authenticated_location = location %}
     {% set browse_variation_name = 'browse' %}
     {% set preview_variation_name = 'preview' %}
@@ -152,33 +200,67 @@
         {% set browse_url = ngrm_video_thumbnail_variation(authenticated_location, 'ngrm_interface', browse_variation_name).url %}
         {% set preview_url = ngrm_remote_resource_variation(authenticated_location, 'ngrm_interface', preview_variation_name).url %}
     {% endif %}
-{% endif %}
 
-{% set selected_image = {
-    'id': location and location.remoteResource.remoteId ? location.remoteResource.remoteId : '',
-    'name': location and location.remoteResource.name ? location.remoteResource.name : '',
-    'type': location and location.remoteResource.type ? location.remoteResource.type : '',
-    'format': location and location.remoteResource.metadata.format is defined ? location.remoteResource.metadata.format : '',
-    'url': location and location.remoteResource.url ? location.remoteResource.url : '',
-    'browseUrl': browse_url,
-    'previewUrl': preview_url,
-    'alternateText': location and location.remoteResource.altText ? location.remoteResource.altText : '',
-    'caption': location and location.remoteResource.caption ? location.remoteResource.caption : '',
-    'watermarkText': location and location.watermarkText ? location.watermarkText : '',
-    'tags': location ? location.remoteResource.tags : [],
-    'size': location ? location.remoteResource.size : 0,
-    'variations': '%VARIATION_SETTINGS%',
-    'height': location and location.remoteResource.metadata.height is defined ? location.remoteResource.metadata.height : 0,
-    'width': location and location.remoteResource.metadata.width is defined ? location.remoteResource.metadata.width : 0
+    {% set crop_settings = {} %}
+    {% for crop_setting in location.cropSettings %}
+        {% set crop_settings = crop_settings|merge({(crop_setting.variationName): {
+            'x': crop_setting.x,
+            'y': crop_setting.y,
+            'w': crop_setting.width,
+            'h': crop_setting.height
+        }}) %}
+    {% endfor %}
+
+    {% set selected_resources = selected_resources|merge([{
+        'id': location.remoteResource.remoteId ? location.remoteResource.remoteId : '',
+        'locationId': location.id ? location.id : '',
+        'name': location.remoteResource.name ? location.remoteResource.name : '',
+        'type': location.remoteResource.type ? location.remoteResource.type : '',
+        'format': location.remoteResource.metadata.format is defined ? location.remoteResource.metadata.format : '',
+        'url': location.remoteResource.url ? location.remoteResource.url : '',
+        'browseUrl': browse_url,
+        'previewUrl': preview_url,
+        'alternateText': location.remoteResource.altText ? location.remoteResource.altText : '',
+        'caption': location.remoteResource.caption ? location.remoteResource.caption : '',
+        'watermarkText': location.watermarkText ? location.watermarkText : '',
+        'tags': location.remoteResource.tags,
+        'size': location.remoteResource.size,
+        'variations': crop_settings,
+        'height': location.remoteResource.metadata.height is defined ? location.remoteResource.metadata.height : 0,
+        'width': location.remoteResource.metadata.width is defined ? location.remoteResource.metadata.width : 0,
+        'source': location.source ? location.source : location_source,
+    }]) %}
+{% endfor %}
+
+{% set first_resource = selected_resources|length > 0 ? selected_resources|first : null %}
+{% set selected_image = first_resource ? first_resource|merge({'uploadedResources': selected_resources}) : {
+    'id': '',
+    'locationId': '',
+    'name': '',
+    'type': 'image',
+    'format': '',
+    'url': '',
+    'browseUrl': '',
+    'previewUrl': '',
+    'alternateText': '',
+    'caption': '',
+    'watermarkText': '',
+    'tags': [],
+    'size': 0,
+    'variations': {},
+    'height': 0,
+    'width': 0,
+    'source': location_source,
+    'uploadedResources': []
 } %}
 
-{% set encoded_selected_image = selected_image|json_encode|replace({'"%VARIATION_SETTINGS%"': variation_settings_json}) %}
+{% set encoded_selected_image = selected_image|json_encode %}
 
 <div
     class="ngremotemedia-container"
     data-id="{{ field_id }}"
-    v-init:selected-image='{{ encoded_selected_image }}'
-    v-init:config='{{ config|json_encode }}'
+    v-init:selected-image='{{ encoded_selected_image|e('html_attr') }}'
+    v-init:config='{{ config|json_encode|e('html_attr') }}'
 >
     <interactions
         field-id="{{ field_id }}"
