@@ -17,6 +17,7 @@ use Netgen\RemoteMedia\Tests\AbstractTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 
 #[CoversClass(RemoteMediaTransformer::class)]
@@ -262,6 +263,21 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->expects(self::never())
             ->method('remove');
 
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects(self::once())
+            ->method('warning')
+            ->with(
+                self::stringContains('no longer exists on the remote'),
+                ['remoteId' => 'upload|image|media/images/example.jpg'],
+            );
+
+        $dataTransformer = new RemoteMediaTransformer(
+            $this->providerMock,
+            new RemoteResourceService($this->providerMock),
+            $logger,
+        );
+
         $expectedLocation = new RemoteResourceLocation(
             new RemoteResource(
                 remoteId: 'upload|image|media/images/example.jpg',
@@ -280,7 +296,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
 
         self::assertRemoteResourceLocationSame(
             $expectedLocation,
-            $this->dataTransformer->reverseTransform($data),
+            $dataTransformer->reverseTransform($data),
         );
     }
 

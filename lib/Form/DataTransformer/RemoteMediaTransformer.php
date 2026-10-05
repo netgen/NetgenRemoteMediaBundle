@@ -9,6 +9,8 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Form\DataTransformerInterface;
 
 use function is_array;
@@ -16,10 +18,15 @@ use function sort;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
 {
+    private LoggerInterface $logger;
+
     public function __construct(
         private ProviderInterface $provider,
         private RemoteResourceService $service,
-    ) {}
+        ?LoggerInterface $logger = null,
+    ) {
+        $this->logger = $logger ?? new NullLogger();
+    }
 
     public function transform($value)
     {
@@ -80,6 +87,10 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             try {
                 $this->provider->updateOnRemote($remoteResource);
             } catch (RemoteResourceNotFoundException) {
+                $this->logger->warning(
+                    '[NGRM] Remote resource "{remoteId}" no longer exists on the remote, its metadata was saved locally only.',
+                    ['remoteId' => $remoteResource->getRemoteId()],
+                );
             }
         }
 
