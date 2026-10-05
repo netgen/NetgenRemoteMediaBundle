@@ -6,8 +6,8 @@ namespace Netgen\RemoteMedia\Tests\Form\DataTransformer;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Netgen\RemoteMedia\API\ProviderInterface;
-use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaCollectionTransformer;
 use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer;

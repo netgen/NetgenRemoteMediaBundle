@@ -23,7 +23,7 @@ class RemoteMediaTypeTest extends TypeTestCase
 {
     private DataTransformerInterface|MockObject $dataTransformerMock;
 
-    private MockObject|ProviderInterface $providerMock;
+    private MockObject&ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
