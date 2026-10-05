@@ -28,6 +28,7 @@ use function in_array;
 use function is_array;
 use function is_file;
 use function is_readable;
+use function is_string;
 use function preg_match;
 use function strpos;
 use function strrpos;
