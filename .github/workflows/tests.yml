@@ -3,27 +3,34 @@ name: Tests
 on:
   push:
     branches:
-      - '3.[0-9]+'
+      - 'master'
+      - '[0-9].[0-9]+'
   pull_request: ~
 
 jobs:
   tests:
-    name: ${{ matrix.php }} / ${{ matrix.symfony }}
+    name: ${{ matrix.php }} / ${{ matrix.symfony }} / ${{ matrix.deps }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.1']
-        symfony: ['~5.4.0', '~6.4.0']
-        deps: ['normal']
         include:
-          - php: '8.1'
+          - php: '8.3'
+            symfony: '~5.4.0'
+            deps: 'normal'
+          - php: '8.3'
             symfony: '~5.4.0'
             deps: 'low'
+          - php: '8.4'
+            symfony: '~7.4.0'
+            deps: 'normal'
+          - php: '8.5'
+            symfony: '~8.1.0'
+            deps: 'normal'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}

@@ -3,7 +3,8 @@ name: Coding standards
 on:
   push:
     branches:
-      - '3.[0-9]+'
+      - 'master'
+      - '[0-9].[0-9]+'
   pull_request: ~
 
 jobs:
@@ -12,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: docker://oskarstark/php-cs-fixer-ga
         with:
           args: --diff --dry-run
