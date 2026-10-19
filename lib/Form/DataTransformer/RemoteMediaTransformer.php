@@ -28,7 +28,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         $this->logger = $logger ?? new NullLogger();
     }
 
-    public function transform($value)
+    public function transform(mixed $value): mixed
     {
         if (!$value instanceof RemoteResourceLocation) {
             return null;
@@ -47,7 +47,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         ];
     }
 
-    public function reverseTransform($value)
+    public function reverseTransform(mixed $value): mixed
     {
         if (!is_array($value) || ($value['remoteId'] ?? null) === null || ($value['remoteId'] ?? '') === '') {
             return null;

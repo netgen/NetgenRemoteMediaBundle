@@ -19,6 +19,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 use function array_map;
 use function array_slice;
+use function method_exists;
 use function trim;
 
 use const PHP_EOL;
@@ -45,7 +46,10 @@ final class RefreshStoredResourcesCommandTest extends TestCase
             ->willReturn($this->repositoryMock);
 
         $application = new Application();
-        $application->add(new RefreshStoredResourcesCommand($entityManagerMock, $this->providerMock));
+        $command = new RefreshStoredResourcesCommand($entityManagerMock, $this->providerMock);
+
+        // Application::add() was removed in Symfony 8, addCommand() exists since Symfony 7.4
+        method_exists($application, 'addCommand') ? $application->addCommand($command) : $application->add($command);
 
         $command = $application->find('netgen:remote_media:refresh');
         $this->commandTester = new CommandTester($command);

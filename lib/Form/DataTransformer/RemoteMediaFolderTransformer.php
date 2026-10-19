@@ -9,7 +9,7 @@ use Symfony\Component\Form\DataTransformerInterface;
 
 final class RemoteMediaFolderTransformer implements DataTransformerInterface
 {
-    public function transform($value)
+    public function transform(mixed $value): mixed
     {
         if (!$value instanceof Folder) {
             return null;
@@ -20,7 +20,7 @@ final class RemoteMediaFolderTransformer implements DataTransformerInterface
         ];
     }
 
-    public function reverseTransform($value)
+    public function reverseTransform(mixed $value): mixed
     {
         return ($value['folder'] ?? null) !== null ? Folder::fromPath($value['folder']) : null;
     }

@@ -80,7 +80,7 @@ final class CloudinaryApiGateway implements GatewayInterface
             'plan' => $usage['plan'],
             'rate_limit_allowed' => $usage->rateLimitAllowed,
             'rate_limit_remaining' => $usage->rateLimitRemaining,
-            'rate_limit_reset_at' => date('d.m.Y H:i:s', $usage->rateLimitResetAt),
+            'rate_limit_reset_at' => $usage->rateLimitResetAt !== false ? date('d.m.Y H:i:s', $usage->rateLimitResetAt) : null,
             'objects' => $usage['objects']['usage'],
             'resources' => $usage['resources'],
             'derived_resources' => $usage['derived_resources'],

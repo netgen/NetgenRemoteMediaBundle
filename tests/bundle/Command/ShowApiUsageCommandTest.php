@@ -13,6 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
+use function method_exists;
 use function trim;
 
 use const PHP_EOL;
@@ -29,7 +30,10 @@ final class ShowApiUsageCommandTest extends TestCase
         $this->providerMock = $this->createMock(ProviderInterface::class);
 
         $application = new Application();
-        $application->add(new ShowApiUsageCommand($this->providerMock));
+        $command = new ShowApiUsageCommand($this->providerMock);
+
+        // Application::add() was removed in Symfony 8, addCommand() exists since Symfony 7.4
+        method_exists($application, 'addCommand') ? $application->addCommand($command) : $application->add($command);
 
         $command = $application->find('netgen:remote_media:usage');
         $this->commandTester = new CommandTester($command);

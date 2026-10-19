@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary\Gateway;
 
-use ArrayObject;
 use Cloudinary\Api\Admin\AdminApi;
 use Cloudinary\Api\ApiResponse;
 use Cloudinary\Api\Exception\NotFound;
@@ -254,7 +253,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $this->adminApiMock
             ->expects(self::once())
             ->method('usage')
-            ->willReturn(['resources' => 1200]);
+            ->willReturn(new ApiResponse(['resources' => 1200], []));
 
         self::assertSame(
             1200,
@@ -306,8 +305,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             ->expects(self::once())
             ->method('rootFolders')
             ->willReturn(
-                new ArrayObject(
+                new ApiResponse(
                     ['folders' => $folders],
+                    [],
                 ),
             );
 
@@ -338,8 +338,9 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
             ->method('subfolders')
             ->with('folder_1')
             ->willReturn(
-                new ArrayObject(
+                new ApiResponse(
                     ['folders' => $folders],
+                    [],
                 ),
             );
 
@@ -403,7 +404,7 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                     'exif' => true,
                 ],
             )
-            ->willReturn($cloudinaryResponse);
+            ->willReturn(new ApiResponse($cloudinaryResponse, []));
 
         $remoteResource = new RemoteResource(
             remoteId: $remoteId->getRemoteId(),
@@ -606,7 +607,6 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
         $this->searchApiMock
             ->expects(self::once())
             ->method('nextCursor')
-            ->willReturn($nextCursor)
             ->willReturn($this->searchApiMock);
 
         $this->searchApiMock
@@ -699,39 +699,39 @@ class CloudinaryApiGatewayTest extends AbstractTestCase
                         [
                             'max_results' => 500,
                         ],
-                        [
+                        new ApiResponse([
                             'tags' => [
                                 'tag1',
                                 'tag2',
                                 'tag3',
                             ],
                             'next_cursor' => 'gegtrgofu0439ree9i0',
-                        ],
+                        ], []),
                     ],
                     [
                         [
                             'max_results' => 500,
                             'next_cursor' => 'gegtrgofu0439ree9i0',
                         ],
-                        [
+                        new ApiResponse([
                             'tags' => [
                                 'tag4',
                                 'tag5',
                                 'tag6',
                             ],
                             'next_cursor' => 'ewtfdrejofjpjoijpo04',
-                        ],
+                        ], []),
                     ],
                     [
                         [
                             'max_results' => 500,
                             'next_cursor' => 'ewtfdrejofjpjoijpo04',
                         ],
-                        [
+                        new ApiResponse([
                             'tags' => [
                                 'tag7',
                             ],
-                        ],
+                        ], []),
                     ],
                 ],
             );
