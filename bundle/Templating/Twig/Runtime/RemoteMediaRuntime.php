@@ -10,6 +10,7 @@ use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\NamedRemoteResourceNotFoundException;
@@ -25,10 +26,19 @@ final class RemoteMediaRuntime extends AbstractExtension
 
     protected VariationResolver $variationResolver;
 
-    public function __construct(ProviderInterface $provider, VariationResolver $variationResolver)
-    {
+    public function __construct(
+        ProviderInterface $provider,
+        VariationResolver $variationResolver,
+        private readonly string $folderMode = CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+        private readonly bool $useAssetFolderAsPublicIdPrefix = false,
+    ) {
         $this->provider = $provider;
         $this->variationResolver = $variationResolver;
+    }
+
+    public function hasFolderScopedUploads(): bool
+    {
+        return $this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED || $this->useAssetFolderAsPublicIdPrefix;
     }
 
     public function getRemoteResource(int $resourceId): ?RemoteResource

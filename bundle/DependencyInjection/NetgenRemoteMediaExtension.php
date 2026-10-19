@@ -112,6 +112,11 @@ final class NetgenRemoteMediaExtension extends Extension implements PrependExten
             $config['cloudinary']['unique_filenames'],
         );
 
+        $container->setParameter(
+            'netgen_remote_media.cloudinary.use_asset_folder_as_public_id_prefix',
+            $config['cloudinary']['use_asset_folder_as_public_id_prefix'],
+        );
+
         if (isset($config['templates'])) {
             if (isset($config['templates']['view_resource'])) {
                 $container->setParameter(

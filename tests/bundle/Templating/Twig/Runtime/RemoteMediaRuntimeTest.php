@@ -11,6 +11,7 @@ use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
+use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
 use Netgen\RemoteMedia\Exception\NamedRemoteResourceLocationNotFoundException;
@@ -753,5 +754,15 @@ final class RemoteMediaRuntimeTest extends AbstractTestCase
             ->willThrowException(new RemoteResourceNotFoundException('upload|video|test_video'));
 
         self::assertNull($this->runtime->getNamedRemoteResourceLocation('test_video_location'));
+    }
+
+    public function testHasFolderScopedUploads(): void
+    {
+        $provider = $this->createMock(ProviderInterface::class);
+        $variationResolver = new VariationResolver(new Registry(), null, []);
+
+        self::assertTrue((new RemoteMediaRuntime($provider, $variationResolver, CloudinaryProvider::FOLDER_MODE_FIXED, false))->hasFolderScopedUploads());
+        self::assertTrue((new RemoteMediaRuntime($provider, $variationResolver, CloudinaryProvider::FOLDER_MODE_DYNAMIC, true))->hasFolderScopedUploads());
+        self::assertFalse((new RemoteMediaRuntime($provider, $variationResolver, CloudinaryProvider::FOLDER_MODE_DYNAMIC, false))->hasFolderScopedUploads());
     }
 }

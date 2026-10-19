@@ -337,4 +337,67 @@ final class UploadOptionsTest extends TestCase
             ],
         ];
     }
+
+    public function testResolveWithAssetFolderAsPublicIdPrefix(): void
+    {
+        $resolver = new UploadOptionsResolver(
+            new VisibilityTypeConverter(),
+            CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+            false,
+            false,
+            true,
+        );
+
+        $options = $resolver->resolve(
+            new ResourceStruct(
+                FileStruct::fromPath('test.jpg'),
+                'image',
+                Folder::fromPath('a/b/c'),
+            ),
+        );
+
+        self::assertSame('a/b/c', $options['asset_folder']);
+        self::assertTrue($options['use_asset_folder_as_public_id_prefix']);
+        self::assertTrue($options['use_filename']);
+        self::assertSame('test.jpg', $options['filename_override']);
+        self::assertArrayNotHasKey('public_id', $options);
+    }
+
+    public function testResolveWithAssetFolderAsPublicIdPrefixWithoutFolder(): void
+    {
+        $resolver = new UploadOptionsResolver(
+            new VisibilityTypeConverter(),
+            CloudinaryProvider::FOLDER_MODE_DYNAMIC,
+            false,
+            false,
+            true,
+        );
+
+        $options = $resolver->resolve(new ResourceStruct(FileStruct::fromPath('test.jpg')));
+
+        self::assertArrayNotHasKey('asset_folder', $options);
+        self::assertArrayNotHasKey('use_asset_folder_as_public_id_prefix', $options);
+    }
+
+    public function testResolveWithAssetFolderAsPublicIdPrefixInFixedFolderMode(): void
+    {
+        $resolver = new UploadOptionsResolver(
+            new VisibilityTypeConverter(),
+            CloudinaryProvider::FOLDER_MODE_FIXED,
+            false,
+            false,
+            true,
+        );
+
+        $options = $resolver->resolve(
+            new ResourceStruct(
+                FileStruct::fromPath('test.jpg'),
+                'image',
+                Folder::fromPath('a/b/c'),
+            ),
+        );
+
+        self::assertSame('a/b/c', $options['folder']);
+        self::assertArrayNotHasKey('use_asset_folder_as_public_id_prefix', $options);
+    }
 }

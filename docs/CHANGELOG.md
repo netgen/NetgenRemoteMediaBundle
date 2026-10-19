@@ -1,5 +1,16 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.0.0
+
+### Added
+
+* `cloudinary.use_asset_folder_as_public_id_prefix` option which prefixes the public ID with the asset folder in `dynamic` folder mode, so the same file can be uploaded to different folders
+* upload error for an existing resource now names the folder when the conflict is limited to that folder
+
+### Changed
+
+* minimum version of `cloudinary/cloudinary_php` is now 2.9 (required for `asset_folder` and `use_asset_folder_as_public_id_prefix` upload parameters)
+
 ## 1.1.11
 
 ### Fixed

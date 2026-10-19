@@ -93,6 +93,10 @@ final class RemoteMediaExtension extends AbstractExtension
                 'ngrm_named_remote_resource_location',
                 [RemoteMediaRuntime::class, 'getNamedRemoteResourceLocation'],
             ),
+            new TwigFunction(
+                'ngrm_folder_scoped_uploads',
+                [RemoteMediaRuntime::class, 'hasFolderScopedUploads'],
+            ),
         ];
     }
 
