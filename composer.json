@@ -73,7 +73,7 @@
     "extra": {
         "ezpublish-legacy-dir": "ezpublish_legacy",
         "branch-alias": {
-            "dev-3.0": "3.0.x-dev"
+            "dev-4.0": "4.0.x-dev"
         }
     }
 }
