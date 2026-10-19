@@ -458,7 +458,7 @@ final class Psr6CachedGateway implements CacheableGatewayInterface
             self::PROJECT_KEY . '-' . self::PROVIDER_KEY . '-' . self::RESOURCE_ID . '-' . $type . '-' . $resourceType . '-' . $resourceId,
         ];
 
-        array_walk($tags, function (&$tag) {
+        array_walk($tags, function (&$tag): void {
             $tag = $this->washKey($tag);
         });
 
