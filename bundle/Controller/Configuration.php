@@ -171,6 +171,6 @@ final class Configuration
      */
     private function resolveUploadContext(Request $request): array
     {
-        return $request->query->get('uploadContext');
+        return $request->query->all('uploadContext');
     }
 }
