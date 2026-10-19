@@ -19,6 +19,7 @@ final class UploadOptions
         private string $folderMode,
         private bool $appendExtension,
         private bool $uniqueFilenames,
+        private bool $useAssetFolderAsPublicIdPrefix = false,
     ) {}
 
     public function resolve(ResourceStruct $resourceStruct): array
@@ -49,6 +50,10 @@ final class UploadOptions
 
         if ($resourceStruct->getFolder() && $this->folderMode === CloudinaryProvider::FOLDER_MODE_DYNAMIC) {
             $options['asset_folder'] = $resourceStruct->getFolder()->getPath();
+
+            if ($this->useAssetFolderAsPublicIdPrefix === true) {
+                $options['use_asset_folder_as_public_id_prefix'] = true;
+            }
         }
 
         if ($resourceStruct->getFolder() && $this->folderMode === CloudinaryProvider::FOLDER_MODE_FIXED) {

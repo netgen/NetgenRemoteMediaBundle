@@ -109,6 +109,7 @@ services:
             - '%netgen_remote_media.cloudinary.folder_mode%'
             - '%netgen_remote_media.cloudinary.append_extension%'
             - '%netgen_remote_media.cloudinary.unique_filenames%'
+            - '%netgen_remote_media.cloudinary.use_asset_folder_as_public_id_prefix%'
 
     netgen_remote_media.provider.cloudinary.resolver.search_expression:
         class: Netgen\RemoteMedia\Core\Provider\Cloudinary\Resolver\SearchExpression
