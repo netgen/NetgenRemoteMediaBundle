@@ -5,11 +5,12 @@ import getNetgenRemoteMediaToolbarButton from './button';
 
 import setupDataCasting from './conversion';
 
-const NetgenRemoteMediaPlugin = (editor) => {
+// A regular function, not an arrow function: CKEditor instantiates function plugins with `new`
+function NetgenRemoteMediaPlugin(editor) {
   editor.config.define(pluginKey, {
-    /** Editor field */
+    /** Editor field, string or `(editor) => string` */
     fieldId: null,
-    /** Netgen Remote Media configuration */
+    /** Netgen Remote Media configuration, deep merged over the defaults */
     config: null,
     /** Variation group for view */
     variationGroup: null,
@@ -17,6 +18,8 @@ const NetgenRemoteMediaPlugin = (editor) => {
     source: null,
     /** Endpoints for handling resources */
     endpoints: defaultValue.endpoints,
+    /** Storage format of the remote media element in editor data, defaults to `formats/html.js` */
+    format: null,
   });
 
   editor.commands.add(pluginKey, new NetgenRemoteMediaCommand(editor));
@@ -28,6 +31,6 @@ const NetgenRemoteMediaPlugin = (editor) => {
   });
 
   setupDataCasting(editor);
-};
+}
 
 export default NetgenRemoteMediaPlugin;
