@@ -32,6 +32,8 @@
         "symfony/twig-bundle": "^5.4 || ^7.4 || ^8.0",
         "symfony/framework-bundle": "^5.4 || ^7.4 || ^8.0",
         "symfony/form": "^5.4 || ^7.4 || ^8.0",
+        "symfony/serializer": "^5.4 || ^7.4 || ^8.0",
+        "symfony/translation": "^5.4 || ^7.4 || ^8.0",
         "doctrine/doctrine-bundle": "^2.7 || ^3.1",
         "doctrine/orm": "^2.20 || ^3.6"
     },
