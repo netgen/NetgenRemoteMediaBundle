@@ -12,6 +12,7 @@
 
 * CKEditor 5 plugin is a regular function, so it loads without transpilation (CKEditor instantiates function plugins with `new`, which fails for arrow functions)
 * CKEditor 5 plugin field ids are unique per inserted element (previously a count-based suffix could repeat after removing an element)
+* CKEditor 5 plugin `config` option is deep merged over the defaults, so partial `paths`/`translations`/`inputFields` no longer drop the remaining keys
 
 ### Changed
 
