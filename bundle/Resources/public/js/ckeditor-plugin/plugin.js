@@ -10,7 +10,7 @@ function NetgenRemoteMediaPlugin(editor) {
   editor.config.define(pluginKey, {
     /** Editor field, string or `(editor) => string` */
     fieldId: null,
-    /** Netgen Remote Media configuration */
+    /** Netgen Remote Media configuration, deep merged over the defaults */
     config: null,
     /** Variation group for view */
     variationGroup: null,
