@@ -25,8 +25,8 @@
 <div
     class="ngremotemedia-select-folder-container"
     data-id="{{ field_id }}"
-    v-init:selected-folder='{{ selected_folder ? '"' ~ selected_folder ~ '"' : null }}'
-    v-init:config='{{ config|json_encode }}'
+    v-init:selected-folder='{{ selected_folder|json_encode|e('html_attr') }}'
+    v-init:config='{{ config|json_encode|e('html_attr') }}'
 >
     <select-folder-interaction :config="config" :selected-folder="selectedFolder" />
 </div>

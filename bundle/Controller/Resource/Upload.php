@@ -28,6 +28,7 @@ use function in_array;
 use function is_array;
 use function is_file;
 use function is_readable;
+use function is_string;
 use function preg_match;
 use function strpos;
 use function strrpos;
@@ -68,8 +69,9 @@ final class Upload extends AbstractController
         $uploadContext = $request->request->all()['upload_context'] ?? [];
         $uploadContext = is_array($uploadContext) ? $uploadContext : [];
 
-        $folder = $request->request->get('folder') && $request->request->get('folder') !== 'null'
-            ? Folder::fromPath($request->request->get('folder'))
+        $folderPath = $request->request->get('folder');
+        $folder = is_string($folderPath) && !in_array($folderPath, ['', 'null', 'undefined', '(root)'], true)
+            ? Folder::fromPath($folderPath)
             : null;
 
         $visibility = $request->request->get('visibility', RemoteResource::VISIBILITY_PUBLIC);

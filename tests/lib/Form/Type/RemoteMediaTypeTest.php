@@ -23,7 +23,7 @@ class RemoteMediaTypeTest extends TypeTestCase
 {
     private DataTransformerInterface|MockObject $dataTransformerMock;
 
-    private MockObject|ProviderInterface $providerMock;
+    private MockObject&ProviderInterface $providerMock;
 
     protected function setUp(): void
     {
@@ -115,6 +115,127 @@ class RemoteMediaTypeTest extends TypeTestCase
         }
     }
 
+    public function testCollectionShapedSubmissionCollapsesToFirstEntry(): void
+    {
+        $expectedLocation = new RemoteResourceLocation(
+            new RemoteResource(
+                remoteId: 'remote-1',
+                type: 'image',
+                url: 'https://example.test/1',
+                md5: 'md5-1',
+            ),
+        );
+
+        $this->dataTransformerMock
+            ->expects(self::once())
+            ->method('reverseTransform')
+            ->with(self::callback(static fn (array $data): bool => $data['remoteId'] === 'remote-1'
+                    && $data['altText'] === 'first alt'))
+            ->willReturn($expectedLocation);
+
+        $form = $this->factory->create(RemoteMediaType::class);
+
+        $form->submit([
+            'source' => 'form_gallery',
+            [
+                'remoteId' => 'remote-1',
+                'type' => 'image',
+                'altText' => 'first alt',
+            ],
+            [
+                'remoteId' => 'remote-2',
+                'type' => 'image',
+                'altText' => 'second alt',
+            ],
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame($expectedLocation, $form->getData());
+    }
+
+    public function testSubmitForeignLocationIdCreatesFreshLocation(): void
+    {
+        $existingLocation = new RemoteResourceLocation(
+            new RemoteResource('upload|image|owned.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/owned.jpg', 'md5-owned'),
+            id: 5,
+        );
+        $resultLocation = new RemoteResourceLocation(
+            new RemoteResource('upload|image|foreign.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/foreign.jpg', 'md5-foreign'),
+        );
+
+        $this->dataTransformerMock
+            ->expects(self::once())
+            ->method('reverseTransform')
+            ->with(self::callback(static fn (array $data): bool => $data['locationId'] === null
+                && $data['remoteId'] === 'upload|image|foreign.jpg'))
+            ->willReturn($resultLocation);
+
+        $form = $this->factory->create(RemoteMediaType::class, $existingLocation);
+
+        $form->submit([
+            'locationId' => '999',
+            'remoteId' => 'upload|image|foreign.jpg',
+            'type' => 'image',
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame($resultLocation, $form->getData());
+    }
+
+    public function testSubmitOwnLocationIdIsPreserved(): void
+    {
+        $existingLocation = new RemoteResourceLocation(
+            new RemoteResource('upload|image|owned.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/owned.jpg', 'md5-owned'),
+            id: 5,
+        );
+
+        $this->dataTransformerMock
+            ->expects(self::once())
+            ->method('reverseTransform')
+            ->with(self::callback(static fn (array $data): bool => $data['locationId'] === '5'
+                && $data['remoteId'] === 'upload|image|owned.jpg'))
+            ->willReturn($existingLocation);
+
+        $form = $this->factory->create(RemoteMediaType::class, $existingLocation);
+
+        $form->submit([
+            'locationId' => '5',
+            'remoteId' => 'upload|image|owned.jpg',
+            'type' => 'image',
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertSame($existingLocation, $form->getData());
+    }
+
+    public function testBuildViewExposesSingleLocationAndCollectionFlags(): void
+    {
+        $location = new RemoteResourceLocation(
+            new RemoteResource('remote-1', RemoteResource::TYPE_IMAGE, 'https://example.test/1', 'md5-1'),
+        );
+
+        $this->providerMock
+            ->method('getSupportedVisibilities')
+            ->willReturn(RemoteResource::SUPPORTED_VISIBILITIES);
+
+        $this->providerMock
+            ->method('getSupportedTypes')
+            ->willReturn(RemoteResource::SUPPORTED_TYPES);
+
+        $this->providerMock
+            ->method('listTags')
+            ->willReturn([]);
+
+        $form = $this->factory->create(RemoteMediaType::class, $location);
+        $view = $form->createView();
+
+        self::assertSame([$location], $view->vars['remote_media_locations']);
+        self::assertSame(1, $view->vars['upload_limit']);
+        self::assertFalse($view->vars['is_collection']);
+        self::assertArrayNotHasKey('uploadLimit', $view->children);
+        self::assertArrayNotHasKey('collectionPayload', $view->children);
+    }
+
     public static function submitDataProvider(): iterable
     {
         return [
@@ -175,6 +296,8 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'parent_folder' => null,
                     'folder' => null,
                     'upload_context' => [],
+                    'upload_limit' => 1,
+                    'is_collection' => false,
                 ],
             ],
             [
@@ -238,6 +361,8 @@ class RemoteMediaTypeTest extends TypeTestCase
                         'label' => 'media',
                     ],
                     'upload_context' => [],
+                    'upload_limit' => 1,
+                    'is_collection' => false,
                 ],
             ],
             [
@@ -308,6 +433,8 @@ class RemoteMediaTypeTest extends TypeTestCase
                         'caption' => 'Some caption',
                         'type' => 'product_image',
                     ],
+                    'upload_limit' => 1,
+                    'is_collection' => false,
                 ],
             ],
         ];
