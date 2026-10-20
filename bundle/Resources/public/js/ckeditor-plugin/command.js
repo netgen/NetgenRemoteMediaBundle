@@ -1,32 +1,20 @@
 import { Command } from '@ckeditor/ckeditor5-core';
 import { pluginKey, defaultValue, attributes } from './constants';
-import { findElementsInModel } from './utils/find-elements-in-model';
+import { createFieldId } from './utils/field-id';
 
 class NetgenRemoteMediaCommand extends Command {
-  constructor(editor) {
-    super(editor);
-
-    this.value = 0;
-  }
-
   refresh() {
     const selectedElement =
       this.editor.model.document.selection.getSelectedElement();
     const isRemoteMedia = selectedElement?.name === pluginKey;
 
     this.isEnabled = !this.editor.isReadOnly && !isRemoteMedia;
-
-    if (!this.value) {
-      this.value = findElementsInModel(this.editor.model.document.getRoot(), pluginKey).length;
-    }
   }
 
   execute() {
     if (!this.isEnabled) {
       return;
     }
-
-    this.value += 1;
 
     this.editor.model.change((writer) => {
       const element = writer.createElement(pluginKey);
@@ -37,7 +25,7 @@ class NetgenRemoteMediaCommand extends Command {
 
       writer.setAttribute(
         attributes.fieldId,
-        `${this.editor.config.get(pluginKey).fieldId}_${this.value}`,
+        createFieldId(this.editor),
         element
       );
       writer.setAttribute(
