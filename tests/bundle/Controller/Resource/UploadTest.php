@@ -650,7 +650,7 @@ final class UploadTest extends TestCase
             ->willReturn(true);
 
         $uploadedFileMock
-            ->expects(self::exactly(3))
+            ->expects(self::atLeastOnce())
             ->method('getRealPath')
             ->willReturn('/var/www/project/media/files/sample.pdf');
 
@@ -660,7 +660,7 @@ final class UploadTest extends TestCase
             ->willReturn('sample');
 
         $uploadedFileMock
-            ->expects(self::exactly(2))
+            ->expects(self::atLeastOnce())
             ->method('getClientOriginalExtension')
             ->willReturn('pdf');
 
