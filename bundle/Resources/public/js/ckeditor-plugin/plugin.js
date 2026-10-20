@@ -18,6 +18,8 @@ function NetgenRemoteMediaPlugin(editor) {
     source: null,
     /** Endpoints for handling resources */
     endpoints: defaultValue.endpoints,
+    /** Storage format of the remote media element in editor data, defaults to `formats/html.js` */
+    format: null,
   });
 
   editor.commands.add(pluginKey, new NetgenRemoteMediaCommand(editor));
