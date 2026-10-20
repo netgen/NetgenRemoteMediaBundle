@@ -25,6 +25,10 @@ const defineUpcast = (editor) => {
         writer.setAttribute(attributes.alignment, alignment, model);
       }
 
+      if (!locationId) {
+        return model;
+      }
+
       const getSelectedImageEndpoint = editor.config.get(pluginKey).endpoints.getSelectedImage ?? defaultValue.endpoints.getSelectedImage;
 
       fetch(getSelectedImageEndpoint(locationId))
