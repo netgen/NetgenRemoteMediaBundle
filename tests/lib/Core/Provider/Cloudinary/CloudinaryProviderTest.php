@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Tests\Core\Provider\Cloudinary;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\ORM\EntityRepository;
 use Netgen\RemoteMedia\API\Search\Query;
 use Netgen\RemoteMedia\API\Search\Result;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
@@ -58,8 +58,8 @@ final class CloudinaryProviderTest extends AbstractTestCase
             ->method('getRepository')
             ->willReturnMap(
                 [
-                    [RemoteResource::class, $this->createMock(ObjectRepository::class)],
-                    [RemoteResourceLocation::class, $this->createMock(ObjectRepository::class)],
+                    [RemoteResource::class, $this->createMock(EntityRepository::class)],
+                    [RemoteResourceLocation::class, $this->createMock(EntityRepository::class)],
                 ],
             );
 

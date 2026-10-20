@@ -6,7 +6,7 @@ namespace Netgen\RemoteMedia\Tests\Core;
 
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\ORM\EntityRepository;
 use Netgen\RemoteMedia\API\Factory\DateTime as DateTimeFactoryInterface;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
 use Netgen\RemoteMedia\API\Upload\ResourceStruct;
@@ -48,17 +48,17 @@ final class AbstractProviderTest extends AbstractTestCase
 
     private LoggerInterface|MockObject $logger;
 
-    private MockObject|ObjectRepository $resourceRepository;
+    private EntityRepository|MockObject $resourceRepository;
 
-    private MockObject|ObjectRepository $locationRepository;
+    private EntityRepository|MockObject $locationRepository;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->dateTimeFactory = $this->createMock(DateTimeFactoryInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->resourceRepository = $this->createMock(ObjectRepository::class);
-        $this->locationRepository = $this->createMock(ObjectRepository::class);
+        $this->resourceRepository = $this->createMock(EntityRepository::class);
+        $this->locationRepository = $this->createMock(EntityRepository::class);
         $this->cropHandler = $this->createMock(HandlerInterface::class);
         $this->formatHandler = $this->createMock(HandlerInterface::class);
 

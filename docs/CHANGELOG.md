@@ -11,10 +11,21 @@
 
 * `RemoteMediaType` keeps its strict single-resource contract (one `RemoteResourceLocation` or `null`); the `upload_limit` option introduced during development was moved to `RemoteMediaCollectionType`.
 * the canonical wire format for collection submissions is the JSON `collectionPayload` field; indexed per-field submissions are deprecated fallbacks.
+* minimum PHP version is now 8.3
+* supported Symfony versions are 5.4, 7.4 and 8.x (6.x is no longer supported)
+* supported Doctrine ORM versions are 2.20+ and 3.6+
+* `cloudinary/cloudinary_php` is now required in version 3.3+
+* data transformers now declare `mixed` parameter and return types
+
+### Removed
+
+* `symfony/proxy-manager-bridge` dependency (it was not used)
 
 ### Fixed
 
 * upload limits are propagated to the Vue widget and enforced server-side during form submission, independently of client-submitted values.
+* API usage no longer fails when Cloudinary does not return the rate limit reset header
+* bundle configuration no longer defines default values on required nodes (invalid since Symfony 8)
 
 ## 3.0.0
 
