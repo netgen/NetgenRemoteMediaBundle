@@ -517,7 +517,10 @@ export default {
 
         if (error.response) {
           if (error.response.status === 409) {
-            fileData.error = this.config.translations.upload_error_existing_resource;
+            const folder = this.normalizeFolderValue(fileData.folder);
+            fileData.error = this.config.folderScopedUploads && folder
+              ? this.config.translations.upload_error_existing_resource_in_folder.replace('%folder%', folder)
+              : this.config.translations.upload_error_existing_resource;
             fileData.resource = error.response.data; // Store existing resource
           } else {
             fileData.error = error.response.data.detail
