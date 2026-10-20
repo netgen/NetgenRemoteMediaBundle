@@ -8,7 +8,7 @@ import setupDataCasting from './conversion';
 // A regular function, not an arrow function: CKEditor instantiates function plugins with `new`
 function NetgenRemoteMediaPlugin(editor) {
   editor.config.define(pluginKey, {
-    /** Editor field */
+    /** Editor field, string or `(editor) => string` */
     fieldId: null,
     /** Netgen Remote Media configuration */
     config: null,
