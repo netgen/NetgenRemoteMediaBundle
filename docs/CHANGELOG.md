@@ -14,7 +14,7 @@
 * minimum PHP version is now 8.3
 * supported Symfony versions are 5.4, 7.4 and 8.x (6.x is no longer supported)
 * supported Doctrine ORM versions are 2.20+ and 3.6+
-* `cloudinary/cloudinary_php` is now required in version 3.1+
+* `cloudinary/cloudinary_php` is now required in version 3.3+
 * data transformers now declare `mixed` parameter and return types
 
 ### Removed
