@@ -1,5 +1,11 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.0.3
+
+### Fixed
+
+* CKEditor 5 plugin is a regular function, so it loads without transpilation (CKEditor instantiates function plugins with `new`, which fails for arrow functions)
+
 ## 3.0.2
 
 ### Added
