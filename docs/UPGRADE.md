@@ -36,8 +36,8 @@ Also, there were a lot of changes during the decoupling from eZ to make things c
    * `public static function createFromCloudinaryResponse(array $response): self`
 * The bundle was using eZ's `ezpublish.cache_pool` cache pool for caching while it was depending on eZ. Now it requires cache pool to be provided in order to work. See [Install instructions](INSTALL.md) for more info.
 * Parameter for cache TTL `netgen_remote_media.cloudinary.cache_ttl` has been removed in favour of semantic configuration for cache. See [Install instructions](INSTALL.md) for more info.
-* `RemoteResourceLocation` can hold alt text and caption overrides which take precedence over the values stored on the cloud (see [Form documentation](FORM.md#alt-text-and-caption-overrides)). If you already created the database tables for 3.0, add the new columns:
-    * MySQL: `ALTER TABLE ngrm_remote_resource_location ADD alt_text_override LONGTEXT DEFAULT NULL, ADD caption_override LONGTEXT DEFAULT NULL;`
+* `RemoteResourceLocation` can hold alt text and caption overrides which take precedence over the values stored on the cloud (see [Form documentation](FORM.md#alt-text-and-caption-overrides)). If you already created the database tables for 3.0, add the new columns with `php bin/console doctrine:schema:update` (check the output of `--dump-sql` first), or manually:
+    * MySQL: `ALTER TABLE ngrm_remote_resource_location ADD alt_text_override TEXT DEFAULT NULL, ADD caption_override TEXT DEFAULT NULL;`
     * PostgreSQL: `ALTER TABLE ngrm_remote_resource_location ADD alt_text_override TEXT DEFAULT NULL, ADD caption_override TEXT DEFAULT NULL;`
 
 ### Code changes
