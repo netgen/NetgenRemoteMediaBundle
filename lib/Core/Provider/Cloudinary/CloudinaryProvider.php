@@ -239,6 +239,8 @@ final class CloudinaryProvider extends AbstractProvider
             cropSettings: $location->getCropSettings(),
             watermarkText: $location->getWatermarkText(),
             id: $location->getId(),
+            altTextOverride: $location->getAltTextOverride(),
+            captionOverride: $location->getCaptionOverride(),
         );
     }
 

@@ -210,6 +210,8 @@ final class RemoteResourceLocationTest extends AbstractTestCase
             ],
             'My watermark',
             324,
+            'My alt text',
+            'My caption',
         );
 
         $new = new RemoteResourceLocation(
@@ -220,6 +222,7 @@ final class RemoteResourceLocationTest extends AbstractTestCase
             ],
             'My new watermark',
             56453,
+            'My new alt text',
         );
 
         $expected = new RemoteResourceLocation(
@@ -229,8 +232,67 @@ final class RemoteResourceLocationTest extends AbstractTestCase
                 new CropSettings('medium', 112, 97, 1200, 800),
             ],
             'My new watermark',
+            altTextOverride: 'My new alt text',
         );
 
         self::assertRemoteResourceLocationSame($expected, $original->refresh($new));
+    }
+
+    public function testOverridesTakePrecedenceOverResourceValues(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            altText: 'Cloud alt text',
+            caption: 'Cloud caption',
+        );
+
+        $location = new RemoteResourceLocation($resource);
+
+        self::assertNull($location->getAltTextOverride());
+        self::assertNull($location->getCaptionOverride());
+        self::assertSame('Cloud alt text', $location->getAltText());
+        self::assertSame('Cloud caption', $location->getCaption());
+
+        $location
+            ->setAltTextOverride('Local alt text')
+            ->setCaptionOverride('Local caption');
+
+        self::assertSame('Local alt text', $location->getAltText());
+        self::assertSame('Local caption', $location->getCaption());
+        self::assertSame('Cloud alt text', $resource->getAltText());
+        self::assertSame('Cloud caption', $resource->getCaption());
+    }
+
+    public function testEmptyOverridesFallBackToResourceValues(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'image',
+            url: 'https://cloudinary.com/test/upload/image/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            altText: 'Cloud alt text',
+            caption: 'Cloud caption',
+        );
+
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            altTextOverride: '',
+            captionOverride: " \n ",
+        );
+
+        self::assertNull($location->getAltTextOverride());
+        self::assertNull($location->getCaptionOverride());
+        self::assertSame('Cloud alt text', $location->getAltText());
+        self::assertSame('Cloud caption', $location->getCaption());
+
+        $location
+            ->setAltTextOverride('Local alt text')
+            ->setAltTextOverride('  ');
+
+        self::assertNull($location->getAltTextOverride());
+        self::assertSame('Cloud alt text', $location->getAltText());
     }
 }

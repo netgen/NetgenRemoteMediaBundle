@@ -23,6 +23,8 @@ final class RemoteResourceService
     {
         $remoteResourceLocation->setSource($data['source'] ?? null);
         $remoteResourceLocation->setWatermarkText($data['watermarkText'] ?? null);
+        $remoteResourceLocation->setAltTextOverride($data['altTextOverride'] ?? null);
+        $remoteResourceLocation->setCaptionOverride($data['captionOverride'] ?? null);
         $remoteResourceLocation->setCropSettings(
             $this->resolveCropSettings($data['cropSettings'] ?? null),
         );
