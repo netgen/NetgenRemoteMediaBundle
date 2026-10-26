@@ -49,6 +49,23 @@ The above example will make sure that, when you select a new resource in the for
 
 The reason why we're using `OneToOne` relation here is because the idea is that every usage of a remote resource has it's own location. Things such as cropping settings or watermark text are stored in a location, and you want to have different cropping settings for the same eg. image used on different places.
 
+## Alt text and caption overrides
+
+Alt text and caption entered in the interface are stored on the resource in the cloud, so changing them updates every location which uses that resource. Each location can additionally have its own alt text and caption override (`altTextOverride` and `captionOverride` fields of the form), stored only on that location and never sent to the cloud. An empty override means that the value from the cloud is used.
+
+`RemoteResourceLocation::getAltText()` and `RemoteResourceLocation::getCaption()` return the override when it's set and the value from the cloud otherwise, so use them (eg. `location.caption` in TWIG) instead of the ones on the resource when rendering a location:
+
+```twig
+{{ ngrm_remote_resource_variation_html_tag(location, 'default', 'wide') }}
+{{ ngrm_remote_resource_location_html_tag(location) }}
+
+{% if location.caption is not empty %}
+    <figcaption>{{ location.caption }}</figcaption>
+{% endif %}
+```
+
+Both TWIG functions render the overrides as `alt` and `title` attributes of images and video thumbnails, unless those attributes are explicitly provided. `ngrm_remote_resource_html_tag` receives only the resource, so it always uses the values from the cloud.
+
 ## Add field to your form
 
 Now when we have the entity configured properly, it's time to add the form field:

@@ -7,7 +7,7 @@
     {% if variation_name %}
         {{ ngrm_remote_resource_variation_html_tag(location, variation_group, variation_name)|raw }}
     {% else %}
-        {{ ngrm_remote_resource_html_tag(location.remoteResource)|raw }}
+        {{ ngrm_remote_resource_location_html_tag(location)|raw }}
     {% endif %}
     </div>
 {% else %}

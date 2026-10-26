@@ -155,6 +155,11 @@ interface ProviderInterface
 
     public function generateHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string;
 
+    /**
+     * Generates the HTML tag for the resource of the location, using alt text and caption overrides of the location.
+     */
+    public function generateLocationHtmlTag(RemoteResourceLocation $location, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string;
+
     public function generateVariationHtmlTag(
         RemoteResourceLocation $location,
         string $variationGroup,

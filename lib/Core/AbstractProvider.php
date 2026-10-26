@@ -23,6 +23,8 @@ use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+use function in_array;
+
 abstract class AbstractProvider implements ProviderInterface
 {
     protected ObjectRepository $resourceRepository;
@@ -239,13 +241,20 @@ abstract class AbstractProvider implements ProviderInterface
 
         $source = $this->namedRemoteResourceLocations[$name]['source'] ?? 'named_remote_resource_location_' . $name;
         $watermarkText = $this->namedRemoteResourceLocations[$name]['watermark_text'] ?? null;
+        $altTextOverride = $this->namedRemoteResourceLocations[$name]['alt_text'] ?? null;
+        $captionOverride = $this->namedRemoteResourceLocations[$name]['caption'] ?? null;
 
         try {
             $location = $this->loadLocationBySource($source);
 
-            if ($location->getWatermarkText() !== $watermarkText) {
-                $location->setWatermarkText($watermarkText);
+            $originalValues = [$location->getWatermarkText(), $location->getAltTextOverride(), $location->getCaptionOverride()];
 
+            $location
+                ->setWatermarkText($watermarkText)
+                ->setAltTextOverride($altTextOverride)
+                ->setCaptionOverride($captionOverride);
+
+            if ($originalValues !== [$location->getWatermarkText(), $location->getAltTextOverride(), $location->getCaptionOverride()]) {
                 $this->storeLocation($location);
             }
 
@@ -263,7 +272,13 @@ abstract class AbstractProvider implements ProviderInterface
             $this->store($resource);
         }
 
-        $location = new RemoteResourceLocation($resource, $source, [], $watermarkText);
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            source: $source,
+            watermarkText: $watermarkText,
+            altTextOverride: $altTextOverride,
+            captionOverride: $captionOverride,
+        );
         $this->storeLocation($location);
 
         return $location;
@@ -324,6 +339,17 @@ abstract class AbstractProvider implements ProviderInterface
         return $this->generateRawVariationHtmlTag($resource, [], $htmlAttributes, $forceVideo, $useThumbnail);
     }
 
+    public function generateLocationHtmlTag(RemoteResourceLocation $location, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string
+    {
+        return $this->generateRawVariationHtmlTag(
+            $location->getRemoteResource(),
+            [],
+            $this->applyLocationOverrides($location, $htmlAttributes, $useThumbnail),
+            $forceVideo,
+            $useThumbnail,
+        );
+    }
+
     public function generateVariationHtmlTag(
         RemoteResourceLocation $location,
         string $variationGroup,
@@ -339,7 +365,13 @@ abstract class AbstractProvider implements ProviderInterface
             $variationName,
         );
 
-        return $this->generateRawVariationHtmlTag($location->getRemoteResource(), $transformations, $htmlAttributes, $forceVideo, $useThumbnail);
+        return $this->generateRawVariationHtmlTag(
+            $location->getRemoteResource(),
+            $transformations,
+            $this->applyLocationOverrides($location, $htmlAttributes, $useThumbnail),
+            $forceVideo,
+            $useThumbnail,
+        );
     }
 
     public function generateRawVariationHtmlTag(
@@ -419,5 +451,31 @@ abstract class AbstractProvider implements ProviderInterface
         }
 
         throw new RemoteResourceLocationNotFoundException(0);
+    }
+
+    /**
+     * Location overrides take precedence over alt text and caption of the remote resource, but not over explicitly
+     * provided attributes. Only tags rendered as an image (images and thumbnails) get them, as in generatePictureTag()
+     * and generateVideoThumbnailTag().
+     */
+    private function applyLocationOverrides(RemoteResourceLocation $location, array $htmlAttributes, bool $useThumbnail): array
+    {
+        $type = $location->getRemoteResource()->getType();
+        $isRenderedAsImage = $type === RemoteResource::TYPE_IMAGE
+            || ($useThumbnail && in_array($type, [RemoteResource::TYPE_VIDEO, RemoteResource::TYPE_AUDIO], true));
+
+        if (!$isRenderedAsImage) {
+            return $htmlAttributes;
+        }
+
+        if (!($htmlAttributes['alt'] ?? null) && $location->getAltTextOverride() !== null) {
+            $htmlAttributes['alt'] = $location->getAltTextOverride();
+        }
+
+        if (!($htmlAttributes['title'] ?? null) && $location->getCaptionOverride() !== null) {
+            $htmlAttributes['title'] = $location->getCaptionOverride();
+        }
+
+        return $htmlAttributes;
     }
 }

@@ -12,6 +12,8 @@
         <field name="source" column="source" type="string" length="255" nullable="true" />
         <field name="cropSettings" column="crop_settings" type="array" />
         <field name="watermarkText" column="watermark_text" type="text" length="1000" nullable="true" />
+        <field name="altTextOverride" column="alt_text_override" type="text" length="1000" nullable="true" />
+        <field name="captionOverride" column="caption_override" type="text" length="1000" nullable="true" />
         <field name="createdAt" column="created_at" type="datetime_immutable" />
         <field name="updatedAt" column="updated_at" type="datetime_immutable" />
 

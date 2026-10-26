@@ -6,6 +6,8 @@
 
 * `cloudinary.use_asset_folder_as_public_id_prefix` option which prefixes the public ID with the asset folder in `dynamic` folder mode, so the same file can be uploaded to different folders
 * upload error for an existing resource now names the folder when the conflict is limited to that folder
+* alt text and caption overrides on `RemoteResourceLocation` (`alt_text_override` and `caption_override` columns), editable in the interface and configurable for named locations (`alt_text` and `caption`), which take precedence over the values stored on the cloud
+* `ngrm_remote_resource_location_html_tag` TWIG function and `ProviderInterface::generateLocationHtmlTag()` which render the resource of a location with its overrides
 
 ### Changed
 

@@ -58,6 +58,10 @@ final class RemoteMediaExtension extends AbstractExtension
                 [RemoteMediaRuntime::class, 'getRemoteResourceHtmlTag'],
             ),
             new TwigFunction(
+                'ngrm_remote_resource_location_html_tag',
+                [RemoteMediaRuntime::class, 'getRemoteResourceLocationHtmlTag'],
+            ),
+            new TwigFunction(
                 'ngrm_remote_resource_variation_html_tag',
                 [RemoteMediaRuntime::class, 'getRemoteResourceVariationHtmlTag'],
             ),

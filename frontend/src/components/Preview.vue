@@ -58,6 +58,36 @@
           >
         </div>
 
+        <div class="ngremotemedia-alttext-override">
+          <span class="help-block description">
+              {{this.config.translations.preview_alternate_text_override}}
+              <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_alternate_text_override_info"></i>
+          </span>
+
+          <input type="text"
+               :name="this.config.inputFields.altTextOverride"
+               v-model="selectedImage.altTextOverride"
+               v-debounce:500ms="() => dispatchChangeEvent(this.config.inputFields.altTextOverride)"
+               :placeholder="selectedImage.alternateText"
+               class="media-alttext-override data"
+          >
+        </div>
+
+        <div class="ngremotemedia-caption-override">
+          <span class="help-block description">
+              {{this.config.translations.preview_caption_override}}
+              <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="this.config.translations.preview_caption_override_info"></i>
+          </span>
+
+          <input type="text"
+               :name="this.config.inputFields.captionOverride"
+               v-model="selectedImage.captionOverride"
+               v-debounce:500ms="() => dispatchChangeEvent(this.config.inputFields.captionOverride)"
+               :placeholder="selectedImage.caption"
+               class="media-caption-override data"
+          >
+        </div>
+
         <div class="ngremotemedia-tags">
           <span class="help-block description">
               {{this.config.translations.preview_tags}}
