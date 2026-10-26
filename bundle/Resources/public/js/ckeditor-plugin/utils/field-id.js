@@ -1,4 +1,3 @@
-import { uid } from '@ckeditor/ckeditor5-utils';
 import { pluginKey } from '../constants';
 
 /**
@@ -11,4 +10,15 @@ export const resolveFieldId = (editor) => {
   return typeof fieldId === 'function' ? fieldId(editor) : fieldId;
 };
 
-export const createFieldId = editor => `${resolveFieldId(editor)}_${uid()}`;
+/**
+ * Random hex suffix. Generated locally instead of using `uid` from `@ckeditor/ckeditor5-utils`:
+ * integrations aliasing CKEditor packages to a prebuilt build (e.g. Sylius) don't expose `uid`.
+ * `crypto.getRandomValues` is used because `crypto.randomUUID` needs a secure context (HTTPS).
+ * The suffix must be random, not a counter: stored content keeps its field ids across page loads.
+ */
+const randomSuffix = () => Array.from(
+  crypto.getRandomValues(new Uint8Array(16)),
+  byte => byte.toString(16).padStart(2, '0'),
+).join('');
+
+export const createFieldId = editor => `${resolveFieldId(editor)}_${randomSuffix()}`;
