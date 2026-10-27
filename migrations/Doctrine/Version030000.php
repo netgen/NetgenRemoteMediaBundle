@@ -7,20 +7,11 @@ namespace Netgen\RemoteMedia\Migrations\Doctrine;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-use function is_a;
-
 final class Version030000 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {
-        // DBAL 3 has AbstractMySQLPlatform (MySQL and MariaDB), DBAL 2 has MySqlPlatform.
-        $platform = $this->connection->getDatabasePlatform();
-
-        $this->abortIf(
-            !is_a($platform, 'Doctrine\DBAL\Platforms\AbstractMySQLPlatform')
-            && !is_a($platform, 'Doctrine\DBAL\Platforms\MySqlPlatform'),
-            'Migration can only be executed safely on MySQL.',
-        );
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on MySQL.');
 
         // ngrm_remote_resource table
 
