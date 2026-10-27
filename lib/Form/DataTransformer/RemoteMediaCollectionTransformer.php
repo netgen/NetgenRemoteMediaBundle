@@ -18,7 +18,7 @@ use function json_encode;
 use const JSON_INVALID_UTF8_SUBSTITUTE;
 
 /**
- * Model transformer for RemoteMediaCollectionType.
+ * Model transformer for RemoteMediaType in collection mode.
  *
  * Model data is always an ordered collection of RemoteResourceLocation objects
  * (an ArrayCollection, possibly empty) — never a bare location, never null.

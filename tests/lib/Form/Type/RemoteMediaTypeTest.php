@@ -18,6 +18,9 @@ use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
 
+/**
+ * RemoteMediaType in single mode (upload_limit: 1).
+ */
 #[CoversClass(RemoteMediaType::class)]
 class RemoteMediaTypeTest extends TypeTestCase
 {
@@ -53,7 +56,7 @@ class RemoteMediaTypeTest extends TypeTestCase
             ),
         );
 
-        $form = $this->factory->create(RemoteMediaType::class, $location, $options);
+        $form = $this->factory->create(RemoteMediaType::class, $location, ['upload_limit' => 1] + $options);
 
         $this->dataTransformerMock
             ->expects(self::once())
@@ -133,7 +136,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                     && $data['altText'] === 'first alt'))
             ->willReturn($expectedLocation);
 
-        $form = $this->factory->create(RemoteMediaType::class);
+        $form = $this->factory->create(RemoteMediaType::class, null, ['upload_limit' => 1]);
 
         $form->submit([
             'source' => 'form_gallery',
@@ -170,7 +173,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                 && $data['remoteId'] === 'upload|image|foreign.jpg'))
             ->willReturn($resultLocation);
 
-        $form = $this->factory->create(RemoteMediaType::class, $existingLocation);
+        $form = $this->factory->create(RemoteMediaType::class, $existingLocation, ['upload_limit' => 1]);
 
         $form->submit([
             'locationId' => '999',
@@ -196,7 +199,7 @@ class RemoteMediaTypeTest extends TypeTestCase
                 && $data['remoteId'] === 'upload|image|owned.jpg'))
             ->willReturn($existingLocation);
 
-        $form = $this->factory->create(RemoteMediaType::class, $existingLocation);
+        $form = $this->factory->create(RemoteMediaType::class, $existingLocation, ['upload_limit' => 1]);
 
         $form->submit([
             'locationId' => '5',
@@ -226,7 +229,7 @@ class RemoteMediaTypeTest extends TypeTestCase
             ->method('listTags')
             ->willReturn([]);
 
-        $form = $this->factory->create(RemoteMediaType::class, $location);
+        $form = $this->factory->create(RemoteMediaType::class, $location, ['upload_limit' => 1]);
         $view = $form->createView();
 
         self::assertSame([$location], $view->vars['remote_media_locations']);
