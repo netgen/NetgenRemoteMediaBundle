@@ -184,6 +184,8 @@ The bundle ships a Doctrine migration which creates its database tables. It requ
 php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
 ```
 
+Run this command after every update of the bundle, for example as part of your deployment, so new migrations are applied.
+
 ## Configure Cloudinary webhook notifications (optional)
 
 If you want to be able to manage resources through Cloudinary interface as well, you might want to configure the [Cloudinary webhook notifications](Cloudinary/WEBHOOK_NOTIFICATIONS.md). Read more on the link.
