@@ -1,6 +1,19 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
+Upgrade to 3.0 (database migrations)
+------------------------------------
+
+### Database migrations
+
+The database tables are now created by a Doctrine migration shipped with the bundle. If you already have the tables (created with `doctrine:schema:update`), mark the migration as executed instead of running it:
+
+```
+php bin/console doctrine:migrations:version 'Netgen\RemoteMedia\Migrations\Doctrine\Version030000' --add --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+```
+
+New installs only need to run `doctrine:migrations:migrate` as described in the installation instructions.
+
 Upgrade from 2.0 to 3.0
 -----------------------
 
