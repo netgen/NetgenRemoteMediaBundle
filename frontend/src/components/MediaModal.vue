@@ -10,6 +10,7 @@
         :multi-select="multiSelect"
         :selection-limit="selectionLimit"
         :current-count="currentCount"
+        :existing-ids="existingIds"
         @loadMore="handleLoadMore"
         @media-selected="item => $emit('media-selected', item)"
         @media-multi-selected="items => $emit('media-multi-selected', items)"
@@ -48,6 +49,10 @@ export default {
     currentCount: {
       type: Number,
       default: 0
+    },
+    existingIds: {
+      type: Array,
+      default: () => []
     }
   },
   components: {

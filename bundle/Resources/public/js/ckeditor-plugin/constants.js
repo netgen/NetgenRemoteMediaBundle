@@ -90,6 +90,7 @@ export const defaultValue = {
       'media_gallery_empty_folder': 'media_gallery_empty_folder',
       'media_gallery_upload_media': 'media_gallery_upload_media',
       'media_gallery_select': 'media_gallery_select',
+      'media_gallery_added': 'media_gallery_added',
       'media_gallery_load_more': 'media_gallery_load_more',
       'multi_select_add_selected': 'multi_select_add_selected',
       'multi_select_deselect': 'multi_select_deselect',

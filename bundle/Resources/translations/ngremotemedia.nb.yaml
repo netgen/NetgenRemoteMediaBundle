@@ -76,6 +76,7 @@ ngrm:
                 empty_folder: 'Folder is empty'
                 upload_media: 'Upload media from your local storage.'
                 select: 'Select'
+                added: 'Lagt til'
                 load_more: 'Load more'
             upload:
                 modal_title: 'Upload media'

@@ -77,6 +77,7 @@
         :multi-select="isCollectionMode"
         :selection-limit="uploadLimit"
         :current-count="currentFileCount"
+        :existing-ids="existingResourceIds"
         @close="handleMediaModalClose"
         @media-selected="handleMediaSelected"
         @media-multi-selected="handleMediaMultiSelected"
@@ -147,6 +148,9 @@ export default {
     },
     currentFileCount() {
       return this.resources.length;
+    },
+    existingResourceIds() {
+      return this.isCollectionMode ? this.resources.map((resource) => resource.id).filter(Boolean) : [];
     },
     hasCroppableVariations() {
       return Object.keys(this.config.availableVariations).length > 0;

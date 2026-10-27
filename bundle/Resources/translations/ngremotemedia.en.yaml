@@ -80,6 +80,7 @@ ngrm:
                 empty_folder: 'Folder is empty'
                 upload_media: 'Upload media from your local storage.'
                 select: 'Select'
+                added: 'Added'
                 load_more: 'Load more'
             upload:
                 modal_title: 'Upload media'

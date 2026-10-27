@@ -80,6 +80,7 @@ ngrm:
                 empty_folder: 'Mapa je prazna'
                 upload_media: 'Učitaj resurs'
                 select: 'Odaberi'
+                added: 'Dodano'
                 load_more: 'Učitaj više'
             upload:
                 modal_title: 'Učitaj resurs'
