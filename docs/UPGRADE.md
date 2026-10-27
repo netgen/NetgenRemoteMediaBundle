@@ -12,9 +12,10 @@ The bundle now ships Doctrine migrations for its database tables. Run them with:
 php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
 ```
 
-If the tables already exist (for example, created with `doctrine:schema:update`), the initial migration fails. Mark it as executed and run the migrations again to execute the remaining ones:
+If the tables already exist (for example, created with `doctrine:schema:update`), the initial migration fails. Create the migration version table, mark the initial migration as executed and run the migrations again to execute the remaining ones (the `version` command does not create the version table by itself, so `sync-metadata-storage` has to run first):
 
 ```
+php bin/console doctrine:migrations:sync-metadata-storage --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
 php bin/console doctrine:migrations:version 'Netgen\RemoteMedia\Migrations\Doctrine\Version030000' --add --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
 php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
 ```
