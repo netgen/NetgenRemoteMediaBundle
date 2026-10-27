@@ -8,8 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
-use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaCollectionTransformer;
-use Netgen\RemoteMedia\Form\Type\RemoteMediaCollectionType;
+use Netgen\RemoteMedia\Form\Type\RemoteMediaType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,8 +20,11 @@ use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use function in_array;
 use function json_encode;
 
-#[CoversClass(RemoteMediaCollectionType::class)]
-class RemoteMediaCollectionTypeTest extends TypeTestCase
+/**
+ * RemoteMediaType in collection mode (any upload_limit other than 1).
+ */
+#[CoversClass(RemoteMediaType::class)]
+class RemoteMediaTypeCollectionTest extends TypeTestCase
 {
     private DataTransformerInterface|MockObject $innerTransformerMock;
 
@@ -41,7 +43,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
     {
         $this->mockProviderFacets();
 
-        $form = $this->factory->create(RemoteMediaCollectionType::class, null, $options);
+        $form = $this->factory->create(RemoteMediaType::class, null, $options);
         $view = $form->createView();
 
         self::assertSame($expectedViewValue, $view->vars['upload_limit']);
@@ -54,7 +56,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
     {
         $this->expectException(InvalidOptionsException::class);
 
-        $this->factory->create(RemoteMediaCollectionType::class, null, [
+        $this->factory->create(RemoteMediaType::class, null, [
             'upload_limit' => $uploadLimit,
         ]);
     }
@@ -74,7 +76,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
             ->with(self::callback(static fn (array $entry): bool => in_array($entry['remoteId'], ['remote-1', 'remote-2'], true)))
             ->willReturnOnConsecutiveCalls($firstLocation, $secondLocation);
 
-        $form = $this->factory->create(RemoteMediaCollectionType::class);
+        $form = $this->factory->create(RemoteMediaType::class);
 
         $form->submit([
             'collectionPayload' => json_encode([
@@ -106,7 +108,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
             ->method('reverseTransform');
 
         $form = $this->factory->create(
-            RemoteMediaCollectionType::class,
+            RemoteMediaType::class,
             new ArrayCollection([$firstLocation, $secondLocation]),
         );
 
@@ -121,7 +123,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
 
     public function testSubmitMalformedPayloadIsNotSynchronized(): void
     {
-        $form = $this->factory->create(RemoteMediaCollectionType::class);
+        $form = $this->factory->create(RemoteMediaType::class);
 
         $form->submit([
             'collectionPayload' => '{"remoteId":',
@@ -143,7 +145,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
             ->with(self::callback(static fn (array $entry): bool => $entry['remoteId'] === 'remote-1'))
             ->willReturn($location);
 
-        $form = $this->factory->create(RemoteMediaCollectionType::class);
+        $form = $this->factory->create(RemoteMediaType::class);
 
         $form->submit([
             [
@@ -173,7 +175,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
             ->willReturn($resultLocation);
 
         $form = $this->factory->create(
-            RemoteMediaCollectionType::class,
+            RemoteMediaType::class,
             new ArrayCollection([$existingLocation]),
         );
 
@@ -193,14 +195,15 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
 
     public function testSubmitOverLimitPayloadIsRejected(): void
     {
-        $form = $this->factory->create(RemoteMediaCollectionType::class, null, [
-            'upload_limit' => 1,
+        $form = $this->factory->create(RemoteMediaType::class, null, [
+            'upload_limit' => 2,
         ]);
 
         $form->submit([
             'collectionPayload' => json_encode([
                 ['remoteId' => 'remote-1', 'type' => 'image'],
                 ['remoteId' => 'remote-2', 'type' => 'image'],
+                ['remoteId' => 'remote-3', 'type' => 'image'],
             ]),
         ]);
 
@@ -210,8 +213,8 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
 
     public function testSubmittedUploadLimitCannotOverrideServerLimit(): void
     {
-        $form = $this->factory->create(RemoteMediaCollectionType::class, null, [
-            'upload_limit' => 1,
+        $form = $this->factory->create(RemoteMediaType::class, null, [
+            'upload_limit' => 2,
         ]);
 
         $form->submit([
@@ -219,6 +222,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
             'collectionPayload' => json_encode([
                 ['remoteId' => 'remote-1', 'type' => 'image'],
                 ['remoteId' => 'remote-2', 'type' => 'image'],
+                ['remoteId' => 'remote-3', 'type' => 'image'],
             ]),
         ]);
 
@@ -228,7 +232,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
 
     public function testSubmitEmptyDataReturnsEmptyCollection(): void
     {
-        $form = $this->factory->create(RemoteMediaCollectionType::class);
+        $form = $this->factory->create(RemoteMediaType::class);
 
         $form->submit([]);
 
@@ -248,7 +252,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
 
         $this->mockProviderFacets();
 
-        $form = $this->factory->create(RemoteMediaCollectionType::class, $locations);
+        $form = $this->factory->create(RemoteMediaType::class, $locations);
         $view = $form->createView();
 
         self::assertSame($locations->toArray(), $view->vars['remote_media_locations']);
@@ -258,7 +262,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
 
     public function testBlockPrefixReusesRemoteMediaTheme(): void
     {
-        $form = $this->factory->create(RemoteMediaCollectionType::class);
+        $form = $this->factory->create(RemoteMediaType::class);
 
         self::assertContains('remote_media', $form->createView()->vars['block_prefixes']);
     }
@@ -311,10 +315,7 @@ class RemoteMediaCollectionTypeTest extends TypeTestCase
 
     protected function getExtensions(): array
     {
-        $type = new RemoteMediaCollectionType(
-            new RemoteMediaCollectionTransformer($this->innerTransformerMock),
-            $this->providerMock,
-        );
+        $type = new RemoteMediaType($this->innerTransformerMock, $this->providerMock);
 
         return [
             new PreloadedExtension([$type], []),
