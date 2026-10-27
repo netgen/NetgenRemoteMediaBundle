@@ -13,8 +13,6 @@ final class Version030000 extends AbstractMigration
     {
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on MySQL.');
 
-        // ngrm_remote_resource table
-
         $this->addSql(
             <<<'EOT'
             CREATE TABLE ngrm_remote_resource (
@@ -41,8 +39,6 @@ final class Version030000 extends AbstractMigration
             ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE utf8mb4_unicode_ci
             EOT
         );
-
-        // ngrm_remote_resource_location table
 
         $this->addSql(
             <<<'EOT'
