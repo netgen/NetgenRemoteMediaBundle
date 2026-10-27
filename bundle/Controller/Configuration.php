@@ -81,6 +81,7 @@ final class Configuration
             'media_gallery_empty_folder' => $this->translator->trans('ngrm.edit.vue.media_gallery.empty_folder', [], 'ngremotemedia'),
             'media_gallery_upload_media' => $this->translator->trans('ngrm.edit.vue.media_gallery.upload_media', [], 'ngremotemedia'),
             'media_gallery_select' => $this->translator->trans('ngrm.edit.vue.media_gallery.select', [], 'ngremotemedia'),
+            'media_gallery_added' => $this->translator->trans('ngrm.edit.vue.media_gallery.added', [], 'ngremotemedia'),
             'media_gallery_load_more' => $this->translator->trans('ngrm.edit.vue.media_gallery.load_more', [], 'ngremotemedia'),
             'Search for media' => $this->translator->trans('Search for media', [], 'ngremotemedia'),
             'Load more' => $this->translator->trans('Load more', [], 'ngremotemedia'),

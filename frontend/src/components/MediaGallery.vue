@@ -8,7 +8,10 @@
       <div class="media" 
            v-for="item in media" 
            :key="getResourceId(item)" 
-           :class="{selected: multiSelect ? isSelected(getResourceId(item)) : getResourceId(item) === selectedMediaId}">
+           :class="{
+             selected: multiSelect ? isSelected(getResourceId(item)) : getResourceId(item) === selectedMediaId,
+             added: isAdded(getResourceId(item))
+           }">
         
         <div v-if="hasPreviewImage(item)" class="media-container">
           <img :src="getPreviewImageUrl(item)" :alt="getFilename(item)" class="img"/>
@@ -45,10 +48,15 @@
         <button type="button" 
                 @click="handleSelectClick(item)" 
                 class="btn btn-blue select-btn"
-                :disabled="multiSelect && !canSelectMore && !isSelected(getResourceId(item))">
-          {{ multiSelect 
-             ? (isSelected(getResourceId(item)) ? translations.multi_select_deselect : translations.media_gallery_select) 
-             : translations.media_gallery_select }}
+                :disabled="isAdded(getResourceId(item)) || (multiSelect && !canSelectMore && !isSelected(getResourceId(item)))">
+          <template v-if="isAdded(getResourceId(item))">
+            <i class="fa fa-check"></i> {{ translations.media_gallery_added || 'Added' }}
+          </template>
+          <template v-else>
+            {{ multiSelect
+               ? (isSelected(getResourceId(item)) ? translations.multi_select_deselect : translations.media_gallery_select)
+               : translations.media_gallery_select }}
+          </template>
         </button>
       </div>
     </div>
@@ -103,6 +111,12 @@ export default {
     currentCount: {
       type: Number,
       default: 0
+    },
+    // Remote ids already in the field; shown as added and not selectable again,
+    // so they don't count twice towards the selection limit.
+    existingIds: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -113,6 +127,9 @@ export default {
     };
   },
   computed: {
+    existingIdSet() {
+      return new Set(this.existingIds);
+    },
     hasSelectionLimit() {
       return this.selectionLimit > 0;
     },
@@ -151,6 +168,9 @@ export default {
     hasPreviewImage(item) {
       return (item.type === "image" || item.type === "video") && this.getPreviewImageUrl(item) !== "";
     },
+    isAdded(remoteId) {
+      return remoteId !== "" && this.existingIdSet.has(remoteId);
+    },
     isSelected(remoteId) {
       return this.selectedItems.some(item => this.getResourceId(item) === remoteId);
     },
@@ -176,6 +196,10 @@ export default {
       this.noticeTimer = setTimeout(() => { this.notice = null; }, 5000);
     },
     handleSelectClick(item) {
+      if (this.isAdded(this.getResourceId(item))) {
+        return;
+      }
+
       if (this.multiSelect) {
         this.toggleSelection(item);
       } else {
@@ -290,6 +314,14 @@ export default {
 
       &.selected {
         border: 1px solid $netgen-primary;
+      }
+
+      &.added {
+        opacity: 0.5;
+
+        .select-btn {
+          cursor: not-allowed;
+        }
       }
 
       .select-btn {
