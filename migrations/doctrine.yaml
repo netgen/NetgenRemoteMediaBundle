@@ -1,0 +1,7 @@
+migrations_paths:
+    Netgen\RemoteMedia\Migrations\Doctrine: Doctrine
+
+table_storage:
+    table_name: ngrm_migration_versions
+
+transactional: false
