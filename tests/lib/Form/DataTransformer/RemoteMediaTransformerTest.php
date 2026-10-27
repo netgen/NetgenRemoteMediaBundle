@@ -212,6 +212,60 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         );
     }
 
+    public function testReverseTransformWithOverridesDoesNotUpdateRemote(): void
+    {
+        $data = [
+            'locationId' => 5,
+            'remoteId' => 'upload|image|media/images/example.jpg',
+            'type' => 'image',
+            'altText' => 'Cloud alt text',
+            'caption' => 'Cloud caption',
+            'tags' => ['tag1'],
+            'cropSettings' => null,
+            'altTextOverride' => 'Local alt text',
+            'captionOverride' => '  ',
+        ];
+
+        $location = new RemoteResourceLocation(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|media/images/example.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+                name: 'example.jpg',
+                altText: 'Cloud alt text',
+                caption: 'Cloud caption',
+                tags: ['tag1'],
+            ),
+            id: 5,
+            captionOverride: 'Old local caption',
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadByRemoteId')
+            ->with('upload|image|media/images/example.jpg')
+            ->willReturn($location->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadLocation')
+            ->with(5)
+            ->willReturn($location);
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('updateOnRemote');
+
+        $result = $this->dataTransformer->reverseTransform($data);
+
+        self::assertSame('Local alt text', $result->getAltTextOverride());
+        self::assertNull($result->getCaptionOverride());
+        self::assertSame('Local alt text', $result->getAltText());
+        self::assertSame('Cloud caption', $result->getCaption());
+        self::assertSame('Cloud alt text', $result->getRemoteResource()->getAltText());
+    }
+
     public function testReverseTransformWithResourceNotExistingOnRemoteAnymore(): void
     {
         $data = [
@@ -437,6 +491,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                     'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
                     'source' => null,
                     'watermarkText' => null,
+                    'altTextOverride' => null,
+                    'captionOverride' => null,
                 ],
             ],
             [
@@ -450,6 +506,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                     ),
                     source: 'my_source',
                     watermarkText: 'This is a watermark',
+                    altTextOverride: 'Local alt text',
+                    captionOverride: 'Local caption',
                 ),
                 [
                     'locationId' => null,
@@ -461,6 +519,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                     'cropSettings' => '[]',
                     'source' => 'my_source',
                     'watermarkText' => 'This is a watermark',
+                    'altTextOverride' => 'Local alt text',
+                    'captionOverride' => 'Local caption',
                 ],
             ],
         ];

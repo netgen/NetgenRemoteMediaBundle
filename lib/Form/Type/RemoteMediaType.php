@@ -52,6 +52,8 @@ final class RemoteMediaType extends AbstractType
             ->add('type', HiddenType::class)
             ->add('altText', HiddenType::class, ['required' => false])
             ->add('caption', HiddenType::class, ['required' => false])
+            ->add('altTextOverride', HiddenType::class, ['required' => false])
+            ->add('captionOverride', HiddenType::class, ['required' => false])
             ->add('watermarkText', HiddenType::class, ['required' => false])
             ->add(
                 'tags',

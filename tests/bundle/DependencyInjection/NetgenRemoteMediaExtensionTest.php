@@ -43,6 +43,8 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
                     'resource_remote_id' => 'my_resource_id',
                     'source' => 'named_my_resource_location',
                     'watermark_text' => 'Netgen.io',
+                    'alt_text' => 'Netgen logo',
+                    'caption' => null,
                 ],
             ],
         );
@@ -152,6 +154,7 @@ final class NetgenRemoteMediaExtensionTest extends AbstractExtensionTestCase
                         'resource_remote_id' => 'my_resource_id',
                         'source' => 'named_my_resource_location',
                         'watermark_text' => 'Netgen.io',
+                        'alt_text' => 'Netgen logo',
                     ],
                 ],
             ],

@@ -197,6 +197,16 @@ abstract class AbstractTestCase extends TestCase
             $expected->getWatermarkText(),
             $actual->getWatermarkText(),
         );
+
+        self::assertSame(
+            $expected->getAltTextOverride(),
+            $actual->getAltTextOverride(),
+        );
+
+        self::assertSame(
+            $expected->getCaptionOverride(),
+            $actual->getCaptionOverride(),
+        );
     }
 
     public static function assertRemoteResourceVariationSame(RemoteResourceVariation $expected, RemoteResourceVariation $actual): void

@@ -34,6 +34,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             'cropSettings' => $this->service->resolveCropSettingsString($value),
             'source' => $value->getSource(),
             'watermarkText' => $value->getWatermarkText(),
+            'altTextOverride' => $value->getAltTextOverride(),
+            'captionOverride' => $value->getCaptionOverride(),
         ];
     }
 
@@ -83,6 +85,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
         $remoteResourceLocation->setSource($value['source'] ?? null);
         $remoteResourceLocation->setWatermarkText($value['watermarkText'] ?? null);
+        $remoteResourceLocation->setAltTextOverride($value['altTextOverride'] ?? null);
+        $remoteResourceLocation->setCaptionOverride($value['captionOverride'] ?? null);
 
         $remoteResourceLocation->setCropSettings(
             $this->service->resolveCropSettings($value['cropSettings'] ?? null),

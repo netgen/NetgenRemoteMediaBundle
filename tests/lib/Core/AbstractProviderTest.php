@@ -120,6 +120,8 @@ final class AbstractProviderTest extends AbstractTestCase
             'test_image_location2' => [
                 'resource_remote_id' => 'upload|image|media/images/test_image2.jpg',
                 'watermark_text' => 'This is some watermark',
+                'alt_text' => 'Named alt text',
+                'caption' => '',
             ],
         ];
 
@@ -933,6 +935,73 @@ final class AbstractProviderTest extends AbstractTestCase
         );
     }
 
+    public function testLoadExistingNamedRemoteResourceLocationWithNewAltText(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image2.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+            altText: 'Cloud alt text',
+        );
+
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            source: 'named_remote_resource_location_test_image_location2',
+            watermarkText: 'This is some watermark',
+            captionOverride: 'Caption removed from config',
+        );
+
+        $this->locationRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['source' => 'named_remote_resource_location_test_image_location2'])
+            ->willReturn($location);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('persist')
+            ->with($location);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('flush');
+
+        $loadedLocation = $this->provider->loadNamedRemoteResourceLocation('test_image_location2');
+
+        self::assertSame('Named alt text', $loadedLocation->getAltText());
+        self::assertNull($loadedLocation->getCaptionOverride());
+    }
+
+    public function testLoadExistingNamedRemoteResourceLocationWithUnchangedConfig(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'upload|image|media/images/test_image2.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/media/images/test_image2.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+        );
+
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            source: 'named_remote_resource_location_test_image_location2',
+            watermarkText: 'This is some watermark',
+            altTextOverride: 'Named alt text',
+        );
+
+        $this->locationRepository
+            ->expects(self::once())
+            ->method('findOneBy')
+            ->with(['source' => 'named_remote_resource_location_test_image_location2'])
+            ->willReturn($location);
+
+        $this->entityManager
+            ->expects(self::never())
+            ->method('persist');
+
+        self::assertSame($location, $this->provider->loadNamedRemoteResourceLocation('test_image_location2'));
+    }
+
     public function testLoadNewNamedRemoteResourceLocationWithExistingResource(): void
     {
         $resource = new RemoteResource(
@@ -957,7 +1026,12 @@ final class AbstractProviderTest extends AbstractTestCase
             ->with(['remoteId' => 'upload|image|media/images/test_image2.jpg'])
             ->willReturn($resource);
 
-        $location = new RemoteResourceLocation($resource, 'named_remote_resource_location_test_image_location2', [], 'This is some watermark');
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            source: 'named_remote_resource_location_test_image_location2',
+            watermarkText: 'This is some watermark',
+            altTextOverride: 'Named alt text',
+        );
 
         $this->entityManager
             ->expects(self::once())
@@ -1415,6 +1489,134 @@ final class AbstractProviderTest extends AbstractTestCase
             ->expects(self::once())
             ->method('generateVideoThumbnailTag')
             ->with($resource, $transformations, [])
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->provider->generateVariationHtmlTag($location, 'article', 'mp4', [], false, true),
+        );
+    }
+
+    public function testGenerateLocationHtmlTagUsesOverrides(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            altText: 'Cloud alt text',
+            caption: 'Cloud caption',
+        );
+
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            altTextOverride: 'Local alt text',
+            captionOverride: 'Local caption',
+        );
+
+        $tag = '<picture><img src="https://cloudinary.com/upload/image/image.jpg"></picture>';
+
+        $this->provider
+            ->expects(self::once())
+            ->method('generatePictureTag')
+            ->with($resource, [], ['width' => 200, 'alt' => 'Local alt text', 'title' => 'Local caption'])
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->provider->generateLocationHtmlTag($location, ['width' => 200]),
+        );
+    }
+
+    public function testGenerateLocationHtmlTagExplicitAttributesWinOverOverrides(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'image.jpg',
+            type: 'image',
+            url: 'https://cloudinary.com/upload/image/image.jpg',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+        );
+
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            altTextOverride: 'Local alt text',
+            captionOverride: 'Local caption',
+        );
+
+        $tag = '<picture><img src="https://cloudinary.com/upload/image/image.jpg"></picture>';
+
+        $this->provider
+            ->expects(self::once())
+            ->method('generatePictureTag')
+            ->with($resource, [], ['alt' => 'Explicit alt text', 'title' => 'Local caption'])
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->provider->generateLocationHtmlTag($location, ['alt' => 'Explicit alt text']),
+        );
+    }
+
+    public function testGenerateLocationHtmlTagVideoIgnoresOverrides(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+        );
+
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            altTextOverride: 'Local alt text',
+            captionOverride: 'Local caption',
+        );
+
+        $tag = '<video><source src="https://cloudinary.com/upload/video/example.mp4"></video>';
+
+        $this->provider
+            ->expects(self::once())
+            ->method('generateVideoTag')
+            ->with($resource, [], ['width' => '100%'])
+            ->willReturn($tag);
+
+        self::assertSame(
+            $tag,
+            $this->provider->generateLocationHtmlTag($location, ['width' => '100%']),
+        );
+    }
+
+    public function testGenerateVariationHtmlTagThumbnailUsesOverrides(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'example.mp4',
+            type: 'video',
+            url: 'https://cloudinary.com/upload/video/example.mp4',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+        );
+
+        $location = new RemoteResourceLocation(
+            remoteResource: $resource,
+            altTextOverride: 'Local alt text',
+        );
+
+        $tag = '<img src="https://cloudinary.com/upload/video/example.jpg">';
+
+        $this->provider
+            ->expects(self::once())
+            ->method('getIdentifier')
+            ->willReturn('cloudinary');
+
+        $this->formatHandler
+            ->expects(self::once())
+            ->method('process')
+            ->with(['mp4'])
+            ->willReturn(['fetch_format' => 'mp4']);
+
+        $this->provider
+            ->expects(self::once())
+            ->method('generateVideoThumbnailTag')
+            ->with($resource, [['fetch_format' => 'mp4']], ['alt' => 'Local alt text'])
             ->willReturn($tag);
 
         self::assertSame(

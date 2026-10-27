@@ -85,6 +85,8 @@ final class ConfigurationTest extends TestCase
                                 'resource_remote_id' => 'upload|image|folder/test_resource',
                                 'source' => 'test_resource',
                                 'watermark_text' => 'Netgen',
+                                'alt_text' => 'Netgen logo',
+                                'caption' => 'Netgen caption',
                             ],
                             'test_location2' => [
                                 'resource_remote_id' => 'upload|image|folder/test_resource2',
