@@ -185,8 +185,6 @@ composer require doctrine/doctrine-migrations-bundle
 php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
 ```
 
-Run this migration first: the tables of `netgen/layouts-remote-media` and `netgen/remote-media-ibexa` reference `ngrm_remote_resource_location`.
-
 ## Configure Cloudinary webhook notifications (optional)
 
 If you want to be able to manage resources through Cloudinary interface as well, you might want to configure the [Cloudinary webhook notifications](Cloudinary/WEBHOOK_NOTIFICATIONS.md). Read more on the link.
