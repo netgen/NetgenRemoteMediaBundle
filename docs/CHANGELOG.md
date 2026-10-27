@@ -11,6 +11,11 @@
 
 * minimum version of `cloudinary/cloudinary_php` is now 2.9 (required for `asset_folder` and `use_asset_folder_as_public_id_prefix` upload parameters)
 
+### Fixed
+
+* Doctrine XML mappings use the correct `http://` namespaces, so they pass Doctrine XML validation (`validate_xml_mapping`)
+* `symfony/serializer` and `symfony/translation` are now required (the bundle depends on both but did not declare them)
+
 ## 1.1.11
 
 ### Fixed
