@@ -1,5 +1,6 @@
-/* eslint-disable no-console */
-import { dataView, dataModel, attributes, viewAttributes, pluginKey, defaultValue } from '../constants';
+import { dataModel, attributes, pluginKey, defaultValue } from '../constants';
+import getFormat from '../utils/get-format';
+import { createFieldId } from '../utils/field-id';
 
 /**
  * Defines the upcast conversion.
@@ -7,35 +8,54 @@ import { dataView, dataModel, attributes, viewAttributes, pluginKey, defaultValu
  * The model is then used in editing downcast to render the editor field.
  */
 const defineUpcast = (editor) => {
+  const format = getFormat(editor);
+
   editor.conversion.for('upcast').elementToElement({
-    view: dataView,
+    view: format.matcher,
+    converterPriority: format.priority ?? 'normal',
     model(viewElement, { writer }) {
-      const locationId = viewElement.getAttribute(viewAttributes.locationId);
+      const { fieldId, locationId, cssClass, variationName, alignment } = format.fromView(viewElement);
       const model = writer.createElement(dataModel.name, {
-        [attributes.fieldId]: viewElement.getAttribute(viewAttributes.fieldId),
-        [attributes.locationId]: locationId,
+        [attributes.fieldId]: fieldId || createFieldId(editor),
+        [attributes.locationId]: locationId || null,
         [attributes.selectedImage]: defaultValue.selectedImage,
       });
+
+      if (alignment) {
+        writer.setAttribute(attributes.alignment, alignment, model);
+      }
+
+      if (!locationId) {
+        return model;
+      }
+
       const getSelectedImageEndpoint = editor.config.get(pluginKey).endpoints.getSelectedImage ?? defaultValue.endpoints.getSelectedImage;
 
       fetch(getSelectedImageEndpoint(locationId))
-        .then(response => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to load selected image for location ${locationId}: ${response.status}`);
+          }
+
+          return response.json();
+        })
         .then((selectedImage) => {
           editor.model.change((writer) => {
-            const selectedVariationName = viewElement.getAttribute(viewAttributes.variationName);
             writer.setAttribute(
               attributes.selectedImage,
               {
                 ...selectedImage,
-                cssClass: viewElement.getAttribute(viewAttributes.cssClass),
+                cssClass,
                 selectedVariation: {
-                  label: selectedVariationName,
-                  value: selectedImage.variations[selectedVariationName]},
+                  label: variationName,
+                  value: selectedImage.variations?.[variationName],
+                },
               },
               model,
             );
-          })
-        });
+          });
+        })
+        .catch(error => console.error(error));
 
       return model;
     },

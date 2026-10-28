@@ -6,6 +6,18 @@
 
 * `cloudinary.use_asset_folder_as_public_id_prefix` option which prefixes the public ID with the asset folder in `dynamic` folder mode, so the same file can be uploaded to different folders
 * upload error for an existing resource now names the folder when the conflict is limited to that folder
+* CKEditor 5 plugin `format` option to replace how the remote media element is stored in editor data (default `htmlFormat` keeps the existing `div.ngremotemedia-cke5` markup)
+* CKEditor 5 plugin `fieldId` option accepts a `(editor) => string` function
+
+### Fixed
+
+* CKEditor 5 plugin is a regular function, so it loads without transpilation (CKEditor instantiates function plugins with `new`, which fails for arrow functions)
+* CKEditor 5 plugin field ids are unique per inserted element (previously a count-based suffix could repeat after removing an element)
+* CKEditor 5 plugin `config` option is deep merged over the defaults, so partial `paths`/`translations`/`inputFields` no longer drop the remaining keys
+* CKEditor 5 plugin no longer requests the selected image for elements stored without a location
+* CKEditor 5 plugin restores element alignment when loading stored data, and stores it as valid `text-align` CSS
+* CKEditor 5 plugin ignores invalid stored alignment values (earlier versions stored `"undefined"`), so saving unchanged content no longer adds `text-align:undefined;`
+* CKEditor 5 plugin keeps the default selected image when the selected image request fails, instead of storing the error response
 
 ### Changed
 
