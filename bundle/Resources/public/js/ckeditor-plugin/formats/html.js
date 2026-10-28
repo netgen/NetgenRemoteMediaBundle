@@ -1,4 +1,4 @@
-import { dataView, viewAttributes, defaultValue } from '../constants';
+import { dataView, viewAttributes, defaultValue, alignments } from '../constants';
 
 /**
  * Default storage format: a self-describing `div` which is rendered on the front by `render-views.js`.
@@ -18,7 +18,10 @@ const htmlFormat = {
     locationId: viewElement.getAttribute(viewAttributes.locationId),
     cssClass: viewElement.getAttribute(viewAttributes.cssClass),
     variationName: viewElement.getAttribute(viewAttributes.variationName),
-    alignment: viewElement.getAttribute(viewAttributes.alignment),
+    // Content saved by earlier plugin versions stores `"undefined"` for elements without alignment
+    alignment: alignments.includes(viewElement.getAttribute(viewAttributes.alignment))
+      ? viewElement.getAttribute(viewAttributes.alignment)
+      : null,
   }),
   toView: (writer, data, pluginConfig) => {
     const viewResourceEndpoint = pluginConfig.endpoints.viewResource ?? defaultValue.endpoints.viewResource;

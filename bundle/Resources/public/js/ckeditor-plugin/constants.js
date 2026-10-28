@@ -17,6 +17,8 @@ export const viewAttributes = {
   variationGroup: `${dataPrefix}-variation-group`,
   viewEndpoint: `${dataPrefix}-view-endpoint`,
 };
+// Alignment names supported by the CKEditor 5 alignment feature
+export const alignments = ['left', 'center', 'right', 'justify'];
 export const datasetAttributes = {
   fieldId: 'fieldId',
   selectedImage: 'selectedImage',
