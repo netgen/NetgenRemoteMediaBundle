@@ -1,6 +1,20 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
+Upgrade from 3.0.0 to 3.0.1
+---------------------------
+
+### Database
+
+* Version 3.0.1 ships the `Version030001` migration. Run it with:
+
+    ```
+    php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    ```
+
+* The migration rebuilds the `ngrm_remote_resource` and `ngrm_remote_resource_location` tables, which took about 10 s on a database with ~164,000 resources and ~171,000 locations (MySQL 8.4).
+* The `down()` method fails if longer values than the old column limits already exist.
+
 Upgrade from 2.0 to 3.0
 -----------------------
 

@@ -1,5 +1,17 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.0.1
+
+### Fixed
+
+* `url` and `original_filename` of remote resources are widened to `TEXT` (non-ASCII filenames are percent-encoded and overflowed `varchar(255)`)
+* `remote_id` is widened to `varchar(768)` and switched to the case-sensitive `utf8mb4_bin` collation (Cloudinary public ids are case-sensitive)
+
+### Added
+
+* index on `ngrm_remote_resource_location.source` (named location lookups were full table scans)
+* all changes are applied by the Doctrine migration `Version030001`
+
 ## 3.0.0
 
 ### BC breaks
