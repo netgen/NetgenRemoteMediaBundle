@@ -32,7 +32,13 @@ const defineUpcast = (editor) => {
       const getSelectedImageEndpoint = editor.config.get(pluginKey).endpoints.getSelectedImage ?? defaultValue.endpoints.getSelectedImage;
 
       fetch(getSelectedImageEndpoint(locationId))
-        .then(response => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Failed to load selected image for location ${locationId}: ${response.status}`);
+          }
+
+          return response.json();
+        })
         .then((selectedImage) => {
           editor.model.change((writer) => {
             writer.setAttribute(
@@ -48,7 +54,8 @@ const defineUpcast = (editor) => {
               model,
             );
           });
-        });
+        })
+        .catch(error => console.error(error));
 
       return model;
     },

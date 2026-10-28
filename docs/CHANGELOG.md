@@ -17,6 +17,7 @@
 * CKEditor 5 plugin no longer requests the selected image for elements stored without a location
 * CKEditor 5 plugin restores element alignment when loading stored data, and stores it as valid `text-align` CSS
 * CKEditor 5 plugin ignores invalid stored alignment values (earlier versions stored `"undefined"`), so saving unchanged content no longer adds `text-align:undefined;`
+* CKEditor 5 plugin keeps the default selected image when the selected image request fails, instead of storing the error response
 
 ### Changed
 
