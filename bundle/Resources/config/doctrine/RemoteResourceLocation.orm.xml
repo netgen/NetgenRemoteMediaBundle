@@ -5,6 +5,10 @@
 
     <entity name="Netgen\RemoteMedia\API\Values\RemoteResourceLocation" table="ngrm_remote_resource_location">
 
+        <indexes>
+            <index name="ngrm_remote_resource_location_source_idx" columns="source" />
+        </indexes>
+
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
