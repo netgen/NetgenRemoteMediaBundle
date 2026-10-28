@@ -2,14 +2,52 @@
 
 ## 3.0.0
 
+### BC breaks
+
+* the bundle is decoupled from eZ / Ibexa: the field type, legacy bridge, admin UI integration, XmlText / RichText converters and eZ commands are removed, use [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa) for the Ibexa integration
+* `netgen/open-graph-bundle` is no longer supported and the Open Graph handler is removed
+* requires PHP 8.1+, Symfony 5.4 or 6.2+ (Symfony 7 is excluded by the Composer constraints), `doctrine/orm` 2.10+, `doctrine/doctrine-bundle` 2.4+ and `cloudinary/cloudinary_php` 2.9+ (Cloudinary SDK v1 is no longer supported)
+* Composer package type is now `symfony-bundle` (was `ezplatform-bundle`) and all non-bundle code lives in the new `Netgen\RemoteMedia\` namespace (`lib/`)
+* the `ngremotemedia_field_link` table and the `RemoteMediaFieldLink` entity are removed, resources are stored in the new `ngrm_remote_resource` and `ngrm_remote_resource_location` tables (Doctrine XML mappings), no Doctrine migrations are shipped and v2 data is not migrated automatically
+* `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value` is replaced by `Netgen\RemoteMedia\API\Values\RemoteResource` (identified by `remoteId`) and `RemoteResourceLocation` (crop settings, watermark text, source), `Variation` is replaced by `RemoteResourceVariation`
+* `Provider\Cloudinary\Search\Query` and `Result` are replaced by `Netgen\RemoteMedia\API\Search\Query` and `Result` (`getResults()` is now `getResources()` and returns `RemoteResource` objects)
+* `RemoteMediaProvider` is replaced by `Netgen\RemoteMedia\API\ProviderInterface` (service `netgen_remote_media.provider`), its methods take `RemoteResource` / `RemoteResourceLocation` objects
+* `VariationResolver` is replaced by `Netgen\RemoteMedia\Core\Resolver\Variation`, `getVariationsForContentType()` is replaced by `getAvailableVariations(?string $group)`
+* configuration is no longer siteaccess aware, `system.<siteaccess>.image_variations.<content type>` is now `image_variations.<variation group>` at the top level of `netgen_remote_media`
+* `cloudinary.folder_mode` is a new option which defaults to `dynamic`, 2.x had no such option and worked as `fixed`, so set it to `fixed` if your Cloudinary account uses fixed folder mode
+* the `netgen_remote_media.cloudinary.cache_ttl` parameter and the `ezpublish.cache_pool` service are replaced by the `cache.pool` (default `cache.app`, use a tag-aware pool) and `cache.ttl` (default `7200`) options
+* Twig functions `netgen_remote_*` are replaced by `ngrm_*` functions (`ngrm_remote_resource`, `ngrm_remote_resource_variation`, `ngrm_remote_resource_html_tag`, `ngrm_video_thumbnail`, `ngrm_remote_resource_download_url`, ...) and the `scaling_format` filter is now `ngrm_scaling_format`
+* console command `netgen:ngremotemedia:usage` is now `netgen:remote_media:usage`, the other `netgen:ngremotemedia:*` commands are removed
+* eZ admin routes are removed, routing now imports `@NetgenRemoteMediaBundle/Resources/config/routing.yml` (ajax routes `netgen_remote_media_ajax_*` and the Cloudinary notify callback)
+* `TransformationHandlersCompilerPass` is renamed to `TransformationHandlersPass` and most classes are now `final`, use decoration instead of extension
+* frontend assets are rebuilt (run `assets:install` again) and the main CSS class `ngremotemedia-type` is renamed to `ngremotemedia-container`
+
 ### Added
 
+* `cloudinary.folder_mode` option (`dynamic` / `fixed`) with support for both Cloudinary folder modes
 * `cloudinary.use_asset_folder_as_public_id_prefix` option which prefixes the public ID with the asset folder in `dynamic` folder mode, so the same file can be uploaded to different folders
-* upload error for an existing resource now names the folder when the conflict is limited to that folder
+* `cloudinary.append_extension`, `cloudinary.unique_filenames`, `cloudinary.cache_requests`, `cloudinary.log_requests` and `cloudinary.encryption_key` options
+* `named_objects` configuration with `ngrm_named_remote_resource` and `ngrm_named_remote_resource_location` Twig functions
+* `templates.view_resource` configuration
+* `RemoteMediaType` and `RemoteMediaFolderType` Symfony form types (options like `variation_group`, `allowed_types`, `parent_folder`, `disable_upload`, `hide_filename` and `upload_context`)
+* CKEditor 5 plugin for inserting remote media into rich text
+* protected resources, with `ngrm_authenticate_remote_resource` and `ngrm_authenticate_remote_resource_location` Twig functions
+* watermark text on resource locations, uploading from an external URL and moving resources between folders
+* `netgen:remote_media:refresh` command for refreshing stored resources
+* `NotificationReceivedEvent` dispatched on every Cloudinary webhook notification
+* the Cloudinary notify callback handles resource move, display name change and asset folder move / rename notifications (move and display name only in `dynamic` folder mode)
+* transformation handlers `flags`, `gravity`, `opacity` and `watermark_text`
+* `audio` and `document` resource types
+* `ngrm-change` browser event (`detail`: `inputFields`, `selectedImage`, `fieldId`, `changedField`) dispatched by the Vue app so custom listeners can react to a selection change, each field instance has its own modal portal
+* Croatian translations
 
 ### Changed
 
 * minimum version of `cloudinary/cloudinary_php` is now 2.9 (required for `asset_folder` and `use_asset_folder_as_public_id_prefix` upload parameters)
+* resource name is resolved from the Cloudinary `display_name` (Cloudinary resolves public ID and display name from the original filename)
+* password-protected PDFs are uploaded as `raw` resources
+* upload error for an existing resource now names the folder when the conflict is limited to that folder
+* the Vue app is reworked and the assets are rebuilt
 
 ### Fixed
 
