@@ -1,25 +1,6 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
-Upgrade to 3.0 (database migrations)
-------------------------------------
-
-### Database migrations
-
-The bundle now ships Doctrine migrations for its database tables. Run them with:
-
-```
-php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
-```
-
-If the tables already exist (for example, created with `doctrine:schema:update`), the initial migration fails. Create the migration version table, mark the initial migration as executed and run the migrations again (the `version` command does not create the version table by itself, so `sync-metadata-storage` has to run first):
-
-```
-php bin/console doctrine:migrations:sync-metadata-storage --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
-php bin/console doctrine:migrations:version 'Netgen\RemoteMedia\Migrations\Doctrine\Version030000' --add --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
-php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
-```
-
 Upgrade from 2.0 to 3.0
 -----------------------
 
@@ -27,7 +8,7 @@ Version 3.0 is a major release. The bundle is decoupled from eZ / Ibexa and cont
 
 ### Upgrade `composer.json`
 
-* Require `netgen/remote-media-bundle` `^3.0` and run `composer update`.
+* Require `netgen/remote-media-bundle` `^3.0` and run `composer update`. The bundle now requires `doctrine/doctrine-migrations-bundle`.
 * If you use Ibexa CMS, also require [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa), which provides the field type, the admin UI integration and the rich text integration that were removed from this bundle.
 * PHP 8.1+, Symfony 5.4 or 6.2+ (Symfony 7 is not supported), `doctrine/orm` 2.10+, `doctrine/doctrine-bundle` 2.4+ and `cloudinary/cloudinary_php` 2.9+ are required.
 * `netgen/open-graph-bundle` is no longer supported and the Open Graph handler is removed.
@@ -37,7 +18,19 @@ Version 3.0 is a major release. The bundle is decoupled from eZ / Ibexa and cont
 
 * The `ngremotemedia_field_link` table is no longer used.
 * The bundle maps two new entities to the `ngrm_remote_resource` and `ngrm_remote_resource_location` tables with Doctrine XML mappings.
-* This bundle does not ship Doctrine migrations, create the tables with the schema tooling of your project (for example a migration generated with `doctrine:migrations:diff`).
+* The tables are created by the Doctrine migration shipped with the bundle (own configuration `migrations/doctrine.yaml`, version table `ngrm_migration_versions`). Run it with:
+
+    ```
+    php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    ```
+
+* If the tables already exist (for example, created with `doctrine:schema:update` on an untagged 3.0), the migration fails. Create the version table, mark the migration as executed and run the migrations again:
+
+    ```
+    php bin/console doctrine:migrations:sync-metadata-storage --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    php bin/console doctrine:migrations:version 'Netgen\RemoteMedia\Migrations\Doctrine\Version030000' --add --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    ```
 * Data migration from the v2 data to the new tables is not part of this bundle yet, v2 data is not migrated automatically.
 
 ### Configuration

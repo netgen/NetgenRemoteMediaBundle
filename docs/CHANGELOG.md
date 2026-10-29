@@ -25,7 +25,7 @@
 ### Added
 
 * `cloudinary.folder_mode` option (`dynamic` / `fixed`) with support for both Cloudinary folder modes
-* Doctrine migration which creates the `ngrm_remote_resource` and `ngrm_remote_resource_location` tables, see [installation instructions](INSTALL.md#database)
+* Doctrine migration `Version030000` which creates the `ngrm_remote_resource` and `ngrm_remote_resource_location` tables, with its own configuration `migrations/doctrine.yaml` and version table `ngrm_migration_versions`, see [installation instructions](INSTALL.md#database)
 * `doctrine/doctrine-migrations-bundle` is now required
 * `cloudinary.use_asset_folder_as_public_id_prefix` option which prefixes the public ID with the asset folder in `dynamic` folder mode, so the same file can be uploaded to different folders
 * `cloudinary.append_extension`, `cloudinary.unique_filenames`, `cloudinary.cache_requests`, `cloudinary.log_requests` and `cloudinary.encryption_key` options
