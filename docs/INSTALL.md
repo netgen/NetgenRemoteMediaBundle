@@ -176,6 +176,26 @@ netgen_remote_media:
     resource: "@NetgenRemoteMediaBundle/Resources/config/routing.yml"
 ```
 
+## Database
+
+The bundle ships a Doctrine migration which creates its database tables. It requires MySQL or MariaDB:
+
+```
+php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+```
+
+Run this command after every update of the bundle, for example as part of your deployment, so new migrations are applied. You can also run it automatically by adding it to the Composer `post-update-cmd` (and/or `post-install-cmd`) scripts in your `composer.json`:
+
+```json
+{
+    "scripts": {
+        "post-update-cmd": [
+            "@php bin/console doctrine:migrations:migrate --no-interaction --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml"
+        ]
+    }
+}
+```
+
 ## Configure Cloudinary webhook notifications (optional)
 
 If you want to be able to manage resources through Cloudinary interface as well, you might want to configure the [Cloudinary webhook notifications](Cloudinary/WEBHOOK_NOTIFICATIONS.md). Read more on the link.

@@ -8,7 +8,7 @@
 * `netgen/open-graph-bundle` is no longer supported and the Open Graph handler is removed
 * requires PHP 8.1+, Symfony 5.4 or 6.2+ (Symfony 7 is excluded by the Composer constraints), `doctrine/orm` 2.10+, `doctrine/doctrine-bundle` 2.4+ and `cloudinary/cloudinary_php` 2.9+ (Cloudinary SDK v1 is no longer supported)
 * Composer package type is now `symfony-bundle` (was `ezplatform-bundle`) and all non-bundle code lives in the new `Netgen\RemoteMedia\` namespace (`lib/`)
-* the `ngremotemedia_field_link` table and the `RemoteMediaFieldLink` entity are removed, resources are stored in the new `ngrm_remote_resource` and `ngrm_remote_resource_location` tables (Doctrine XML mappings), no Doctrine migrations are shipped and v2 data is not migrated automatically
+* the `ngremotemedia_field_link` table and the `RemoteMediaFieldLink` entity are removed, resources are stored in the new `ngrm_remote_resource` and `ngrm_remote_resource_location` tables (Doctrine XML mappings) created by the shipped Doctrine migration `Version030000`, v2 data is not migrated automatically
 * `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value` is replaced by `Netgen\RemoteMedia\API\Values\RemoteResource` (identified by `remoteId`) and `RemoteResourceLocation` (crop settings, watermark text, source), `Variation` is replaced by `RemoteResourceVariation`
 * `Provider\Cloudinary\Search\Query` and `Result` are replaced by `Netgen\RemoteMedia\API\Search\Query` and `Result` (`getResults()` is now `getResources()` and returns `RemoteResource` objects)
 * `RemoteMediaProvider` is replaced by `Netgen\RemoteMedia\API\ProviderInterface` (service `netgen_remote_media.provider`), its methods take `RemoteResource` / `RemoteResourceLocation` objects
@@ -25,6 +25,8 @@
 ### Added
 
 * `cloudinary.folder_mode` option (`dynamic` / `fixed`) with support for both Cloudinary folder modes
+* Doctrine migration `Version030000` which creates the `ngrm_remote_resource` and `ngrm_remote_resource_location` tables, with its own configuration `migrations/doctrine.yaml` and version table `ngrm_migration_versions`, see [installation instructions](INSTALL.md#database)
+* `doctrine/doctrine-migrations-bundle` is now required
 * `cloudinary.use_asset_folder_as_public_id_prefix` option which prefixes the public ID with the asset folder in `dynamic` folder mode, so the same file can be uploaded to different folders
 * `cloudinary.append_extension`, `cloudinary.unique_filenames`, `cloudinary.cache_requests`, `cloudinary.log_requests` and `cloudinary.encryption_key` options
 * `named_objects` configuration with `ngrm_named_remote_resource` and `ngrm_named_remote_resource_location` Twig functions
