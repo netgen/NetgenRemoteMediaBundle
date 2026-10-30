@@ -12,6 +12,10 @@
 * **BC break:** `RemoteMediaType` defaults to `upload_limit: null`, so fields without the option now return an `ArrayCollection`. Add `'upload_limit' => 1` to every single-resource field, see [UPGRADE.md](UPGRADE.md).
 * the canonical wire format for collection submissions is the JSON `collectionPayload` field; indexed per-field submissions are deprecated fallbacks.
 
+### Removed
+
+* unused legacy interface labels (`Search for media`, `Cancel`, `next`, `prev` etc.) from the widget and `/configuration` translations; the interface uses the `ngrm.edit.vue.*` keys.
+
 ### Fixed
 
 * upload limits are propagated to the Vue widget and enforced server-side during form submission, independently of client-submitted values.
