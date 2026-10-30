@@ -94,6 +94,8 @@ export const defaultValue = {
       'media_gallery_load_more': 'media_gallery_load_more',
       'multi_select_add_selected': 'multi_select_add_selected',
       'multi_select_deselect': 'multi_select_deselect',
+      'multi_select_selected': 'multi_select_selected',
+      'multi_select_selected_remaining': 'multi_select_selected_remaining',
       'limit_reached': 'limit_reached',
       'Search for media': 'Search for media',
       'Load more': 'Load more',

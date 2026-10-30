@@ -136,6 +136,8 @@ ngrm:
             multi_gallery_remove: 'Ukloni'
             multi_select_add_selected: 'Dodaj %count% odabranih'
             multi_select_deselect: 'Poništi odabir'
+            multi_select_selected: 'Odabrano: %count%'
+            multi_select_selected_remaining: 'Odabrano: %count%, preostalo mjesta: %remaining%'
             reorder:
                 drag: 'Povucite za promjenu redoslijeda'
                 move_previous: 'Premjesti na prethodnu poziciju'

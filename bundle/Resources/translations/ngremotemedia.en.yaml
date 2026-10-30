@@ -136,6 +136,8 @@ ngrm:
             multi_gallery_remove: 'Remove'
             multi_select_add_selected: 'Add %count% Selected Item(s)'
             multi_select_deselect: 'Deselect'
+            multi_select_selected: '%count% selected'
+            multi_select_selected_remaining: '%count% selected, %remaining% slot(s) remaining'
             reorder:
                 drag: 'Drag to reorder'
                 move_previous: 'Move to previous position'

@@ -132,6 +132,8 @@ ngrm:
             multi_gallery_remove: 'Fjern'
             multi_select_add_selected: 'Legg til %count% valgt(e)'
             multi_select_deselect: 'Fjern markering'
+            multi_select_selected: '%count% valgt'
+            multi_select_selected_remaining: '%count% valgt, %remaining% plass(er) igjen'
             reorder:
                 drag: 'Dra for å endre rekkefølge'
                 move_previous: 'Flytt til forrige posisjon'
