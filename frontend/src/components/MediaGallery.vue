@@ -142,14 +142,19 @@ export default {
     },
     selectionMessage() {
       if (!this.multiSelect) return '';
+      const count = this.selectedItems.length;
       if (!this.hasSelectionLimit) {
-        return `${this.selectedItems.length} item(s) selected`;
+        return (this.translations.multi_select_selected || '%count% selected')
+          .replace('%count%', count);
       }
-      const remaining = this.remainingSlots - this.selectedItems.length;
+      const remaining = this.remainingSlots - count;
       if (remaining <= 0) {
-        return `Selection limit reached (${this.remainingSlots} maximum)`;
+        return (this.translations.limit_reached || 'File limit reached (%limit% maximum)')
+          .replace('%limit%', this.selectionLimit);
       }
-      return `${this.selectedItems.length} selected, ${remaining} slot(s) remaining`;
+      return (this.translations.multi_select_selected_remaining || '%count% selected, %remaining% slot(s) remaining')
+        .replace('%count%', count)
+        .replace('%remaining%', remaining);
     }
   },
   methods: {
