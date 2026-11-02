@@ -1,12 +1,12 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
-Upgrade from 3.0 to 3.1
------------------------
+Upgrade from 3.0.1 to 3.0.2
+---------------------------
 
 ### Database
 
-* Version 3.1.0 ships the `Version030100` migration. Run it with:
+* Version 3.0.2 ships the `Version030002` migration. Run it with:
 
     ```
     php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
@@ -25,7 +25,7 @@ Upgrade from 3.0 to 3.1
     ```
 
 * Do not hide the `ngrm_migration_versions` table (for example with `~^(?!ngrm_)~`). The migrations of this bundle do not find the table then and the second run of the command fails with `TableExistsException`.
-* The diff also proposes to drop `ngrm_migration_versions`, since it is the version table of this bundle and not of the project. This was already the case in 3.0. To exclude it, pass a filter to the diff command, which replaces `schema_filter` for that run, so repeat the project filters in it:
+* The diff also proposes to drop `ngrm_migration_versions`, since it is the version table of this bundle and not of the project. This was already the case in 3.0.1. To exclude it, pass a filter to the diff command, which replaces `schema_filter` for that run, so repeat the project filters in it:
 
     ```
     php bin/console doctrine:migrations:diff --filter-expression='~^(?!(ngrm_migration_versions|ngrm_remote_media_content_link|nglayouts_remote_media_item)$)~'

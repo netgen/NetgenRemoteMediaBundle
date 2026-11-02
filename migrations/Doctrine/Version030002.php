@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * The tables belong to netgen/remote-media-ibexa and netgen/layouts-remote-media and are created even if those packages are not installed.
  */
-final class Version030100 extends AbstractMigration
+final class Version030002 extends AbstractMigration
 {
     public function up(Schema $schema): void
     {

@@ -1,10 +1,10 @@
 # Netgen Remote Media Bundle changelog
 
-## 3.1.0
+## 3.0.2
 
 ### Added
 
-* Doctrine migration `Version030100` which creates the `ngrm_remote_media_content_link` table of [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa) and the `nglayouts_remote_media_item` table of [netgen/layouts-remote-media](https://github.com/netgen-layouts/layouts-remote-media), the tables are created even if those packages are not installed
+* Doctrine migration `Version030002` which creates the `ngrm_remote_media_content_link` table of [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa) and the `nglayouts_remote_media_item` table of [netgen/layouts-remote-media](https://github.com/netgen-layouts/layouts-remote-media), the tables are created even if those packages are not installed
 * the migration widens the `value` column of an already existing `nglayouts_remote_media_item` table to `varchar(768)` with the case-sensitive `utf8mb4_bin` collation, existing tables and data are kept
 
 ### Changed
