@@ -1,6 +1,37 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
+Upgrade from 3.0.1 to 3.0.2
+---------------------------
+
+### Database
+
+* Version 3.0.2 ships the `Version030002` migration. Run it with:
+
+    ```
+    php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    ```
+
+* The migration creates the `ngrm_remote_media_content_link` table used by `netgen/remote-media-ibexa` and the `nglayouts_remote_media_item` table used by `netgen/layouts-remote-media`. The tables are created also if those packages are not installed, they stay empty and unused then.
+* Tables which already exist (for example created with `doctrine:schema:update`) are kept with their data. The migration only widens `nglayouts_remote_media_item.value` to `varchar(768)` with the `utf8mb4_bin` collation.
+* `netgen/remote-media-ibexa` and `netgen/layouts-remote-media` ship no migrations of their own, the command above is the only one to run.
+* All Netgen Remote Media packages share the migrations of this bundle and the version table `ngrm_migration_versions`. One command then updates the database of every installed package, and the tables of the integration packages are always created after `ngrm_remote_resource_location`, which they reference.
+* The `down()` method drops both tables together with their data.
+* If your project runs `doctrine:migrations:diff` without the integration packages, the diff proposes to drop the two tables. Hide them with the `schema_filter` of the Doctrine DBAL connection:
+
+    ```yaml
+    doctrine:
+        dbal:
+            schema_filter: '~^(?!(ngrm_remote_media_content_link|nglayouts_remote_media_item)$)~'
+    ```
+
+* Do not hide the `ngrm_migration_versions` table (for example with `~^(?!ngrm_)~`). The migrations of this bundle do not find the table then and the second run of the command fails with `TableExistsException`.
+* The diff also proposes to drop `ngrm_migration_versions`, since it is the version table of this bundle and not of the project. This was already the case in 3.0.1. To exclude it, pass a filter to the diff command, which replaces `schema_filter` for that run, so repeat the project filters in it:
+
+    ```
+    php bin/console doctrine:migrations:diff --filter-expression='~^(?!(ngrm_migration_versions|ngrm_remote_media_content_link|nglayouts_remote_media_item)$)~'
+    ```
+
 Upgrade from 3.0.0 to 3.0.1
 ---------------------------
 
