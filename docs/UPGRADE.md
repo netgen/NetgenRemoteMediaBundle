@@ -1,6 +1,13 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
+Upgrade from 3.x to 4.0
+-----------------------
+
+### Code changes
+
+* `ProviderInterface::generateLocationHtmlTag()` is now part of the interface. Custom providers which don't extend `AbstractProvider` must implement it. In 3.1 they triggered a deprecation and the TWIG runtime applied the location overrides itself.
+
 Upgrade from 3.0.3 to 3.1.0
 ---------------------------
 

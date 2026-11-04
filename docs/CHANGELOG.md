@@ -1,5 +1,11 @@
 # Netgen Remote Media Bundle changelog
 
+## 4.0.0
+
+### BC breaks
+
+* `generateLocationHtmlTag()` is added to `ProviderInterface` (it was declared with `@method` since 3.1), custom providers which don't extend `AbstractProvider` must implement it, the TWIG runtime no longer falls back to `generateHtmlTag()`
+
 ## 3.1.0
 
 ### Added
