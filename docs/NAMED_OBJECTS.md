@@ -19,11 +19,13 @@ netgen_remote_media:
 
 ### Remote resource location
 
-If you also need a location for that resource, it's possible by using configuration for locations. Configuration consists of key, value pairs, where key is the desired name (eg. `my_resource_location`) and value is another array which accepts three keys:
+If you also need a location for that resource, it's possible by using configuration for locations. Configuration consists of key, value pairs, where key is the desired name (eg. `my_resource_location`) and value is another array which accepts the following keys:
 
 - `resource_remote_id` - remote ID of the resource on the cloud
 - `source` (optional) - text that will be used for the location source (eg. `named_my_resource_location`)
 - `watermark_text` (optional) - watermark text which can be used if a watermaked variation gets built from that location
+- `alt_text` (optional) - alt text override for the location, used instead of the alt text stored on the cloud
+- `caption` (optional) - caption override for the location, used instead of the caption stored on the cloud
 
 Example:
 
@@ -35,6 +37,7 @@ netgen_remote_media:
                 resource_remote_id: 'upload|image|folder/my_resource'
                 source: 'named_my_resource_location'
                 watermark_text: 'Netgen.io'
+                alt_text: 'Netgen logo'
 ```
 
 ## Usage

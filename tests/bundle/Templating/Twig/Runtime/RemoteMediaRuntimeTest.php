@@ -765,4 +765,28 @@ final class RemoteMediaRuntimeTest extends AbstractTestCase
         self::assertTrue((new RemoteMediaRuntime($provider, $variationResolver, CloudinaryProvider::FOLDER_MODE_DYNAMIC, true))->hasFolderScopedUploads());
         self::assertFalse((new RemoteMediaRuntime($provider, $variationResolver, CloudinaryProvider::FOLDER_MODE_DYNAMIC, false))->hasFolderScopedUploads());
     }
+
+    public function testGetRemoteResourceLocationHtmlTag(): void
+    {
+        $location = new RemoteResourceLocation(
+            remoteResource: new RemoteResource(
+                remoteId: 'upload|image|test_image.jpg',
+                type: 'image',
+                url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
+                md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+            ),
+            altTextOverride: 'Local alt text',
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('generateLocationHtmlTag')
+            ->with($location, ['class' => 'test'], false, false)
+            ->willReturn('<img alt="Local alt text">');
+
+        self::assertSame(
+            '<img alt="Local alt text">',
+            $this->runtime->getRemoteResourceLocationHtmlTag($location, ['class' => 'test']),
+        );
+    }
 }

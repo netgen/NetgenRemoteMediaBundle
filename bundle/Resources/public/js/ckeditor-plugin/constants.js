@@ -17,6 +17,8 @@ export const viewAttributes = {
   variationGroup: `${dataPrefix}-variation-group`,
   viewEndpoint: `${dataPrefix}-view-endpoint`,
 };
+// Alignment names supported by the CKEditor 5 alignment feature
+export const alignments = ['left', 'center', 'right', 'justify'];
 export const datasetAttributes = {
   fieldId: 'fieldId',
   selectedImage: 'selectedImage',
@@ -124,6 +126,10 @@ export const defaultValue = {
       'preview_alternate_text_info': 'preview_alternate_text_info',
       'preview_caption': 'preview_caption',
       'preview_caption_info': 'preview_caption_info',
+      'preview_alternate_text_override': 'preview_alternate_text_override',
+      'preview_alternate_text_override_info': 'preview_alternate_text_override_info',
+      'preview_caption_override': 'preview_caption_override',
+      'preview_caption_override_info': 'preview_caption_override_info',
       'preview_tags': 'preview_tags',
       'preview_tags_info': 'preview_tags_info',
       'preview_watermark_text': 'preview_watermark_text',
@@ -148,6 +154,8 @@ export const defaultValue = {
       type: 'type',
       altText: 'altText',
       caption: 'caption',
+      altTextOverride: 'altTextOverride',
+      captionOverride: 'captionOverride',
       tags: 'tags[]',
       cropSettings: 'cropSettings',
       source: 'source',
@@ -176,6 +184,8 @@ export const defaultValue = {
     alternateText: '',
     caption: '',
     watermarkText: '',
+    altTextOverride: '',
+    captionOverride: '',
     tags: [],
     size: '',
     variations: {},

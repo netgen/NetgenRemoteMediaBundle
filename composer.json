@@ -33,7 +33,10 @@
         "symfony/framework-bundle": "^5.4 || ^6.2",
         "symfony/proxy-manager-bridge": "^5.4 || ^6.2",
         "symfony/form": "^5.4 || ^6.2",
+        "symfony/serializer": "^5.4 || ^6.2",
+        "symfony/translation": "^5.4 || ^6.2",
         "doctrine/doctrine-bundle": "^2.4",
+        "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.10"
     },
     "require-dev": {
@@ -52,7 +55,8 @@
     "autoload": {
         "psr-4": {
             "Netgen\\RemoteMedia\\": "lib/",
-            "Netgen\\Bundle\\RemoteMediaBundle\\": "bundle/"
+            "Netgen\\Bundle\\RemoteMediaBundle\\": "bundle/",
+            "Netgen\\RemoteMedia\\Migrations\\": "migrations/"
         }
     },
     "autoload-dev": {

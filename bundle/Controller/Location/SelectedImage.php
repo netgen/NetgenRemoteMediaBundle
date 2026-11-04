@@ -54,6 +54,8 @@ final class SelectedImage
             'alternateText' => $remoteResource->getAltText(),
             'caption' => $remoteResource->getCaption(),
             'watermarkText' => $remoteResourceLocation->getWatermarkText(),
+            'altTextOverride' => $remoteResourceLocation->getAltTextOverride(),
+            'captionOverride' => $remoteResourceLocation->getCaptionOverride(),
             'tags' => $remoteResource->getTags(),
             'size' => $remoteResource->getSize(),
             'variations' => $this->service->resolveCropSettingsJson($remoteResourceLocation),

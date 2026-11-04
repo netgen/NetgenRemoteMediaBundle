@@ -1,15 +1,120 @@
 # Netgen Remote Media Bundle changelog
 
-## 3.0.0
+## 4.0.0
+
+### BC breaks
+
+* `generateLocationHtmlTag()` is added to `ProviderInterface` (it was declared with `@method` since 3.1), custom providers which don't extend `AbstractProvider` must implement it, the TWIG runtime no longer falls back to `generateHtmlTag()`
+
+## 3.1.0
 
 ### Added
 
+* alt text and caption overrides on `RemoteResourceLocation` (`alt_text_override` and `caption_override` columns), stored only on the location and never sent to the cloud, they take precedence over the values stored on the cloud
+* the overrides are editable in the interface (form and CKEditor 5 plugin) next to the cloud values, and configurable for named locations (`alt_text` and `caption`), see [form documentation](FORM.md#alt-text-and-caption-overrides) and [named objects](NAMED_OBJECTS.md)
+* `RemoteResourceLocation::getAltText()` and `RemoteResourceLocation::getCaption()` which return the override when it's set and the value from the cloud otherwise
+* `ngrm_remote_resource_location_html_tag` TWIG function and `ProviderInterface::generateLocationHtmlTag()` which render the resource of a location with its overrides
+* Doctrine migration `Version030100` which adds the two columns
+
+### Deprecated
+
+* not implementing `generateLocationHtmlTag()` in custom providers which don't extend `AbstractProvider` is deprecated, the method is declared with `@method` on `ProviderInterface` and will be added to the interface in 4.0, until then the TWIG runtime applies the overrides itself and calls `generateHtmlTag()` for such providers
+
+## 3.0.3
+
+### Added
+
+* CKEditor 5 plugin `fieldId` option accepts a `(editor) => string` function
+* CKEditor 5 plugin `format` option to replace how the remote media element is stored in editor data (default `htmlFormat` keeps the existing `div.ngremotemedia-cke5` markup)
+
+### Fixed
+
+* CKEditor 5 plugin is a regular function, so it loads without transpilation (CKEditor instantiates function plugins with `new`, which fails for arrow functions)
+* CKEditor 5 plugin field ids are unique per inserted element (previously a count-based suffix could repeat after removing an element)
+* CKEditor 5 plugin `config` option is deep merged over the defaults, so partial `paths`/`translations`/`inputFields` no longer drop the remaining keys
+* CKEditor 5 plugin restores element alignment when loading stored data, and stores it as valid `text-align` CSS
+* CKEditor 5 plugin no longer requests the selected image for elements stored without a location
+* CKEditor 5 plugin ignores invalid stored alignment values (earlier versions stored `"undefined"`), so saving unchanged content no longer adds `text-align:undefined;`
+* CKEditor 5 plugin keeps the default selected image when the selected image request fails, instead of storing the error response
+
+## 3.0.2
+
+### Added
+
+* Doctrine migration `Version030002` which creates the `ngrm_remote_media_content_link` table of [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa) and the `nglayouts_remote_media_item` table of [netgen/layouts-remote-media](https://github.com/netgen-layouts/layouts-remote-media), the tables are created even if those packages are not installed
+* the migration widens the `value` column of an already existing `nglayouts_remote_media_item` table to `varchar(768)` with the case-sensitive `utf8mb4_bin` collation, existing tables and data are kept
+
+### Changed
+
+* `netgen/remote-media-ibexa` and `netgen/layouts-remote-media` do not ship their own migrations, all tables of the Netgen Remote Media packages are created by the migrations of this bundle with the single version table `ngrm_migration_versions`, so one command updates the database of every installed package and the tables are always created in the right order, see [installation instructions](INSTALL.md#database)
+
+## 3.0.1
+
+### Fixed
+
+* `url` and `original_filename` of remote resources are widened to `TEXT` (non-ASCII filenames are percent-encoded and overflowed `varchar(255)`)
+* `remote_id` is widened to `varchar(768)` and switched to the case-sensitive `utf8mb4_bin` collation (Cloudinary public ids are case-sensitive)
+
+### Added
+
+* index on `ngrm_remote_resource_location.source` (named location lookups were full table scans)
+* all changes are applied by the Doctrine migration `Version030001`
+
+## 3.0.0
+
+### BC breaks
+
+* the bundle is decoupled from eZ / Ibexa: the field type, legacy bridge, admin UI integration, XmlText / RichText converters and eZ commands are removed, use [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa) for the Ibexa integration
+* `netgen/open-graph-bundle` is no longer supported and the Open Graph handler is removed
+* requires PHP 8.1+, Symfony 5.4 or 6.2+ (Symfony 7 is excluded by the Composer constraints), `doctrine/orm` 2.10+, `doctrine/doctrine-bundle` 2.4+ and `cloudinary/cloudinary_php` 2.9+ (Cloudinary SDK v1 is no longer supported)
+* Composer package type is now `symfony-bundle` (was `ezplatform-bundle`) and all non-bundle code lives in the new `Netgen\RemoteMedia\` namespace (`lib/`)
+* the `ngremotemedia_field_link` table and the `RemoteMediaFieldLink` entity are removed, resources are stored in the new `ngrm_remote_resource` and `ngrm_remote_resource_location` tables (Doctrine XML mappings) created by the shipped Doctrine migration `Version030000`, v2 data is not migrated automatically
+* `Netgen\Bundle\RemoteMediaBundle\Core\FieldType\RemoteMedia\Value` is replaced by `Netgen\RemoteMedia\API\Values\RemoteResource` (identified by `remoteId`) and `RemoteResourceLocation` (crop settings, watermark text, source), `Variation` is replaced by `RemoteResourceVariation`
+* `Provider\Cloudinary\Search\Query` and `Result` are replaced by `Netgen\RemoteMedia\API\Search\Query` and `Result` (`getResults()` is now `getResources()` and returns `RemoteResource` objects)
+* `RemoteMediaProvider` is replaced by `Netgen\RemoteMedia\API\ProviderInterface` (service `netgen_remote_media.provider`), its methods take `RemoteResource` / `RemoteResourceLocation` objects
+* `VariationResolver` is replaced by `Netgen\RemoteMedia\Core\Resolver\Variation`, `getVariationsForContentType()` is replaced by `getAvailableVariations(?string $group)`
+* configuration is no longer siteaccess aware, `system.<siteaccess>.image_variations.<content type>` is now `image_variations.<variation group>` at the top level of `netgen_remote_media`
+* `cloudinary.folder_mode` is a new option which defaults to `dynamic`, 2.x had no such option and worked as `fixed`, so set it to `fixed` if your Cloudinary account uses fixed folder mode
+* the `netgen_remote_media.cloudinary.cache_ttl` parameter and the `ezpublish.cache_pool` service are replaced by the `cache.pool` (default `cache.app`, use a tag-aware pool) and `cache.ttl` (default `7200`) options
+* Twig functions `netgen_remote_*` are replaced by `ngrm_*` functions (`ngrm_remote_resource`, `ngrm_remote_resource_variation`, `ngrm_remote_resource_html_tag`, `ngrm_video_thumbnail`, `ngrm_remote_resource_download_url`, ...) and the `scaling_format` filter is now `ngrm_scaling_format`
+* console command `netgen:ngremotemedia:usage` is now `netgen:remote_media:usage`, the other `netgen:ngremotemedia:*` commands are removed
+* eZ admin routes are removed, routing now imports `@NetgenRemoteMediaBundle/Resources/config/routing.yml` (ajax routes `netgen_remote_media_ajax_*` and the Cloudinary notify callback)
+* `TransformationHandlersCompilerPass` is renamed to `TransformationHandlersPass` and most classes are now `final`, use decoration instead of extension
+* frontend assets are rebuilt (run `assets:install` again) and the main CSS class `ngremotemedia-type` is renamed to `ngremotemedia-container`
+
+### Added
+
+* `cloudinary.folder_mode` option (`dynamic` / `fixed`) with support for both Cloudinary folder modes
+* Doctrine migration `Version030000` which creates the `ngrm_remote_resource` and `ngrm_remote_resource_location` tables, with its own configuration `migrations/doctrine.yaml` and version table `ngrm_migration_versions`, see [installation instructions](INSTALL.md#database)
+* `doctrine/doctrine-migrations-bundle` is now required
 * `cloudinary.use_asset_folder_as_public_id_prefix` option which prefixes the public ID with the asset folder in `dynamic` folder mode, so the same file can be uploaded to different folders
-* upload error for an existing resource now names the folder when the conflict is limited to that folder
+* `cloudinary.append_extension`, `cloudinary.unique_filenames`, `cloudinary.cache_requests`, `cloudinary.log_requests` and `cloudinary.encryption_key` options
+* `named_objects` configuration with `ngrm_named_remote_resource` and `ngrm_named_remote_resource_location` Twig functions
+* `templates.view_resource` configuration
+* `RemoteMediaType` and `RemoteMediaFolderType` Symfony form types (options like `variation_group`, `allowed_types`, `parent_folder`, `disable_upload`, `hide_filename` and `upload_context`)
+* CKEditor 5 plugin for inserting remote media into rich text
+* protected resources, with `ngrm_authenticate_remote_resource` and `ngrm_authenticate_remote_resource_location` Twig functions
+* watermark text on resource locations, uploading from an external URL and moving resources between folders
+* `netgen:remote_media:refresh` command for refreshing stored resources
+* `NotificationReceivedEvent` dispatched on every Cloudinary webhook notification
+* the Cloudinary notify callback handles resource move, display name change and asset folder move / rename notifications (move and display name only in `dynamic` folder mode)
+* transformation handlers `flags`, `gravity`, `opacity` and `watermark_text`
+* `audio` and `document` resource types
+* `ngrm-change` browser event (`detail`: `inputFields`, `selectedImage`, `fieldId`, `changedField`) dispatched by the Vue app so custom listeners can react to a selection change, each field instance has its own modal portal
+* Croatian translations
 
 ### Changed
 
 * minimum version of `cloudinary/cloudinary_php` is now 2.9 (required for `asset_folder` and `use_asset_folder_as_public_id_prefix` upload parameters)
+* resource name is resolved from the Cloudinary `display_name` (Cloudinary resolves public ID and display name from the original filename)
+* password-protected PDFs are uploaded as `raw` resources
+* upload error for an existing resource now names the folder when the conflict is limited to that folder
+* the Vue app is reworked and the assets are rebuilt
+
+### Fixed
+
+* Doctrine XML mappings use the correct `http://` namespaces, so they pass Doctrine XML validation (`validate_xml_mapping`)
+* `symfony/serializer` and `symfony/translation` are now required (the bundle depends on both but did not declare them)
 
 ## 1.1.11
 

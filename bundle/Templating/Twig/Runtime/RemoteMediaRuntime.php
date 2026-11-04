@@ -107,6 +107,11 @@ final class RemoteMediaRuntime extends AbstractExtension
         return $this->provider->generateHtmlTag($resource, $htmlAttributes, $forceVideo, $useThumbnail);
     }
 
+    public function getRemoteResourceLocationHtmlTag(RemoteResourceLocation $location, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string
+    {
+        return $this->provider->generateLocationHtmlTag($location, $htmlAttributes, $forceVideo, $useThumbnail);
+    }
+
     public function getRemoteResourceVariationHtmlTag(
         RemoteResourceLocation $location,
         string $variationGroup,
