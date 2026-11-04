@@ -1,12 +1,13 @@
 import { createElement } from '@ckeditor/ckeditor5-utils';
 import { attributes, defaultValue, pluginKey } from '../../constants';
+import mergeDeep from '../../utils/merge-deep';
 
 const renderField = ({ domElement, model, editor }) => {
   // eslint-disable-next-line no-param-reassign
   domElement.textContent = '';
 
   const pluginConfig = editor.config.get(pluginKey);
-  const config = JSON.stringify(Object.assign({}, defaultValue.config, pluginConfig.config));
+  const config = JSON.stringify(mergeDeep(defaultValue.config, pluginConfig.config));
   const fieldId = model.getAttribute(attributes.fieldId);
   const selectedImage = JSON.stringify(model.getAttribute(attributes.selectedImage));
   domElement.append(
