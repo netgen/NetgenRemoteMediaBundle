@@ -19,6 +19,10 @@ use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Twig\Extension\AbstractExtension;
 
 use function count;
+use function get_debug_type;
+use function in_array;
+use function method_exists;
+use function trigger_deprecation;
 
 final class RemoteMediaRuntime extends AbstractExtension
 {
@@ -109,7 +113,32 @@ final class RemoteMediaRuntime extends AbstractExtension
 
     public function getRemoteResourceLocationHtmlTag(RemoteResourceLocation $location, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string
     {
-        return $this->provider->generateLocationHtmlTag($location, $htmlAttributes, $forceVideo, $useThumbnail);
+        // The check and the fallback below will be removed in 4.0, when generateLocationHtmlTag() is added to ProviderInterface.
+        if (method_exists($this->provider, 'generateLocationHtmlTag')) {
+            return $this->provider->generateLocationHtmlTag($location, $htmlAttributes, $forceVideo, $useThumbnail);
+        }
+
+        trigger_deprecation(
+            'netgen/remote-media-bundle',
+            '3.1',
+            'Not implementing the "%s::generateLocationHtmlTag()" method in "%s" is deprecated, the method will be added to the interface in 4.0.',
+            ProviderInterface::class,
+            get_debug_type($this->provider),
+        );
+
+        $type = $location->getRemoteResource()->getType();
+        $isRenderedAsImage = $type === RemoteResource::TYPE_IMAGE
+            || ($useThumbnail && in_array($type, [RemoteResource::TYPE_VIDEO, RemoteResource::TYPE_AUDIO], true));
+
+        if ($isRenderedAsImage && !($htmlAttributes['alt'] ?? null) && $location->getAltTextOverride() !== null) {
+            $htmlAttributes['alt'] = $location->getAltTextOverride();
+        }
+
+        if ($isRenderedAsImage && !($htmlAttributes['title'] ?? null) && $location->getCaptionOverride() !== null) {
+            $htmlAttributes['title'] = $location->getCaptionOverride();
+        }
+
+        return $this->provider->generateHtmlTag($location->getRemoteResource(), $htmlAttributes, $forceVideo, $useThumbnail);
     }
 
     public function getRemoteResourceVariationHtmlTag(

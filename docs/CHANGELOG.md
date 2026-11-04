@@ -10,9 +10,9 @@
 * `ngrm_remote_resource_location_html_tag` TWIG function and `ProviderInterface::generateLocationHtmlTag()` which render the resource of a location with its overrides
 * Doctrine migration `Version030100` which adds the two columns
 
-### BC breaks
+### Deprecated
 
-* `ProviderInterface` has the new method `generateLocationHtmlTag()`, custom providers which don't extend `AbstractProvider` must implement it
+* not implementing `generateLocationHtmlTag()` in custom providers which don't extend `AbstractProvider` is deprecated, the method is declared with `@method` on `ProviderInterface` and will be added to the interface in 4.0, until then the TWIG runtime applies the overrides itself and calls `generateHtmlTag()` for such providers
 
 ## 3.0.3
 

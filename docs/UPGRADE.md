@@ -24,7 +24,7 @@ Upgrade from 3.0.3 to 3.1.0
 
 ### Code changes
 
-* `ProviderInterface` has the new method `generateLocationHtmlTag()`. Custom providers which don't extend `AbstractProvider` must implement it.
+* `ProviderInterface` declares the new method `generateLocationHtmlTag()` with `@method`, it will be added to the interface in 4.0. `AbstractProvider` implements it. Custom providers which don't extend `AbstractProvider` keep working, but `ngrm_remote_resource_location_html_tag` triggers a deprecation for them. Implement the method before upgrading to 4.0.
 * The overrides are used only where a location is rendered through `ngrm_remote_resource_location_html_tag`, `ngrm_remote_resource_variation_html_tag`, `location.altText` or `location.caption`. Templates which read the values from `location.remoteResource` keep showing the values from the cloud, see [form documentation](FORM.md#alt-text-and-caption-overrides).
 * Projects which build the form data of a remote media field manually (outside of the `RemoteMediaType` form, for example in import scripts) must send the current `altTextOverride` and `captionOverride` of the location. A missing key is saved as an empty override, as for the other location fields.
 
