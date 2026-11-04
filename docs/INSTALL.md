@@ -178,9 +178,14 @@ netgen_remote_media:
 
 ## Database
 
-The bundle ships Doctrine migrations which create its database tables. They also create the tables of [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa) and [netgen/layouts-remote-media](https://github.com/netgen-layouts/layouts-remote-media), those packages ship no migrations. It requires MySQL or MariaDB.
+The bundle ships Doctrine migrations which create its database tables. They require MySQL or MariaDB.
 
-One command covers the tables of all three packages, with the single version table `ngrm_migration_versions`:
+The migrations also create the tables of [netgen/remote-media-ibexa](https://github.com/netgen/remote-media-ibexa) and [netgen/layouts-remote-media](https://github.com/netgen-layouts/layouts-remote-media), even if those packages are not installed. Those packages ship no migrations of their own. All Netgen Remote Media packages share the migrations of this bundle and one version table, `ngrm_migration_versions`, because:
+
+* one command updates the database of every installed package, instead of a separate command and version table for each package
+* the tables are always created in the right order, the tables of the integration packages reference `ngrm_remote_resource_location`
+
+Run the migrations with:
 
 ```
 php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml

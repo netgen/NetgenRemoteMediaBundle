@@ -9,7 +9,7 @@
 
 ### Changed
 
-* `netgen/remote-media-ibexa` and `netgen/layouts-remote-media` do not ship their own migrations, all tables of the Netgen Remote Media packages are created by the migrations of this bundle with the single version table `ngrm_migration_versions`, see [installation instructions](INSTALL.md#database)
+* `netgen/remote-media-ibexa` and `netgen/layouts-remote-media` do not ship their own migrations, all tables of the Netgen Remote Media packages are created by the migrations of this bundle with the single version table `ngrm_migration_versions`, so one command updates the database of every installed package and the tables are always created in the right order, see [installation instructions](INSTALL.md#database)
 
 ## 3.0.1
 
