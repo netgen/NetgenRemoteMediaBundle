@@ -1,6 +1,33 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
+Upgrade from 3.0.3 to 3.1.0
+---------------------------
+
+### Database
+
+* Version 3.1.0 ships the `Version030100` migration. Run it with:
+
+    ```
+    php bin/console doctrine:migrations:migrate --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    ```
+
+* The migration adds the nullable `alt_text_override` and `caption_override` columns to `ngrm_remote_resource_location`. Existing locations have no overrides, so they keep using the alt text and caption stored on the cloud.
+* If the columns already exist (for example, added with `doctrine:schema:update` while testing an untagged version), the migration fails. Mark it as executed instead:
+
+    ```
+    php bin/console doctrine:migrations:version 'Netgen\RemoteMedia\Migrations\Doctrine\Version030100' --add --configuration=vendor/netgen/remote-media-bundle/migrations/doctrine.yaml
+    ```
+
+* The `down()` method drops both columns together with the stored overrides.
+* If the Doctrine metadata cache is stored outside of the Symfony cache directory (for example in Redis), clear it after the upgrade with `php bin/console doctrine:cache:clear-metadata`. Otherwise Doctrine keeps using the old mapping and loading a location fails with `Typed property Netgen\RemoteMedia\API\Values\RemoteResourceLocation::$altTextOverride must not be accessed before initialization`.
+
+### Code changes
+
+* `ProviderInterface` has the new method `generateLocationHtmlTag()`. Custom providers which don't extend `AbstractProvider` must implement it.
+* The overrides are used only where a location is rendered through `ngrm_remote_resource_location_html_tag`, `ngrm_remote_resource_variation_html_tag`, `location.altText` or `location.caption`. Templates which read the values from `location.remoteResource` keep showing the values from the cloud, see [form documentation](FORM.md#alt-text-and-caption-overrides).
+* Projects which build the form data of a remote media field manually (outside of the `RemoteMediaType` form, for example in import scripts) must send the current `altTextOverride` and `captionOverride` of the location. A missing key is saved as an empty override, as for the other location fields.
+
 Upgrade from 3.0.1 to 3.0.2
 ---------------------------
 
