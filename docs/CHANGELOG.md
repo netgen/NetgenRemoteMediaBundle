@@ -1,5 +1,19 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.1.0
+
+### Added
+
+* alt text and caption overrides on `RemoteResourceLocation` (`alt_text_override` and `caption_override` columns), stored only on the location and never sent to the cloud, they take precedence over the values stored on the cloud
+* the overrides are editable in the interface (form and CKEditor 5 plugin) next to the cloud values, and configurable for named locations (`alt_text` and `caption`), see [form documentation](FORM.md#alt-text-and-caption-overrides) and [named objects](NAMED_OBJECTS.md)
+* `RemoteResourceLocation::getAltText()` and `RemoteResourceLocation::getCaption()` which return the override when it's set and the value from the cloud otherwise
+* `ngrm_remote_resource_location_html_tag` TWIG function and `ProviderInterface::generateLocationHtmlTag()` which render the resource of a location with its overrides
+* Doctrine migration `Version030100` which adds the two columns
+
+### Deprecated
+
+* not implementing `generateLocationHtmlTag()` in custom providers which don't extend `AbstractProvider` is deprecated, the method is declared with `@method` on `ProviderInterface` and will be added to the interface in 4.0, until then the TWIG runtime applies the overrides itself and calls `generateHtmlTag()` for such providers
+
 ## 3.0.3
 
 ### Added

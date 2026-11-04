@@ -168,6 +168,7 @@ final class SelectedImageTest extends TestCase
             cropSettings: [new CropSettings('testVariation')],
             watermarkText: 'watermarkText',
             id: 1,
+            altTextOverride: 'altTextOverride',
         );
     }
 
@@ -209,6 +210,8 @@ final class SelectedImageTest extends TestCase
             'alternateText' => 'altText',
             'caption' => 'caption',
             'watermarkText' => 'watermarkText',
+            'altTextOverride' => 'altTextOverride',
+            'captionOverride' => null,
             'tags' => ['test'],
             'size' => 0,
             'variations' => [
