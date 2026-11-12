@@ -61,6 +61,10 @@
       </div>
     </div>
 
+    <div class="load-more-wrapper" v-if="canLoadMore">
+      <button type="button" class="btn btn-blue" @click="$emit('loadMore')">{{ this.translations.media_gallery_load_more }}</button>
+    </div>
+
     <!-- Transient banner for blocked selection attempts -->
     <div v-if="notice"
          class="limit-indicator limit-exceeded"
@@ -81,10 +85,7 @@
         {{ (translations.multi_select_add_selected || 'Add selected (%count%)').replace('%count%', selectedItems.length) }}
       </button>
     </div>
-    
-    <div class="load-more-wrapper" v-if="canLoadMore">
-      <button type="button" class="btn btn-blue" @click="$emit('loadMore')">{{ this.translations.media_gallery_load_more }}</button>
-    </div>
+
   </div>
 </template>
 
@@ -229,11 +230,19 @@ export default {
 .media-gallery {
   position: relative;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  > * {
+    flex-shrink: 0;
+  }
 
   .items {
+    flex: 1 1 auto;
+    min-height: 0;
     padding: 15px;
     overflow-y: auto;
-    height: calc(100% - 50px);
 
     &.loading {
       opacity: 0.5;
@@ -364,8 +373,6 @@ export default {
   }
 
   .multi-select-bar {
-    position: sticky;
-    bottom: 0;
     padding: 15px;
     background-color: #f8f9fa;
     border-top: 2px solid #dee2e6;
@@ -403,10 +410,6 @@ export default {
     background-color: $white;
     text-align: right;
     box-shadow: inset 1px 0 0 0 $mercury, 0 -1px 0 0 $mercury;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
   }
 }
 </style>
