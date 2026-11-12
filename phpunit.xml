@@ -10,6 +10,7 @@
     requireCoverageMetadata="true"
 >
     <php>
+        <ini name="date.timezone" value="UTC"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="max[self]=0"/>
     </php>
 

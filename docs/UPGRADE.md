@@ -1,6 +1,20 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
+Upgrade from 3.0 to 4.0
+-----------------------
+
+* `RemoteMediaType` has a new `upload_limit` option that defaults to `null` (unlimited). In that mode the field submits and returns a Doctrine `ArrayCollection` of `RemoteResourceLocation` objects instead of a single location. To keep a field single, add `'upload_limit' => 1`:
+
+    ```php
+    $builder->add('remote_resource_location', RemoteMediaType::class, [
+        'upload_limit' => 1,
+    ]);
+    ```
+
+    With `upload_limit: 1` the field still returns one `RemoteResourceLocation` or `null`, so its entity mapping and stored data stay as they are.
+* To turn an existing single field into a collection, change the entity relation to a to-many one (see [FORM.md](FORM.md)) and move the data with a Doctrine migration: copy each non-null `remote_resource_location_id` from the old column into the new join table, then drop the column. The locations themselves stay in `ngrm_remote_resource_location`.
+
 Upgrade from 2.0 to 3.0
 -----------------------
 

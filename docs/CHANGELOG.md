@@ -1,5 +1,26 @@
 # Netgen Remote Media Bundle changelog
 
+## 4.0.0
+
+### Added
+
+* `upload_limit` option on `RemoteMediaType`. `1` keeps the single-resource behaviour (one `RemoteResourceLocation` or `null`); `null` (unlimited) or any other positive integer turns the field into an ordered collection that submits/returns an `ArrayCollection` of `RemoteResourceLocation` objects.
+* multi-upload admin interface with drag-and-drop reordering, per-resource metadata editing and a folder tree selector.
+
+### Changed
+
+* **BC break:** `RemoteMediaType` defaults to `upload_limit: null`, so fields without the option now return an `ArrayCollection`. Add `'upload_limit' => 1` to every single-resource field, see [UPGRADE.md](UPGRADE.md).
+* the canonical wire format for collection submissions is the JSON `collectionPayload` field; indexed per-field submissions are deprecated fallbacks.
+
+### Removed
+
+* unused legacy interface labels (`Search for media`, `Cancel`, `next`, `prev` etc.) from the widget and `/configuration` translations; the interface uses the `ngrm.edit.vue.*` keys.
+
+### Fixed
+
+* upload limits are propagated to the Vue widget and enforced server-side during form submission, independently of client-submitted values.
+* the media picker shows resources that are already in the field as added and doesn't let them be selected again, so they no longer count twice towards the upload limit.
+
 ## 3.0.0
 
 ### Added

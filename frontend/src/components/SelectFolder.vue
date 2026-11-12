@@ -1,33 +1,36 @@
 <template>
-  <div class="folder-gallery">
-    <div :class="loading ? 'items loading' : 'items'">
+  <div class="folder-gallery" :class="{ collapsed: !isExpanded }">
+    <div class="breadcrumbs-header" @click="toggleExpanded">
       <div class="breadcrumbs">
-        <span>{{ this.config.translations.upload_breadcrumbs_info }} </span>
+        <span>{{ config.translations.upload_breadcrumbs_info }} </span>
         <span v-for="(folder, index) in breadcrumbs" :key="index">
           <span v-if="index !== 0"> / </span>
-          <a v-if="index !== breadcrumbs.length - 1" href="javascript:void(0);" @click="openFolder(folder.id)">
+          <a v-if="index !== breadcrumbs.length - 1" href="javascript:void(0);" @click.stop="openFolder(folder.id)">
             {{folder.label}}
           </a>
           <span v-else>{{folder.label}}</span>
         </span>
       </div>
+      <i class="fa toggle-icon" :class="isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+    </div>
 
+    <div v-if="isExpanded" :class="loading ? 'items loading' : 'items'">
       <div v-if="folders.length > 0 || allowCreate" class="info">
         <i class="fa fa-info-circle"></i>
-        {{ this.config.translations.upload_info_text }}
+        {{ config.translations.upload_info_text }}
       </div>
 
-      <div class="media" v-for="folder in folders" :key="folder.id" :class="{selected: folder.id === _self.folder}">
-        <div class="media-container" v-on:dblclick="openFolder(folder.id)">
+      <div class="media" v-for="folderItem in folders" :key="folderItem.id" :class="{selected: folderItem.id === folder}">
+        <div class="media-container" v-on:dblclick="openFolder(folderItem.id)">
           <span class="file-placeholder">
             <span class="icon-doc">
               <i class="fa fa-folder"></i>
             </span>
           </span>
-          <Label class="filename">{{folder.label}}</Label>
+          <Label class="filename">{{folderItem.label}}</Label>
         </div>
-        <button type="button" @click="$emit('select', folder.id)" class="btn btn-blue select-btn">
-          {{ _self.config.translations.upload_button_select }}
+        <button type="button" @click="$emit('select', folderItem.id)" class="btn btn-blue select-btn">
+          {{ config.translations.upload_button_select }}
         </button>
       </div>
       <div v-if="allowCreate" class="media new-folder">
@@ -37,14 +40,15 @@
               <i class="fa fa-folder"></i>
             </span>
           </span>
-          <input type="text" v-model="newFolder" :placeholder="this.config.translations.upload_placeholder_new_folder"/>
+          <input type="text" v-model="newFolder" :placeholder="config.translations.upload_placeholder_new_folder"/>
         </div>
         <button type="button" class="btn btn-blue select-btn" :disabled="newFolder === null" @click="createNewFolder">
-          {{ this.config.translations.upload_button_create }}
+          {{ config.translations.upload_button_create }}
         </button>
       </div>
+
+      <i v-if="loading" class="ng-icon ng-spinner" />
     </div>
-    <i v-if="loading" class="ng-icon ng-spinner" />
   </div>
 </template>
 
@@ -56,7 +60,14 @@ import {FOLDER_ROOT} from "../constants/facets";
 
 export default {
   name: "SelectFolder",
-  props: ["config", "selectedFolder"],
+  props: {
+    config: Object,
+    selectedFolder: String,
+    startExpanded: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       folders: [],
@@ -65,13 +76,18 @@ export default {
       loading: false,
       allowCreate: true,
       folder: this.selectedFolder,
+      isExpanded: this.startExpanded, // Use prop or default to collapsed
     };
   },
   methods: {
+    toggleExpanded() {
+      this.isExpanded = !this.isExpanded;
+    },
     openFolder(folderPath) {
       this.folder = folderPath;
       this.$emit('change', this.folder);
       this.loadSubFolders(folderPath);
+      this.isExpanded = true; // Auto-expand when navigating
     },
     async loadSubFolders(folderPath) {
       this.loading = true;
@@ -158,22 +174,42 @@ export default {
   },
   created() {
     if (this.config.folder) {
-      folder = this.config.folder.id;
+      this.folder = this.config.folder.id;
       this.allowCreate = false;
 
-      this.folder = folder;
       this.$emit('change', this.folder);
-      this.generateBreadcrumbs(folder);
+      this.generateBreadcrumbs(this.folder);
 
       return;
     }
 
-    let folder = null;
-    if (this.config.parentFolder) {
+    // Use selectedFolder prop if provided, otherwise use parentFolder
+    let folder = this.selectedFolder || null;
+    if (!folder && this.config.parentFolder) {
       folder = this.config.parentFolder.id;
     }
 
-    this.openFolder(folder);
+    // Load folders but don't auto-expand unless startExpanded prop is true
+    this.folder = folder;
+    this.$emit('change', this.folder);
+    this.loadSubFolders(folder);
+
+    // Generate breadcrumbs for the selected folder
+    if (this.folder) {
+      this.generateBreadcrumbs(this.folder);
+    }
+  },
+  watch: {
+    selectedFolder: function(newFolder, oldFolder) {
+      // Only update if the value actually changed and it's not the initial mount
+      if (newFolder !== oldFolder && oldFolder !== undefined) {
+        this.folder = newFolder;
+        if (newFolder) {
+          this.loadSubFolders(newFolder);
+          this.generateBreadcrumbs(newFolder);
+        }
+      }
+    }
   }
 };
 </script>
@@ -186,6 +222,35 @@ export default {
   position: relative;
   flex-grow: 1;
   height: calc(100% - 50px);
+
+  &.collapsed {
+    height: auto;
+    flex-grow: 0;
+  }
+
+  .breadcrumbs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: $wild-sand;
+    border: 1px solid $mercury;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 10px;
+
+    &:hover {
+      background-color: darken($wild-sand, 3%);
+    }
+
+    .toggle-icon {
+      color: $dusty-gray;
+      font-size: 14px;
+      margin-left: 10px;
+      flex-shrink: 0;
+    }
+  }
   overflow-y: auto;
 
   .items {

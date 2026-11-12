@@ -19,6 +19,7 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -633,6 +634,97 @@ final class UploadTest extends TestCase
         $this->controller->__invoke($request);
     }
 
+    #[DataProvider('rootFolderSentinelDataProvider')]
+    public function testUploadNormalizesRootFolderSentinels(string $folder): void
+    {
+        $request = new Request();
+        $request->request->add([
+            'folder' => $folder,
+        ]);
+
+        $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
+
+        $uploadedFileMock
+            ->expects(self::atLeastOnce())
+            ->method('getRealPath')
+            ->willReturn('/var/www/project/media/files/sample.pdf');
+
+        $uploadedFileMock
+            ->expects(self::exactly(2))
+            ->method('getClientOriginalName')
+            ->willReturn('sample');
+
+        $uploadedFileMock
+            ->expects(self::atLeastOnce())
+            ->method('getClientOriginalExtension')
+            ->willReturn('pdf');
+
+        $request->files->add([
+            'file' => $uploadedFileMock,
+        ]);
+
+        $this->fileHashFactoryMock
+            ->expects(self::once())
+            ->method('createHash')
+            ->with('/var/www/project/media/files/sample.pdf')
+            ->willReturn('a522f23sf81aa0afd03387c37e2b6eax');
+
+        $fileStruct = FileStruct::fromUploadedFile($uploadedFileMock);
+
+        $resourceStruct = new ResourceStruct(
+            $fileStruct,
+            'auto',
+            null,
+            'public',
+            $request->request->get('filename'),
+        );
+
+        $resource = new RemoteResource(
+            remoteId: 'upload|document|sample.pdf',
+            type: 'document',
+            url: 'https://cloudinary.com/test/upload/document/sample.pdf',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'sample.pdf',
+            size: 123,
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($resourceStruct)
+            ->willReturn($resource);
+
+        $response = $this->controller->__invoke($request);
+
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        self::assertSame(
+            json_encode([
+                'remoteId' => 'upload|document|sample.pdf',
+                'folder' => null,
+                'tags' => [],
+                'type' => 'document',
+                'visibility' => 'public',
+                'size' => 123,
+                'width' => null,
+                'height' => null,
+                'filename' => 'sample.pdf',
+                'originalFilename' => null,
+                'format' => null,
+                'browseUrl' => '',
+                'previewUrl' => '',
+                'url' => 'https://cloudinary.com/test/upload/document/sample.pdf',
+                'altText' => null,
+                'caption' => null,
+            ]),
+            $response->getContent(),
+        );
+    }
+
     public function testUploadExistingFile(): void
     {
         $request = new Request();
@@ -937,5 +1029,15 @@ final class UploadTest extends TestCase
         self::expectExceptionMessage('Missing file to upload');
 
         $this->controller->__invoke($request);
+    }
+
+    public static function rootFolderSentinelDataProvider(): iterable
+    {
+        return [
+            'empty' => [''],
+            'null string' => ['null'],
+            'undefined string' => ['undefined'],
+            'root sentinel' => ['(root)'],
+        ];
     }
 }

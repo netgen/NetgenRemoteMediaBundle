@@ -10,8 +10,11 @@ use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 
+use function is_array;
+use function is_string;
 use function json_decode;
 use function json_encode;
+use function sort;
 
 final class RemoteResourceService
 {
@@ -38,9 +41,9 @@ final class RemoteResourceService
             return true;
         }
 
-        $remoteResource->setAltText($data['altText'] ?? null);
-        $remoteResource->setCaption($data['caption'] ?? null);
-        $remoteResource->setTags($data['tags']);
+        $remoteResource->setAltText($this->normalizeNullableString($data['altText'] ?? null));
+        $remoteResource->setCaption($this->normalizeNullableString($data['caption'] ?? null));
+        $remoteResource->setTags($this->normalizeTags($data['tags'] ?? []));
 
         try {
             $this->provider->updateOnRemote($remoteResource);
@@ -58,15 +61,15 @@ final class RemoteResourceService
 
     public function needsUpdateOnRemote(RemoteResource $remoteResource, array $data): bool
     {
-        if ($remoteResource->getAltText() !== ($data['altText'] ?? null)) {
+        if ($this->normalizeNullableString($remoteResource->getAltText()) !== $this->normalizeNullableString($data['altText'] ?? null)) {
             return true;
         }
 
-        if ($remoteResource->getCaption() !== ($data['caption'] ?? null)) {
+        if ($this->normalizeNullableString($remoteResource->getCaption()) !== $this->normalizeNullableString($data['caption'] ?? null)) {
             return true;
         }
 
-        if ($remoteResource->getTags() !== ($data['tags'] ?? [])) {
+        if ($this->normalizeTags($remoteResource->getTags()) !== $this->normalizeTags($data['tags'] ?? [])) {
             return true;
         }
 
@@ -83,9 +86,16 @@ final class RemoteResourceService
         }
 
         $cropSettingsArray = json_decode($cropSettingsString, true);
+        if (!is_array($cropSettingsArray)) {
+            return [];
+        }
 
         $cropSettings = [];
         foreach ($cropSettingsArray as $variationName => $variationCropSettings) {
+            if (!is_string($variationName) || !is_array($variationCropSettings)) {
+                continue;
+            }
+
             $cropSettings[] = CropSettings::fromArray($variationName, $variationCropSettings);
         }
 
@@ -110,5 +120,28 @@ final class RemoteResourceService
         }
 
         return $cropSettings;
+    }
+
+    private function normalizeNullableString(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (string) $value;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function normalizeTags(mixed $tags): array
+    {
+        if (!is_array($tags)) {
+            return [];
+        }
+
+        sort($tags);
+
+        return $tags;
     }
 }

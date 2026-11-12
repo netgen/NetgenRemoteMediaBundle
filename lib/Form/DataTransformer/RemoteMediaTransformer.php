@@ -9,14 +9,24 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Form\DataTransformerInterface;
+
+use function is_array;
+use function sort;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
 {
+    private LoggerInterface $logger;
+
     public function __construct(
         private ProviderInterface $provider,
         private RemoteResourceService $service,
-    ) {}
+        ?LoggerInterface $logger = null,
+    ) {
+        $this->logger = $logger ?? new NullLogger();
+    }
 
     public function transform($value)
     {
@@ -39,7 +49,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
     public function reverseTransform($value)
     {
-        if ($value['remoteId'] === null) {
+        if (!is_array($value) || ($value['remoteId'] ?? null) === null || ($value['remoteId'] ?? '') === '') {
             return null;
         }
 
@@ -53,9 +63,11 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             }
         }
 
+        $locationId = $value['locationId'] ?? null;
+
         try {
-            $remoteResourceLocation = $value['locationId'] !== null && $value['locationId'] !== ''
-                ? $this->provider->loadLocation((int) $value['locationId'])
+            $remoteResourceLocation = $locationId !== null && $locationId !== ''
+                ? $this->provider->loadLocation((int) $locationId)
                 : new RemoteResourceLocation($remoteResource);
         } catch (RemoteResourceLocationNotFoundException $e) {
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
@@ -67,17 +79,18 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
         $needsUpdateOnRemote = $this->service->needsUpdateOnRemote($remoteResource, $value);
 
-        $remoteResource->setAltText($value['altText'] ?? null);
-        $remoteResource->setCaption($value['caption'] ?? null);
-        $remoteResource->setTags($value['tags']);
+        $remoteResource->setAltText($this->normalizeNullableString($value['altText'] ?? null));
+        $remoteResource->setCaption($this->normalizeNullableString($value['caption'] ?? null));
+        $remoteResource->setTags($this->normalizeTags($value['tags'] ?? []));
 
         if ($needsUpdateOnRemote) {
             try {
                 $this->provider->updateOnRemote($remoteResource);
-            } catch (RemoteResourceNotFoundException $e) {
-                $this->provider->remove($remoteResource);
-
-                return null;
+            } catch (RemoteResourceNotFoundException) {
+                $this->logger->warning(
+                    '[NGRM] Remote resource "{remoteId}" no longer exists on the remote, its metadata was saved locally only.',
+                    ['remoteId' => $remoteResource->getRemoteId()],
+                );
             }
         }
 
@@ -89,5 +102,28 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         );
 
         return $remoteResourceLocation;
+    }
+
+    private function normalizeNullableString(mixed $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (string) $value;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function normalizeTags(mixed $tags): array
+    {
+        if (!is_array($tags)) {
+            return [];
+        }
+
+        sort($tags);
+
+        return $tags;
     }
 }

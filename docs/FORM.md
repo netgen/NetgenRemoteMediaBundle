@@ -66,7 +66,9 @@ class MyFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('remote_resource_location', RemoteMediaType::class);
+        $builder->add('remote_resource_location', RemoteMediaType::class, [
+            'upload_limit' => 1,
+        ]);
     }
 }
 ```
@@ -123,6 +125,32 @@ This parameter enables you to disable the upload, which means that users will be
 
 This parameter enables filename hiding; instead of original filename, it will use file's MD5 hash as a public ID. Original filename will be stored in the context though and can be used, if needed.
 
+#### `upload_limit`
+
+Controls how many resources the field accepts, and with that the shape of the field's data:
+
+* `1`: a single resource. The field submits and returns one `RemoteResourceLocation`, or `null` when emptied. Use it for `OneToOne`/`ManyToOne` relations like the one above.
+* `null` (default): unlimited. The field submits and returns a Doctrine `ArrayCollection` of `RemoteResourceLocation` objects (possibly empty), in the order chosen in the interface.
+* any other positive integer: a collection capped at that many resources.
+
+The legacy value `0` is still accepted and normalized to `null`.
+
+In collection mode, editors can select or upload several resources at once and reorder them. Submitted collections are validated server-side: if the payload contains more resources than the configured limit, the form is invalid. The canonical wire format is the JSON `collectionPayload` field rendered by the widget; indexed per-field submissions are deprecated fallbacks kept for backwards compatibility.
+
+Collection mode reuses the scalar children of the single mode for the first submitted entry, so constraints attached directly to those children only validate that first entry. Put per-entry validation on the collection model value, or validate the `RemoteResourceLocation` objects after transformation when every entry must be checked.
+
+A collection field needs a to-many relation on your entity, for example:
+
+```php
+#[ORM\ManyToMany(targetEntity: RemoteResourceLocation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+#[ORM\JoinTable(name: 'my_entity_gallery')]
+#[ORM\JoinColumn(onDelete: 'CASCADE')]
+#[ORM\InverseJoinColumn(unique: true, onDelete: 'CASCADE')]
+private Collection $gallery;
+```
+
+`ManyToMany` does not keep the order; if it matters, map an intermediate entity with a `position` column.
+
 ### Example
 
 Let's say that you have a form for digital products in a webshop and you want to limit editors to be able to upload only protected files inside a specific folder. You want to also add some context.
@@ -144,8 +172,9 @@ class MyFormType extends AbstractType
             'remote_resource_location',
             RemoteMediaType::class,
             [
+                'upload_limit' => 1,
                 'allowed_visibilities' => ['protected'],
-                'folder' => ['media/products/files'],
+                'folder' => 'media/products/files',
                 'upload_context' => [
                     'sylius_type' => 'product',
                     'sylius_code' => $this->getProductCode(),
