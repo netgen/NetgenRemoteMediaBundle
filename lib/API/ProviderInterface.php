@@ -21,6 +21,9 @@ use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 
+/**
+ * @method string generateLocationHtmlTag(RemoteResourceLocation $location, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false) Generates the HTML tag for the resource of the location, using alt text and caption overrides of the location. Not implementing it is deprecated since 3.1, it will be added to the interface in 4.0.
+ */
 interface ProviderInterface
 {
     public function getIdentifier(): string;
@@ -154,6 +157,14 @@ interface ProviderInterface
     public function buildVideoThumbnailRawVariation(RemoteResource $resource, array $transformations = [], ?int $startOffset = null): RemoteResourceVariation;
 
     public function generateHtmlTag(RemoteResource $resource, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string;
+
+    /*
+     * Generates the HTML tag for the resource of the location, using alt text and caption overrides of the location.
+     *
+     * Will be added to the interface in 4.0, see the @method annotation of the interface.
+     *
+     * public function generateLocationHtmlTag(RemoteResourceLocation $location, array $htmlAttributes = [], bool $forceVideo = false, bool $useThumbnail = false): string;
+     */
 
     public function generateVariationHtmlTag(
         RemoteResourceLocation $location,
