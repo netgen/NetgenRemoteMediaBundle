@@ -1,7 +1,7 @@
 Netgen Remote Media Bundle upgrade instructions
 ===============================================
 
-Upgrade from 3.x to 4.0
+Upgrade from 3.1 to 4.0
 -----------------------
 
 ### Code changes
