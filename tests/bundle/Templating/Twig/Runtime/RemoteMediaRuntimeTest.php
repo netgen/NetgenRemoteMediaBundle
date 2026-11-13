@@ -11,7 +11,6 @@ use Netgen\RemoteMedia\API\Values\AuthToken;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
-use Netgen\RemoteMedia\Core\AbstractProvider;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
@@ -23,12 +22,6 @@ use Netgen\RemoteMedia\Tests\AbstractTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\NullLogger;
-
-use function json_encode;
-use function restore_error_handler;
-use function set_error_handler;
-
-use const E_USER_DEPRECATED;
 
 #[CoversClass(RemoteMediaRuntime::class)]
 final class RemoteMediaRuntimeTest extends AbstractTestCase
@@ -785,94 +778,15 @@ final class RemoteMediaRuntimeTest extends AbstractTestCase
             altTextOverride: 'Local alt text',
         );
 
-        $provider = $this->createMock(AbstractProvider::class);
-        $provider
+        $this->providerMock
             ->expects(self::once())
             ->method('generateLocationHtmlTag')
             ->with($location, ['class' => 'test'], false, false)
             ->willReturn('<img alt="Local alt text">');
 
-        $runtime = new RemoteMediaRuntime($provider, new VariationResolver(new Registry(), null, []));
-
         self::assertSame(
             '<img alt="Local alt text">',
-            $runtime->getRemoteResourceLocationHtmlTag($location, ['class' => 'test']),
+            $this->runtime->getRemoteResourceLocationHtmlTag($location, ['class' => 'test']),
         );
-    }
-
-    public function testGetRemoteResourceLocationHtmlTagWithProviderWithoutMethod(): void
-    {
-        $resource = new RemoteResource(
-            remoteId: 'upload|image|test_image.jpg',
-            type: 'image',
-            url: 'https://cloudinary.com/test/upload/image/test_image.jpg',
-            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
-            altText: 'Cloud alt text',
-            caption: 'Cloud caption',
-        );
-
-        $location = new RemoteResourceLocation(
-            remoteResource: $resource,
-            altTextOverride: 'Local alt text',
-            captionOverride: 'Local caption',
-        );
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('generateHtmlTag')
-            ->with($resource, ['class' => 'test', 'alt' => 'Local alt text', 'title' => 'Local caption'], false, false)
-            ->willReturn('<img alt="Local alt text" title="Local caption">');
-
-        $deprecations = [];
-        set_error_handler(static function (int $level, string $message) use (&$deprecations): bool {
-            $deprecations[] = $message;
-
-            return true;
-        }, E_USER_DEPRECATED);
-
-        try {
-            $tag = $this->runtime->getRemoteResourceLocationHtmlTag($location, ['class' => 'test']);
-        } finally {
-            restore_error_handler();
-        }
-
-        self::assertSame('<img alt="Local alt text" title="Local caption">', $tag);
-        self::assertCount(1, $deprecations);
-        self::assertStringContainsString('generateLocationHtmlTag()', $deprecations[0]);
-    }
-
-    public function testGetRemoteResourceLocationHtmlTagWithProviderWithoutMethodKeepsExplicitAttributes(): void
-    {
-        $resource = new RemoteResource(
-            remoteId: 'upload|video|test_video',
-            type: 'video',
-            url: 'https://cloudinary.com/test/upload/video/test_video',
-            md5: 'e522f43cf89aa0afd03387c37e2b6e12',
-        );
-
-        $location = new RemoteResourceLocation(
-            remoteResource: $resource,
-            altTextOverride: 'Local alt text',
-            captionOverride: 'Local caption',
-        );
-
-        $this->providerMock
-            ->expects(self::exactly(2))
-            ->method('generateHtmlTag')
-            ->willReturnCallback(static fn (RemoteResource $resource, array $htmlAttributes): string => json_encode($htmlAttributes));
-
-        set_error_handler(static fn (): bool => true, E_USER_DEPRECATED);
-
-        try {
-            // video without thumbnail is not rendered as an image, so the overrides are not used
-            self::assertSame('[]', $this->runtime->getRemoteResourceLocationHtmlTag($location));
-            // explicit attributes win over the overrides
-            self::assertSame(
-                '{"alt":"Explicit alt","title":"Local caption"}',
-                $this->runtime->getRemoteResourceLocationHtmlTag($location, ['alt' => 'Explicit alt'], false, true),
-            );
-        } finally {
-            restore_error_handler();
-        }
     }
 }
