@@ -6,7 +6,7 @@
       :load-options="loadSubFolders"
       v-model="internalSelectedFolder"
       @input="handleFolderChange"
-      :placeholder="config.translations.upload_root_folder"
+      :placeholder="rootLabel"
       :clearable="true"
       :defaultExpandLevel="1"
       :appendToBody="true"
@@ -36,8 +36,8 @@
         <input
           type="text"
           v-model="newFolderName"
-          :placeholder="config.translations.upload_placeholder_new_folder"
-          :aria-label="config.translations.upload_placeholder_new_folder || 'New folder name'"
+          :placeholder="newFolderPlaceholder"
+          :aria-label="newFolderPlaceholder"
           @keydown.enter.prevent="createFolder"
           @keyup.esc="cancelCreateFolder"
           ref="newFolderInput"
@@ -142,6 +142,9 @@ export default {
     },
     rootLabel() {
       return this.config.translations.upload_root_folder || FOLDER_ROOT;
+    },
+    newFolderPlaceholder() {
+      return this.config.translations.upload_placeholder_new_folder || 'New folder name';
     },
     createLabel() {
       return this.config.translations.upload_button_create || 'Create';
@@ -262,7 +265,7 @@ export default {
       // Add "Create new folder" action as the last item
       folderNodes.push({
         id: this.createActionId(node.id),
-        label: this.config.translations.upload_button_create,
+        label: this.createLabel,
         isCreateAction: true,
         parentNode: node,
         children: undefined // No children for this action
@@ -328,7 +331,7 @@ export default {
           // Re-add the "Create new folder" action at the end
           this.creatingFolderParent.children.push({
             id: this.createActionId(this.creatingFolderParent.id),
-            label: this.config.translations.upload_button_create,
+            label: this.createLabel,
             isCreateAction: true,
             parentNode: this.creatingFolderParent,
             children: undefined
