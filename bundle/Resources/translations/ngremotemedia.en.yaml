@@ -91,6 +91,7 @@ ngrm:
                 breadcrumbs_info: 'You are here:'
                 root_folder: '(root)'
                 info_text: 'Double click on a folder to open it'
+                create_folder_in: 'Create folder in: %folder%'
                 button:
                     select: 'Select'
                     create: 'Create'
@@ -107,6 +108,7 @@ ngrm:
                     unsupported_resource_type: "Resource has been uploaded but it's type is not supported so it can't be used here! Supported types: "
                     invalid_visibility: 'Invalid visibility option "%visibility%", supported options: "%supported_visibilities%"'
                     file_upload_failed: 'File upload failed; the file might be too big or corrupted. Check your server file upload size settings.'
+                    create_folder_failed: 'Failed to create folder'
             multi_upload:
                 title: 'Upload multiple files'
                 drop_zone: 'Drop files here or click to browse'
@@ -123,6 +125,16 @@ ngrm:
                 global_visibility: 'Default visibility for all files:'
                 global_apply_to_all: 'apply to all files'
                 use_existing: 'Use existing file'
+                retry: 'Retry'
+                duplicate_file: '"%filename%" is already in the upload list'
+                already_added: 'Already added to this field'
+                submit_blocked:
+                    pending: 'Some files are not uploaded yet. Upload or remove them before saving.'
+                    uploading: 'Wait until the upload has finished before saving.'
+                error:
+                    empty_filename: 'Enter a file name'
+                    timeout: 'The upload timed out. Try again.'
+                    failed: 'Upload failed'
                 table:
                     preview: 'Preview'
                     filename: 'Filename'
