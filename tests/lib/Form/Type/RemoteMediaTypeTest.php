@@ -289,6 +289,56 @@ final class RemoteMediaTypeTest extends TypeTestCase
         self::assertSame([$locations[2], $locations[0]], $form->createView()->vars['remote_media_locations']);
     }
 
+    /**
+     * The alt text and caption inputs of the widget edit the overrides: the
+     * values from the cloud are sent back as they were loaded.
+     */
+    public function testSubmitStoresOverridesWithoutUpdatingTheRemote(): void
+    {
+        $locations = $this->storeGallery();
+        $locations[0]->getRemoteResource()->setAltText('Cloud alt')->setCaption('Cloud caption');
+        $locations[0]->setAltTextOverride('Old local alt')->setCaptionOverride('Old local caption');
+        $locations[1]->setAltTextOverride('Kept local alt');
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('updateOnRemote');
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($locations));
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                [
+                    'locationId' => 6,
+                    'remoteId' => 'upload|image|6.jpg',
+                    'altText' => 'Cloud alt',
+                    'caption' => 'Cloud caption',
+                    'altTextOverride' => 'New local alt',
+                    'captionOverride' => '',
+                ],
+                ['locationId' => 7, 'remoteId' => 'upload|image|7.jpg', 'altTextOverride' => 'Kept local alt', 'captionOverride' => ''],
+                ['locationId' => 8, 'remoteId' => 'upload|image|8.jpg', 'altTextOverride' => '', 'captionOverride' => 'New local caption'],
+            ]),
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertTrue($form->isValid());
+        self::assertSame($locations, $form->getData()->toArray());
+
+        self::assertSame('New local alt', $locations[0]->getAltTextOverride());
+        self::assertNull($locations[0]->getCaptionOverride());
+        self::assertSame('Cloud alt', $locations[0]->getRemoteResource()->getAltText());
+        self::assertSame('Cloud caption', $locations[0]->getRemoteResource()->getCaption());
+        self::assertSame('New local alt', $locations[0]->getAltText());
+        self::assertSame('Cloud caption', $locations[0]->getCaption());
+
+        self::assertSame('Kept local alt', $locations[1]->getAltTextOverride());
+        self::assertNull($locations[1]->getCaptionOverride());
+
+        self::assertNull($locations[2]->getAltTextOverride());
+        self::assertSame('New local caption', $locations[2]->getCaptionOverride());
+    }
+
     #[DataProvider('missingPayloadDataProvider')]
     public function testSubmitWithoutPayloadDoesNotChangeTheField(mixed $submittedData): void
     {

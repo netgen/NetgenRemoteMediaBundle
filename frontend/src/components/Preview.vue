@@ -112,8 +112,8 @@
         <p>{{ resource.type }} / {{ resource.format }}</p>
 
         <div class="image-meta-data">
-          <!-- Alt Text -->
-          <div class="ngremotemedia-alttext">
+          <!-- Cloud alt text and caption; CKEditor embeds only, form fields edit just the overrides -->
+          <div v-if="isEmbed" class="ngremotemedia-alttext">
             <label class="help-block description" :for="getInputId('altText', index)">
               {{ config.translations.preview_alternate_text }}
               <i v-if="config.translations.preview_alternate_text_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_alternate_text_info"></i>
@@ -129,8 +129,7 @@
             />
           </div>
 
-          <!-- Caption -->
-          <div class="ngremotemedia-caption">
+          <div v-if="isEmbed" class="ngremotemedia-caption">
             <label class="help-block description" :for="getInputId('caption', index)">
               {{ config.translations.preview_caption }}
               <i v-if="config.translations.preview_caption_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_caption_info"></i>
@@ -146,10 +145,10 @@
             />
           </div>
 
-          <!-- Alt Text Override -->
+          <!-- Alt text and caption of this location; in form fields they are the only alt text and caption inputs -->
           <div class="ngremotemedia-alttext-override">
             <label class="help-block description" :for="getInputId('altTextOverride', index)">
-              {{ config.translations.preview_alternate_text_override }}
+              {{ altTextOverrideLabel }}
               <i v-if="config.translations.preview_alternate_text_override_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_alternate_text_override_info"></i>
             </label>
             <input
@@ -164,10 +163,9 @@
             />
           </div>
 
-          <!-- Caption Override -->
           <div class="ngremotemedia-caption-override">
             <label class="help-block description" :for="getInputId('captionOverride', index)">
-              {{ config.translations.preview_caption_override }}
+              {{ captionOverrideLabel }}
               <i v-if="config.translations.preview_caption_override_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_caption_override_info"></i>
             </label>
             <input
@@ -347,6 +345,16 @@ export default {
     moveNextLabel() {
       return this.config.translations.reorder_move_next || "Move to next position";
     },
+    altTextOverrideLabel() {
+      return this.isEmbed
+        ? this.config.translations.preview_alternate_text_override
+        : this.config.translations.preview_alternate_text;
+    },
+    captionOverrideLabel() {
+      return this.isEmbed
+        ? this.config.translations.preview_caption_override
+        : this.config.translations.preview_caption;
+    },
     removeLabel() {
       return this.config.translations.multi_gallery_remove || "Remove";
     },
@@ -359,6 +367,7 @@ export default {
           locationId: resource.locationId || "",
           remoteId: resource.id || "",
           type: resource.type || "",
+          // Sent back as loaded, so the save does not change them on the cloud.
           altText: resource.alternateText || "",
           caption: resource.caption || "",
           altTextOverride: resource.altTextOverride || "",

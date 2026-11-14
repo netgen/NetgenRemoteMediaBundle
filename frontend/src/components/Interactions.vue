@@ -245,7 +245,7 @@ export default {
       return createEmptyImageState(this.config.locationSource || null);
     },
 
-    // Skips resources already in the gallery (they share alt text and caption)
+    // Skips resources already in the gallery (they share the tags stored on the cloud)
     // and stops at the upload limit instead of letting the save fail server-side.
     appendResources(newResources) {
       const knownIds = new Set(this.resources.map((resource) => resource.id));
