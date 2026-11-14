@@ -1,30 +1,14 @@
 {% block remote_media_widget %}
-    {% set input_fields = {'_collection': form.vars.full_name} %}
-    {% for child in form.children %}
-        {% if child.vars.name == 'tags' %}
-            {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name ~ '[]'}) %}
-        {% else %}
-            {% set input_fields = input_fields|merge({(child.vars.name): child.vars.full_name}) %}
-        {% endif %}
-    {% endfor %}
+    {# Rendered on the server with the current value, so a submit without the
+       widget (it failed to load, JavaScript is off) leaves the field as it is.
+       The widget prints its own input with the same name further down in the
+       document and, being the later of the two, that is the value PHP reads. #}
+    {{ form_widget(form.collectionPayload) }}
 
-    {% if form.uploadLimit is defined %}
-        {{ form_widget(form.uploadLimit) }}
-    {% endif %}
-    {% do form.locationId.setRendered %}
-    {% do form.remoteId.setRendered %}
-    {% do form.type.setRendered %}
-    {% do form.altText.setRendered %}
-    {% do form.caption.setRendered %}
-    {% do form.altTextOverride.setRendered %}
-    {% do form.captionOverride.setRendered %}
-    {% do form.watermarkText.setRendered %}
-    {% do form.tags.setRendered %}
-    {% do form.cropSettings.setRendered %}
-    {% do form.source.setRendered %}
-    {% if form.collectionPayload is defined %}
-        {% do form.collectionPayload.setRendered %}
-    {% endif %}
+    {% set input_fields = {
+        '_collection': form.vars.full_name,
+        'collectionPayload': form.collectionPayload.vars.full_name,
+    } %}
 
     {% set available_variations = [] %}
     {% set allowed_variations = form.vars.allowed_variations|default([]) %}
@@ -41,7 +25,6 @@
 
     {% include '@NetgenRemoteMedia/app/interactions.html.twig' with {
         'field_id': id,
-        'location_id': form.children.locationId.vars.value,
         'variation_group': form.vars.variation_group ?: 'default',
         'input_fields': input_fields,
         'available_variations': available_variations,
@@ -53,9 +36,9 @@
         'upload_context': form.vars.upload_context|default([]),
         'disable_upload': form.vars.disable_upload|default(false),
         'hide_filename': form.vars.hide_filename|default(false),
-        'upload_limit': form.vars.upload_limit is defined ? form.vars.upload_limit : 1,
-        'is_collection': form.vars.is_collection|default(false),
-        'location_source': form.children.source.vars.value|default(null),
+        'upload_limit': form.vars.upload_limit,
+        'is_collection': true,
+        'location_source': form.vars.location_source,
         'locations': form.vars.remote_media_locations|default([])
     } %}
 {% endblock %}

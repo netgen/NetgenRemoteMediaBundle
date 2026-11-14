@@ -4,319 +4,580 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Tests\Form\Type;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
+use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer;
 use Netgen\RemoteMedia\Form\Type\RemoteMediaType;
+use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Netgen\RemoteMedia\Tests\AbstractTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\PreloadedExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use Symfony\Component\Translation\Loader\YamlFileLoader;
+use Symfony\Component\Translation\Translator;
+use Symfony\Component\Validator\Validation;
 
-/**
- * RemoteMediaType in single mode (upload_limit: 1).
- */
+use function array_column;
+use function array_keys;
+use function array_map;
+use function iterator_to_array;
+use function json_decode;
+use function json_encode;
+
 #[CoversClass(RemoteMediaType::class)]
-class RemoteMediaTypeTest extends TypeTestCase
+final class RemoteMediaTypeTest extends TypeTestCase
 {
-    private DataTransformerInterface|MockObject $dataTransformerMock;
-
     private MockObject&ProviderInterface $providerMock;
+
+    /**
+     * Resources known to the provider, by remote ID.
+     *
+     * @var array<string, RemoteResource>
+     */
+    private array $resources = [];
+
+    /**
+     * Locations stored in the provider, by ID.
+     *
+     * @var array<int, RemoteResourceLocation>
+     */
+    private array $locations = [];
+
+    private Translator $translator;
 
     protected function setUp(): void
     {
-        $this->dataTransformerMock = $this->createMock(DataTransformerInterface::class);
         $this->providerMock = $this->createMock(ProviderInterface::class);
+
+        $this->providerMock
+            ->method('loadByRemoteId')
+            ->willReturnCallback(
+                fn (string $remoteId): RemoteResource => $this->resources[$remoteId] ?? throw new RemoteResourceNotFoundException($remoteId),
+            );
+
+        $this->providerMock
+            ->method('loadFromRemote')
+            ->willReturnCallback(
+                static fn (string $remoteId): RemoteResource => throw new RemoteResourceNotFoundException($remoteId),
+            );
+
+        $this->providerMock
+            ->method('loadLocation')
+            ->willReturnCallback(
+                fn (int $id): RemoteResourceLocation => $this->locations[$id] ?? throw new RemoteResourceLocationNotFoundException($id),
+            );
+
+        $this->providerMock
+            ->method('getSupportedVisibilities')
+            ->willReturn(RemoteResource::SUPPORTED_VISIBILITIES);
+
+        $this->providerMock
+            ->method('getSupportedTypes')
+            ->willReturn(RemoteResource::SUPPORTED_TYPES);
+
+        $this->providerMock
+            ->method('listTags')
+            ->willReturn(['tag1', 'tag3']);
 
         parent::setUp();
     }
 
-    #[DataProvider('submitDataProvider')]
-    public function testSubmitValidData(
-        array $formData,
-        array $options,
-        array $transformerData,
-        RemoteResourceLocation $expectedLocation,
-        array $viewData,
-        array $viewOptions
-    ): void {
-        $location = new RemoteResourceLocation(
-            new RemoteResource(
-                remoteId: 'upload|image|media/images/example.jpg',
-                type: 'image',
-                url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                name: 'example.jpg',
-                folder: Folder::fromPath('media/images'),
-            ),
-        );
-
-        $form = $this->factory->create(RemoteMediaType::class, $location, ['upload_limit' => 1] + $options);
-
-        $this->dataTransformerMock
-            ->expects(self::once())
-            ->method('reverseTransform')
-            ->with($transformerData)
-            ->willReturn($expectedLocation);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('getSupportedVisibilities')
-            ->willReturn(RemoteResource::SUPPORTED_VISIBILITIES);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('getSupportedTypes')
-            ->willReturn(RemoteResource::SUPPORTED_TYPES);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('listTags')
-            ->willReturn(['tag1', 'tag3']);
-
-        $form->submit($formData);
-
-        self::assertTrue($form->isSynchronized());
-
-        AbstractTestCase::assertRemoteResourceLocationSame(
-            $expectedLocation,
-            $form->getData(),
-        );
-
+    #[DataProvider('uploadLimitDataProvider')]
+    public function testUploadLimitOnlyChangesTheViewVariable(array $options, ?int $expectedUploadLimit): void
+    {
+        $form = $this->factory->create(RemoteMediaType::class, null, $options);
         $view = $form->createView();
 
-        self::assertSame(
-            $viewData,
-            $view->vars['value'],
-        );
+        self::assertSame($expectedUploadLimit, $view->vars['upload_limit']);
+        self::assertSame(['collectionPayload'], array_keys($view->children));
+        self::assertSame('[]', $view->children['collectionPayload']->vars['value']);
+        self::assertInstanceOf(ArrayCollection::class, $form->submit(['collectionPayload' => '[]'])->getData());
+    }
 
-        self::assertSame(
-            'remote_media',
-            $view->vars['id'],
-        );
+    #[DataProvider('invalidUploadLimitDataProvider')]
+    public function testInvalidUploadLimitOption(mixed $uploadLimit): void
+    {
+        $this->expectException(InvalidOptionsException::class);
 
-        self::assertSame(
-            'remote_media',
-            $view->vars['name'],
-        );
+        $this->factory->create(RemoteMediaType::class, null, ['upload_limit' => $uploadLimit]);
+    }
 
-        self::assertSame(
-            'remote_media',
-            $view->vars['full_name'],
-        );
+    #[DataProvider('viewOptionsDataProvider')]
+    public function testBuildViewExposesOptions(array $options, array $expectedVars): void
+    {
+        $view = $this->factory->createNamed('gallery', RemoteMediaType::class, null, $options)->createView();
 
-        foreach ($viewOptions as $key => $value) {
-            self::assertSame(
-                $value,
-                $view->vars[$key],
-            );
+        foreach ($expectedVars as $name => $expectedValue) {
+            self::assertSame($expectedValue, $view->vars[$name], $name);
         }
     }
 
-    public function testCollectionShapedSubmissionCollapsesToFirstEntry(): void
+    public function testViewHoldsTheCurrentValueAsPayloadOrderedByPosition(): void
     {
-        $expectedLocation = new RemoteResourceLocation(
-            new RemoteResource(
-                remoteId: 'remote-1',
-                type: 'image',
-                url: 'https://example.test/1',
-                md5: 'md5-1',
-            ),
-        );
+        $first = $this->storeLocation(6, 'upload|image|first.jpg', position: 0);
+        $second = $this->storeLocation(7, 'upload|image|second.jpg', position: 1);
+        $second->setAltTextOverride('Local alt')->setCropSettings([new CropSettings('hero', 1, 2, 300, 200)]);
 
-        $this->dataTransformerMock
-            ->expects(self::once())
-            ->method('reverseTransform')
-            ->with(self::callback(static fn (array $data): bool => $data['remoteId'] === 'remote-1'
-                    && $data['altText'] === 'first alt'))
-            ->willReturn($expectedLocation);
+        $view = $this->factory->create(RemoteMediaType::class, new ArrayCollection([$second, $first]))->createView();
+
+        self::assertSame([$first, $second], $view->vars['remote_media_locations']);
+
+        $entries = json_decode($view->children['collectionPayload']->vars['value'], true);
+
+        self::assertSame([6, 7], array_column($entries, 'locationId'));
+        self::assertSame(['upload|image|first.jpg', 'upload|image|second.jpg'], array_column($entries, 'remoteId'));
+        self::assertSame('Local alt', $entries[1]['altTextOverride']);
+        self::assertSame('{"hero":{"x":1,"y":2,"w":300,"h":200}}', $entries[1]['cropSettings']);
+    }
+
+    public function testSettingSingleLocationAsDataIsRejected(): void
+    {
+        $this->expectException(TransformationFailedException::class);
+        $this->expectExceptionMessage('The data of RemoteMediaType is a collection, also when "upload_limit" is 1.');
+
+        $this->factory->create(RemoteMediaType::class, $this->storeLocation(6, 'upload|image|first.jpg'), ['upload_limit' => 1]);
+    }
+
+    public function testSubmitReturnsCollectionInSubmittedOrder(): void
+    {
+        $this->addResource('upload|image|first.jpg');
+        $this->addResource('upload|video|second.mp4');
+
+        $this->providerMock
+            ->expects(self::exactly(2))
+            ->method('updateOnRemote');
+
+        $form = $this->factory->createNamed('gallery', RemoteMediaType::class);
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                [
+                    'remoteId' => 'upload|video|second.mp4',
+                    'altText' => 'Second alt',
+                    'altTextOverride' => 'Second local alt',
+                    'captionOverride' => 'Second local caption',
+                    'watermarkText' => 'Watermark',
+                    'cropSettings' => '{"hero":{"x":10,"y":20,"w":1920,"h":1080}}',
+                    'source' => 'own_source',
+                ],
+                [
+                    'remoteId' => 'upload|image|first.jpg',
+                    'caption' => 'First caption',
+                    'tags' => ['b', 'a'],
+                ],
+            ]),
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertTrue($form->isValid());
+
+        $data = $form->getData();
+        self::assertInstanceOf(ArrayCollection::class, $data);
+        self::assertCount(2, $data);
+
+        AbstractTestCase::assertRemoteResourceLocationSame(
+            new RemoteResourceLocation(
+                remoteResource: new RemoteResource(
+                    remoteId: 'upload|video|second.mp4',
+                    type: 'image',
+                    url: 'https://example.test/upload|video|second.mp4',
+                    md5: 'md5',
+                    altText: 'Second alt',
+                ),
+                source: 'own_source',
+                cropSettings: [new CropSettings('hero', 10, 20, 1920, 1080)],
+                watermarkText: 'Watermark',
+                altTextOverride: 'Second local alt',
+                captionOverride: 'Second local caption',
+                position: 0,
+            ),
+            $data[0],
+        );
+        self::assertNull($data[0]->getId());
+
+        AbstractTestCase::assertRemoteResourceLocationSame(
+            new RemoteResourceLocation(
+                remoteResource: new RemoteResource(
+                    remoteId: 'upload|image|first.jpg',
+                    type: 'image',
+                    url: 'https://example.test/upload|image|first.jpg',
+                    md5: 'md5',
+                    caption: 'First caption',
+                    tags: ['a', 'b'],
+                ),
+                source: 'form_gallery',
+                position: 1,
+            ),
+            $data[1],
+        );
+    }
+
+    public function testSubmitKeepsOwnLocation(): void
+    {
+        $location = $this->storeLocation(5, 'upload|image|owned.jpg');
+        $location->setWatermarkText('Old watermark');
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection([$location]));
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                ['locationId' => '5', 'remoteId' => 'upload|image|owned.jpg', 'watermarkText' => 'New watermark'],
+            ]),
+        ]);
+
+        self::assertTrue($form->isValid());
+        self::assertSame([$location], $form->getData()->toArray());
+        self::assertSame(5, $form->getData()->first()->getId());
+        self::assertSame('New watermark', $location->getWatermarkText());
+    }
+
+    public function testSubmitForeignLocationIdCreatesNewLocation(): void
+    {
+        $ownLocation = $this->storeLocation(5, 'upload|image|owned.jpg');
+        $foreignLocation = $this->storeLocation(999, 'upload|image|foreign.jpg');
+        $foreignLocation->setWatermarkText('Belongs to another entity');
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection([$ownLocation]));
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                ['locationId' => 999, 'remoteId' => 'upload|image|foreign.jpg', 'watermarkText' => 'Taken over'],
+            ]),
+        ]);
+
+        self::assertTrue($form->isValid());
+
+        $data = $form->getData();
+        self::assertCount(1, $data);
+        self::assertNotSame($foreignLocation, $data[0]);
+        self::assertNull($data[0]->getId());
+        self::assertSame($foreignLocation->getRemoteResource(), $data[0]->getRemoteResource());
+        self::assertSame('Taken over', $data[0]->getWatermarkText());
+        self::assertSame('Belongs to another entity', $foreignLocation->getWatermarkText());
+    }
+
+    public function testSubmitReordersAndRemovesStoredLocations(): void
+    {
+        $locations = $this->storeGallery();
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($locations));
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                ['locationId' => 8, 'remoteId' => 'upload|image|8.jpg'],
+                ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg'],
+            ]),
+        ]);
+
+        self::assertTrue($form->isValid());
+        self::assertSame([$locations[2], $locations[0]], $form->getData()->toArray());
+        self::assertSame(0, $locations[2]->getPosition());
+        self::assertSame(1, $locations[0]->getPosition());
+
+        self::assertSame([$locations[2], $locations[0]], $form->createView()->vars['remote_media_locations']);
+    }
+
+    #[DataProvider('missingPayloadDataProvider')]
+    public function testSubmitWithoutPayloadDoesNotChangeTheField(mixed $submittedData): void
+    {
+        $locations = $this->storeGallery();
+        $locations[1]->setAltTextOverride('Local alt')->setCropSettings([new CropSettings('hero', 1, 2, 300, 200)]);
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('updateOnRemote');
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($locations));
+
+        $form->submit($submittedData);
+
+        self::assertTrue($form->isSynchronized());
+        self::assertTrue($form->isValid());
+
+        $data = $form->getData();
+        self::assertInstanceOf(ArrayCollection::class, $data);
+        self::assertSame($locations, $data->toArray());
+        self::assertSame('Local alt', $locations[1]->getAltTextOverride());
+        AbstractTestCase::assertCropSettingsSame(new CropSettings('hero', 1, 2, 300, 200), $locations[1]->getCropSettings()[0]);
+    }
+
+    #[DataProvider('missingPayloadDataProvider')]
+    public function testSubmitWithoutPayloadOnEmptyFieldReturnsEmptyCollection(mixed $submittedData): void
+    {
+        $form = $this->factory->create(RemoteMediaType::class);
+
+        $form->submit($submittedData);
+
+        self::assertTrue($form->isValid());
+        self::assertInstanceOf(ArrayCollection::class, $form->getData());
+        self::assertTrue($form->getData()->isEmpty());
+    }
+
+    public function testSubmitEmptyListClearsTheField(): void
+    {
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($this->storeGallery()));
+
+        $form->submit(['collectionPayload' => '[]']);
+
+        self::assertTrue($form->isValid());
+
+        $data = $form->getData();
+        self::assertInstanceOf(ArrayCollection::class, $data);
+        self::assertTrue($data->isEmpty());
+        self::assertSame([], $form->createView()->vars['remote_media_locations']);
+    }
+
+    #[DataProvider('invalidSubmissionDataProvider')]
+    public function testInvalidSubmissionIsRejected(mixed $submittedData): void
+    {
+        $locations = $this->storeGallery();
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('updateOnRemote');
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($locations));
+
+        $form->submit($submittedData);
+
+        self::assertTrue($form->isSubmitted());
+        self::assertFalse($form->isValid());
+        self::assertNull($locations[0]->getWatermarkText());
+        self::assertSame([], $locations[0]->getCropSettings());
+    }
+
+    public function testSubmitKeepsOnlyTheFirstEntryOfARepeatedLocation(): void
+    {
+        $locations = $this->storeGallery();
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($locations));
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'watermarkText' => 'first'],
+                ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'watermarkText' => 'repeated'],
+            ]),
+        ]);
+
+        self::assertTrue($form->isValid());
+        self::assertSame([$locations[0]], $form->getData()->toArray());
+        self::assertSame('first', $locations[0]->getWatermarkText());
+    }
+
+    public function testLimitOneReturnsCollectionWithOneLocation(): void
+    {
+        $this->addResource('upload|image|first.jpg');
 
         $form = $this->factory->create(RemoteMediaType::class, null, ['upload_limit' => 1]);
 
         $form->submit([
-            'source' => 'form_gallery',
-            [
-                'remoteId' => 'remote-1',
-                'type' => 'image',
-                'altText' => 'first alt',
-            ],
-            [
-                'remoteId' => 'remote-2',
-                'type' => 'image',
-                'altText' => 'second alt',
-            ],
+            'collectionPayload' => json_encode([['remoteId' => 'upload|image|first.jpg']]),
         ]);
 
-        self::assertTrue($form->isSynchronized());
-        self::assertSame($expectedLocation, $form->getData());
+        self::assertTrue($form->isValid());
+
+        $data = $form->getData();
+        self::assertInstanceOf(ArrayCollection::class, $data);
+        self::assertCount(1, $data);
+        self::assertSame('upload|image|first.jpg', $data[0]->getRemoteResource()->getRemoteId());
     }
 
-    public function testSubmitForeignLocationIdCreatesFreshLocation(): void
+    public function testLimitOneReturnsEmptyCollectionWhenEmptied(): void
     {
-        $existingLocation = new RemoteResourceLocation(
-            new RemoteResource('upload|image|owned.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/owned.jpg', 'md5-owned'),
-            id: 5,
-        );
-        $resultLocation = new RemoteResourceLocation(
-            new RemoteResource('upload|image|foreign.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/foreign.jpg', 'md5-foreign'),
-        );
+        $location = $this->storeLocation(6, 'upload|image|first.jpg');
 
-        $this->dataTransformerMock
-            ->expects(self::once())
-            ->method('reverseTransform')
-            ->with(self::callback(static fn (array $data): bool => $data['locationId'] === null
-                && $data['remoteId'] === 'upload|image|foreign.jpg'))
-            ->willReturn($resultLocation);
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection([$location]), ['upload_limit' => 1]);
 
-        $form = $this->factory->create(RemoteMediaType::class, $existingLocation, ['upload_limit' => 1]);
+        $form->submit(['collectionPayload' => '[]']);
+
+        self::assertTrue($form->isValid());
+        self::assertInstanceOf(ArrayCollection::class, $form->getData());
+        self::assertTrue($form->getData()->isEmpty());
+    }
+
+    #[DataProvider('limitExceededMessageDataProvider')]
+    public function testSubmitOverLimitIsInvalidWithTranslatedMessage(string $locale, string $expectedMessage): void
+    {
+        $this->translator->setLocale($locale);
+
+        $this->storeGallery();
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('updateOnRemote');
+
+        $form = $this->factory->create(RemoteMediaType::class, null, ['upload_limit' => 2]);
 
         $form->submit([
-            'locationId' => '999',
-            'remoteId' => 'upload|image|foreign.jpg',
-            'type' => 'image',
+            'collectionPayload' => json_encode([
+                ['remoteId' => 'upload|image|6.jpg'],
+                ['remoteId' => 'upload|image|7.jpg'],
+                ['remoteId' => 'upload|image|8.jpg'],
+            ]),
         ]);
 
-        self::assertTrue($form->isSynchronized());
-        self::assertSame($resultLocation, $form->getData());
+        self::assertTrue($form->isSubmitted());
+        self::assertFalse($form->isSynchronized());
+        self::assertFalse($form->isValid());
+        self::assertSame([$expectedMessage], self::errorMessages($form));
     }
 
-    public function testSubmitOwnLocationIdIsPreserved(): void
+    public function testBuildViewAfterRejectedSubmissionShowsWhatWasSubmitted(): void
     {
-        $existingLocation = new RemoteResourceLocation(
-            new RemoteResource('upload|image|owned.jpg', RemoteResource::TYPE_IMAGE, 'https://example.test/owned.jpg', 'md5-owned'),
-            id: 5,
+        $locations = $this->storeGallery();
+        $locations[0]->getRemoteResource()->setAltText('Stored alt');
+        $this->addResource('upload|image|new.jpg');
+
+        $form = $this->factory->createNamed('gallery', RemoteMediaType::class, new ArrayCollection($locations), ['upload_limit' => 3]);
+
+        // Reordered, with a new resource, a crop and edited texts, but one resource over the limit.
+        $form->submit([
+            'collectionPayload' => json_encode([
+                ['locationId' => 8, 'remoteId' => 'upload|image|8.jpg', 'cropSettings' => '{"hero":{"x":5,"y":6,"w":70,"h":80}}'],
+                ['remoteId' => 'upload|image|new.jpg', 'watermarkText' => 'New watermark'],
+                [
+                    'locationId' => 6,
+                    'remoteId' => 'upload|image|6.jpg',
+                    'altText' => 'Edited alt',
+                    'caption' => 'Edited caption',
+                    'tags' => ['edited'],
+                    'altTextOverride' => 'Edited local alt',
+                    'captionOverride' => 'Edited local caption',
+                ],
+                ['locationId' => 7, 'remoteId' => 'upload|image|7.jpg'],
+            ]),
+        ]);
+
+        self::assertFalse($form->isValid());
+
+        $view = $form->createView();
+        $viewLocations = $view->vars['remote_media_locations'];
+
+        self::assertSame(
+            ['upload|image|8.jpg', 'upload|image|new.jpg', 'upload|image|6.jpg', 'upload|image|7.jpg'],
+            array_map(static fn (RemoteResourceLocation $location): string => $location->getRemoteResource()->getRemoteId(), $viewLocations),
+        );
+        self::assertSame([8, null, 6, 7], array_map(static fn (RemoteResourceLocation $location): ?int => $location->getId(), $viewLocations));
+
+        AbstractTestCase::assertCropSettingsSame(new CropSettings('hero', 5, 6, 70, 80), $viewLocations[0]->getCropSettings()[0]);
+        self::assertSame('New watermark', $viewLocations[1]->getWatermarkText());
+        self::assertSame('form_gallery', $viewLocations[1]->getSource());
+        self::assertSame('Edited alt', $viewLocations[2]->getRemoteResource()->getAltText());
+        self::assertSame('Edited caption', $viewLocations[2]->getRemoteResource()->getCaption());
+        self::assertSame(['edited'], $viewLocations[2]->getRemoteResource()->getTags());
+        self::assertSame('Edited local alt', $viewLocations[2]->getAltTextOverride());
+        self::assertSame('Edited local caption', $viewLocations[2]->getCaptionOverride());
+
+        // The same payload is rendered into the hidden input.
+        self::assertSame(
+            [8, null, 6, 7],
+            array_column(json_decode($view->children['collectionPayload']->vars['value'], true), 'locationId'),
         );
 
-        $this->dataTransformerMock
-            ->expects(self::once())
-            ->method('reverseTransform')
-            ->with(self::callback(static fn (array $data): bool => $data['locationId'] === '5'
-                && $data['remoteId'] === 'upload|image|owned.jpg'))
-            ->willReturn($existingLocation);
+        // Nothing of the rejected submission reached the stored locations and resources.
+        self::assertNotSame($locations[0], $viewLocations[2]);
+        self::assertNotSame($locations[0]->getRemoteResource(), $viewLocations[2]->getRemoteResource());
+        self::assertSame('Stored alt', $locations[0]->getRemoteResource()->getAltText());
+        self::assertNull($locations[0]->getAltTextOverride());
+        self::assertSame([], $locations[2]->getCropSettings());
+        self::assertSame([0, 1, 2], array_map(static fn (RemoteResourceLocation $location): ?int => $location->getPosition(), $locations));
+    }
 
-        $form = $this->factory->create(RemoteMediaType::class, $existingLocation, ['upload_limit' => 1]);
+    public function testBuildViewAfterRejectedSubmissionSkipsWhatCannotBeShown(): void
+    {
+        $locations = $this->storeGallery();
+
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($locations));
 
         $form->submit([
-            'locationId' => '5',
-            'remoteId' => 'upload|image|owned.jpg',
-            'type' => 'image',
+            'collectionPayload' => json_encode([
+                ['locationId' => 7, 'remoteId' => 'upload|image|7.jpg'],
+                ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'cropSettings' => ['hero' => ['x' => 1]]],
+                ['remoteId' => 'upload|image|unknown.jpg'],
+            ]),
         ]);
 
-        self::assertTrue($form->isSynchronized());
-        self::assertSame($existingLocation, $form->getData());
+        self::assertFalse($form->isValid());
+
+        $viewLocations = $form->createView()->vars['remote_media_locations'];
+
+        self::assertCount(1, $viewLocations);
+        self::assertSame(7, $viewLocations[0]->getId());
     }
 
-    public function testBuildViewExposesSingleLocationAndCollectionFlags(): void
+    public function testBuildViewAfterUnreadableSubmissionShowsNothing(): void
     {
-        $location = new RemoteResourceLocation(
-            new RemoteResource('remote-1', RemoteResource::TYPE_IMAGE, 'https://example.test/1', 'md5-1'),
-        );
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($this->storeGallery()));
 
-        $this->providerMock
-            ->method('getSupportedVisibilities')
-            ->willReturn(RemoteResource::SUPPORTED_VISIBILITIES);
+        $form->submit(['collectionPayload' => '{"remoteId":']);
 
-        $this->providerMock
-            ->method('getSupportedTypes')
-            ->willReturn(RemoteResource::SUPPORTED_TYPES);
+        self::assertFalse($form->isValid());
 
-        $this->providerMock
-            ->method('listTags')
-            ->willReturn([]);
-
-        $form = $this->factory->create(RemoteMediaType::class, $location, ['upload_limit' => 1]);
         $view = $form->createView();
 
-        self::assertSame([$location], $view->vars['remote_media_locations']);
-        self::assertSame(1, $view->vars['upload_limit']);
-        self::assertFalse($view->vars['is_collection']);
-        self::assertArrayNotHasKey('uploadLimit', $view->children);
-        self::assertArrayNotHasKey('collectionPayload', $view->children);
+        self::assertSame([], $view->vars['remote_media_locations']);
+        self::assertSame('{"remoteId":', $view->children['collectionPayload']->vars['value']);
     }
 
-    public static function submitDataProvider(): iterable
+    public function testBlockPrefix(): void
+    {
+        self::assertContains('remote_media', $this->factory->create(RemoteMediaType::class)->createView()->vars['block_prefixes']);
+    }
+
+    public static function uploadLimitDataProvider(): iterable
     {
         return [
-            [
-                [
-                    'locationId' => '',
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => 'Test alt text',
-                    'caption' => 'Test caption',
-                    'tags' => ['example', 'image', 'test'],
-                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
-                    'source' => null,
-                    'watermarkText' => 'This is a watermark',
-                    'altTextOverride' => 'Local alt text',
-                    'captionOverride' => 'Local caption',
-                ],
+            'default is unlimited' => [[], null],
+            'null is unlimited' => [['upload_limit' => null], null],
+            'single resource' => [['upload_limit' => 1], 1],
+            'several resources' => [['upload_limit' => 3], 3],
+        ];
+    }
+
+    public static function invalidUploadLimitDataProvider(): iterable
+    {
+        return [
+            'zero' => [0],
+            'negative' => [-1],
+            'string' => ['3'],
+            'float' => [1.5],
+        ];
+    }
+
+    public static function viewOptionsDataProvider(): iterable
+    {
+        return [
+            'defaults' => [
                 [],
                 [
-                    'locationId' => '',
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => 'Test alt text',
-                    'caption' => 'Test caption',
-                    'tags' => ['example', 'image', 'test'],
-                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
-                    'source' => null,
-                    'watermarkText' => 'This is a watermark',
-                    'altTextOverride' => 'Local alt text',
-                    'captionOverride' => 'Local caption',
-                ],
-                new RemoteResourceLocation(
-                    remoteResource: new RemoteResource(
-                        remoteId: 'upload|image|media/images/example.jpg',
-                        type: 'image',
-                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                        name: 'example.jpg',
-                        folder: Folder::fromPath('media/images'),
-                    ),
-                    cropSettings: [
-                        new CropSettings('hero_image', 10, 20, 1920, 1080),
-                    ],
-                    watermarkText: 'This is a watermark',
-                    altTextOverride: 'Local alt text',
-                    captionOverride: 'Local caption',
-                ),
-                [
-                    'locationId' => null,
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => 'Test alt text',
-                    'caption' => 'Test caption',
-                    'altTextOverride' => 'Local alt text',
-                    'captionOverride' => 'Local caption',
-                    'watermarkText' => 'This is a watermark',
-                    'tags' => ['example', 'image', 'test'],
-                    'cropSettings' => '{"hero_image": {"x": 10, "y": 20, "w": 1920, "h": 1080}}',
-                    'source' => null,
-                ],
-                [
                     'variation_group' => 'default',
+                    'allowed_variations' => [],
                     'allowed_visibilities' => [],
                     'allowed_types' => [],
                     'allowed_tags' => [],
                     'parent_folder' => null,
                     'folder' => null,
                     'upload_context' => [],
-                    'upload_limit' => 1,
-                    'is_collection' => false,
+                    'disable_upload' => false,
+                    'hide_filename' => false,
+                    'upload_limit' => null,
+                    'location_source' => 'form_gallery',
+                    'remote_media_locations' => [],
                 ],
             ],
-            [
-                [
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'source' => 'Test source',
-                ],
+            'folders as paths' => [
                 [
                     'variation_group' => null,
                     'allowed_visibilities' => ['public', 'other'],
@@ -325,67 +586,20 @@ class RemoteMediaTypeTest extends TypeTestCase
                     'parent_folder' => 'media/test',
                     'folder' => 'media',
                     'upload_context' => ['test'],
-                ],
-                [
-                    'locationId' => null,
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => null,
-                    'caption' => null,
-                    'tags' => [],
-                    'cropSettings' => null,
-                    'source' => 'Test source',
-                    'watermarkText' => null,
-                    'altTextOverride' => null,
-                    'captionOverride' => null,
-                ],
-                new RemoteResourceLocation(
-                    new RemoteResource(
-                        remoteId: 'upload|image|media/images/example.jpg',
-                        type: 'image',
-                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                        name: 'example.jpg',
-                    ),
-                    'Test source',
-                ),
-                [
-                    'locationId' => null,
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => null,
-                    'caption' => null,
-                    'altTextOverride' => null,
-                    'captionOverride' => null,
-                    'watermarkText' => null,
-                    'tags' => [],
-                    'cropSettings' => null,
-                    'source' => 'Test source',
+                    'location_source' => 'product_gallery',
                 ],
                 [
                     'variation_group' => 'default',
                     'allowed_visibilities' => ['public'],
                     'allowed_types' => ['image', 'video'],
                     'allowed_tags' => ['tag1'],
-                    'parent_folder' => [
-                        'id' => 'media/test',
-                        'label' => 'test',
-                    ],
-                    'folder' => [
-                        'id' => 'media',
-                        'label' => 'media',
-                    ],
+                    'parent_folder' => ['id' => 'media/test', 'label' => 'test'],
+                    'folder' => ['id' => 'media', 'label' => 'media'],
                     'upload_context' => [],
-                    'upload_limit' => 1,
-                    'is_collection' => false,
+                    'location_source' => 'product_gallery',
                 ],
             ],
-            [
-                [
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'source' => 'Test source',
-                ],
+            'folders as objects' => [
                 [
                     'variation_group' => 'product_image',
                     'allowed_visibilities' => ['protected'],
@@ -397,74 +611,163 @@ class RemoteMediaTypeTest extends TypeTestCase
                         'caption' => 'Some caption',
                         'type' => 'product_image',
                     ],
-                ],
-                [
-                    'locationId' => null,
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => null,
-                    'caption' => null,
-                    'tags' => [],
-                    'cropSettings' => null,
-                    'source' => 'Test source',
-                    'watermarkText' => null,
-                    'altTextOverride' => null,
-                    'captionOverride' => null,
-                ],
-                new RemoteResourceLocation(
-                    new RemoteResource(
-                        remoteId: 'upload|image|media/images/example.jpg',
-                        type: 'image',
-                        url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-                        md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-                        name: 'example.jpg',
-                    ),
-                    'Test source',
-                ),
-                [
-                    'locationId' => null,
-                    'remoteId' => 'upload|image|media/images/example.jpg',
-                    'type' => 'image',
-                    'altText' => null,
-                    'caption' => null,
-                    'altTextOverride' => null,
-                    'captionOverride' => null,
-                    'watermarkText' => null,
-                    'tags' => [],
-                    'cropSettings' => null,
-                    'source' => 'Test source',
+                    'disable_upload' => true,
+                    'hide_filename' => true,
+                    'upload_limit' => 1,
                 ],
                 [
                     'variation_group' => 'product_image',
                     'allowed_visibilities' => ['protected'],
                     'allowed_types' => ['other'],
                     'allowed_tags' => [],
-                    'parent_folder' => [
-                        'id' => 'media/test',
-                        'label' => 'test',
-                    ],
-                    'folder' => [
-                        'id' => 'media',
-                        'label' => 'media',
-                    ],
+                    'parent_folder' => ['id' => 'media/test', 'label' => 'test'],
+                    'folder' => ['id' => 'media', 'label' => 'media'],
                     'upload_context' => [
                         'alt' => 'Some alt',
                         'caption' => 'Some caption',
                         'type' => 'product_image',
                     ],
+                    'disable_upload' => true,
+                    'hide_filename' => true,
                     'upload_limit' => 1,
-                    'is_collection' => false,
                 ],
             ],
         ];
     }
 
+    public static function missingPayloadDataProvider(): iterable
+    {
+        return [
+            'field not submitted at all' => [null],
+            'no payload' => [[]],
+            'null payload' => [['collectionPayload' => null]],
+            'empty payload' => [['collectionPayload' => '']],
+        ];
+    }
+
+    public static function invalidSubmissionDataProvider(): iterable
+    {
+        return [
+            'malformed JSON' => [
+                ['collectionPayload' => '{"remoteId":'],
+            ],
+            'JSON object instead of a list' => [
+                ['collectionPayload' => '{}'],
+            ],
+            'payload submitted as an array' => [
+                ['collectionPayload' => [['remoteId' => 'upload|image|6.jpg']]],
+            ],
+            'scalar submitted for the field' => [
+                '[]',
+            ],
+            'crop settings as an object' => [
+                ['collectionPayload' => json_encode([
+                    ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'cropSettings' => ['hero' => ['x' => 1, 'y' => 2, 'w' => 3, 'h' => 4]]],
+                ])],
+            ],
+            'alt text as an object' => [
+                ['collectionPayload' => json_encode([
+                    ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'altText' => ['en' => 'Alt']],
+                ])],
+            ],
+            'tags as a string' => [
+                ['collectionPayload' => json_encode([
+                    ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'tags' => 'one,two'],
+                ])],
+            ],
+            'location ID as a list' => [
+                ['collectionPayload' => json_encode([
+                    ['locationId' => [6], 'remoteId' => 'upload|image|6.jpg'],
+                ])],
+            ],
+            'fields of the single resource shape next to the payload' => [
+                ['collectionPayload' => '[]', 'remoteId' => 'upload|image|6.jpg', 'locationId' => '6'],
+            ],
+        ];
+    }
+
+    public static function limitExceededMessageDataProvider(): iterable
+    {
+        return [
+            ['en', 'Too many files selected (3). The maximum allowed is 2.'],
+            ['hr', 'Odabrano je previše datoteka (3). Najveći dopušteni broj je 2.'],
+            ['no', 'For mange filer er valgt (3). Maksimalt tillatt antall er 2.'],
+        ];
+    }
+
     protected function getExtensions(): array
     {
-        $type = new RemoteMediaType($this->dataTransformerMock, $this->providerMock);
+        $service = new RemoteResourceService($this->providerMock);
+        $type = new RemoteMediaType(
+            new RemoteMediaTransformer($this->providerMock, $service),
+            $this->providerMock,
+            $service,
+        );
+
+        // Form errors are translated with the translations shipped by the bundle.
+        $this->translator = new Translator('en');
+        $this->translator->addLoader('yaml', new YamlFileLoader());
+        foreach (['en', 'hr', 'no'] as $locale) {
+            $this->translator->addResource(
+                'yaml',
+                __DIR__ . '/../../../../bundle/Resources/translations/validators.' . $locale . '.yaml',
+                $locale,
+                'validators',
+            );
+        }
+
+        $validator = Validation::createValidatorBuilder()
+            ->setTranslator($this->translator)
+            ->setTranslationDomain('validators')
+            ->getValidator();
 
         return [
             new PreloadedExtension([$type], []),
+            new ValidatorExtension($validator, false),
         ];
+    }
+
+    private function addResource(string $remoteId): RemoteResource
+    {
+        return $this->resources[$remoteId] = new RemoteResource(
+            remoteId: $remoteId,
+            type: RemoteResource::TYPE_IMAGE,
+            url: 'https://example.test/' . $remoteId,
+            md5: 'md5',
+        );
+    }
+
+    private function storeLocation(int $id, string $remoteId, ?int $position = null): RemoteResourceLocation
+    {
+        return $this->locations[$id] = new RemoteResourceLocation(
+            $this->addResource($remoteId),
+            id: $id,
+            position: $position,
+        );
+    }
+
+    /**
+     * @return array<int, RemoteResourceLocation> Stored locations 6, 7 and 8, in that order
+     */
+    private function storeGallery(): array
+    {
+        return [
+            $this->storeLocation(6, 'upload|image|6.jpg', position: 0),
+            $this->storeLocation(7, 'upload|image|7.jpg', position: 1),
+            $this->storeLocation(8, 'upload|image|8.jpg', position: 2),
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private static function errorMessages(FormInterface $form): array
+    {
+        $messages = [];
+        foreach (iterator_to_array($form->getErrors(true), false) as $error) {
+            $messages[] = $error->getMessage();
+        }
+
+        return $messages;
     }
 }

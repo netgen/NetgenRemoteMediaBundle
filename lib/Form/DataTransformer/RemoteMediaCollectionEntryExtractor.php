@@ -6,49 +6,94 @@ namespace Netgen\RemoteMedia\Form\DataTransformer;
 
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-use function array_filter;
+use function array_is_list;
 use function array_key_exists;
-use function array_values;
 use function ctype_digit;
+use function get_debug_type;
 use function is_array;
 use function is_int;
-use function is_scalar;
 use function is_string;
 use function json_decode;
 use function json_last_error;
 use function json_last_error_msg;
+use function sprintf;
 
 use const JSON_ERROR_NONE;
 
 /**
- * Shared extraction/normalization helpers for RemoteMedia collection submissions.
- * Used by the form types' PRE_SUBMIT listeners and RemoteMediaCollectionTransformer
- * so the two paths cannot drift out of sync.
+ * Reads the JSON `collectionPayload` submitted by the remote media widget into
+ * normalized entries, one per selected resource, in the submitted order.
  *
- * The canonical wire format is the JSON `collectionPayload` (see fromPayload()).
- * The root-indexed and field-indexed forms are deprecated fallbacks kept for
- * backwards compatibility with pre-payload clients and will be removed.
+ * Shared by RemoteMediaType and RemoteMediaCollectionTransformer, so both read
+ * the payload in the same way.
  */
 final class RemoteMediaCollectionEntryExtractor
 {
+    private const STRING_FIELDS = ['type', 'altText', 'caption', 'altTextOverride', 'captionOverride', 'watermarkText'];
+
+    private const CROP_COORDINATES = ['x', 'y', 'w', 'h', 'width', 'height'];
+
     /**
-     * @param array<string, mixed> $data
+     * Entries without a remote ID are skipped. Of the entries repeating a
+     * location ID only the first one is kept, as a location can be in the
+     * collection only once.
+     *
+     * @return array<int, array<string, mixed>>
+     *
+     * @throws TransformationFailedException If the payload is not a JSON list of objects, or an entry field has an unexpected type
+     */
+    public static function fromPayload(mixed $payload, ?string $defaultSource = null): array
+    {
+        $entries = [];
+        foreach (self::decode($payload) as $entry) {
+            $entry = self::normalizeEntry($entry, $defaultSource);
+            if ($entry !== null) {
+                $entries[] = $entry;
+            }
+        }
+
+        return self::removeRepeatedLocations($entries);
+    }
+
+    /**
+     * Same as fromPayload(), but skips everything that cannot be read instead
+     * of failing. Meant for showing a rejected submission back to the editor.
      *
      * @return array<int, array<string, mixed>>
      */
-    public static function fromPayload(array $data): array
+    public static function fromPayloadLenient(mixed $payload, ?string $defaultSource = null): array
     {
-        if (!array_key_exists('collectionPayload', $data)) {
+        try {
+            $decoded = self::decode($payload);
+        } catch (TransformationFailedException) {
             return [];
         }
 
-        $payload = $data['collectionPayload'];
-        if ($payload === '') {
-            return [];
+        $entries = [];
+        foreach ($decoded as $entry) {
+            try {
+                $entry = self::normalizeEntry($entry, $defaultSource);
+            } catch (TransformationFailedException) {
+                continue;
+            }
+
+            if ($entry !== null) {
+                $entries[] = $entry;
+            }
         }
 
-        if (!is_string($payload)) {
-            throw new TransformationFailedException('The remote media collection payload must be a JSON array.');
+        return self::removeRepeatedLocations($entries);
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    private static function decode(mixed $payload): array
+    {
+        if (!is_string($payload) || $payload === '') {
+            throw new TransformationFailedException(
+                sprintf('The remote media collection payload must be a JSON string, %s given.', $payload === '' ? 'empty string' : get_debug_type($payload)),
+            );
         }
 
         $decoded = json_decode($payload, true);
@@ -58,221 +103,174 @@ final class RemoteMediaCollectionEntryExtractor
             );
         }
 
-        if (!is_array($decoded)) {
+        // An empty JSON object decodes to an empty array as well, but only "[]" may clear the collection.
+        if (!is_array($decoded) || !array_is_list($decoded) || ($decoded === [] && !is_array(json_decode($payload)))) {
             throw new TransformationFailedException('The remote media collection payload must be a JSON array.');
         }
 
-        $entries = [];
-        foreach ($decoded as $entry) {
-            if (!is_array($entry)) {
-                continue;
-            }
-
-            $normalized = self::normalizeEntry($entry, $data['source'] ?? null);
-            if ($normalized !== null) {
-                $entries[] = $normalized;
-            }
-        }
-
-        return $entries;
+        return $decoded;
     }
 
     /**
-     * @deprecated submit the JSON `collectionPayload` instead; kept for BC with pre-payload clients
-     *
-     * @param array<string, mixed> $data
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    public static function fromRootIndexed(array $data): array
-    {
-        $entries = [];
-        foreach ($data as $index => $entry) {
-            if ((!is_int($index) && !(is_string($index) && ctype_digit($index))) || !is_array($entry)) {
-                continue;
-            }
-
-            $normalized = self::normalizeEntry($entry, $data['source'] ?? null);
-            if ($normalized !== null) {
-                $entries[] = $normalized;
-            }
-        }
-
-        return $entries;
-    }
-
-    /**
-     * @deprecated submit the JSON `collectionPayload` instead; kept for BC with pre-payload clients
-     *
-     * @param array<string, mixed> $data
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    public static function fromFieldIndexed(array $data): array
-    {
-        if (!isset($data['remoteId']) || !is_array($data['remoteId'])) {
-            return [];
-        }
-
-        $entries = [];
-        foreach ($data['remoteId'] as $index => $_) {
-            $remoteId = self::indexedValue($data, 'remoteId', $index);
-            if (!is_string($remoteId) || $remoteId === '') {
-                continue;
-            }
-
-            $entries[] = [
-                'locationId' => self::indexedValue($data, 'locationId', $index),
-                'remoteId' => $remoteId,
-                'type' => (string) (self::indexedValue($data, 'type', $index, '') ?? ''),
-                'altText' => (string) (self::indexedValue($data, 'altText', $index, '') ?? ''),
-                'caption' => (string) (self::indexedValue($data, 'caption', $index, '') ?? ''),
-                'altTextOverride' => (string) (self::indexedValue($data, 'altTextOverride', $index, '') ?? ''),
-                'captionOverride' => (string) (self::indexedValue($data, 'captionOverride', $index, '') ?? ''),
-                'watermarkText' => (string) (self::indexedValue($data, 'watermarkText', $index, '') ?? ''),
-                'tags' => self::normalizeTags(self::indexedTags($data, $index)),
-                'cropSettings' => (string) (self::indexedValue($data, 'cropSettings', $index, '{}') ?? '{}'),
-                'source' => (string) (self::indexedValue($data, 'source', $index, $data['source'] ?? null) ?? ''),
-            ];
-        }
-
-        return $entries;
-    }
-
-    /**
-     * Tries payload first, then root-indexed, then field-indexed. Returns the first non-empty result, or [].
-     *
-     * @param array<string, mixed> $data
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    public static function extractAny(array $data): array
-    {
-        $entries = self::fromPayload($data);
-        if ($entries === []) {
-            $entries = self::fromRootIndexed($data);
-        }
-        if ($entries === []) {
-            $entries = self::fromFieldIndexed($data);
-        }
-
-        return $entries;
-    }
-
-    /**
-     * Removes numeric top-level keys from the data so they cannot leak through to scalar HiddenType children.
-     *
-     * @param array<string, mixed> $data
-     *
-     * @return array<string, mixed>
-     */
-    public static function stripNumericKeys(array $data): array
-    {
-        foreach ($data as $key => $_) {
-            if (is_int($key) || (is_string($key) && ctype_digit($key))) {
-                unset($data[$key]);
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param array<string, mixed> $entry
-     *
      * @return array<string, mixed>|null
      */
-    private static function normalizeEntry(array $entry, mixed $source): ?array
+    private static function normalizeEntry(mixed $entry, ?string $defaultSource): ?array
     {
-        $remoteId = $entry['remoteId'] ?? $entry['id'] ?? null;
-        if (!is_string($remoteId) || $remoteId === '') {
+        if (!is_array($entry)) {
+            throw new TransformationFailedException(
+                sprintf('A remote media collection entry must be a JSON object, %s given.', get_debug_type($entry)),
+            );
+        }
+
+        $remoteId = self::stringField($entry, 'remoteId');
+        if ($remoteId === null) {
             return null;
         }
 
-        $locationId = $entry['locationId'] ?? null;
-        if ($locationId !== null && (!is_scalar($locationId) || $locationId === '')) {
-            $locationId = null;
-        }
-
-        return [
-            'locationId' => $locationId,
+        $normalized = [
+            'locationId' => self::locationId($entry['locationId'] ?? null),
             'remoteId' => $remoteId,
-            'type' => (string) ($entry['type'] ?? ''),
-            'altText' => (string) ($entry['altText'] ?? $entry['alternateText'] ?? ''),
-            'caption' => (string) ($entry['caption'] ?? ''),
-            'altTextOverride' => (string) ($entry['altTextOverride'] ?? ''),
-            'captionOverride' => (string) ($entry['captionOverride'] ?? ''),
-            'watermarkText' => (string) ($entry['watermarkText'] ?? ''),
-            'tags' => self::normalizeTags($entry['tags'] ?? []),
-            'cropSettings' => (string) ($entry['cropSettings'] ?? '{}'),
-            'source' => (string) ($entry['source'] ?? $source ?? ''),
         ];
+
+        foreach (self::STRING_FIELDS as $field) {
+            $normalized[$field] = self::stringField($entry, $field);
+        }
+
+        $normalized['tags'] = self::tags($entry['tags'] ?? null);
+        $normalized['cropSettings'] = self::cropSettings($entry['cropSettings'] ?? null);
+        $normalized['source'] = self::stringField($entry, 'source') ?? $defaultSource;
+
+        return $normalized;
     }
 
     /**
-     * @param array<string, mixed> $data
-     */
-    private static function indexedValue(array $data, string $field, int|string $index, mixed $default = null): mixed
-    {
-        if (!array_key_exists($field, $data)) {
-            return $default;
-        }
-
-        $value = $data[$field];
-        if (!is_array($value)) {
-            return $value;
-        }
-
-        if (!array_key_exists($index, $value)) {
-            return $default;
-        }
-
-        $indexedValue = $value[$index];
-        if (is_array($indexedValue) && array_key_exists($field, $indexedValue)) {
-            return $indexedValue[$field];
-        }
-
-        if (!is_array($indexedValue)) {
-            return $indexedValue;
-        }
-
-        return $default;
-    }
-
-    /**
-     * Tags are the one field whose per-index value is itself a list, so the
-     * scalar-oriented indexedValue() helper cannot be used for them.
+     * @param array<int, array<string, mixed>> $entries
      *
-     * @param array<string, mixed> $data
+     * @return array<int, array<string, mixed>>
      */
-    private static function indexedTags(array $data, int|string $index): mixed
+    private static function removeRepeatedLocations(array $entries): array
     {
-        $tags = $data['tags'] ?? null;
-        if (!is_array($tags) || !array_key_exists($index, $tags)) {
-            return [];
+        $seenLocationIds = [];
+        $uniqueEntries = [];
+
+        foreach ($entries as $entry) {
+            $locationId = $entry['locationId'];
+            if ($locationId !== null) {
+                if (array_key_exists($locationId, $seenLocationIds)) {
+                    continue;
+                }
+
+                $seenLocationIds[$locationId] = true;
+            }
+
+            $uniqueEntries[] = $entry;
         }
 
-        $indexedTags = $tags[$index];
-        if (is_array($indexedTags) && array_key_exists('tags', $indexedTags)) {
-            return $indexedTags['tags'];
+        return $uniqueEntries;
+    }
+
+    /**
+     * @param array<mixed> $entry
+     *
+     * @return string|null Null if the field is missing or empty
+     */
+    private static function stringField(array $entry, string $field): ?string
+    {
+        $value = $entry[$field] ?? null;
+        if ($value !== null && !is_string($value)) {
+            throw self::unexpectedType($field, 'a string', $value);
         }
 
-        return $indexedTags;
+        return $value !== '' ? $value : null;
+    }
+
+    private static function locationId(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_string($value) && ctype_digit($value)) {
+            $value = (int) $value;
+        }
+
+        if (!is_int($value) || $value < 1) {
+            throw self::unexpectedType('locationId', 'a positive integer', $value);
+        }
+
+        return $value;
     }
 
     /**
      * @return array<int, string>
      */
-    private static function normalizeTags(mixed $tags): array
+    private static function tags(mixed $value): array
     {
-        if (!is_array($tags)) {
+        if ($value === null) {
             return [];
         }
 
-        return array_values(
-            array_filter(
-                $tags,
-                static fn ($tag): bool => is_string($tag) && $tag !== '',
+        if (!is_array($value)) {
+            throw self::unexpectedType('tags', 'a list of strings', $value);
+        }
+
+        $tags = [];
+        foreach ($value as $tag) {
+            if (!is_string($tag)) {
+                throw self::unexpectedType('tags', 'a list of strings', $value);
+            }
+
+            if ($tag !== '') {
+                $tags[] = $tag;
+            }
+        }
+
+        return $tags;
+    }
+
+    /**
+     * Crop settings travel as a JSON string of their own: an object holding
+     * the crop coordinates per variation name.
+     */
+    private static function cropSettings(mixed $value): string
+    {
+        if ($value === null || $value === '') {
+            return '{}';
+        }
+
+        if (!is_string($value)) {
+            throw self::unexpectedType('cropSettings', 'a JSON string', $value);
+        }
+
+        $variations = json_decode($value, true);
+        if (!is_array($variations)) {
+            throw self::unexpectedType('cropSettings', 'a JSON string holding an object', $variations);
+        }
+
+        foreach ($variations as $coordinates) {
+            if (!is_array($coordinates)) {
+                continue;
+            }
+
+            foreach (self::CROP_COORDINATES as $name) {
+                $coordinate = $coordinates[$name] ?? null;
+                if ($coordinate !== null && !is_int($coordinate)) {
+                    throw self::unexpectedType('cropSettings', 'a JSON string with integer crop coordinates', $coordinate);
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    private static function unexpectedType(string $field, string $expected, mixed $value): TransformationFailedException
+    {
+        return new TransformationFailedException(
+            sprintf(
+                'The "%s" field of a remote media collection entry must be %s, %s given.',
+                $field,
+                $expected,
+                get_debug_type($value),
             ),
         );
     }

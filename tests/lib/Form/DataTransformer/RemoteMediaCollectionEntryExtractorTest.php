@@ -6,120 +6,253 @@ namespace Netgen\RemoteMedia\Tests\Form\DataTransformer;
 
 use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaCollectionEntryExtractor;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
+use function array_column;
 use function json_encode;
 
 #[CoversClass(RemoteMediaCollectionEntryExtractor::class)]
 final class RemoteMediaCollectionEntryExtractorTest extends TestCase
 {
-    public function testStripNumericKeysRemovesIntegerAndDigitStringKeys(): void
+    public function testFromPayloadNormalizesEntries(): void
     {
-        $data = [
-            'remoteId' => 'r1',
-            0 => ['remoteId' => 'r2'],
-            '1' => ['remoteId' => 'r3'],
-            'source' => 'form_source',
-        ];
+        $payload = json_encode([
+            [
+                'locationId' => 12,
+                'remoteId' => 'upload|image|first.jpg',
+                'type' => 'image',
+                'altText' => 'Alt',
+                'caption' => 'Caption',
+                'altTextOverride' => 'Local alt',
+                'captionOverride' => 'Local caption',
+                'watermarkText' => 'Watermark',
+                'tags' => ['one', '', 'two'],
+                'cropSettings' => '{"hero":{"x":1,"y":2,"w":300,"h":200}}',
+                'source' => 'own_source',
+            ],
+            [
+                'locationId' => '',
+                'remoteId' => 'upload|image|second.jpg',
+                'caption' => '',
+                'source' => '',
+            ],
+            [
+                'locationId' => '15',
+                'remoteId' => 'upload|image|third.jpg',
+                'altText' => null,
+                'tags' => null,
+                'cropSettings' => null,
+            ],
+        ]);
 
-        $cleaned = RemoteMediaCollectionEntryExtractor::stripNumericKeys($data);
-
-        self::assertSame(['remoteId' => 'r1', 'source' => 'form_source'], $cleaned);
+        self::assertSame(
+            [
+                [
+                    'locationId' => 12,
+                    'remoteId' => 'upload|image|first.jpg',
+                    'type' => 'image',
+                    'altText' => 'Alt',
+                    'caption' => 'Caption',
+                    'altTextOverride' => 'Local alt',
+                    'captionOverride' => 'Local caption',
+                    'watermarkText' => 'Watermark',
+                    'tags' => ['one', 'two'],
+                    'cropSettings' => '{"hero":{"x":1,"y":2,"w":300,"h":200}}',
+                    'source' => 'own_source',
+                ],
+                [
+                    'locationId' => null,
+                    'remoteId' => 'upload|image|second.jpg',
+                    'type' => null,
+                    'altText' => null,
+                    'caption' => null,
+                    'altTextOverride' => null,
+                    'captionOverride' => null,
+                    'watermarkText' => null,
+                    'tags' => [],
+                    'cropSettings' => '{}',
+                    'source' => 'form_gallery',
+                ],
+                [
+                    'locationId' => 15,
+                    'remoteId' => 'upload|image|third.jpg',
+                    'type' => null,
+                    'altText' => null,
+                    'caption' => null,
+                    'altTextOverride' => null,
+                    'captionOverride' => null,
+                    'watermarkText' => null,
+                    'tags' => [],
+                    'cropSettings' => '{}',
+                    'source' => 'form_gallery',
+                ],
+            ],
+            RemoteMediaCollectionEntryExtractor::fromPayload($payload, 'form_gallery'),
+        );
     }
 
-    /**
-     * Regression: malformed indexed entries (no remoteId) used to leak through to scalar HiddenType
-     * children because the PRE_SUBMIT listener bailed before stripping numeric keys. The extractor's
-     * stripNumericKeys is now called unconditionally; this asserts it cleans the data even when no
-     * usable entries are extracted.
-     */
-    public function testExtractAnyReturnsEmptyForMalformedIndexedEntries(): void
+    public function testFromPayloadReturnsNoEntriesForEmptyList(): void
     {
-        $data = [
-            0 => ['caption' => 'orphan with no remoteId'],
-            'remoteId' => '',
-            'source' => 'form_source',
-        ];
-
-        self::assertSame([], RemoteMediaCollectionEntryExtractor::extractAny($data));
+        self::assertSame([], RemoteMediaCollectionEntryExtractor::fromPayload('[]'));
     }
 
-    public function testFromPayloadDecodesJsonAndNormalizesEntries(): void
+    public function testFromPayloadSkipsEntriesWithoutRemoteId(): void
     {
-        $data = [
-            'collectionPayload' => json_encode([
-                ['remoteId' => 'r1', 'altText' => 'a', 'altTextOverride' => 'local a', 'captionOverride' => 'local c'],
-                ['id' => 'r2'], // 'id' is accepted as fallback for remoteId
-                ['caption' => 'no id, dropped'],
-            ]),
-            'source' => 'form_source',
-        ];
+        $entries = RemoteMediaCollectionEntryExtractor::fromPayload(json_encode([
+            ['remoteId' => 'r1'],
+            ['caption' => 'no remote ID'],
+            ['remoteId' => ''],
+            ['remoteId' => null],
+            ['remoteId' => 'r2'],
+        ]));
 
-        $entries = RemoteMediaCollectionEntryExtractor::fromPayload($data);
-
-        self::assertCount(2, $entries);
-        self::assertSame('r1', $entries[0]['remoteId']);
-        self::assertSame('a', $entries[0]['altText']);
-        self::assertSame('local a', $entries[0]['altTextOverride']);
-        self::assertSame('local c', $entries[0]['captionOverride']);
-        self::assertSame('r2', $entries[1]['remoteId']);
-        self::assertSame('', $entries[1]['altTextOverride']);
-        self::assertSame('', $entries[1]['captionOverride']);
-        self::assertSame('form_source', $entries[0]['source']);
+        self::assertSame(['r1', 'r2'], array_column($entries, 'remoteId'));
     }
 
-    public function testFromPayloadRejectsMalformedJson(): void
+    public function testFromPayloadKeepsOnlyTheFirstEntryOfARepeatedLocation(): void
+    {
+        $entries = RemoteMediaCollectionEntryExtractor::fromPayload(json_encode([
+            ['locationId' => 6, 'remoteId' => 'r1', 'caption' => 'first'],
+            ['locationId' => 7, 'remoteId' => 'r2'],
+            ['locationId' => '6', 'remoteId' => 'r1', 'caption' => 'repeated'],
+            ['locationId' => null, 'remoteId' => 'r1', 'caption' => 'new location of the same resource'],
+            ['locationId' => '', 'remoteId' => 'r1', 'caption' => 'another new location'],
+        ]));
+
+        self::assertSame([6, 7, null, null], array_column($entries, 'locationId'));
+        self::assertSame(
+            ['first', null, 'new location of the same resource', 'another new location'],
+            array_column($entries, 'caption'),
+        );
+    }
+
+    #[DataProvider('invalidPayloadDataProvider')]
+    public function testFromPayloadRejectsInvalidPayload(mixed $payload): void
     {
         $this->expectException(TransformationFailedException::class);
+        $this->expectExceptionMessage('The remote media collection payload');
 
-        RemoteMediaCollectionEntryExtractor::fromPayload([
-            'collectionPayload' => '{"remoteId":',
-        ]);
+        RemoteMediaCollectionEntryExtractor::fromPayload($payload);
     }
 
-    public function testNormalizeEntryDropsNonScalarLocationId(): void
+    #[DataProvider('invalidEntryDataProvider')]
+    public function testFromPayloadRejectsEntryFieldsOfUnexpectedType(mixed $entry, string $expectedMessage): void
     {
-        $entries = RemoteMediaCollectionEntryExtractor::fromPayload([
-            'collectionPayload' => json_encode([
-                ['locationId' => ['nested'], 'remoteId' => 'r1'],
+        $this->expectException(TransformationFailedException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        RemoteMediaCollectionEntryExtractor::fromPayload(json_encode([$entry]));
+    }
+
+    public function testFromPayloadLenientSkipsWhatCannotBeRead(): void
+    {
+        $entries = RemoteMediaCollectionEntryExtractor::fromPayloadLenient(
+            json_encode([
+                ['remoteId' => 'r1', 'cropSettings' => ['hero' => ['x' => 1]]],
+                'not an entry',
+                ['remoteId' => 'r2', 'caption' => 'kept'],
+                ['remoteId' => 'r3', 'tags' => 'not a list'],
+                ['locationId' => 4, 'remoteId' => 'r4'],
+                ['locationId' => 4, 'remoteId' => 'r4'],
             ]),
-        ]);
+            'form_gallery',
+        );
 
-        self::assertNull($entries[0]['locationId']);
+        self::assertSame(['r2', 'r4'], array_column($entries, 'remoteId'));
+        self::assertSame(['kept', null], array_column($entries, 'caption'));
+        self::assertSame(['form_gallery', 'form_gallery'], array_column($entries, 'source'));
     }
 
-    public function testFromRootIndexedSkipsEntriesWithoutRemoteId(): void
+    #[DataProvider('invalidPayloadDataProvider')]
+    public function testFromPayloadLenientReturnsNoEntriesForInvalidPayload(mixed $payload): void
     {
-        $data = [
-            0 => ['remoteId' => 'r1'],
-            1 => ['caption' => 'no remoteId, dropped'],
-            2 => ['remoteId' => ''],
-            3 => ['remoteId' => 'r2'],
-        ];
-
-        $entries = RemoteMediaCollectionEntryExtractor::fromRootIndexed($data);
-
-        self::assertCount(2, $entries);
-        self::assertSame('r1', $entries[0]['remoteId']);
-        self::assertSame('r2', $entries[1]['remoteId']);
+        self::assertSame([], RemoteMediaCollectionEntryExtractor::fromPayloadLenient($payload));
     }
 
-    public function testFromFieldIndexedReadsParallelArrays(): void
+    public static function invalidPayloadDataProvider(): iterable
     {
-        $data = [
-            'remoteId' => ['r1', 'r2'],
-            'altText' => ['alt1', 'alt2'],
-            'tags' => [['t1'], ['t2', '']],
-            'source' => 'form_source',
+        return [
+            'missing' => [null],
+            'empty string' => [''],
+            'not a string' => [['remoteId' => 'r1']],
+            'malformed JSON' => ['{"remoteId":'],
+            'JSON scalar' => ['"r1"'],
+            'JSON object' => ['{"remoteId":"r1"}'],
+            'empty JSON object' => ['{}'],
+            'JSON null' => ['null'],
         ];
+    }
 
-        $entries = RemoteMediaCollectionEntryExtractor::fromFieldIndexed($data);
-
-        self::assertCount(2, $entries);
-        self::assertSame('r1', $entries[0]['remoteId']);
-        self::assertSame('alt1', $entries[0]['altText']);
-        self::assertSame(['t1'], $entries[0]['tags']);
-        self::assertSame(['t2'], $entries[1]['tags']);
+    public static function invalidEntryDataProvider(): iterable
+    {
+        return [
+            'entry is a string' => [
+                'r1',
+                'entry must be a JSON object, string given',
+            ],
+            'remote ID is a number' => [
+                ['remoteId' => 5],
+                'The "remoteId" field of a remote media collection entry must be a string, int given',
+            ],
+            'location ID is a list' => [
+                ['remoteId' => 'r1', 'locationId' => ['nested']],
+                'The "locationId" field of a remote media collection entry must be a positive integer, array given',
+            ],
+            'location ID is not numeric' => [
+                ['remoteId' => 'r1', 'locationId' => 'abc'],
+                'The "locationId" field of a remote media collection entry must be a positive integer, string given',
+            ],
+            'location ID is zero' => [
+                ['remoteId' => 'r1', 'locationId' => 0],
+                'The "locationId" field of a remote media collection entry must be a positive integer, int given',
+            ],
+            'alt text is an object' => [
+                ['remoteId' => 'r1', 'altText' => ['en' => 'Alt']],
+                'The "altText" field of a remote media collection entry must be a string, array given',
+            ],
+            'caption is a number' => [
+                ['remoteId' => 'r1', 'caption' => 1.5],
+                'The "caption" field of a remote media collection entry must be a string, float given',
+            ],
+            'alt text override is a boolean' => [
+                ['remoteId' => 'r1', 'altTextOverride' => true],
+                'The "altTextOverride" field of a remote media collection entry must be a string, bool given',
+            ],
+            'watermark text is a list' => [
+                ['remoteId' => 'r1', 'watermarkText' => ['text']],
+                'The "watermarkText" field of a remote media collection entry must be a string, array given',
+            ],
+            'source is a list' => [
+                ['remoteId' => 'r1', 'source' => ['form']],
+                'The "source" field of a remote media collection entry must be a string, array given',
+            ],
+            'tags are a string' => [
+                ['remoteId' => 'r1', 'tags' => 'one,two'],
+                'The "tags" field of a remote media collection entry must be a list of strings, string given',
+            ],
+            'a tag is a list' => [
+                ['remoteId' => 'r1', 'tags' => ['one', ['two']]],
+                'The "tags" field of a remote media collection entry must be a list of strings, array given',
+            ],
+            'crop settings are an object' => [
+                ['remoteId' => 'r1', 'cropSettings' => ['hero' => ['x' => 1, 'y' => 2, 'w' => 3, 'h' => 4]]],
+                'The "cropSettings" field of a remote media collection entry must be a JSON string, array given',
+            ],
+            'crop settings are an empty object' => [
+                ['remoteId' => 'r1', 'cropSettings' => new stdClass()],
+                'The "cropSettings" field of a remote media collection entry must be a JSON string, array given',
+            ],
+            'crop settings are not JSON' => [
+                ['remoteId' => 'r1', 'cropSettings' => 'hero'],
+                'The "cropSettings" field of a remote media collection entry must be a JSON string holding an object, null given',
+            ],
+            'crop coordinate is a string' => [
+                ['remoteId' => 'r1', 'cropSettings' => '{"hero":{"x":"1","y":2,"w":3,"h":4}}'],
+                'The "cropSettings" field of a remote media collection entry must be a JSON string with integer crop coordinates, string given',
+            ],
+        ];
     }
 }

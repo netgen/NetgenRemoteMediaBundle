@@ -1,0 +1,3 @@
+ngrm:
+    form:
+        upload_limit_exceeded: 'Odabrano je previše datoteka ({{ count }}). Najveći dopušteni broj je {{ limit }}.'
