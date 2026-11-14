@@ -49,32 +49,58 @@ Upgrade from 3.1 to 4.0
 
 Change the relation of the entity as shown in [FORM.md](FORM.md#add-relation-to-your-entity): a `ManyToMany` relation with a unique inverse join column, `#[ORM\OrderBy(['position' => 'ASC'])]`, `addX()` and `removeX()` methods, and no setter which replaces the collection.
 
-Then move the data. Generate the migration with `php bin/console doctrine:migrations:diff` and add the `INSERT` and `UPDATE` statements below between the `CREATE TABLE` of the join table and the `DROP` of the old column. Otherwise the existing relations are lost.
+Then move the data in a Doctrine migration of your project. Generate it with `php bin/console doctrine:migrations:diff`, then add the `INSERT` and `UPDATE` statements between the creation of the join table and the drop of the old column. Without them the existing relations are lost. Run it with `php bin/console doctrine:migrations:migrate`.
 
 For an entity table `my_entity` with the column `remote_resource_location_id`, mapped as in [FORM.md](FORM.md#add-relation-to-your-entity), the whole migration is (MySQL):
 
-```sql
-CREATE TABLE my_entity_image (
-    my_entity_id INT NOT NULL,
-    remote_resource_location_id INT NOT NULL,
-    INDEX IDX_113C6D80677473C9 (my_entity_id),
-    UNIQUE INDEX UNIQ_113C6D80B29166B0 (remote_resource_location_id),
-    PRIMARY KEY(my_entity_id, remote_resource_location_id)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB;
+```php
+<?php
 
-ALTER TABLE my_entity_image ADD CONSTRAINT FK_113C6D80677473C9 FOREIGN KEY (my_entity_id) REFERENCES my_entity (id) ON DELETE CASCADE;
-ALTER TABLE my_entity_image ADD CONSTRAINT FK_113C6D80B29166B0 FOREIGN KEY (remote_resource_location_id) REFERENCES ngrm_remote_resource_location (id) ON DELETE CASCADE;
+declare(strict_types=1);
 
-INSERT INTO my_entity_image (my_entity_id, remote_resource_location_id)
-SELECT id, remote_resource_location_id FROM my_entity WHERE remote_resource_location_id IS NOT NULL;
+namespace DoctrineMigrations;
 
-UPDATE ngrm_remote_resource_location l
-INNER JOIN my_entity_image i ON i.remote_resource_location_id = l.id
-SET l.position = 0;
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
 
--- The name of the old foreign key is in the output of SHOW CREATE TABLE my_entity
-ALTER TABLE my_entity DROP FOREIGN KEY FK_OLD_FOREIGN_KEY_NAME;
-ALTER TABLE my_entity DROP remote_resource_location_id;
+final class Version20261114000000 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return 'Move my_entity.remote_resource_location_id to the my_entity_image join table';
+    }
+
+    public function up(Schema $schema): void
+    {
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on MySQL.');
+
+        $this->addSql('CREATE TABLE my_entity_image (my_entity_id INT NOT NULL, remote_resource_location_id INT NOT NULL, INDEX IDX_113C6D80677473C9 (my_entity_id), UNIQUE INDEX UNIQ_113C6D80B29166B0 (remote_resource_location_id), PRIMARY KEY(my_entity_id, remote_resource_location_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE my_entity_image ADD CONSTRAINT FK_113C6D80677473C9 FOREIGN KEY (my_entity_id) REFERENCES my_entity (id) ON DELETE CASCADE');
+        $this->addSql('ALTER TABLE my_entity_image ADD CONSTRAINT FK_113C6D80B29166B0 FOREIGN KEY (remote_resource_location_id) REFERENCES ngrm_remote_resource_location (id) ON DELETE CASCADE');
+
+        // Added by hand: move the existing relations and give them a position
+        $this->addSql('INSERT INTO my_entity_image (my_entity_id, remote_resource_location_id) SELECT id, remote_resource_location_id FROM my_entity WHERE remote_resource_location_id IS NOT NULL');
+        $this->addSql('UPDATE ngrm_remote_resource_location l INNER JOIN my_entity_image i ON i.remote_resource_location_id = l.id SET l.position = 0');
+
+        // The name of the old foreign key is in your generated migration, or in SHOW CREATE TABLE my_entity
+        $this->addSql('ALTER TABLE my_entity DROP FOREIGN KEY FK_OLD_FOREIGN_KEY_NAME');
+        $this->addSql('ALTER TABLE my_entity DROP remote_resource_location_id');
+    }
+
+    public function down(Schema $schema): void
+    {
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on MySQL.');
+
+        $this->addSql('ALTER TABLE my_entity ADD remote_resource_location_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE my_entity ADD CONSTRAINT FK_OLD_FOREIGN_KEY_NAME FOREIGN KEY (remote_resource_location_id) REFERENCES ngrm_remote_resource_location (id) ON DELETE SET NULL');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_OLD_INDEX_NAME ON my_entity (remote_resource_location_id)');
+
+        // Keeps the first resource of each collection, the others are dropped from the entity
+        $this->addSql('UPDATE my_entity e SET e.remote_resource_location_id = (SELECT i.remote_resource_location_id FROM my_entity_image i INNER JOIN ngrm_remote_resource_location l ON l.id = i.remote_resource_location_id WHERE i.my_entity_id = e.id ORDER BY l.position, l.id LIMIT 1)');
+
+        $this->addSql('DROP TABLE my_entity_image');
+    }
+}
 ```
 
 The index and foreign key names above are the ones Doctrine generates for these table and column names. Take the names from your generated migration. The locations themselves stay in `ngrm_remote_resource_location`, only the link moves to the join table.
