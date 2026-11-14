@@ -53,6 +53,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             try {
                 $remoteResource = $this->provider->loadFromRemote((string) $value['remoteId']);
             } catch (RemoteResourceNotFoundException $e) {
+                $this->service->logMissingResource((string) $value['remoteId']);
+
                 return null;
             }
         }

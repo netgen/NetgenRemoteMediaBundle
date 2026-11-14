@@ -148,7 +148,21 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ->with('upload|image|media/images/example.jpg')
             ->willThrowException(new RemoteResourceNotFoundException('upload|image|media/images/example.jpg'));
 
-        self::assertNull($this->dataTransformer->reverseTransform($data));
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger
+            ->expects(self::once())
+            ->method('warning')
+            ->with(
+                self::stringContains('exists neither locally nor on the remote'),
+                ['remoteId' => 'upload|image|media/images/example.jpg'],
+            );
+
+        $dataTransformer = new RemoteMediaTransformer(
+            $this->providerMock,
+            new RemoteResourceService($this->providerMock, $logger),
+        );
+
+        self::assertNull($dataTransformer->reverseTransform($data));
     }
 
     public function testReverseTransformWithExistingLocation(): void

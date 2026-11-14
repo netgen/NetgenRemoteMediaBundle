@@ -81,6 +81,17 @@ final class RemoteResourceService
         return $existsOnRemote;
     }
 
+    /**
+     * Logs a resource which was submitted but exists neither locally nor on the remote.
+     */
+    public function logMissingResource(string $remoteId): void
+    {
+        $this->logger->warning(
+            '[NGRM] Remote resource "{remoteId}" exists neither locally nor on the remote, it was left out of the submitted value.',
+            ['remoteId' => $remoteId],
+        );
+    }
+
     public function needsUpdateOnRemote(RemoteResource $remoteResource, array $data): bool
     {
         if ($this->normalizeNullableString($remoteResource->getAltText()) !== $this->normalizeNullableString($data['altText'] ?? null)) {
