@@ -309,6 +309,9 @@ export default {
 
       return this.isAtLimit;
     },
+    uploadFailedMessage() {
+      return this.t.multi_upload_error_failed || 'Upload failed';
+    },
     hasUnfinishedFiles() {
       return this.files.some(f => f.status === 'pending' || f.status === 'uploading');
     },
@@ -649,10 +652,11 @@ export default {
         }
 
         return this.serverErrorMessage(error.response)
-          || `Error ${error.response.status} - ${error.response.statusText}`;
+          || `${this.uploadFailedMessage} (${error.response.status})`;
       }
 
-      return error.message || this.t.multi_upload_error_failed || 'Upload failed';
+      // No response at all, eg. the network is down.
+      return this.uploadFailedMessage;
     },
     // Uploads one row. Returns the uploaded resource, or null when the row failed.
     async uploadSingleFile(fileData) {

@@ -38,7 +38,7 @@
               @keydown.enter.prevent
               :class="['filename-input', { 'is-invalid': isFilenameEmpty(fileData) }]"
             />
-            <div class="file-size">{{ formatFileSize(fileData.file.size) }}</div>
+            <div class="file-size">{{ formatByteSize(fileData.file.size) }}</div>
           </td>
 
           <!-- Folder -->
@@ -163,6 +163,7 @@
 <script>
 import FolderTreeSelect from "./FolderTreeSelect";
 import vSelect from "vue-select";
+import { formatByteSize } from "../utility/utility";
 
 export default {
   name: "MultiUploadTable",
@@ -243,6 +244,7 @@ export default {
     };
   },
   methods: {
+    formatByteSize,
     // Failed rows stay editable so a 409 can be fixed by renaming or overwriting.
     isEditable(fileData) {
       return !this.batchUploading && (fileData.status === 'pending' || fileData.status === 'error');
@@ -267,13 +269,6 @@ export default {
         this.previewUrls[fileData.id] = URL.createObjectURL(fileData.file);
       }
       return this.previewUrls[fileData.id];
-    },
-    formatFileSize(bytes) {
-      if (bytes === 0) return '0 Bytes';
-      const k = 1024;
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.floor(Math.log(bytes) / Math.log(k));
-      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     },
     getFolderName(folder) {
       return folder || this.rootFolderLabel;
