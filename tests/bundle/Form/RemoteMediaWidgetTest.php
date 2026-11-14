@@ -10,6 +10,7 @@ use DOMElement;
 use DOMXPath;
 use Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension\RemoteMediaExtension;
 use Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime;
+use Netgen\Bundle\RemoteMediaBundle\Translation\VueTranslations;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
@@ -32,6 +33,7 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormRenderer;
 use Symfony\Component\Form\Forms;
+use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\Validation;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -239,6 +241,7 @@ final class RemoteMediaWidgetTest extends TestCase
                 $this->providerMock,
                 new VariationResolver(new Registry(), null),
             ),
+            VueTranslations::class => static fn (): VueTranslations => new VueTranslations(new IdentityTranslator()),
         ]));
 
         return $twig;
