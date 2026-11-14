@@ -158,6 +158,7 @@ import axios from "axios";
 // and no response. A slow but moving upload of a big file is never cut off.
 const UPLOAD_IDLE_TIMEOUT_MS = 180000;
 const UPLOAD_TIMEOUT_REASON = 'ngrm-upload-timeout';
+const SUBMIT_CONTROL_SELECTOR = 'button:not([type]), button[type=submit], input[type=submit], input[type=image]';
 
 // Same name, size and modification time: treated as the same file picked twice.
 const fileKey = (file) => `${file.name}/${file.size}/${file.lastModified}`;
@@ -728,7 +729,20 @@ export default {
     // Unfinished uploads would end up in the remote storage but not in the saved
     // value, so the form waits until every row is uploaded or removed.
     handleFormSubmit(event) {
-      const form = event.target;
+      this.blockSubmit(event, event.target);
+    },
+    // Hosts like the Sylius admin react to the submit button's click (e.g. by putting
+    // the form into a loading state), which happens before the submit event, so the
+    // click is blocked too. The submit listener still covers forms without a button.
+    handleSubmitClick(event) {
+      const control = event.target instanceof Element ? event.target.closest(SUBMIT_CONTROL_SELECTOR) : null;
+      if (!control) {
+        return;
+      }
+
+      this.blockSubmit(event, control.form);
+    },
+    blockSubmit(event, form) {
       if (!this.hasUnfinishedFiles || !this.$el || !(form instanceof HTMLFormElement) || !form.contains(this.$el)) {
         return;
       }
@@ -739,6 +753,12 @@ export default {
       this.submitBlockedMessage = this.files.some(f => f.status === 'uploading')
         ? (this.t.multi_upload_submit_blocked_uploading || 'Wait until the upload has finished before saving.')
         : (this.t.multi_upload_submit_blocked_pending || 'Some files are not uploaded yet. Upload or remove them before saving.');
+
+      // Lets the host undo its own submit state (spinners, disabled buttons).
+      this.$el.dispatchEvent(new CustomEvent('ngrm-submit-blocked', {
+        bubbles: true,
+        detail: { form, message: this.submitBlockedMessage },
+      }));
 
       this.$nextTick(() => {
         if (this.$refs.submitBlocked) {
@@ -782,11 +802,14 @@ export default {
     this.globalVisibility = this.defaultVisibility;
     // Capture phase on the document runs before any submit handler of the form itself.
     this.formSubmitListener = (event) => this.handleFormSubmit(event);
+    this.submitClickListener = (event) => this.handleSubmitClick(event);
     document.addEventListener('submit', this.formSubmitListener, true);
+    document.addEventListener('click', this.submitClickListener, true);
   },
   beforeDestroy() {
     if (this.noticeTimer) clearTimeout(this.noticeTimer);
     document.removeEventListener('submit', this.formSubmitListener, true);
+    document.removeEventListener('click', this.submitClickListener, true);
   }
 };
 </script>
