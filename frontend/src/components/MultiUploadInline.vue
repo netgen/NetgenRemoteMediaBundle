@@ -399,7 +399,9 @@ export default {
     },
     handleDrop(event) {
       this.isDragOver = false;
-      if (this.isDropzoneDisabled) return;
+      // At the limit addFiles explains why nothing was added; only an upload in
+      // progress in single file mode ignores the drop.
+      if (this.isSingleFileMode && this.uploading) return;
       this.addFiles(Array.from(event.dataTransfer.files));
     },
     // Drops files that are already in the list, and repeats within the same selection.
