@@ -12,7 +12,19 @@ Vue.config.productionTip = false;
 Vue.use(PortalVue);
 Vue.use(vueDebounce);
 
+// The CKEditor plugin renders a widget again on every change, which throws away
+// the DOM of the previous instance. That instance is destroyed, otherwise its
+// document listeners keep the whole component tree alive.
+const destroyDetachedInstance = (key) => {
+    const instance = window[key];
+    if (instance && instance.$el && !document.documentElement.contains(instance.$el)) {
+        instance.$destroy();
+    }
+};
+
 const initInteractionsVue = (el) => {
+    destroyDetachedInstance(`ngrm_interactions_vue_${el.dataset.id}`);
+
     window[`ngrm_interactions_vue_${el.dataset.id}`] = new Vue({
         el,
         directives: {
@@ -90,6 +102,8 @@ const initInteractionsVue = (el) => {
 };
 
 const initSelectFolderVue = (el) => {
+    destroyDetachedInstance(`ngrm_select_folder_vue_${el.dataset.id}`);
+
     window[`ngrm_select_folder_vue_${el.dataset.id}`] = new Vue({
         el,
         directives: {
