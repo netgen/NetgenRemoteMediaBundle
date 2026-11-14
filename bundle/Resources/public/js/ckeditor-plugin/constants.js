@@ -50,7 +50,6 @@ export const defaultValue = {
   },
   config: {
     mode: 'embed',
-    isCollection: false,
     uploadLimit: 1,
     paths: {
       browse_resources: '/ngremotemedia/ajax/resource/browse',
@@ -59,6 +58,9 @@ export const defaultValue = {
       load_folders: '/ngremotemedia/ajax/folder/load',
       create_folder: '/ngremotemedia/ajax/folder/create',
     },
+    // Real translations come from the /configuration endpoint. Keys that the Vue
+    // components give an English fallback for are left out on purpose: a
+    // placeholder here would win over that fallback and show the raw key.
     translations: {
       'browse_title': 'browse_title',
       'browse_select_type': 'browse_select_type',
@@ -92,13 +94,7 @@ export const defaultValue = {
       'media_gallery_empty_folder': 'media_gallery_empty_folder',
       'media_gallery_upload_media': 'media_gallery_upload_media',
       'media_gallery_select': 'media_gallery_select',
-      'media_gallery_added': 'media_gallery_added',
       'media_gallery_load_more': 'media_gallery_load_more',
-      'multi_select_add_selected': 'multi_select_add_selected',
-      'multi_select_deselect': 'multi_select_deselect',
-      'multi_select_selected': 'multi_select_selected',
-      'multi_select_selected_remaining': 'multi_select_selected_remaining',
-      'limit_reached': 'limit_reached',
       'interactions_scale': 'interactions_scale',
       'interactions_no_media_selected': 'interactions_no_media_selected',
       'interactions_remove_media': 'interactions_remove_media',
