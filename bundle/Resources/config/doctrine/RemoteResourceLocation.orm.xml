@@ -18,6 +18,7 @@
         <field name="watermarkText" column="watermark_text" type="text" length="1000" nullable="true" />
         <field name="altTextOverride" column="alt_text_override" type="text" length="1000" nullable="true" />
         <field name="captionOverride" column="caption_override" type="text" length="1000" nullable="true" />
+        <field name="position" column="position" type="integer" nullable="true" />
         <field name="createdAt" column="created_at" type="datetime_immutable" />
         <field name="updatedAt" column="updated_at" type="datetime_immutable" />
 

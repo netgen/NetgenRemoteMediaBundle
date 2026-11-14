@@ -241,6 +241,7 @@ final class CloudinaryProvider extends AbstractProvider
             id: $location->getId(),
             altTextOverride: $location->getAltTextOverride(),
             captionOverride: $location->getCaptionOverride(),
+            position: $location->getPosition(),
         );
     }
 
