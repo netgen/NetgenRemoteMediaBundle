@@ -42,7 +42,6 @@ Upgrade from 3.1 to 4.0
 * If a resource no longer exists on the remote, the form and the CKEditor `location/create` and `location/update` endpoints keep it. The change is stored locally and a warning with the remote ID is logged. In 3.x the resource was deleted together with all its locations. `RemoteResourceService::handleRemoteUpdate()` returns `false` in that case. The Cloudinary notification callback and `netgen:remote_media:refresh --delete` still delete such resources.
 * Constructor changes, if you create these services yourself:
     * `RemoteMediaType` takes the `RemoteResourceService` as the 3rd argument.
-    * `RemoteMediaTransformer` no longer takes a logger.
     * `RemoteResourceService` takes an optional logger as the 2nd argument.
     * The `Configuration` controller takes `VueTranslations` instead of `TranslatorInterface` as the 2nd argument.
 
@@ -96,6 +95,15 @@ The index and foreign key names above are the ones Doctrine generates for these 
 * The `detail` of the `ngrm-change` browser event now also has `config`, the configuration of the widget.
 * `detail.selectedImage.uploadedResources` holds all resources of the field, in order. The other fields of `selectedImage` still describe the first resource.
 * In form fields the widget posts only the `collectionPayload` input, named `inputFields.collectionPayload` in `detail`. The named inputs of 3.x (`remoteId`, `locationId` etc.) are not rendered anymore. Listeners which read them must read `collectionPayload` or `selectedImage.uploadedResources`. In CKEditor (`mode: 'embed'`) the named inputs stay.
+
+### Blocked form submit
+
+* While files in the upload panel are waiting to be uploaded or uploading, the widget blocks the submit of the form it is in. It cancels both the click on a submit button and the `submit` event, in the capture phase on `document`, and shows a message above the panel.
+* Hosts which react to the submit button themselves (for example the loading state of a Sylius `loadable` form) see neither event. If they change their state in some other way before the submit, they can undo it on the bubbling `ngrm-submit-blocked` event of the widget. Its `detail` has `form` (the blocked form) and `message` (the message shown to the editor).
+
+### Upload endpoint
+
+* The upload endpoint answers a missing file, an unsupported visibility and a failed file upload with `400 Bad Request` and the translated message in `detail` of a JSON body. In 3.x it threw an `InvalidArgumentException`, which ended in a `500` response.
 
 Upgrade from 3.0.3 to 3.1.0
 ---------------------------

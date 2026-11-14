@@ -9,7 +9,7 @@
 * `RemoteMediaType` throws a `TransformationFailedException` when its data is a single `RemoteResourceLocation`
 * `RemoteMediaType` has a single child, the JSON `collectionPayload` field, the `locationId`, `remoteId`, `type`, `altText`, `caption`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags`, `cropSettings` and `source` children are removed, custom form themes which render them must be updated
 * old named fields (`remoteId`, `locationId` etc.) posted for a `RemoteMediaType` field make the form invalid with an "extra fields" error
-* `RemoteMediaType` constructor takes the `RemoteResourceService` as the 3rd argument, `RemoteMediaTransformer` no longer takes a logger and `RemoteResourceService` takes an optional logger as the 2nd argument
+* `RemoteMediaType` constructor takes the `RemoteResourceService` as the 3rd argument and `RemoteResourceService` takes an optional logger as the 2nd argument
 * `Configuration` controller takes `VueTranslations` instead of `TranslatorInterface` as the 2nd argument
 * `@NetgenRemoteMedia/app/interactions.html.twig` takes `locations`, `upload_limit` (defaults to `1`) and `location_source`, the `variation_settings_json` parameter is removed
 * `RemoteResourceService::handleRemoteUpdate()` (CKEditor `location/create` and `location/update`) and `RemoteMediaType` no longer delete a resource which doesn't exist on the remote anymore, the change is stored locally only, a warning with the remote ID is logged and `handleRemoteUpdate()` returns `false`
@@ -26,14 +26,14 @@
 * `ngrm_vue_translations()` TWIG function which returns the translated labels of the interface, the templates and the `/configuration` endpoint build the labels from the same list
 * `validators` translation domain with the `ngrm.form.upload_limit_exceeded` message (en, hr and no)
 * `config` in the `detail` of the `ngrm-change` browser event, and `selectedImage.uploadedResources` with all resources of the field
-* the form blocks the submit while files are waiting to be uploaded or uploading
+* the form blocks the submit while files are waiting to be uploaded or uploading, and dispatches the `ngrm-submit-blocked` browser event
+* `RemoteMediaType` logs a warning with the remote ID when a submitted resource exists neither locally nor on the remote, the resource is left out of the value as before
 * `vuedraggable` frontend dependency
 
 ### Changed
 
-* a missing `collectionPayload` in a submission keeps the field's value, only an empty list (`[]`) clears it
-* the form theme renders `collectionPayload` with the current value, so a submission without the widget doesn't change the field
-* after an invalid submission the widget shows the submitted resources, order and crops instead of the stored ones
+* the upload endpoint returns `400` with the translated message in `detail` for a missing file, an unsupported visibility and a failed file upload, instead of throwing an `InvalidArgumentException` (`500`)
+* `RemoteMediaType` errors (eg. over the upload limit) are attached to the field instead of the parent form, `error_bubbling` is `false`
 * `/configuration` returns all translations of the interface, so the CKEditor plugin also gets the labels of the upload panel and the media picker
 * the frontend lock file is re-resolved, which upgrades Vue from 2.6 to 2.7, `vue-select` from 3.2 to 3.20 and `@babel/core` from 7.6 to 7.28
 * `regenerator-runtime` is a direct frontend dependency, the re-resolved Babel needs it
