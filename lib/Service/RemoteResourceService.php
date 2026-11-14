@@ -9,6 +9,8 @@ use Netgen\RemoteMedia\API\Values\CropSettings;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 use function is_array;
 use function is_string;
@@ -18,9 +20,14 @@ use function sort;
 
 final class RemoteResourceService
 {
+    private LoggerInterface $logger;
+
     public function __construct(
         private ProviderInterface $provider,
-    ) {}
+        ?LoggerInterface $logger = null,
+    ) {
+        $this->logger = $logger ?? new NullLogger();
+    }
 
     public function handleLocationUpdate(RemoteResourceLocation $remoteResourceLocation, array $data, bool $persist = false): void
     {
@@ -37,6 +44,13 @@ final class RemoteResourceService
         }
     }
 
+    /**
+     * Applies the alt text, caption and tags from the data to the resource and updates them on the remote.
+     *
+     * A resource which no longer exists on the remote is kept: the change is applied locally only and a warning is logged.
+     *
+     * @return bool False if the resource no longer exists on the remote, true otherwise
+     */
     public function handleRemoteUpdate(RemoteResource $remoteResource, array $data, bool $persist = false): bool
     {
         if (!$this->needsUpdateOnRemote($remoteResource, $data)) {
@@ -47,18 +61,24 @@ final class RemoteResourceService
         $remoteResource->setCaption($this->normalizeNullableString($data['caption'] ?? null));
         $remoteResource->setTags($this->normalizeTags($data['tags'] ?? []));
 
+        $existsOnRemote = true;
+
         try {
             $this->provider->updateOnRemote($remoteResource);
-            if ($persist) {
-                $this->provider->store($remoteResource);
-            }
-        } catch (RemoteResourceNotFoundException $e) {
-            $this->provider->remove($remoteResource);
+        } catch (RemoteResourceNotFoundException) {
+            $existsOnRemote = false;
 
-            return false;
+            $this->logger->warning(
+                '[NGRM] Remote resource "{remoteId}" no longer exists on the remote, its metadata was updated locally only.',
+                ['remoteId' => $remoteResource->getRemoteId()],
+            );
         }
 
-        return true;
+        if ($persist) {
+            $this->provider->store($remoteResource);
+        }
+
+        return $existsOnRemote;
     }
 
     public function needsUpdateOnRemote(RemoteResource $remoteResource, array $data): bool

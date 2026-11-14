@@ -328,8 +328,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
 
         $dataTransformer = new RemoteMediaTransformer(
             $this->providerMock,
-            new RemoteResourceService($this->providerMock),
-            $logger,
+            new RemoteResourceService($this->providerMock, $logger),
         );
 
         $expectedLocation = new RemoteResourceLocation(
