@@ -248,10 +248,7 @@ final class RemoteMediaType extends AbstractType
             }
 
             $resource = clone $resource;
-            $resource
-                ->setAltText($entry['altText'])
-                ->setCaption($entry['caption'])
-                ->setTags($entry['tags']);
+            $resource->setTags($entry['tags']);
 
             $locations[] = new RemoteResourceLocation(
                 remoteResource: $resource,

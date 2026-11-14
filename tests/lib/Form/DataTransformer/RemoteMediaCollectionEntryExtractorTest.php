@@ -36,13 +36,13 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
             [
                 'locationId' => '',
                 'remoteId' => 'upload|image|second.jpg',
-                'caption' => '',
+                'captionOverride' => '',
                 'source' => '',
             ],
             [
                 'locationId' => '15',
                 'remoteId' => 'upload|image|third.jpg',
-                'altText' => null,
+                'altTextOverride' => null,
                 'tags' => null,
                 'cropSettings' => null,
             ],
@@ -54,8 +54,6 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                     'locationId' => 12,
                     'remoteId' => 'upload|image|first.jpg',
                     'type' => 'image',
-                    'altText' => 'Alt',
-                    'caption' => 'Caption',
                     'altTextOverride' => 'Local alt',
                     'captionOverride' => 'Local caption',
                     'watermarkText' => 'Watermark',
@@ -67,8 +65,6 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                     'locationId' => null,
                     'remoteId' => 'upload|image|second.jpg',
                     'type' => null,
-                    'altText' => null,
-                    'caption' => null,
                     'altTextOverride' => null,
                     'captionOverride' => null,
                     'watermarkText' => null,
@@ -80,8 +76,6 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                     'locationId' => 15,
                     'remoteId' => 'upload|image|third.jpg',
                     'type' => null,
-                    'altText' => null,
-                    'caption' => null,
                     'altTextOverride' => null,
                     'captionOverride' => null,
                     'watermarkText' => null,
@@ -94,6 +88,26 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
         );
     }
 
+    /**
+     * The form field edits only the overrides, so the alt text and caption of
+     * the resource are not part of an entry, whatever is sent for them.
+     */
+    public function testFromPayloadDropsAltTextAndCaptionOfTheResource(): void
+    {
+        $entries = RemoteMediaCollectionEntryExtractor::fromPayload(json_encode([
+            ['remoteId' => 'r1', 'altText' => 'Alt', 'caption' => 'Caption', 'altTextOverride' => 'Local alt'],
+            ['remoteId' => 'r2', 'altText' => ['en' => 'Alt'], 'caption' => 1.5],
+        ]));
+
+        self::assertSame(['r1', 'r2'], array_column($entries, 'remoteId'));
+        self::assertSame(['Local alt', null], array_column($entries, 'altTextOverride'));
+
+        foreach ($entries as $entry) {
+            self::assertArrayNotHasKey('altText', $entry);
+            self::assertArrayNotHasKey('caption', $entry);
+        }
+    }
+
     public function testFromPayloadReturnsNoEntriesForEmptyList(): void
     {
         self::assertSame([], RemoteMediaCollectionEntryExtractor::fromPayload('[]'));
@@ -103,7 +117,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
     {
         $entries = RemoteMediaCollectionEntryExtractor::fromPayload(json_encode([
             ['remoteId' => 'r1'],
-            ['caption' => 'no remote ID'],
+            ['captionOverride' => 'no remote ID'],
             ['remoteId' => ''],
             ['remoteId' => null],
             ['remoteId' => 'r2'],
@@ -115,17 +129,17 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
     public function testFromPayloadKeepsOnlyTheFirstEntryOfARepeatedLocation(): void
     {
         $entries = RemoteMediaCollectionEntryExtractor::fromPayload(json_encode([
-            ['locationId' => 6, 'remoteId' => 'r1', 'caption' => 'first'],
+            ['locationId' => 6, 'remoteId' => 'r1', 'captionOverride' => 'first'],
             ['locationId' => 7, 'remoteId' => 'r2'],
-            ['locationId' => '6', 'remoteId' => 'r1', 'caption' => 'repeated'],
-            ['locationId' => null, 'remoteId' => 'r1', 'caption' => 'new location of the same resource'],
-            ['locationId' => '', 'remoteId' => 'r1', 'caption' => 'another new location'],
+            ['locationId' => '6', 'remoteId' => 'r1', 'captionOverride' => 'repeated'],
+            ['locationId' => null, 'remoteId' => 'r1', 'captionOverride' => 'new location of the same resource'],
+            ['locationId' => '', 'remoteId' => 'r1', 'captionOverride' => 'another new location'],
         ]));
 
         self::assertSame([6, 7, null, null], array_column($entries, 'locationId'));
         self::assertSame(
             ['first', null, 'new location of the same resource', 'another new location'],
-            array_column($entries, 'caption'),
+            array_column($entries, 'captionOverride'),
         );
     }
 
@@ -153,7 +167,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
             json_encode([
                 ['remoteId' => 'r1', 'cropSettings' => ['hero' => ['x' => 1]]],
                 'not an entry',
-                ['remoteId' => 'r2', 'caption' => 'kept'],
+                ['remoteId' => 'r2', 'captionOverride' => 'kept'],
                 ['remoteId' => 'r3', 'tags' => 'not a list'],
                 ['locationId' => 4, 'remoteId' => 'r4'],
                 ['locationId' => 4, 'remoteId' => 'r4'],
@@ -162,7 +176,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
         );
 
         self::assertSame(['r2', 'r4'], array_column($entries, 'remoteId'));
-        self::assertSame(['kept', null], array_column($entries, 'caption'));
+        self::assertSame(['kept', null], array_column($entries, 'captionOverride'));
         self::assertSame(['form_gallery', 'form_gallery'], array_column($entries, 'source'));
     }
 
@@ -209,13 +223,9 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                 ['remoteId' => 'r1', 'locationId' => 0],
                 'The "locationId" field of a remote media collection entry must be a positive integer, int given',
             ],
-            'alt text is an object' => [
-                ['remoteId' => 'r1', 'altText' => ['en' => 'Alt']],
-                'The "altText" field of a remote media collection entry must be a string, array given',
-            ],
-            'caption is a number' => [
-                ['remoteId' => 'r1', 'caption' => 1.5],
-                'The "caption" field of a remote media collection entry must be a string, float given',
+            'caption override is a number' => [
+                ['remoteId' => 'r1', 'captionOverride' => 1.5],
+                'The "captionOverride" field of a remote media collection entry must be a string, float given',
             ],
             'alt text override is a boolean' => [
                 ['remoteId' => 'r1', 'altTextOverride' => true],

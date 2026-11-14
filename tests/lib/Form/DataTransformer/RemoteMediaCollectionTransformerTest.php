@@ -188,8 +188,6 @@ final class RemoteMediaCollectionTransformerTest extends AbstractTestCase
                 'locationId' => 4,
                 'remoteId' => 'remote-1',
                 'type' => 'image',
-                'altText' => null,
-                'caption' => null,
                 'altTextOverride' => null,
                 'captionOverride' => null,
                 'watermarkText' => null,
@@ -264,13 +262,13 @@ final class RemoteMediaCollectionTransformerTest extends AbstractTestCase
         $this->innerTransformer
             ->expects(self::once())
             ->method('reverseTransform')
-            ->with(self::callback(static fn (array $entry): bool => $entry['caption'] === 'first'))
+            ->with(self::callback(static fn (array $entry): bool => $entry['captionOverride'] === 'first'))
             ->willReturn($location);
 
         $result = $this->transformer->reverseTransform([
             'collectionPayload' => json_encode([
-                ['locationId' => 6, 'remoteId' => 'remote-1', 'caption' => 'first'],
-                ['locationId' => 6, 'remoteId' => 'remote-1', 'caption' => 'repeated'],
+                ['locationId' => 6, 'remoteId' => 'remote-1', 'captionOverride' => 'first'],
+                ['locationId' => 6, 'remoteId' => 'remote-1', 'captionOverride' => 'repeated'],
             ]),
         ]);
 
@@ -485,6 +483,13 @@ final class RemoteMediaCollectionTransformerTest extends AbstractTestCase
         self::assertCount(2, $result);
         self::assertSame($existingLocation, $result[0]);
         self::assertSame($newResource, $result[1]->getRemoteResource());
+        self::assertSame(['updated'], $existingResource->getTags());
+        self::assertSame(['new'], $newResource->getTags());
+        // Alt text and caption of a resource are never taken from the payload.
+        self::assertNull($existingResource->getAltText());
+        self::assertNull($existingResource->getCaption());
+        self::assertNull($newResource->getAltText());
+        self::assertNull($newResource->getCaption());
         self::assertSame('updated-source', $existingLocation->getSource());
         self::assertSame('new-source', $result[1]->getSource());
         self::assertSame(0, $existingLocation->getPosition());

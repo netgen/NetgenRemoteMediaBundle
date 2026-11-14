@@ -367,9 +367,7 @@ export default {
           locationId: resource.locationId || "",
           remoteId: resource.id || "",
           type: resource.type || "",
-          // Sent back as loaded, so the save does not change them on the cloud.
-          altText: resource.alternateText || "",
-          caption: resource.caption || "",
+          // No cloud alt text and caption: the form field stores only the overrides.
           altTextOverride: resource.altTextOverride || "",
           captionOverride: resource.captionOverride || "",
           watermarkText: resource.watermarkText || "",

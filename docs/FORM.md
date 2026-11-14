@@ -206,8 +206,9 @@ The widget submits the whole selection as one hidden JSON field, `collectionPayl
 ```
 
 * An entry without `locationId` creates a new location. An entry with the `locationId` of a location from the field's current value updates that location. Any other `locationId` is ignored and a new location is created.
-* Entry fields are `locationId`, `remoteId`, `type`, `altText`, `caption`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags` (a list of strings), `cropSettings` (a JSON string) and `source`. A field with the wrong type makes the form invalid.
-* `altText`, `caption` and `tags` are the values of the resource in the cloud. If they differ from the stored ones, the resource is updated in the cloud. The widget sends `altText` and `caption` back as it got them and changes only `altTextOverride` and `captionOverride`. An empty or missing override is stored as `null`.
+* Entry fields are `locationId`, `remoteId`, `type`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags` (a list of strings), `cropSettings` (a JSON string) and `source`. A field with the wrong type makes the form invalid.
+* `tags` are the tags of the resource in the cloud. If they differ from the stored ones, the resource is updated in the cloud. Missing `tags` are read as an empty list.
+* Alt text and caption are submitted only as `altTextOverride` and `captionOverride`. An empty or missing override is stored as `null`. The alt text and caption of the resource are not part of an entry: `altText` and `caption` are ignored if sent, they never change the resource and never update it in the cloud.
 * If the same `locationId` is sent twice, only the first entry is used.
 * If `collectionPayload` is not submitted at all (eg. the widget didn't load), the field keeps its current value. Only an empty list, `[]`, clears the field.
 * The form theme renders `collectionPayload` with the current value, so a form submitted without the widget doesn't change the field.

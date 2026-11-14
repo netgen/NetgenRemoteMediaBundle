@@ -61,24 +61,28 @@ final class RemoteResourceService
         $remoteResource->setCaption($this->normalizeNullableString($data['caption'] ?? null));
         $remoteResource->setTags($this->normalizeTags($data['tags'] ?? []));
 
-        $existsOnRemote = true;
+        return $this->updateOnRemote($remoteResource, $persist);
+    }
 
-        try {
-            $this->provider->updateOnRemote($remoteResource);
-        } catch (RemoteResourceNotFoundException) {
-            $existsOnRemote = false;
-
-            $this->logger->warning(
-                '[NGRM] Remote resource "{remoteId}" no longer exists on the remote, its metadata was updated locally only.',
-                ['remoteId' => $remoteResource->getRemoteId()],
-            );
+    /**
+     * Applies the tags to the resource and updates them on the remote. The alt text and caption of the resource are not touched.
+     *
+     * Used by the form field, where alt text and caption are edited only as overrides of a location.
+     * A resource which no longer exists on the remote is kept, as in handleRemoteUpdate().
+     *
+     * @param array<mixed> $tags
+     *
+     * @return bool False if the resource no longer exists on the remote, true otherwise
+     */
+    public function handleRemoteTagsUpdate(RemoteResource $remoteResource, array $tags, bool $persist = false): bool
+    {
+        if ($this->normalizeTags($remoteResource->getTags()) === $this->normalizeTags($tags)) {
+            return true;
         }
 
-        if ($persist) {
-            $this->provider->store($remoteResource);
-        }
+        $remoteResource->setTags($this->normalizeTags($tags));
 
-        return $existsOnRemote;
+        return $this->updateOnRemote($remoteResource, $persist);
     }
 
     /**
@@ -153,6 +157,28 @@ final class RemoteResourceService
         }
 
         return $cropSettings;
+    }
+
+    private function updateOnRemote(RemoteResource $remoteResource, bool $persist): bool
+    {
+        $existsOnRemote = true;
+
+        try {
+            $this->provider->updateOnRemote($remoteResource);
+        } catch (RemoteResourceNotFoundException) {
+            $existsOnRemote = false;
+
+            $this->logger->warning(
+                '[NGRM] Remote resource "{remoteId}" no longer exists on the remote, its metadata was updated locally only.',
+                ['remoteId' => $remoteResource->getRemoteId()],
+            );
+        }
+
+        if ($persist) {
+            $this->provider->store($remoteResource);
+        }
+
+        return $existsOnRemote;
     }
 
     private function normalizeNullableString(mixed $value): ?string
