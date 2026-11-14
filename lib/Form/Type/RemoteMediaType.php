@@ -73,6 +73,9 @@ final class RemoteMediaType extends AbstractType
             'disable_upload' => false,
             'hide_filename' => false,
             'upload_limit' => null,
+            // The errors (eg. over the limit) belong to this field, not to the
+            // whole form, so it's clear which field they are about.
+            'error_bubbling' => false,
         ]);
 
         $resolver->setAllowedTypes('upload_limit', ['int', 'null']);

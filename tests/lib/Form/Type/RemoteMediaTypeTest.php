@@ -418,20 +418,29 @@ final class RemoteMediaTypeTest extends TypeTestCase
             ->expects(self::never())
             ->method('updateOnRemote');
 
-        $form = $this->factory->create(RemoteMediaType::class, null, ['upload_limit' => 2]);
+        $parentForm = $this->factory->createBuilder()
+            ->add('gallery', RemoteMediaType::class, ['upload_limit' => 2])
+            ->getForm();
 
-        $form->submit([
-            'collectionPayload' => json_encode([
-                ['remoteId' => 'upload|image|6.jpg'],
-                ['remoteId' => 'upload|image|7.jpg'],
-                ['remoteId' => 'upload|image|8.jpg'],
-            ]),
+        $parentForm->submit([
+            'gallery' => [
+                'collectionPayload' => json_encode([
+                    ['remoteId' => 'upload|image|6.jpg'],
+                    ['remoteId' => 'upload|image|7.jpg'],
+                    ['remoteId' => 'upload|image|8.jpg'],
+                ]),
+            ],
         ]);
+
+        $form = $parentForm->get('gallery');
 
         self::assertTrue($form->isSubmitted());
         self::assertFalse($form->isSynchronized());
         self::assertFalse($form->isValid());
+        self::assertFalse($parentForm->isValid());
+        // The error stays on the field instead of bubbling up to the parent form.
         self::assertSame([$expectedMessage], self::errorMessages($form));
+        self::assertCount(0, $parentForm->getErrors());
     }
 
     public function testBuildViewAfterRejectedSubmissionShowsWhatWasSubmitted(): void
