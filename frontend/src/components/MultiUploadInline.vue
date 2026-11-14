@@ -64,12 +64,14 @@
     <div v-if="files.length > 0" class="global-settings">
       <!-- Global folder selector (hidden when the field forces a folder) -->
       <div v-if="!config.folder" class="global-setting-item global-folder">
-        <label>{{ globalFolderLabel }}</label>
-        <folder-tree-select
-          :config="config"
-          :selected-folder="effectiveGlobalFolder"
-          @change="handleGlobalFolderChange"
-        ></folder-tree-select>
+        <label :id="globalFolderLabelId">{{ globalFolderLabel }}</label>
+        <div role="group" :aria-labelledby="globalFolderLabelId">
+          <folder-tree-select
+            :config="config"
+            :selected-folder="effectiveGlobalFolder"
+            @change="handleGlobalFolderChange"
+          ></folder-tree-select>
+        </div>
       </div>
 
       <!-- Global visibility selector, only when there is a choice -->
@@ -221,6 +223,9 @@ export default {
     effectiveGlobalFolder() {
       if (this.globalFolder) return this.globalFolder;
       return this.config.parentFolder ? this.config.parentFolder.id : '';
+    },
+    globalFolderLabelId() {
+      return `ngrm-${this.fieldId}-upload-folder-label`;
     },
     globalVisibilityInputId() {
       return `ngrm-${this.fieldId}-upload-visibility`;

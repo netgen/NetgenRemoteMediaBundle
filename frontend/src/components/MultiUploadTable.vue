@@ -48,12 +48,17 @@
               <i class="fa fa-lock" aria-hidden="true"></i>
               {{ config.folder.label || config.folder.id }}
             </span>
-            <folder-tree-select
+            <div
               v-else-if="isEditable(fileData)"
-              :config="config"
-              :selected-folder="fileData.folder"
-              @change="handleFolderChange(fileData, $event)"
-            ></folder-tree-select>
+              role="group"
+              :aria-label="folderLabel + ': ' + fileData.file.name"
+            >
+              <folder-tree-select
+                :config="config"
+                :selected-folder="fileData.folder"
+                @change="handleFolderChange(fileData, $event)"
+              ></folder-tree-select>
+            </div>
             <span v-else>{{ getFolderName(fileData.folder) }}</span>
           </td>
 
