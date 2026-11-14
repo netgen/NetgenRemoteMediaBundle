@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Resource;
 
-use InvalidArgumentException;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\AbstractController;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload as UploadController;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
@@ -29,6 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function file_put_contents;
+use function json_decode;
 use function json_encode;
 use function sys_get_temp_dir;
 use function tempnam;
@@ -628,10 +628,13 @@ final class UploadTest extends TestCase
             )
             ->willReturn('Invalid visibility option "test", supported options: "public", "protected".');
 
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Invalid visibility option "test", supported options: "public", "protected".');
+        $response = $this->controller->__invoke($request);
 
-        $this->controller->__invoke($request);
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame(
+            ['detail' => 'Invalid visibility option "test", supported options: "public", "protected".'],
+            json_decode((string) $response->getContent(), true),
+        );
     }
 
     #[DataProvider('rootFolderSentinelDataProvider')]
@@ -878,10 +881,13 @@ final class UploadTest extends TestCase
             )
             ->willReturn('File upload failed; the file might be too big or corrupted. Check your server file upload size settings.');
 
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('File upload failed; the file might be too big or corrupted. Check your server file upload size settings.');
-
         $response = $this->controller->__invoke($request);
+
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame(
+            ['detail' => 'File upload failed; the file might be too big or corrupted. Check your server file upload size settings.'],
+            json_decode((string) $response->getContent(), true),
+        );
     }
 
     public function testUploadExistingFileName(): void
@@ -1025,10 +1031,13 @@ final class UploadTest extends TestCase
             )
             ->willReturn('Missing file to upload');
 
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Missing file to upload');
+        $response = $this->controller->__invoke($request);
 
-        $this->controller->__invoke($request);
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame(
+            ['detail' => 'Missing file to upload'],
+            json_decode((string) $response->getContent(), true),
+        );
     }
 
     public static function rootFolderSentinelDataProvider(): iterable
