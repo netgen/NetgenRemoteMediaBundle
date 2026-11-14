@@ -5,25 +5,47 @@
 ### BC breaks
 
 * `generateLocationHtmlTag()` is added to `ProviderInterface` (it was declared with `@method` since 3.1), custom providers which don't extend `AbstractProvider` must implement it, the TWIG runtime no longer falls back to `generateHtmlTag()`
+* `RemoteMediaType` data is always an `ArrayCollection` of `RemoteResourceLocation` objects, also with `'upload_limit' => 1` (0 or 1 items), entities need a to-many relation instead of a single `RemoteResourceLocation`, see [UPGRADE.md](UPGRADE.md)
+* `RemoteMediaType` throws a `TransformationFailedException` when its data is a single `RemoteResourceLocation`
+* `RemoteMediaType` has a single child, the JSON `collectionPayload` field, the `locationId`, `remoteId`, `type`, `altText`, `caption`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags`, `cropSettings` and `source` children are removed, custom form themes which render them must be updated
+* old named fields (`remoteId`, `locationId` etc.) posted for a `RemoteMediaType` field make the form invalid with an "extra fields" error
+* `RemoteMediaType` constructor takes the `RemoteResourceService` as the 3rd argument, `RemoteMediaTransformer` no longer takes a logger and `RemoteResourceService` takes an optional logger as the 2nd argument
+* `Configuration` controller takes `VueTranslations` instead of `TranslatorInterface` as the 2nd argument
+* `@NetgenRemoteMedia/app/interactions.html.twig` takes `locations`, `upload_limit` (defaults to `1`) and `location_source`, the `variation_settings_json` parameter is removed
+* `RemoteResourceService::handleRemoteUpdate()` (CKEditor `location/create` and `location/update`) and `RemoteMediaType` no longer delete a resource which doesn't exist on the remote anymore, the change is stored locally only, a warning with the remote ID is logged and `handleRemoteUpdate()` returns `false`
+* the frontend assets are rebuilt, run `assets:install` again
 
 ### Added
 
-* `upload_limit` option on `RemoteMediaType`. `1` keeps the single-resource behaviour (one `RemoteResourceLocation` or `null`); `null` (unlimited) or any other positive integer turns the field into an ordered collection that submits/returns an `ArrayCollection` of `RemoteResourceLocation` objects.
-* multi-upload admin interface with drag-and-drop reordering, per-resource metadata editing and a folder tree selector.
+* `upload_limit` option on `RemoteMediaType` (`null` for unlimited, the default, or a positive integer), it limits the number of resources in the interface and is checked on the server
+* multi-upload interface with drag and drop, per-file name, folder, visibility and overwrite, retry of failed uploads and a folder tree selector
+* selecting several resources at once in the media picker, resources already in the field are marked as added
+* reordering of the field's resources by drag and drop
+* `position` on `RemoteResourceLocation` (`getPosition()` and `setPosition()`), the form sets it to the index of the location in the collection, use `#[ORM\OrderBy(['position' => 'ASC'])]` to load the collection in that order
+* Doctrine migration `Version040000` which adds the `position` column to `ngrm_remote_resource_location`
+* `ngrm_vue_translations()` TWIG function which returns the translated labels of the interface, the templates and the `/configuration` endpoint build the labels from the same list
+* `validators` translation domain with the `ngrm.form.upload_limit_exceeded` message (en, hr and no)
+* `config` in the `detail` of the `ngrm-change` browser event, and `selectedImage.uploadedResources` with all resources of the field
+* the form blocks the submit while files are waiting to be uploaded or uploading
+* `vuedraggable` frontend dependency
 
 ### Changed
 
-* **BC break:** `RemoteMediaType` defaults to `upload_limit: null`, so fields without the option now return an `ArrayCollection`. Add `'upload_limit' => 1` to every single-resource field, see [UPGRADE.md](UPGRADE.md).
-* the canonical wire format for collection submissions is the JSON `collectionPayload` field; indexed per-field submissions are deprecated fallbacks.
+* a missing `collectionPayload` in a submission keeps the field's value, only an empty list (`[]`) clears it
+* the form theme renders `collectionPayload` with the current value, so a submission without the widget doesn't change the field
+* after an invalid submission the widget shows the submitted resources, order and crops instead of the stored ones
+* `/configuration` returns all translations of the interface, so the CKEditor plugin also gets the labels of the upload panel and the media picker
+* the frontend lock file is re-resolved, which upgrades Vue from 2.6 to 2.7, `vue-select` from 3.2 to 3.20 and `@babel/core` from 7.6 to 7.28
+* `regenerator-runtime` is a direct frontend dependency, the re-resolved Babel needs it
+* English labels of the interface use sentence case
+* Norwegian translations cover the whole interface
 
 ### Removed
 
-* unused legacy interface labels (`Search for media`, `Cancel`, `next`, `prev` etc.) from the widget and `/configuration` translations; the interface uses the `ngrm.edit.vue.*` keys.
-
-### Fixed
-
-* upload limits are propagated to the Vue widget and enforced server-side during form submission, independently of client-submitted values.
-* the media picker shows resources that are already in the field as added and doesn't let them be selected again, so they no longer count twice towards the upload limit.
+* `ngremotemedia.nb.yaml` translations, Symfony falls back from `nb` to `no`
+* unused interface labels (`Search for media`, `Cancel`, `next`, `prev` etc.) from the widget and `/configuration` translations, the interface uses the `ngrm.edit.vue.*` keys
+* unused `ngrm.edit.vue.*` labels (`browse.empty_folder`, `browse.empty_folder_hint`, `browse.select`, `browse.load_more`, `interactions.remove_media`, `interactions.quick_upload`, `upload.modal_title` and `upload.button.upload`)
+* the upload modal, uploads go through the upload panel
 
 ## 3.1.0
 

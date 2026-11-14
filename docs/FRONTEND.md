@@ -19,6 +19,12 @@ All source code is in frontend directory in the root of the repo:
 $ cd frontend
 ```
 
+Use Node 12 (see `frontend/.nvmrc` and `engines` in `frontend/package.json`), the committed assets are built with it. With nvm:
+
+```bash
+$ nvm use
+```
+
 JS dependencies must be installed:
 
 ```bash
