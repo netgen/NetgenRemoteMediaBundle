@@ -85,7 +85,7 @@ services:
         public: true
         arguments:
             - '@router'
-            - '@translator'
+            - '@netgen_remote_media.translation.vue_translations'
             - '@netgen_remote_media.resolver.variation'
             - '%netgen_remote_media.cloudinary.folder_mode%'
             - '%netgen_remote_media.cloudinary.use_asset_folder_as_public_id_prefix%'
