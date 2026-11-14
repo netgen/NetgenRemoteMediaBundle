@@ -38,7 +38,7 @@
           v-model="newFolderName"
           :placeholder="config.translations.upload_placeholder_new_folder"
           :aria-label="config.translations.upload_placeholder_new_folder || 'New folder name'"
-          @keyup.enter="createFolder"
+          @keydown.enter.prevent="createFolder"
           @keyup.esc="cancelCreateFolder"
           ref="newFolderInput"
           class="new-folder-input"

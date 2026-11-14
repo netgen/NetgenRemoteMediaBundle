@@ -35,6 +35,7 @@
               :aria-label="filenameLabel + ': ' + fileData.file.name"
               :aria-invalid="isFilenameEmpty(fileData) ? 'true' : null"
               @input="handleFilenameChange(fileData, $event.target.value)"
+              @keydown.enter.prevent
               :class="['filename-input', { 'is-invalid': isFilenameEmpty(fileData) }]"
             />
             <div class="file-size">{{ formatFileSize(fileData.file.size) }}</div>
