@@ -10,6 +10,7 @@
       @remove-resource="handleRemoveResource"
       @reorder-resources="handleReorderResources"
       @update-resource="handleUpdateResource"
+      @update-image="handleUpdateImage"
       @move-resource="handleMoveResource"
       @crop-resource="handleCropClicked"
     >
@@ -29,13 +30,6 @@
       :data-id="fieldId"
       class="ngremotemedia-buttons"
     >
-      <!-- Posts an empty id when a single field is emptied, so the server clears it. -->
-      <input
-        v-if="!isCollectionMode && currentFileCount === 0"
-        :name="config.inputFields.remoteId"
-        type="hidden"
-        value=""
-      />
       <input
         :value="getBrowseButtonLabel()"
         class="ngremotemedia-remote-file btn"
@@ -74,7 +68,7 @@
         :types="types"
         :visibilities="visibilities"
         :facets-loading="facetsLoading"
-        :multi-select="isCollectionMode"
+        :multi-select="!isSingleMode"
         :selection-limit="uploadLimit"
         :current-count="currentFileCount"
         :existing-ids="existingResourceIds"
@@ -138,12 +132,9 @@ export default {
     uploadLimit() {
       return Number(this.config.uploadLimit || 0);
     },
-    isCollectionMode() {
-      if (this.config.isCollection !== undefined && this.config.isCollection !== null) {
-        return !!this.config.isCollection;
-      }
-
-      return this.uploadLimit !== 1;
+    // With a limit of 1 a new pick or upload replaces the current item.
+    isSingleMode() {
+      return this.uploadLimit === 1;
     },
     resources() {
       return this.localSelectedImage.uploadedResources || [];
@@ -152,7 +143,7 @@ export default {
       return this.resources.length;
     },
     existingResourceIds() {
-      return this.isCollectionMode ? this.resources.map((resource) => resource.id).filter(Boolean) : [];
+      return this.isSingleMode ? [] : this.resources.map((resource) => resource.id).filter(Boolean);
     },
     hasCroppableVariations() {
       return Object.keys(this.config.availableVariations).length > 0;
@@ -177,7 +168,11 @@ export default {
   },
   methods: {
     getBrowseButtonLabel() {
-      return this.config.translations.interactions_manage_media;
+      if (this.currentFileCount === 0) {
+        return this.config.translations.interactions_select_media || "Select media";
+      }
+
+      return this.config.translations.interactions_manage_media || "Manage media";
     },
 
     handleRemoveResource(index) {
@@ -199,7 +194,14 @@ export default {
         i === index ? { ...resource, [field]: value } : resource
       );
       this.setResources(resources);
-      this.dispatchVanillaChangeEvent();
+    },
+
+    // Embed-level settings (CSS class, variation) live on the image, not on a resource.
+    handleUpdateImage({ field, value }) {
+      this.localSelectedImage = {
+        ...this.localSelectedImage,
+        [field]: value,
+      };
     },
 
     handleMoveResource({ from, to }) {
