@@ -44,7 +44,10 @@
       :visibilities="visibilities"
       :upload-limit="uploadLimit"
       :current-count="currentFileCount"
+      :existing-ids="fieldResourceIds"
+      :field-id="fieldId"
       @all-uploaded="handleMultiResourcesUploaded"
+      @queue-change="queuedUploadCount = $event"
     >
     </multi-upload-inline>
 
@@ -70,7 +73,7 @@
         :facets-loading="facetsLoading"
         :multi-select="!isSingleMode"
         :selection-limit="uploadLimit"
-        :current-count="currentFileCount"
+        :current-count="currentFileCount + queuedUploadCount"
         :existing-ids="existingResourceIds"
         @close="handleMediaModalClose"
         @media-selected="handleMediaSelected"
@@ -142,8 +145,12 @@ export default {
     currentFileCount() {
       return this.resources.length;
     },
+    fieldResourceIds() {
+      return this.resources.map((resource) => resource.id).filter(Boolean);
+    },
+    // Marked as "Added" in the picker; with a limit of 1 picking replaces, so nothing is marked.
     existingResourceIds() {
-      return this.isSingleMode ? [] : this.resources.map((resource) => resource.id).filter(Boolean);
+      return this.isSingleMode ? [] : this.fieldResourceIds;
     },
     hasCroppableVariations() {
       return Object.keys(this.config.availableVariations).length > 0;
@@ -164,6 +171,8 @@ export default {
       cropTargetIndex: 0,
       limitNotice: null,
       limitNoticeTimer: null,
+      // Files waiting in the upload panel; the picker counts them towards the limit.
+      queuedUploadCount: 0,
     };
   },
   methods: {
@@ -389,11 +398,11 @@ export default {
       }
 
       const newResource = this.normalizeResource(item);
-      if (this.uploadLimit === 1 && !newResource.watermarkText) {
+      if (this.isSingleMode && !newResource.watermarkText) {
         newResource.watermarkText = this.localSelectedImage.watermarkText || "";
       }
       const allResources =
-        this.uploadLimit === 1 ? [newResource] : [...this.resources, newResource];
+        this.isSingleMode ? [newResource] : [...this.resources, newResource];
 
       this.setResources(allResources);
 
@@ -475,8 +484,13 @@ export default {
     handleMultiResourcesUploaded(resources) {
       if (resources.length > 0) {
         const uploadedResources = resources.map((item) => this.normalizeResource(item));
-        if (this.uploadLimit === 1) {
-          this.setResources([uploadedResources[0]]);
+        if (this.isSingleMode) {
+          // Replaces the current item and keeps its watermark text, like picking does.
+          const newResource = uploadedResources[0];
+          if (!newResource.watermarkText) {
+            newResource.watermarkText = this.localSelectedImage.watermarkText || "";
+          }
+          this.setResources([newResource]);
         } else {
           this.appendResources(uploadedResources);
         }

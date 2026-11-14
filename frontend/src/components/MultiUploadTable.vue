@@ -6,22 +6,22 @@
           <th>{{ previewLabel }}</th>
           <th>{{ filenameLabel }}</th>
           <th>{{ folderLabel }}</th>
-          <th v-if="visibilities.length > 0">{{ visibilityLabel }}</th>
+          <th v-if="showVisibility">{{ visibilityLabel }}</th>
           <th>{{ overwriteLabel }}</th>
           <th>{{ statusLabel }}</th>
           <th>{{ actionsLabel }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(fileData, index) in files" 
-            :key="fileData.id" 
-            :class="['status-' + fileData.status, { 'over-limit-row': isOverLimit && uploadLimit > 0 && index >= uploadLimit }]">
+        <tr v-for="fileData in files"
+            :key="fileData.id"
+            :class="['status-' + fileData.status, { 'over-limit-row': isOverLimit(fileData) }]">
           <!-- Preview -->
           <td class="preview-cell">
             <div class="file-preview">
               <img v-if="isImage(fileData.file)" :src="getPreviewUrl(fileData)" :alt="fileData.filename">
               <span v-else class="file-icon">
-                <i class="fa fa-file"></i>
+                <i class="fa fa-file" aria-hidden="true"></i>
               </span>
             </div>
           </td>
@@ -31,28 +31,36 @@
             <input
               type="text"
               :value="fileData.filename"
-              :disabled="fileData.status !== 'pending' || batchUploading"
+              :disabled="!isEditable(fileData)"
+              :aria-label="filenameLabel + ': ' + fileData.file.name"
+              :aria-invalid="isFilenameEmpty(fileData) ? 'true' : null"
               @input="handleFilenameChange(fileData, $event.target.value)"
-              class="filename-input"
+              :class="['filename-input', { 'is-invalid': isFilenameEmpty(fileData) }]"
             />
             <div class="file-size">{{ formatFileSize(fileData.file.size) }}</div>
           </td>
 
           <!-- Folder -->
           <td class="folder-cell">
+            <!-- A folder forced by the field configuration cannot be changed per file -->
+            <span v-if="config.folder" class="folder-fixed">
+              <i class="fa fa-lock" aria-hidden="true"></i>
+              {{ config.folder.label || config.folder.id }}
+            </span>
             <folder-tree-select
-              v-if="fileData.status === 'pending'"
+              v-else-if="isEditable(fileData)"
               :config="config"
               :selected-folder="fileData.folder"
               @change="handleFolderChange(fileData, $event)"
             ></folder-tree-select>
-            <span v-else>{{ fileData.folder || '/' }}</span>
+            <span v-else>{{ getFolderName(fileData.folder) }}</span>
           </td>
 
           <!-- Visibility -->
-          <td class="visibility-cell" v-if="visibilities.length > 0">
+          <td class="visibility-cell" v-if="showVisibility">
             <v-select
-              v-if="fileData.status === 'pending'"
+              v-if="isEditable(fileData)"
+              :input-id="getInputId(fileData, 'visibility')"
               :options="visibilities"
               label="name"
               :value="fileData.visibility"
@@ -61,6 +69,9 @@
               @input="handleVisibilityChange(fileData, $event)"
             />
             <span v-else>{{ getVisibilityName(fileData.visibility) }}</span>
+            <label v-if="isEditable(fileData)" class="ngrm-sr-only" :for="getInputId(fileData, 'visibility')">
+              {{ visibilityLabel }}: {{ fileData.file.name }}
+            </label>
           </td>
 
           <!-- Overwrite -->
@@ -68,7 +79,8 @@
             <input
               type="checkbox"
               :checked="fileData.overwrite"
-              :disabled="fileData.status !== 'pending' || batchUploading"
+              :disabled="!isEditable(fileData)"
+              :aria-label="overwriteLabel + ': ' + fileData.file.name"
               @change="handleOverwriteChange(fileData, $event.target.checked)"
               class="overwrite-checkbox"
             />
@@ -78,22 +90,23 @@
           <td class="status-cell">
             <div class="status-indicator">
               <span v-if="fileData.status === 'pending'" class="status-badge status-pending">
-                <i class="fa fa-clock-o"></i> {{ pendingLabel }}
+                <i class="fa fa-clock-o" aria-hidden="true"></i> {{ pendingLabel }}
               </span>
               <span v-else-if="fileData.status === 'uploading'" class="status-badge status-uploading">
-                <i class="fa fa-spinner fa-spin"></i> {{ fileData.progress }}%
+                <i class="fa fa-spinner fa-spin" aria-hidden="true"></i> {{ fileData.progress }}%
               </span>
               <span v-else-if="fileData.status === 'success'" class="status-badge status-success">
-                <i class="fa fa-check"></i> {{ successLabel }}
+                <i class="fa fa-check" aria-hidden="true"></i> {{ successLabel }}
               </span>
               <span v-else-if="fileData.status === 'error'" class="status-badge status-error">
-                <i class="fa fa-exclamation-circle"></i> {{ errorLabel }}
+                <i class="fa fa-exclamation-circle" aria-hidden="true"></i> {{ errorLabel }}
               </span>
             </div>
             <div v-if="fileData.status === 'uploading'" class="progress-bar">
               <div class="progress-fill" :style="{ width: fileData.progress + '%' }"></div>
             </div>
             <div v-if="fileData.error" class="error-message">{{ fileData.error }}</div>
+            <div v-if="fileData.notice" class="notice-message">{{ fileData.notice }}</div>
           </td>
 
           <!-- Actions -->
@@ -102,21 +115,32 @@
               v-if="fileData.status === 'pending'"
               type="button"
               class="btn btn-sm btn-primary"
-              @click="handleUpload(fileData)"
-              :disabled="batchUploading"
+              @click="$emit('upload-single', fileData)"
+              :disabled="!canUploadRow(fileData)"
               :title="uploadFileLabel"
+              :aria-label="uploadFileLabel + ': ' + fileData.file.name"
             >
-              <i class="fa fa-upload"></i>
+              <i class="fa fa-upload" aria-hidden="true"></i>
+            </button>
+            <button
+              v-if="fileData.status === 'error'"
+              type="button"
+              class="btn btn-sm btn-primary"
+              @click="$emit('retry', fileData)"
+              :disabled="!canUploadRow(fileData)"
+              :aria-label="retryLabel + ': ' + fileData.file.name"
+            >
+              <i class="fa fa-repeat" aria-hidden="true"></i> {{ retryLabel }}
             </button>
             <button
               v-if="fileData.status === 'error' && fileData.resource"
               type="button"
               class="btn btn-sm btn-default"
-              @click="handleUseExisting(fileData)"
+              @click="$emit('use-existing', fileData)"
               :disabled="batchUploading"
-              :title="useExistingLabel"
+              :aria-label="useExistingLabel + ': ' + fileData.file.name"
             >
-              <i class="fa fa-link"></i> {{ useExistingLabel }}
+              <i class="fa fa-link" aria-hidden="true"></i> {{ useExistingLabel }}
             </button>
             <button
               type="button"
@@ -124,8 +148,9 @@
               @click="handleRemove(fileData)"
               :disabled="fileData.status === 'uploading' || batchUploading"
               :title="removeFileLabel"
+              :aria-label="removeFileLabel + ': ' + fileData.file.name"
             >
-              <i class="fa fa-trash"></i>
+              <i class="fa fa-trash" aria-hidden="true"></i>
             </button>
           </td>
         </tr>
@@ -144,13 +169,10 @@ export default {
     files: Array,
     config: Object,
     visibilities: Array,
-    isOverLimit: {
-      type: Boolean,
-      default: false
-    },
-    uploadLimit: {
-      type: Number,
-      default: 0
+    // Rows beyond the field's upload limit; they cannot be uploaded until others are removed.
+    overLimitIds: {
+      type: Array,
+      default: () => []
     },
     batchUploading: {
       type: Boolean,
@@ -158,44 +180,56 @@ export default {
     }
   },
   computed: {
+    t() {
+      return this.config.translations || {};
+    },
+    showVisibility() {
+      return this.visibilities.length > 1;
+    },
     previewLabel() {
-      return this.config.translations.multi_upload_table_preview || 'Preview';
+      return this.t.multi_upload_table_preview || 'Preview';
     },
     filenameLabel() {
-      return this.config.translations.multi_upload_table_filename || 'Filename';
+      return this.t.multi_upload_table_filename || 'Filename';
     },
     folderLabel() {
-      return this.config.translations.multi_upload_table_folder || 'Folder';
+      return this.t.multi_upload_table_folder || 'Folder';
     },
     visibilityLabel() {
-      return this.config.translations.multi_upload_table_visibility || 'Visibility';
+      return this.t.multi_upload_table_visibility || 'Visibility';
     },
     overwriteLabel() {
-      return this.config.translations.upload_checkbox_overwrite || 'Overwrite';
+      return this.t.upload_checkbox_overwrite || 'Overwrite';
     },
     statusLabel() {
-      return this.config.translations.multi_upload_table_status || 'Status';
+      return this.t.multi_upload_table_status || 'Status';
     },
     actionsLabel() {
-      return this.config.translations.multi_upload_table_actions || 'Actions';
+      return this.t.multi_upload_table_actions || 'Actions';
     },
     pendingLabel() {
-      return this.config.translations.multi_upload_status_pending || 'Pending';
+      return this.t.multi_upload_status_pending || 'Pending';
     },
     successLabel() {
-      return this.config.translations.multi_upload_status_success || 'Success';
+      return this.t.multi_upload_status_success || 'Success';
     },
     errorLabel() {
-      return this.config.translations.multi_upload_status_error || 'Error';
+      return this.t.multi_upload_status_error || 'Error';
     },
     uploadFileLabel() {
-      return this.config.translations.multi_upload_table_upload_file || 'Upload this file';
+      return this.t.multi_upload_table_upload_file || 'Upload this file';
     },
     removeFileLabel() {
-      return this.config.translations.multi_upload_table_remove_file || 'Remove file';
+      return this.t.multi_upload_table_remove_file || 'Remove file';
     },
     useExistingLabel() {
-      return this.config.translations.multi_upload_use_existing || 'Use existing file';
+      return this.t.multi_upload_use_existing || 'Use existing file';
+    },
+    retryLabel() {
+      return this.t.multi_upload_retry || 'Retry';
+    },
+    rootFolderLabel() {
+      return this.t.upload_root_folder || '(root)';
     },
   },
   components: {
@@ -208,6 +242,22 @@ export default {
     };
   },
   methods: {
+    // Failed rows stay editable so a 409 can be fixed by renaming or overwriting.
+    isEditable(fileData) {
+      return !this.batchUploading && (fileData.status === 'pending' || fileData.status === 'error');
+    },
+    isOverLimit(fileData) {
+      return this.overLimitIds.includes(fileData.id);
+    },
+    isFilenameEmpty(fileData) {
+      return (fileData.filename || '').trim() === '';
+    },
+    canUploadRow(fileData) {
+      return !this.batchUploading && !this.isOverLimit(fileData) && !this.isFilenameEmpty(fileData);
+    },
+    getInputId(fileData, field) {
+      return `ngrm-upload-${this._uid}-${fileData.id}-${field}`;
+    },
     isImage(file) {
       return file.type.startsWith('image/');
     },
@@ -224,6 +274,9 @@ export default {
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     },
+    getFolderName(folder) {
+      return folder || this.rootFolderLabel;
+    },
     getVisibilityName(visibilityId) {
       const visibility = this.visibilities.find(v => v.id === visibilityId);
       return visibility ? visibility.name : visibilityId;
@@ -239,12 +292,6 @@ export default {
     },
     handleOverwriteChange(fileData, overwrite) {
       this.$emit('update-file', fileData.id, { overwrite });
-    },
-    handleUpload(fileData) {
-      this.$emit('upload-single', fileData);
-    },
-    handleUseExisting(fileData) {
-      this.$emit('use-existing', fileData);
     },
     handleRemove(fileData) {
       // Revoke preview URL if exists
@@ -368,6 +415,10 @@ export default {
       background-color: $wild-sand;
       cursor: not-allowed;
     }
+
+    &.is-invalid {
+      border-color: red;
+    }
   }
 
   .file-size {
@@ -379,6 +430,14 @@ export default {
 
 .folder-cell {
   min-width: 150px;
+
+  .folder-fixed {
+    color: $dusty-gray;
+
+    i {
+      margin-right: 4px;
+    }
+  }
 }
 
 .overwrite-cell {
@@ -462,11 +521,18 @@ export default {
     color: red;
     word-break: break-word;
   }
+
+  .notice-message {
+    margin-top: 4px;
+    font-size: 11px;
+    color: $dusty-gray;
+  }
 }
 
 .actions-cell {
-  width: 100px;
+  min-width: 100px;
   text-align: center;
+  white-space: nowrap;
 
   .btn {
     padding: 6px 10px;
