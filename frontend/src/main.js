@@ -56,7 +56,6 @@ const initInteractionsVue = (el) => {
                 disableUpload: false,
                 hideFilename: false,
                 uploadLimit: 1,
-                isCollection: false,
                 locationSource: null,
             },
             selectedImage: {

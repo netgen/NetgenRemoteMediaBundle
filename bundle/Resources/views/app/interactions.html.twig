@@ -16,7 +16,6 @@
 {% set hide_filename = hide_filename|default(false) %}
 {% set upload_limit = upload_limit is defined ? upload_limit : 1 %}
 {% set upload_limit_for_vue = upload_limit is same as(null) ? 0 : upload_limit %}
-{% set is_collection = is_collection|default(false) %}
 {% set location_source = location_source|default(null) %}
 {% set locations = locations|default([]) %}
 
@@ -49,7 +48,6 @@
     'hideFilename': hide_filename,
     'folderScopedUploads': ngrm_folder_scoped_uploads(),
     'uploadLimit': upload_limit_for_vue,
-    'isCollection': is_collection,
     'locationSource': location_source,
 } %}
 

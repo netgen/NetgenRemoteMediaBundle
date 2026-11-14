@@ -152,7 +152,6 @@ final class RemoteMediaWidgetTest extends TestCase
             ['_collection' => 'gallery', 'collectionPayload' => 'gallery[collectionPayload]'],
             $config['inputFields'],
         );
-        self::assertTrue($config['isCollection']);
         self::assertSame(5, $config['uploadLimit']);
         self::assertSame('product_gallery', $config['locationSource']);
 
@@ -175,7 +174,6 @@ final class RemoteMediaWidgetTest extends TestCase
 
         $config = json_decode(self::container($html)->getAttribute('v-init:config'), true);
         self::assertSame(['_collection' => 'cover', 'collectionPayload' => 'cover[collectionPayload]'], $config['inputFields']);
-        self::assertTrue($config['isCollection']);
         self::assertSame(1, $config['uploadLimit']);
         self::assertSame('form_cover', $config['locationSource']);
     }
