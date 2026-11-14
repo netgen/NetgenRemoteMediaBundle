@@ -287,6 +287,8 @@ final class RemoteMediaType extends AbstractType
         $data['type'] = $entry['type'];
         $data['altText'] = $entry['altText'];
         $data['caption'] = $entry['caption'];
+        $data['altTextOverride'] = $entry['altTextOverride'];
+        $data['captionOverride'] = $entry['captionOverride'];
         $data['watermarkText'] = $entry['watermarkText'];
         $data['tags'] = $entry['tags'];
         $data['cropSettings'] = $entry['cropSettings'];

@@ -299,6 +299,8 @@ export default {
           type: resource.type || "",
           altText: resource.alternateText || "",
           caption: resource.caption || "",
+          altTextOverride: resource.altTextOverride || "",
+          captionOverride: resource.captionOverride || "",
           watermarkText: resource.watermarkText || "",
           tags: resource.tags || [],
           cropSettings: JSON.stringify(resource.variations || {}),

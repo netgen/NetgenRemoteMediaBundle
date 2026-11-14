@@ -19,6 +19,7 @@ use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
 use function in_array;
+use function json_decode;
 use function json_encode;
 
 #[CoversClass(RemoteMediaCollectionTransformer::class)]
@@ -58,6 +59,8 @@ final class RemoteMediaCollectionTransformerTest extends AbstractTestCase
                 'type' => null,
                 'altText' => null,
                 'caption' => null,
+                'altTextOverride' => null,
+                'captionOverride' => null,
                 'watermarkText' => null,
                 'tags' => [],
                 'cropSettings' => null,
@@ -95,6 +98,8 @@ final class RemoteMediaCollectionTransformerTest extends AbstractTestCase
                 'type' => null,
                 'altText' => null,
                 'caption' => null,
+                'altTextOverride' => null,
+                'captionOverride' => null,
                 'watermarkText' => null,
                 'tags' => [],
                 'cropSettings' => null,
@@ -354,5 +359,80 @@ final class RemoteMediaCollectionTransformerTest extends AbstractTestCase
         self::assertSame($newResource, $result[1]->getRemoteResource());
         self::assertSame('updated-source', $existingLocation->getSource());
         self::assertSame('new-source', $result[1]->getSource());
+    }
+
+    public function testOverridesAreCarriedThroughCollectionPayload(): void
+    {
+        $firstResource = new RemoteResource(
+            'upload|image|first.jpg',
+            RemoteResource::TYPE_IMAGE,
+            'https://example.test/first.jpg',
+            'md5-first',
+        );
+        $secondResource = new RemoteResource(
+            'upload|image|second.jpg',
+            RemoteResource::TYPE_IMAGE,
+            'https://example.test/second.jpg',
+            'md5-second',
+        );
+        $firstLocation = new RemoteResourceLocation(
+            $firstResource,
+            'gallery',
+            id: 10,
+            altTextOverride: 'Old local alt',
+            captionOverride: 'Old local caption',
+        );
+        $secondLocation = new RemoteResourceLocation(
+            $secondResource,
+            'gallery',
+            id: 11,
+            altTextOverride: 'Kept local alt',
+            captionOverride: 'Kept local caption',
+        );
+
+        $provider = $this->createMock(ProviderInterface::class);
+        $provider
+            ->method('loadByRemoteId')
+            ->willReturnCallback(static fn (string $remoteId): RemoteResource => match ($remoteId) {
+                'upload|image|first.jpg' => $firstResource,
+                'upload|image|second.jpg' => $secondResource,
+            });
+        $provider
+            ->method('loadLocation')
+            ->willReturnCallback(static fn (int $id): RemoteResourceLocation => match ($id) {
+                10 => $firstLocation,
+                11 => $secondLocation,
+            });
+        $provider
+            ->expects(self::never())
+            ->method('updateOnRemote');
+
+        $transformer = new RemoteMediaCollectionTransformer(
+            new RemoteMediaTransformer($provider, new RemoteResourceService($provider)),
+        );
+
+        $viewData = $transformer->transform(new ArrayCollection([$firstLocation, $secondLocation]));
+        $entries = json_decode($viewData['collectionPayload'], true);
+
+        self::assertSame('Old local alt', $entries[0]['altTextOverride']);
+        self::assertSame('Old local caption', $entries[0]['captionOverride']);
+        self::assertSame('Kept local alt', $entries[1]['altTextOverride']);
+        self::assertSame('Kept local caption', $entries[1]['captionOverride']);
+        self::assertSame('Old local alt', $viewData['altTextOverride']);
+        self::assertSame('Old local caption', $viewData['captionOverride']);
+
+        $entries[0]['altTextOverride'] = 'New local alt';
+        $entries[0]['captionOverride'] = '';
+
+        $result = $transformer->reverseTransform([
+            'uploadLimit' => '0',
+            'collectionPayload' => json_encode($entries),
+        ]);
+
+        self::assertSame([$firstLocation, $secondLocation], $result->toArray());
+        self::assertSame('New local alt', $firstLocation->getAltTextOverride());
+        self::assertNull($firstLocation->getCaptionOverride());
+        self::assertSame('Kept local alt', $secondLocation->getAltTextOverride());
+        self::assertSame('Kept local caption', $secondLocation->getCaptionOverride());
     }
 }

@@ -75,6 +75,8 @@ final class RemoteMediaCollectionTransformer implements DataTransformerInterface
             'type' => $firstEntry['type'] ?? null,
             'altText' => $firstEntry['altText'] ?? null,
             'caption' => $firstEntry['caption'] ?? null,
+            'altTextOverride' => $firstEntry['altTextOverride'] ?? null,
+            'captionOverride' => $firstEntry['captionOverride'] ?? null,
             'watermarkText' => $firstEntry['watermarkText'] ?? null,
             'tags' => $firstEntry['tags'] ?? [],
             'cropSettings' => $firstEntry['cropSettings'] ?? null,

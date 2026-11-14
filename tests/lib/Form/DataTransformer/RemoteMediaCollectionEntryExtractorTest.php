@@ -49,7 +49,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
     {
         $data = [
             'collectionPayload' => json_encode([
-                ['remoteId' => 'r1', 'altText' => 'a'],
+                ['remoteId' => 'r1', 'altText' => 'a', 'altTextOverride' => 'local a', 'captionOverride' => 'local c'],
                 ['id' => 'r2'], // 'id' is accepted as fallback for remoteId
                 ['caption' => 'no id, dropped'],
             ]),
@@ -61,7 +61,11 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
         self::assertCount(2, $entries);
         self::assertSame('r1', $entries[0]['remoteId']);
         self::assertSame('a', $entries[0]['altText']);
+        self::assertSame('local a', $entries[0]['altTextOverride']);
+        self::assertSame('local c', $entries[0]['captionOverride']);
         self::assertSame('r2', $entries[1]['remoteId']);
+        self::assertSame('', $entries[1]['altTextOverride']);
+        self::assertSame('', $entries[1]['captionOverride']);
         self::assertSame('form_source', $entries[0]['source']);
     }
 
