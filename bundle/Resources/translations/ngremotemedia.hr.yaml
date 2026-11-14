@@ -23,10 +23,8 @@ ngrm:
             interactions:
                 scale: 'Skaliraj'
                 no_media_selected: 'Nema odabranog resursa'
-                remove_media: 'Ukloni resurs'
                 select_media: 'Odaberi resurs'
                 manage_media: 'Upravljaj resursima'
-                quick_upload: 'Učitaj datoteku'
             select_folder_interaction:
                 button: 'Odaberi mapu'
                 empty: 'Nije odabrana ni jedna mapa'
@@ -65,10 +63,6 @@ ngrm:
                     all_visibilities: 'Sve vidljivosti'
                     search: 'Pretraži (po imenu, tagu, mapi, alternativom textu itd.)'
                     search_placeholder: 'Unesi pojam pretraživanja'
-                empty_folder: 'Mapa je prazna'
-                empty_folder_hint: 'Učitaj resurs'
-                select: 'Odaberi'
-                load_more: 'Učitaj više'
             crop:
                 modal_title: 'Skaliranje'
                 reset: 'Obriši'
@@ -87,14 +81,13 @@ ngrm:
                 added: 'Dodano'
                 load_more: 'Učitaj više'
             upload:
-                modal_title: 'Učitaj resurs'
                 breadcrumbs_info: 'Vi se nalazite ovdje:'
                 root_folder: '(root)'
                 info_text: 'Dvaput kliknite na mapu kako biste ju otvorili'
+                create_folder_in: 'Kreiraj mapu u: %folder%'
                 button:
                     select: 'Odaberi'
                     create: 'Kreiraj'
-                    upload: 'Učitaj'
                     cancel: 'Odustani'
                 checkbox:
                     overwrite: 'Prepiši'
@@ -107,8 +100,8 @@ ngrm:
                     unsupported_resource_type: 'Resurs je uspješno učitan no njegov tip nije podržan na ovome mjestu! Podržani tipovi: '
                     invalid_visibility: 'Odabrana je nepodržana vidljivost "%visibility%", podržane vidljivosti: "%supported_visibilities%"'
                     file_upload_failed: 'Učitavanje datoteke neuspješno; datoteka je možda prevelika ili neispravna. Provjerite postavke servera za učitavanje datoteka.'
+                    create_folder_failed: 'Kreiranje mape nije uspjelo'
             multi_upload:
-                title: 'Učitaj više datoteka'
                 drop_zone: 'Ispustite datoteke ovdje ili kliknite za odabir'
                 drop_zone_single: 'Ispustite datoteku ovdje ili kliknite za odabir'
                 browse: 'Odaberi datoteke'
@@ -123,6 +116,16 @@ ngrm:
                 global_visibility: 'Zadana vidljivost za sve datoteke:'
                 global_apply_to_all: 'primijeni na sve datoteke'
                 use_existing: 'Upotrijebi postojeću datoteku'
+                retry: 'Pokušaj ponovno'
+                duplicate_file: 'Datoteka "%filename%" već je na popisu za učitavanje'
+                already_added: 'Već je dodano u ovo polje'
+                submit_blocked:
+                    pending: 'Neke datoteke još nisu učitane. Učitajte ih ili ih uklonite prije spremanja.'
+                    uploading: 'Pričekajte da učitavanje završi prije spremanja.'
+                error:
+                    empty_filename: 'Unesite naziv datoteke'
+                    timeout: 'Učitavanje je predugo trajalo. Pokušajte ponovno.'
+                    failed: 'Učitavanje nije uspjelo'
                 table:
                     preview: 'Pregled'
                     filename: 'Naziv datoteke'
@@ -134,11 +137,10 @@ ngrm:
                     remove_file: 'Ukloni datoteku'
                 status:
                     pending: 'Na čekanju'
-                    uploading: 'Učitavanje'
                     success: 'Uspješno'
                     error: 'Greška'
             multi_gallery_remove: 'Ukloni'
-            multi_select_add_selected: 'Dodaj %count% odabranih'
+            multi_select_add_selected: 'Dodaj odabrano (%count%)'
             multi_select_deselect: 'Poništi odabir'
             multi_select_selected: 'Odabrano: %count%'
             multi_select_selected_remaining: 'Odabrano: %count%, preostalo mjesta: %remaining%'
@@ -149,4 +151,3 @@ ngrm:
             limit_reached: 'Dosegnuto je ograničenje datoteka (najviše %limit%)'
             limit_exceeded: 'Previše datoteka! Dopušteno je najviše %limit%'
             limit_remaining: 'Preostalo mjesta: %remaining%'
-            limit_info: '%count% od %limit% datoteka'
