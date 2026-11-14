@@ -17,8 +17,8 @@
         <span v-if="!node.raw.isCreateAction" class="folder-label">
           {{ node.label }}
         </span>
-        <span v-else class="create-folder-action" @click.stop.prevent="showCreateFolder(node.raw.parentNode)">
-          <i class="fa fa-plus"></i> {{ config.translations.upload_button_create }}
+        <span v-else class="create-folder-action">
+          <i class="fa fa-plus" aria-hidden="true"></i> {{ createLabel }}
         </span>
       </div>
       <div slot="value-label" slot-scope="{ node }">
@@ -29,14 +29,15 @@
     <!-- Create folder modal/inline input -->
     <div v-if="creatingFolder" class="create-folder-inline">
       <div class="create-folder-header">
-        <i class="fa fa-folder"></i>
-        <span>{{ config.translations.upload_button_create }} in: {{ creatingFolderParent ? creatingFolderParent.label : '(root)' }}</span>
+        <i class="fa fa-folder" aria-hidden="true"></i>
+        <span>{{ createFolderInLabel }}</span>
       </div>
       <div class="create-folder-body">
         <input
           type="text"
           v-model="newFolderName"
           :placeholder="config.translations.upload_placeholder_new_folder"
+          :aria-label="config.translations.upload_placeholder_new_folder || 'New folder name'"
           @keyup.enter="createFolder"
           @keyup.esc="cancelCreateFolder"
           ref="newFolderInput"
@@ -44,14 +45,14 @@
         />
         <div class="create-folder-actions">
           <button type="button" class="btn btn-sm btn-primary" @click="createFolder" :disabled="!newFolderName">
-            <i class="fa fa-check"></i> {{ config.translations.upload_button_create }}
+            <i class="fa fa-check" aria-hidden="true"></i> {{ createLabel }}
           </button>
           <button type="button" class="btn btn-sm btn-default" @click="cancelCreateFolder">
-            <i class="fa fa-times"></i> {{ config.translations.upload_button_cancel }}
+            <i class="fa fa-times" aria-hidden="true"></i> {{ config.translations.upload_button_cancel || 'Cancel' }}
           </button>
         </div>
       </div>
-      <div v-if="createFolderError" class="create-folder-error">
+      <div v-if="createFolderError" class="create-folder-error" role="alert">
         {{ createFolderError }}
       </div>
     </div>
@@ -80,17 +81,32 @@ export default {
     }
   },
   directives: {
+    // The treeselect menu is appended to <body>, so its options (including "Create")
+    // are not inside this element. Treeselect selects on mousedown and then removes
+    // the menu, so the following click lands elsewhere. A click therefore only counts
+    // as outside when its mousedown also started outside this element and the menu.
     'click-outside': {
       bind(el, binding) {
+        const isInside = (target) => el === target
+          || el.contains(target)
+          || (target instanceof Element && !!target.closest('.vue-treeselect__portal-target'));
+
+        el.clickOutsideMouseDown = function(event) {
+          el.clickOutsideStartedInside = isInside(event.target);
+        };
         el.clickOutsideEvent = function(event) {
-          if (!(el === event.target || el.contains(event.target))) {
+          const startedInside = el.clickOutsideStartedInside;
+          el.clickOutsideStartedInside = false;
+          if (!startedInside && !isInside(event.target)) {
             binding.value(event);
           }
         };
-        document.body.addEventListener('click', el.clickOutsideEvent);
+        document.addEventListener('mousedown', el.clickOutsideMouseDown, true);
+        document.addEventListener('click', el.clickOutsideEvent);
       },
       unbind(el) {
-        document.body.removeEventListener('click', el.clickOutsideEvent);
+        document.removeEventListener('mousedown', el.clickOutsideMouseDown, true);
+        document.removeEventListener('click', el.clickOutsideEvent);
       }
     }
   },
@@ -99,7 +115,9 @@ export default {
   },
   data() {
     const rootId = this.config.parentFolder ? this.config.parentFolder.id : FOLDER_ROOT;
-    const rootLabel = this.config.parentFolder ? this.config.parentFolder.label : FOLDER_ROOT;
+    const rootLabel = this.config.parentFolder
+      ? this.config.parentFolder.label
+      : (this.config.translations.upload_root_folder || FOLDER_ROOT);
 
     return {
       folders: [{
@@ -114,15 +132,38 @@ export default {
       createFolderError: null
     };
   },
+  computed: {
+    rootId() {
+      return this.config.parentFolder ? this.config.parentFolder.id : FOLDER_ROOT;
+    },
+    // Folder used when the selection is cleared: the configured parent folder, or the root.
+    defaultFolder() {
+      return this.config.parentFolder ? this.config.parentFolder.id : '';
+    },
+    rootLabel() {
+      return this.config.translations.upload_root_folder || FOLDER_ROOT;
+    },
+    createLabel() {
+      return this.config.translations.upload_button_create || 'Create';
+    },
+    createFolderInLabel() {
+      const parent = this.creatingFolderParent && this.creatingFolderParent.id !== FOLDER_ROOT
+        ? this.creatingFolderParent.label
+        : this.rootLabel;
+
+      return (this.config.translations.upload_create_folder_in || 'Create folder in: %folder%')
+        .replace('%folder%', parent);
+    },
+  },
   methods: {
     getFullPath(folderId) {
       if (typeof folderId !== 'string' || this.isCreateActionValue(folderId)) {
-        return this.config.translations.upload_root_folder || '(root)';
+        return this.rootLabel;
       }
 
       // Handle root folder
-      if (!folderId || folderId === FOLDER_ROOT || folderId === '(root)') {
-        return this.config.translations.upload_root_folder || '(root)';
+      if (!folderId || folderId === FOLDER_ROOT) {
+        return this.rootLabel;
       }
 
       // Replace slashes with " / " for better readability (breadcrumb style)
@@ -161,8 +202,8 @@ export default {
         return;
       }
 
-      const normalizedValue = this.normalizeFolderValue(value);
-      this.internalSelectedFolder = normalizedValue || (this.config.parentFolder ? this.config.parentFolder.id : FOLDER_ROOT);
+      const normalizedValue = this.normalizeFolderValue(value) || this.defaultFolder;
+      this.internalSelectedFolder = normalizedValue || this.rootId;
       this.$emit('change', normalizedValue);
     },
     createActionId(parentId) {
@@ -303,7 +344,12 @@ export default {
 
         this.cancelCreateFolder();
       } catch (error) {
-        this.createFolderError = (error.response && error.response.data && error.response.data.message) || 'Failed to create folder';
+        const data = error.response && error.response.data;
+        const serverMessage = data && typeof data === 'object' ? (data.detail || data.message) : null;
+
+        this.createFolderError = serverMessage
+          || this.config.translations.upload_error_create_folder_failed
+          || 'Failed to create folder';
       }
     },
     cancelCreateFolder() {
@@ -315,7 +361,7 @@ export default {
   },
   watch: {
     selectedFolder(newValue) {
-      this.internalSelectedFolder = newValue;
+      this.internalSelectedFolder = newValue || this.rootId;
     }
   }
 };
