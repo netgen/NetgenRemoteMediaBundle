@@ -16,10 +16,12 @@ use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaTransformer;
 use Netgen\RemoteMedia\Form\Type\RemoteMediaType;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Netgen\RemoteMedia\Tests\AbstractTestCase;
+use Netgen\RemoteMedia\Tests\Form\Type\Fixtures\Gallery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\PreloadedExtension;
@@ -603,9 +605,109 @@ final class RemoteMediaTypeTest extends TypeTestCase
         self::assertSame('{"remoteId":', $view->children['collectionPayload']->vars['value']);
     }
 
+    #[DataProvider('emptyDataDataProvider')]
+    public function testFieldWithoutLocationsIsEmpty(?ArrayCollection $data): void
+    {
+        $form = $this->createParentForm($data);
+
+        self::assertSame('[]', $form->get('media')->get('collectionPayload')->getData());
+        self::assertTrue($form->get('media')->isEmpty());
+        self::assertTrue($form->isEmpty());
+    }
+
+    public function testFieldWithLocationsIsNotEmpty(): void
+    {
+        $form = $this->createParentForm(new ArrayCollection($this->storeGallery()));
+
+        self::assertFalse($form->get('media')->isEmpty());
+        self::assertFalse($form->isEmpty());
+    }
+
+    #[DataProvider('emptySubmissionDataProvider')]
+    public function testFieldIsEmptyAfterEmptySubmission(mixed $submittedData): void
+    {
+        $form = $this->factory->create(RemoteMediaType::class);
+
+        $form->submit($submittedData);
+
+        self::assertTrue($form->isValid());
+        self::assertTrue($form->isEmpty());
+    }
+
+    public function testFieldIsEmptyAfterBeingCleared(): void
+    {
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($this->storeGallery()));
+
+        $form->submit(['collectionPayload' => '[]']);
+
+        self::assertTrue($form->isValid());
+        self::assertTrue($form->isEmpty());
+    }
+
+    public function testFieldIsNotEmptyAfterSubmittingLocations(): void
+    {
+        $this->addResource('upload|image|new.jpg');
+
+        $form = $this->factory->create(RemoteMediaType::class);
+
+        $form->submit(['collectionPayload' => json_encode([['remoteId' => 'upload|image|new.jpg']])]);
+
+        self::assertTrue($form->isValid());
+        self::assertFalse($form->isEmpty());
+    }
+
+    /**
+     * An optional embedded form with a data class gets no object when it is
+     * submitted empty (Symfony checks whether the form is empty).
+     */
+    #[DataProvider('emptySubmissionDataProvider')]
+    public function testEmptyEmbeddedFormGetsNoObject(mixed $submittedData): void
+    {
+        $form = $this->createFormWithEmbeddedForm();
+
+        $form->submit(['embedded' => ['images' => $submittedData]]);
+
+        self::assertTrue($form->isValid());
+        self::assertNull($form->get('embedded')->getData());
+    }
+
+    public function testEmbeddedFormWithLocationsGetsAnObject(): void
+    {
+        $this->addResource('upload|image|new.jpg');
+
+        $form = $this->createFormWithEmbeddedForm();
+
+        $form->submit(['embedded' => ['images' => ['collectionPayload' => json_encode([['remoteId' => 'upload|image|new.jpg']])]]]);
+
+        self::assertTrue($form->isValid());
+
+        $data = $form->get('embedded')->getData();
+        self::assertInstanceOf(Gallery::class, $data);
+        self::assertCount(1, $data->getImages());
+    }
+
     public function testBlockPrefix(): void
     {
         self::assertContains('remote_media', $this->factory->create(RemoteMediaType::class)->createView()->vars['block_prefixes']);
+    }
+
+    public static function emptyDataDataProvider(): iterable
+    {
+        return [
+            'no data' => [null],
+            'empty collection' => [new ArrayCollection()],
+        ];
+    }
+
+    public static function emptySubmissionDataProvider(): iterable
+    {
+        return [
+            'empty list' => [['collectionPayload' => '[]']],
+            'empty string' => [['collectionPayload' => '']],
+            'null payload' => [['collectionPayload' => null]],
+            'no payload' => [[]],
+            'null' => [null],
+        ];
     }
 
     public static function uploadLimitDataProvider(): iterable
@@ -797,6 +899,34 @@ final class RemoteMediaTypeTest extends TypeTestCase
             new PreloadedExtension([$type], []),
             new ValidatorExtension($validator, false),
         ];
+    }
+
+    /**
+     * A form without data, with "media" as its only field.
+     *
+     * @param ArrayCollection<int, RemoteResourceLocation>|null $data
+     *
+     * @return FormInterface<mixed>
+     */
+    private function createParentForm(?ArrayCollection $data): FormInterface
+    {
+        return $this->factory->createBuilder()
+            ->add('media', RemoteMediaType::class, ['data' => $data])
+            ->getForm();
+    }
+
+    /**
+     * @return FormInterface<mixed>
+     */
+    private function createFormWithEmbeddedForm(): FormInterface
+    {
+        $builder = $this->factory->createBuilder();
+        $builder->add(
+            $builder->create('embedded', FormType::class, ['data_class' => Gallery::class, 'required' => false])
+                ->add('images', RemoteMediaType::class),
+        );
+
+        return $builder->getForm();
     }
 
     private function addResource(string $remoteId): RemoteResource

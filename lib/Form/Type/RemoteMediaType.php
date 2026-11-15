@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Form\Type;
 
+use JsonException;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\Folder;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
@@ -31,6 +32,7 @@ use function in_array;
 use function is_array;
 use function is_iterable;
 use function is_string;
+use function json_decode;
 use function json_encode;
 
 use const JSON_INVALID_UTF8_SUBSTITUTE;
@@ -86,7 +88,14 @@ final class RemoteMediaType extends AbstractType
     {
         $locationSource = self::resolveLocationSource($options, $builder->getName());
 
-        $builder->add('collectionPayload', HiddenType::class, ['required' => false]);
+        $builder->add('collectionPayload', HiddenType::class, [
+            'required' => false,
+            // The payload of an empty field is "[]", which is not empty for
+            // Symfony. Without this, the field and every form containing it
+            // would never be empty (eg. an embedded form would always get an
+            // object created out of its empty_data).
+            'is_empty_callback' => static fn (mixed $payload): bool => self::isEmptyPayload($payload),
+        ]);
 
         $builder->addModelTransformer(
             new RemoteMediaCollectionTransformer($this->transformer, $options['upload_limit'], $locationSource),
@@ -172,6 +181,19 @@ final class RemoteMediaType extends AbstractType
             'location_source' => $locationSource,
             'remote_media_locations' => $this->resolveViewLocations($form, $locationSource),
         ]);
+    }
+
+    private static function isEmptyPayload(mixed $payload): bool
+    {
+        if ($payload === null || $payload === '') {
+            return true;
+        }
+
+        try {
+            return is_string($payload) && json_decode($payload, true, 512, JSON_THROW_ON_ERROR) === [];
+        } catch (JsonException) {
+            return false;
+        }
     }
 
     /**

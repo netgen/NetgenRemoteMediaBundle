@@ -34,6 +34,7 @@
 
 * the upload endpoint returns `400` with the translated message in `detail` for a missing file, an unsupported visibility and a failed file upload, instead of throwing an `InvalidArgumentException` (`500`)
 * `RemoteMediaType` errors (eg. over the upload limit) are attached to the field instead of the parent form, `error_bubbling` is `false`
+* `RemoteMediaType` without resources is empty for Symfony (`FormInterface::isEmpty()`), also with the `[]` payload, so an optional embedded form whose fields are all empty gets no object created out of its `empty_data`
 * `/configuration` returns all translations of the interface, so the CKEditor plugin also gets the labels of the upload panel and the media picker
 * the frontend lock file is re-resolved, which upgrades Vue from 2.6 to 2.7, `vue-select` from 3.2 to 3.20 and `@babel/core` from 7.6 to 7.28
 * `regenerator-runtime` is a direct frontend dependency, the re-resolved Babel needs it
