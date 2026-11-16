@@ -1,5 +1,25 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.1.1
+
+### Added
+
+* CKEditor 5 plugin `copyLocationsOnLoad` option, which switches every loaded element to a copy of its stored location before it can be edited, for integrations whose stored editor data is shared by versions, translations or copies (the edited data then never changes locations referenced by other stored data)
+* CKEditor 5 plugin `onError` option, called with a translated message and the error when loading, copying, creating or updating a location fails (defaults to `console.error`), with the `ngrm.edit.vue.ckeditor.*` translations
+* `waitForLocationRequests()` and `hasPendingLocationRequests()` exports of the CKEditor 5 plugin, to check for and wait for pending location requests before submitting editor data (an element whose location is still being created would be stored without it)
+
+### Changed
+
+* CKEditor 5 plugin no longer deletes locations: removing an element or replacing its resource leaves the location in the database, as the element can come back through undo, paste or drag and drop, the `deleteLocation` endpoint option is removed
+* CKEditor 5 plugin location requests of one element run one after another, so an update always targets the location created by the request before it
+
+### Fixed
+
+* CKEditor 5 plugin sends the configured `source` when updating a location, so the location keeps it after the first edit
+* CKEditor 5 plugin keeps the stored CSS class and variation when the editor data is saved before the selected image is loaded or when loading it fails
+* CKEditor 5 plugin no longer silently stores an element without a location when creating the location fails, the element goes back to the previously selected resource and `onError` is called
+* CKEditor 5 plugin clears the location of an element when its resource is removed in the interface, instead of keeping the previous location
+
 ## 3.1.0
 
 ### Added

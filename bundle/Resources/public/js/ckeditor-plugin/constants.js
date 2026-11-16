@@ -44,7 +44,6 @@ export const defaultValue = {
   endpoints: {
     createLocation: '/ngremotemedia/ajax/location/create',
     updateLocation: locationId => `/ngremotemedia/ajax/location/update/${locationId}`,
-    deleteLocation: locationId => `/ngremotemedia/ajax/location/delete/${locationId}`,
     getSelectedImage: locationId => `/ngremotemedia/ajax/location/${locationId}/selected-image`,
     viewResource: locationId => `/ngremotemedia/ajax/resource/view/${locationId}`,
   },
@@ -147,6 +146,10 @@ export const defaultValue = {
       'upload_placeholder_new_folder': 'upload_placeholder_new_folder',
       'upload_error_existing_resource': 'upload_error_existing_resource',
       'upload_error_unsupported_resource_type': 'upload_error_unsupported_resource_type',
+      'ckeditor_location_load_error': 'Remote media could not be loaded in the editor. The stored media is kept unchanged.',
+      'ckeditor_location_copy_error': 'Remote media could not be prepared for editing. The stored media is kept unchanged, select it again to edit it.',
+      'ckeditor_location_create_error': 'Selected remote media could not be saved. Select it again.',
+      'ckeditor_location_update_error': 'Changes to the remote media could not be saved. Make the change again.',
     },
     inputFields: {
       locationId: 'locationId',

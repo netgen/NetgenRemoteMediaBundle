@@ -20,6 +20,13 @@ function NetgenRemoteMediaPlugin(editor) {
     endpoints: defaultValue.endpoints,
     /** Storage format of the remote media element in editor data, defaults to `formats/html.js` */
     format: null,
+    /**
+     * Edit copies of stored locations instead of the stored locations, for integrations which store editor data
+     * in versions, translations or copies sharing the same locations
+     */
+    copyLocationsOnLoad: false,
+    /** Called with a translated message and the error when a location request fails, defaults to `console.error` */
+    onError: null,
   });
 
   editor.commands.add(pluginKey, new NetgenRemoteMediaCommand(editor));

@@ -3,7 +3,6 @@ import { dataModel, attributes, pluginKey, editingView, defaultValue } from '../
 import { toWidget } from '@ckeditor/ckeditor5-widget';
 import renderField from './editing-downcast-utils/render-field';
 import * as operationHandlers from './editing-downcast-utils/operation-handlers';
-import createLocation from './editing-downcast-utils/remote-resource-location/create';
 import handleRemoteResourceLocation from './editing-downcast-utils/handle-remote-resource-location';
 
 /**
