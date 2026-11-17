@@ -59,6 +59,8 @@ final class RemoteMediaTypeTest extends TypeTestCase
 
     private Translator $translator;
 
+    private int $loadFromRemoteCalls = 0;
+
     protected function setUp(): void
     {
         $this->providerMock = $this->createMock(ProviderInterface::class);
@@ -72,7 +74,11 @@ final class RemoteMediaTypeTest extends TypeTestCase
         $this->providerMock
             ->method('loadFromRemote')
             ->willReturnCallback(
-                static fn (string $remoteId): RemoteResource => throw new RemoteResourceNotFoundException($remoteId),
+                function (string $remoteId): RemoteResource {
+                    ++$this->loadFromRemoteCalls;
+
+                    throw new RemoteResourceNotFoundException($remoteId);
+                },
             );
 
         $this->providerMock
@@ -576,6 +582,26 @@ final class RemoteMediaTypeTest extends TypeTestCase
 
         self::assertCount(1, $viewLocations);
         self::assertSame(7, $viewLocations[0]->getId());
+    }
+
+    public function testBuildViewAfterRejectedSubmissionDoesNotAskTheRemote(): void
+    {
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection(), ['upload_limit' => 1]);
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                ['remoteId' => 'upload|image|unknown-1.jpg'],
+                ['remoteId' => 'upload|image|unknown-2.jpg'],
+                ['remoteId' => 'upload|image|unknown-3.jpg'],
+            ]),
+        ]);
+
+        self::assertFalse($form->isValid());
+
+        $callsBeforeView = $this->loadFromRemoteCalls;
+
+        self::assertSame([], $form->createView()->vars['remote_media_locations']);
+        self::assertSame($callsBeforeView, $this->loadFromRemoteCalls);
     }
 
     public function testBuildViewAfterUnreadableSubmissionShowsNothing(): void

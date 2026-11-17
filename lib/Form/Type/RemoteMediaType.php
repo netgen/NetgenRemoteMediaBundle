@@ -290,15 +290,14 @@ final class RemoteMediaType extends AbstractType
         return $locations;
     }
 
+    /**
+     * Loads only from the local storage. A rejected payload is not limited,
+     * so asking the remote here could mean one API call per submitted entry.
+     */
     private function loadResource(string $remoteId): ?RemoteResource
     {
         try {
             return $this->provider->loadByRemoteId($remoteId);
-        } catch (RemoteResourceNotFoundException) {
-        }
-
-        try {
-            return $this->provider->loadFromRemote($remoteId);
         } catch (RemoteResourceNotFoundException) {
             return null;
         }

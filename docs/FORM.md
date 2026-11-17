@@ -211,7 +211,7 @@ The widget submits the whole selection as one hidden JSON field, `collectionPayl
 * If the same `locationId` is sent twice, only the first entry is used.
 * If `collectionPayload` is not submitted at all (eg. the widget didn't load), the field keeps its current value. Only an empty list, `[]`, clears the field.
 * The form theme renders `collectionPayload` with the current value, so a form submitted without the widget doesn't change the field.
-* After an invalid submission, the widget shows the submitted selection again, not the stored one.
+* After an invalid submission, the widget shows the submitted selection again, not the stored one. Only resources stored locally are shown: one picked in the media browser and not saved yet is left out.
 
 ### Example
 
