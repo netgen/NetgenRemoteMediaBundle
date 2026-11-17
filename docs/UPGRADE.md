@@ -124,7 +124,8 @@ The index and foreign key names above are the ones Doctrine generates for these 
 
 ### Blocked form submit
 
-* While files in the upload panel are waiting to be uploaded or uploading, the widget blocks the submit of the form it is in. It cancels both the click on a submit button and the `submit` event, in the capture phase on `document`, and shows a message above the panel.
+* While files in the upload panel are waiting to be uploaded or uploading, the widget blocks the submit of the form it is in. It cancels both the click on a submit button and the `submit` event, in the capture phase on `document`, and shows a message above the panel. If the field is not visible, for example in an inactive tab, the message is also shown on top of the page.
+* Submit buttons with the `formnovalidate` or the `data-ngrm-skip-submit-block` attribute are never blocked, so Cancel or Delete draft buttons keep working. Add `data-ngrm-skip-submit-block` to other buttons which leave the form without saving.
 * Hosts which react to the submit button themselves (for example the loading state of a Sylius `loadable` form) see neither event. If they change their state in some other way before the submit, they can undo it on the bubbling `ngrm-submit-blocked` event of the widget. Its `detail` has `form` (the blocked form) and `message` (the message shown to the editor).
 
 ### Upload endpoint

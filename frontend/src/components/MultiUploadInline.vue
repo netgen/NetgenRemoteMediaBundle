@@ -41,8 +41,8 @@
       />
     </div>
 
-    <!-- Limit indicator (only show when there are queued files or we're over limit) -->
-    <div v-if="hasLimit && !isSingleFileMode && (pendingFilesCount > 0 || isOverLimit)"
+    <!-- Limit indicator (only show when there are queued files or the field is full) -->
+    <div v-if="hasLimit && !isSingleFileMode && (pendingFilesCount > 0 || isAtLimit)"
          class="limit-indicator"
          :class="limitClass">
       <i v-if="isOverLimit" class="fa fa-exclamation-triangle" aria-hidden="true"></i>
@@ -160,7 +160,12 @@ import axios from "axios";
 // and no response. A slow but moving upload of a big file is never cut off.
 const UPLOAD_IDLE_TIMEOUT_MS = 180000;
 const UPLOAD_TIMEOUT_REASON = 'ngrm-upload-timeout';
+const UPLOAD_DESTROYED_REASON = 'ngrm-upload-destroyed';
 const SUBMIT_CONTROL_SELECTOR = 'button:not([type]), button[type=submit], input[type=submit], input[type=image]';
+// Submit controls with one of these attributes (eg. Cancel, Delete draft) are never blocked.
+const SUBMIT_BLOCK_SKIP_ATTRIBUTES = ['formnovalidate', 'data-ngrm-skip-submit-block'];
+const FLOATING_NOTICE_DURATION_MS = 6000;
+const FLOATING_NOTICE_ID = 'ngrm-floating-notice';
 
 // Same name, size and modification time: treated as the same file picked twice.
 const fileKey = (file) => `${file.name}/${file.size}/${file.lastModified}`;
@@ -195,7 +200,7 @@ export default {
   },
   data() {
     return {
-      uploading: false,
+      activeUploads: 0, // running upload batches, a row upload is a batch of one
       isDragOver: false,
       files: [], // Array of {id, key, file, filename, folder, visibility, overwrite, status, progress, error, notice, resource}
       nextId: 1,
@@ -217,6 +222,9 @@ export default {
     },
     isSingleFileMode() {
       return this.uploadLimit === 1;
+    },
+    uploading() {
+      return this.activeUploads > 0;
     },
     // Uploads start in the configured parent folder. Read lazily: the config is
     // filled in only after this component has been created.
@@ -413,9 +421,10 @@ export default {
       if (this.isSingleFileMode && this.uploading) return;
       this.addFiles(Array.from(event.dataTransfer.files));
     },
-    // Drops files that are already in the list, and repeats within the same selection.
+    // Drops files that are already waiting in the list, and repeats within the same selection.
+    // Uploaded rows don't count: their file can be picked again, eg. after it was removed from the field.
     filterDuplicateFiles(files) {
-      const knownKeys = new Set(this.files.map(f => f.key));
+      const knownKeys = new Set(this.files.filter(f => f.status !== 'success').map(f => f.key));
       const duplicates = [];
       const unique = files.filter((file) => {
         const key = fileKey(file);
@@ -556,29 +565,34 @@ export default {
         return;
       }
 
-      const resource = await this.uploadSingleFile(fileData);
-      if (resource && !this.isInField(resource)) {
-        this.$emit('all-uploaded', [resource]);
-      }
+      await this.runUploads([fileData.id]);
     },
     async uploadAll() {
       if (this.uploading) return;
 
+      await this.runUploads(
+        this.files
+          .filter(f => f.status === 'pending' && !this.overLimitIds.includes(f.id))
+          .map(f => f.id)
+      );
+    },
+    // Uploads the rows one after the other. Upload all, a row upload and a retry
+    // all go through here, so each of them disables the panel and shows progress.
+    async runUploads(fileIds) {
       const resources = [];
-      this.uploading = true;
+      this.activeUploads++;
 
       try {
-        const pendingFileIds = this.files
-          .filter(f => f.status === 'pending' && !this.overLimitIds.includes(f.id))
-          .map(f => f.id);
-        this.totalFiles = pendingFileIds.length;
+        this.totalFiles = fileIds.length;
         this.currentFileIndex = 0;
         this.batchCompleted = 0;
 
-        for (const fileId of pendingFileIds) {
+        for (const fileId of fileIds) {
+          if (this.isDestroyed) break;
+
           const fileData = this.files.find(f => f.id === fileId);
 
-          if (fileData && fileData.status === 'pending') {
+          if (fileData && (fileData.status === 'pending' || fileData.status === 'error')) {
             if (!this.hasRoomFor(resources.length)) {
               this.showLimitReachedNotice();
               break;
@@ -596,7 +610,7 @@ export default {
           this.batchCompleted++;
         }
       } finally {
-        this.uploading = false;
+        this.activeUploads--;
         this.currentFileIndex = 0;
         this.totalFiles = 0;
         this.batchCompleted = 0;
@@ -607,7 +621,7 @@ export default {
         // form value, otherwise a retry duplicates them. Failed rows stay in
         // the table for retry. Scoped to this batch so resources emitted by an
         // earlier run are not added twice.
-        if (resources.length > 0) {
+        if (resources.length > 0 && !this.isDestroyed) {
           this.$emit('all-uploaded', resources);
         }
       }
@@ -683,6 +697,7 @@ export default {
       fileData.resource = null;
 
       const cancelSource = axios.CancelToken.source();
+      this.cancelSources.add(cancelSource);
       let idleTimer = null;
       const restartIdleTimer = () => {
         clearTimeout(idleTimer);
@@ -733,12 +748,22 @@ export default {
         return null;
       } finally {
         clearTimeout(idleTimer);
+        this.cancelSources.delete(cancelSource);
       }
     },
     // Unfinished uploads would end up in the remote storage but not in the saved
     // value, so the form waits until every row is uploaded or removed.
     handleFormSubmit(event) {
+      // Older browsers have no event.submitter, the click handler remembers a skipped control.
+      if (this.skipsSubmitBlock(event.submitter || this.skippedSubmitControl)) {
+        return;
+      }
+
       this.blockSubmit(event, event.target);
+    },
+    skipsSubmitBlock(control) {
+      return control instanceof Element
+        && SUBMIT_BLOCK_SKIP_ATTRIBUTES.some(attribute => control.hasAttribute(attribute));
     },
     // Hosts like the Sylius admin react to the submit button's click (e.g. by putting
     // the form into a loading state), which happens before the submit event, so the
@@ -746,6 +771,12 @@ export default {
     handleSubmitClick(event) {
       const control = event.target instanceof Element ? event.target.closest(SUBMIT_CONTROL_SELECTOR) : null;
       if (!control) {
+        return;
+      }
+
+      if (this.skipsSubmitBlock(control)) {
+        this.skippedSubmitControl = control;
+        setTimeout(() => { this.skippedSubmitControl = null; });
         return;
       }
 
@@ -770,10 +801,36 @@ export default {
       }));
 
       this.$nextTick(() => {
-        if (this.$refs.submitBlocked) {
+        // In an inactive tab the message above the panel can't be seen, show it on top of the page too.
+        if (this.$el.offsetParent === null) {
+          this.showFloatingNotice(this.submitBlockedMessage);
+        } else if (this.$refs.submitBlocked) {
           this.$refs.submitBlocked.scrollIntoView({ block: 'center' });
         }
       });
+    },
+    showFloatingNotice(message) {
+      this.removeFloatingNotice();
+      // One notice per page, also when several hidden fields block the same submit.
+      const existing = document.getElementById(FLOATING_NOTICE_ID);
+      if (existing) existing.remove();
+
+      const notice = document.createElement('div');
+      notice.id = FLOATING_NOTICE_ID;
+      notice.className = 'limit-indicator limit-exceeded ngrm-floating-notice';
+      notice.setAttribute('role', 'alert');
+      notice.textContent = message;
+      document.body.appendChild(notice);
+
+      this.floatingNotice = notice;
+      this.floatingNoticeTimer = setTimeout(() => this.removeFloatingNotice(), FLOATING_NOTICE_DURATION_MS);
+    },
+    removeFloatingNotice() {
+      clearTimeout(this.floatingNoticeTimer);
+      if (this.floatingNotice) {
+        this.floatingNotice.remove();
+        this.floatingNotice = null;
+      }
     },
   },
   watch: {
@@ -798,6 +855,7 @@ export default {
     hasUnfinishedFiles(value) {
       if (!value) {
         this.submitBlockedMessage = null;
+        this.removeFloatingNotice();
       }
     },
     pendingFilesCount: {
@@ -806,6 +864,14 @@ export default {
         this.$emit('queue-change', count);
       }
     },
+  },
+  created() {
+    // Not reactive: only needed to cancel the requests and clean up.
+    this.cancelSources = new Set();
+    this.isDestroyed = false;
+    this.floatingNotice = null;
+    this.floatingNoticeTimer = null;
+    this.skippedSubmitControl = null;
   },
   mounted() {
     this.globalVisibility = this.defaultVisibility;
@@ -816,6 +882,12 @@ export default {
     document.addEventListener('click', this.submitClickListener, true);
   },
   beforeDestroy() {
+    // Eg. CKEditor re-renders the widget while a file uploads. Nothing could add the
+    // result anymore, so the requests are aborted and no rows are updated or emitted.
+    // A request the server already received may still finish there.
+    this.isDestroyed = true;
+    this.cancelSources.forEach(source => source.cancel(UPLOAD_DESTROYED_REASON));
+    this.removeFloatingNotice();
     if (this.noticeTimer) clearTimeout(this.noticeTimer);
     document.removeEventListener('submit', this.formSubmitListener, true);
     document.removeEventListener('click', this.submitClickListener, true);

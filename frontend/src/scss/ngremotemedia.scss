@@ -277,6 +277,18 @@
     color: #721c24;
     font-weight: 600;
   }
+
+  // On top of the page, for a field in an inactive tab
+  &.ngrm-floating-notice {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    max-width: calc(100vw - 32px);
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
 }
 
 // Visually hidden, still read by screen readers
