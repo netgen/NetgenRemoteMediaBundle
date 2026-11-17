@@ -38,8 +38,8 @@
 * `/configuration` returns all translations of the interface, so the CKEditor plugin also gets the labels of the upload panel and the media picker
 * the frontend lock file is re-resolved, which upgrades Vue from 2.6 to 2.7, `vue-select` from 3.2 to 3.20 and `@babel/core` from 7.6 to 7.28
 * `regenerator-runtime` is a direct frontend dependency, the re-resolved Babel needs it
-* the alt text and caption inputs of the form field edit the overrides of the location (`altTextOverride` and `captionOverride`), one alt text and one caption input per item, the form field doesn't change the alt text and caption stored on the cloud anymore, `altText` and `caption` are not part of `collectionPayload` and are ignored if submitted, the CKEditor 5 plugin still shows both, see [form documentation](FORM.md#alt-text-and-caption-overrides)
-* `RemoteResourceService::handleRemoteTagsUpdate()` updates only the tags of a resource on the remote, `RemoteMediaType` uses it instead of `handleRemoteUpdate()`
+* `RemoteResourceService::handleRemoteUpdate()` compares and stores the tags sorted
+* `RemoteResourceService::handleRemoteUpdate()` stores an empty alt text or caption as `null`
 * English labels of the interface use sentence case
 * Norwegian translations cover the whole interface
 

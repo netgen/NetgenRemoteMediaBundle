@@ -101,6 +101,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                 md5: 'e522f43cf89aa0afd03387c37e2b6e29',
                 name: 'example.jpg',
                 folder: Folder::fromPath('media/images'),
+                altText: 'Test alt text',
+                caption: 'Test caption',
                 tags: ['tag1', 'tag2'],
             ),
             cropSettings: [
@@ -108,8 +110,6 @@ class RemoteMediaTransformerTest extends AbstractTestCase
             ],
             watermarkText: 'This is a watermark',
         );
-
-        // Only the tags are taken over, the alt text and caption sent for the resource are ignored.
 
         $this->providerMock
             ->expects(self::once())
@@ -227,18 +227,14 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         );
     }
 
-    /**
-     * Alt text and caption sent for the resource (eg. by a page loaded before
-     * they were changed on the cloud) never reach the resource or the remote.
-     */
-    public function testReverseTransformIgnoresAltTextAndCaptionOfTheResource(): void
+    public function testReverseTransformWithOverridesDoesNotUpdateRemote(): void
     {
         $data = [
             'locationId' => 5,
             'remoteId' => 'upload|image|media/images/example.jpg',
             'type' => 'image',
-            'altText' => 'Stale alt text',
-            'caption' => '',
+            'altText' => 'Cloud alt text',
+            'caption' => 'Cloud caption',
             'tags' => ['tag1'],
             'cropSettings' => null,
             'altTextOverride' => 'Local alt text',
@@ -283,45 +279,6 @@ class RemoteMediaTransformerTest extends AbstractTestCase
         self::assertSame('Local alt text', $result->getAltText());
         self::assertSame('Cloud caption', $result->getCaption());
         self::assertSame('Cloud alt text', $result->getRemoteResource()->getAltText());
-        self::assertSame('Cloud caption', $result->getRemoteResource()->getCaption());
-        self::assertSame(['tag1'], $result->getRemoteResource()->getTags());
-    }
-
-    public function testReverseTransformUpdatesOnlyTheTagsOnRemote(): void
-    {
-        $resource = new RemoteResource(
-            remoteId: 'upload|image|media/images/example.jpg',
-            type: 'image',
-            url: 'https://cloudinary.com/test/upload/image/media/images/example.jpg',
-            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
-            name: 'example.jpg',
-            altText: 'Cloud alt text',
-            caption: 'Cloud caption',
-            tags: ['tag1'],
-        );
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('loadByRemoteId')
-            ->with('upload|image|media/images/example.jpg')
-            ->willReturn($resource);
-
-        $this->providerMock
-            ->expects(self::once())
-            ->method('updateOnRemote')
-            ->with($resource);
-
-        // Neither sent, nor sent with a different value: both leave the resource as it is.
-        $result = $this->dataTransformer->reverseTransform([
-            'remoteId' => 'upload|image|media/images/example.jpg',
-            'caption' => 'Stale caption',
-            'tags' => ['tag2', 'tag1'],
-        ]);
-
-        self::assertSame($resource, $result->getRemoteResource());
-        self::assertSame('Cloud alt text', $resource->getAltText());
-        self::assertSame('Cloud caption', $resource->getCaption());
-        self::assertSame(['tag1', 'tag2'], $resource->getTags());
     }
 
     public function testReverseTransformWithResourceNotExistingOnRemoteAnymoreDoesNotRemoveLocalResource(): void
@@ -396,6 +353,7 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                 md5: 'e522f43cf89aa0afd03387c37e2b6e29',
                 name: 'example.jpg',
                 folder: Folder::fromPath('media/images'),
+                caption: 'test caption',
                 tags: ['tag2'],
             ),
             'test',
@@ -624,6 +582,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                     'locationId' => null,
                     'remoteId' => 'upload|image|media/images/example.jpg',
                     'type' => 'image',
+                    'altText' => 'Test alt text',
+                    'caption' => 'Test caption',
                     'tags' => ['tag1', 'tag2'],
                     'cropSettings' => '{"hero_image":{"x":10,"y":20,"w":1920,"h":1080}}',
                     'source' => null,
@@ -650,6 +610,8 @@ class RemoteMediaTransformerTest extends AbstractTestCase
                     'locationId' => null,
                     'remoteId' => 'upload|image|media/images/example.jpg',
                     'type' => 'image',
+                    'altText' => null,
+                    'caption' => null,
                     'tags' => [],
                     'cropSettings' => '[]',
                     'source' => 'my_source',

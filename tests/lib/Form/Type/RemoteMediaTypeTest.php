@@ -157,9 +157,8 @@ final class RemoteMediaTypeTest extends TypeTestCase
         $this->addResource('upload|image|first.jpg');
         $this->addResource('upload|video|second.mp4');
 
-        // Only the changed tags of the first image are sent to the remote.
         $this->providerMock
-            ->expects(self::once())
+            ->expects(self::exactly(2))
             ->method('updateOnRemote');
 
         $form = $this->factory->createNamed('gallery', RemoteMediaType::class);
@@ -197,6 +196,7 @@ final class RemoteMediaTypeTest extends TypeTestCase
                     type: 'image',
                     url: 'https://example.test/upload|video|second.mp4',
                     md5: 'md5',
+                    altText: 'Second alt',
                 ),
                 source: 'own_source',
                 cropSettings: [new CropSettings('hero', 10, 20, 1920, 1080)],
@@ -216,6 +216,7 @@ final class RemoteMediaTypeTest extends TypeTestCase
                     type: 'image',
                     url: 'https://example.test/upload|image|first.jpg',
                     md5: 'md5',
+                    caption: 'First caption',
                     tags: ['a', 'b'],
                 ),
                 source: 'form_gallery',
@@ -291,11 +292,10 @@ final class RemoteMediaTypeTest extends TypeTestCase
     }
 
     /**
-     * The alt text and caption inputs of the widget edit the overrides. Alt
-     * text and caption of the resource are ignored, so a stale or a tampered
-     * payload cannot write them back to the cloud.
+     * The overrides are stored on the locations. Cloud values sent back as
+     * they were loaded don't update the remote.
      */
-    public function testSubmitStoresOverridesAndIgnoresAltTextAndCaptionOfTheResource(): void
+    public function testSubmitStoresOverridesWithoutUpdatingTheRemote(): void
     {
         $locations = $this->storeGallery();
         $locations[0]->getRemoteResource()->setAltText('Cloud alt')->setCaption('Cloud caption');
@@ -313,20 +313,13 @@ final class RemoteMediaTypeTest extends TypeTestCase
                 [
                     'locationId' => 6,
                     'remoteId' => 'upload|image|6.jpg',
-                    'altText' => 'Stale cloud alt',
-                    'caption' => '',
+                    'altText' => 'Cloud alt',
+                    'caption' => 'Cloud caption',
                     'altTextOverride' => 'New local alt',
                     'captionOverride' => '',
                 ],
                 ['locationId' => 7, 'remoteId' => 'upload|image|7.jpg', 'altTextOverride' => 'Kept local alt', 'captionOverride' => ''],
-                [
-                    'locationId' => 8,
-                    'remoteId' => 'upload|image|8.jpg',
-                    'altText' => 'Alt of a resource without one',
-                    'caption' => 'Caption of a resource without one',
-                    'altTextOverride' => '',
-                    'captionOverride' => 'New local caption',
-                ],
+                ['locationId' => 8, 'remoteId' => 'upload|image|8.jpg', 'altTextOverride' => '', 'captionOverride' => 'New local caption'],
             ]),
         ]);
 
@@ -344,13 +337,8 @@ final class RemoteMediaTypeTest extends TypeTestCase
         self::assertSame('Kept local alt', $locations[1]->getAltTextOverride());
         self::assertNull($locations[1]->getCaptionOverride());
 
-        self::assertNull($locations[1]->getRemoteResource()->getAltText());
-        self::assertNull($locations[1]->getRemoteResource()->getCaption());
-
         self::assertNull($locations[2]->getAltTextOverride());
         self::assertSame('New local caption', $locations[2]->getCaptionOverride());
-        self::assertNull($locations[2]->getRemoteResource()->getAltText());
-        self::assertNull($locations[2]->getRemoteResource()->getCaption());
     }
 
     #[DataProvider('missingPayloadDataProvider')]
@@ -510,7 +498,7 @@ final class RemoteMediaTypeTest extends TypeTestCase
     public function testBuildViewAfterRejectedSubmissionShowsWhatWasSubmitted(): void
     {
         $locations = $this->storeGallery();
-        $locations[0]->getRemoteResource()->setAltText('Stored alt')->setCaption('Stored caption');
+        $locations[0]->getRemoteResource()->setAltText('Stored alt');
         $this->addResource('upload|image|new.jpg');
 
         $form = $this->factory->createNamed('gallery', RemoteMediaType::class, new ArrayCollection($locations), ['upload_limit' => 3]);
@@ -547,9 +535,8 @@ final class RemoteMediaTypeTest extends TypeTestCase
         AbstractTestCase::assertCropSettingsSame(new CropSettings('hero', 5, 6, 70, 80), $viewLocations[0]->getCropSettings()[0]);
         self::assertSame('New watermark', $viewLocations[1]->getWatermarkText());
         self::assertSame('form_gallery', $viewLocations[1]->getSource());
-        // Alt text and caption of the resource are shown as stored, the field cannot change them.
-        self::assertSame('Stored alt', $viewLocations[2]->getRemoteResource()->getAltText());
-        self::assertSame('Stored caption', $viewLocations[2]->getRemoteResource()->getCaption());
+        self::assertSame('Edited alt', $viewLocations[2]->getRemoteResource()->getAltText());
+        self::assertSame('Edited caption', $viewLocations[2]->getRemoteResource()->getCaption());
         self::assertSame(['edited'], $viewLocations[2]->getRemoteResource()->getTags());
         self::assertSame('Edited local alt', $viewLocations[2]->getAltTextOverride());
         self::assertSame('Edited local caption', $viewLocations[2]->getCaptionOverride());
@@ -839,9 +826,9 @@ final class RemoteMediaTypeTest extends TypeTestCase
                     ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'cropSettings' => ['hero' => ['x' => 1, 'y' => 2, 'w' => 3, 'h' => 4]]],
                 ])],
             ],
-            'alt text override as an object' => [
+            'alt text as an object' => [
                 ['collectionPayload' => json_encode([
-                    ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'altTextOverride' => ['en' => 'Alt']],
+                    ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'altText' => ['en' => 'Alt']],
                 ])],
             ],
             'tags as a string' => [

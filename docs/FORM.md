@@ -93,9 +93,9 @@ The reason why every entity has its own locations is that every usage of a remot
 
 ## Alt text and caption overrides
 
-Alt text and caption of a resource are stored in the cloud, so changing them there updates every location which uses that resource. Each location can additionally have its own alt text and caption override (`altTextOverride` and `captionOverride`), stored only on that location and never sent to the cloud. An empty override means that the value from the cloud is used.
+Alt text and caption entered in the interface are stored on the resource in the cloud, so changing them updates every location which uses that resource. Each location can additionally have its own alt text and caption override (`altTextOverride` and `captionOverride`), stored only on that location and never sent to the cloud. An empty override means that the value from the cloud is used.
 
-In the form field, every item has one alt text and one caption input, and they edit the overrides of its location. The values from the cloud are shown as placeholders and can't be changed there. An emptied input removes the override. The CKEditor 5 plugin shows the inputs for the cloud values and for the overrides next to each other.
+The form field and the CKEditor 5 plugin show the inputs for the cloud values and for the overrides next to each other, for every item. An emptied override input removes the override.
 
 `RemoteResourceLocation::getAltText()` and `RemoteResourceLocation::getCaption()` return the override when it's set and the value from the cloud otherwise, so use them (eg. `location.caption` in TWIG) instead of the ones on the resource when rendering a location:
 
@@ -206,9 +206,8 @@ The widget submits the whole selection as one hidden JSON field, `collectionPayl
 ```
 
 * An entry without `locationId` creates a new location. An entry with the `locationId` of a location from the field's current value updates that location. Any other `locationId` is ignored and a new location is created.
-* Entry fields are `locationId`, `remoteId`, `type`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags` (a list of strings), `cropSettings` (a JSON string) and `source`. A field with the wrong type makes the form invalid.
-* `tags` are the tags of the resource in the cloud. If they differ from the stored ones, the resource is updated in the cloud. Missing `tags` are read as an empty list.
-* Alt text and caption are submitted only as `altTextOverride` and `captionOverride`. An empty or missing override is stored as `null`. The alt text and caption of the resource are not part of an entry: `altText` and `caption` are ignored if sent, they never change the resource and never update it in the cloud.
+* Entry fields are `locationId`, `remoteId`, `type`, `altText`, `caption`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags` (a list of strings), `cropSettings` (a JSON string) and `source`. A field with the wrong type makes the form invalid.
+* `altText`, `caption` and `tags` are the values of the resource in the cloud. If they differ from the stored ones, the resource is updated in the cloud. An empty or missing `altText`, `caption`, `altTextOverride` or `captionOverride` is stored as `null`, so code which submits the field must send the current `altText`, `caption` and `tags` to keep them. Missing `tags` are read as an empty list.
 * If the same `locationId` is sent twice, only the first entry is used.
 * If `collectionPayload` is not submitted at all (eg. the widget didn't load), the field keeps its current value. Only an empty list, `[]`, clears the field.
 * The form theme renders `collectionPayload` with the current value, so a form submitted without the widget doesn't change the field.

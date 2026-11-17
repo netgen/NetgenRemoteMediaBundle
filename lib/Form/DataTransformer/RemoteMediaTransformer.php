@@ -30,6 +30,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             'locationId' => $value->getId(),
             'remoteId' => $value->getRemoteResource()->getRemoteId(),
             'type' => $value->getRemoteResource()->getType(),
+            'altText' => $value->getRemoteResource()->getAltText(),
+            'caption' => $value->getRemoteResource()->getCaption(),
             'tags' => $value->getRemoteResource()->getTags(),
             'cropSettings' => $this->service->resolveCropSettingsString($value),
             'source' => $value->getSource(),
@@ -71,11 +73,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
         }
 
-        // Only the tags are taken over. Alt text and caption of the resource are
-        // never changed by the form field, whatever the payload carries.
         // A resource that is gone from the remote is kept, the service logs it.
-        $tags = $value['tags'] ?? [];
-        $this->service->handleRemoteTagsUpdate($remoteResource, is_array($tags) ? $tags : []);
+        $this->service->handleRemoteUpdate($remoteResource, $value);
 
         $remoteResourceLocation->setSource($value['source'] ?? null);
         $remoteResourceLocation->setWatermarkText($value['watermarkText'] ?? null);

@@ -112,8 +112,8 @@
         <p>{{ resource.type }} / {{ resource.format }}</p>
 
         <div class="image-meta-data">
-          <!-- Cloud alt text and caption; CKEditor embeds only, form fields edit just the overrides -->
-          <div v-if="isEmbed" class="ngremotemedia-alttext">
+          <!-- Alt text and caption stored in the cloud, shared by every location of the resource -->
+          <div class="ngremotemedia-alttext">
             <label class="help-block description" :for="getInputId('altText', index)">
               {{ config.translations.preview_alternate_text }}
               <i v-if="config.translations.preview_alternate_text_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_alternate_text_info"></i>
@@ -129,7 +129,7 @@
             />
           </div>
 
-          <div v-if="isEmbed" class="ngremotemedia-caption">
+          <div class="ngremotemedia-caption">
             <label class="help-block description" :for="getInputId('caption', index)">
               {{ config.translations.preview_caption }}
               <i v-if="config.translations.preview_caption_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_caption_info"></i>
@@ -145,10 +145,10 @@
             />
           </div>
 
-          <!-- Alt text and caption of this location; in form fields they are the only alt text and caption inputs -->
+          <!-- Overrides of this location, on top of the values in the cloud -->
           <div class="ngremotemedia-alttext-override">
             <label class="help-block description" :for="getInputId('altTextOverride', index)">
-              {{ altTextOverrideLabel }}
+              {{ config.translations.preview_alternate_text_override }}
               <i v-if="config.translations.preview_alternate_text_override_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_alternate_text_override_info"></i>
             </label>
             <input
@@ -165,7 +165,7 @@
 
           <div class="ngremotemedia-caption-override">
             <label class="help-block description" :for="getInputId('captionOverride', index)">
-              {{ captionOverrideLabel }}
+              {{ config.translations.preview_caption_override }}
               <i v-if="config.translations.preview_caption_override_info" class="fa fa-info-circle" data-toggle="tooltip" data-placement="right" :title="config.translations.preview_caption_override_info"></i>
             </label>
             <input
@@ -345,16 +345,6 @@ export default {
     moveNextLabel() {
       return this.config.translations.reorder_move_next || "Move to next position";
     },
-    altTextOverrideLabel() {
-      return this.isEmbed
-        ? this.config.translations.preview_alternate_text_override
-        : this.config.translations.preview_alternate_text;
-    },
-    captionOverrideLabel() {
-      return this.isEmbed
-        ? this.config.translations.preview_caption_override
-        : this.config.translations.preview_caption;
-    },
     removeLabel() {
       return this.config.translations.multi_gallery_remove || "Remove";
     },
@@ -367,7 +357,9 @@ export default {
           locationId: resource.locationId || "",
           remoteId: resource.id || "",
           type: resource.type || "",
-          // No cloud alt text and caption: the form field stores only the overrides.
+          // Values in the cloud: a change updates the resource there, for every location.
+          altText: resource.alternateText || "",
+          caption: resource.caption || "",
           altTextOverride: resource.altTextOverride || "",
           captionOverride: resource.captionOverride || "",
           watermarkText: resource.watermarkText || "",

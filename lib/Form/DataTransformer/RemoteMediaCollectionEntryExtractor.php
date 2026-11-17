@@ -24,15 +24,12 @@ use const JSON_ERROR_NONE;
  * Reads the JSON `collectionPayload` submitted by the remote media widget into
  * normalized entries, one per selected resource, in the submitted order.
  *
- * Fields which are not part of an entry are dropped. That includes `altText`
- * and `caption`: the form field edits only the overrides of a location.
- *
  * Shared by RemoteMediaType and RemoteMediaCollectionTransformer, so both read
  * the payload in the same way.
  */
 final class RemoteMediaCollectionEntryExtractor
 {
-    private const STRING_FIELDS = ['type', 'altTextOverride', 'captionOverride', 'watermarkText'];
+    private const STRING_FIELDS = ['type', 'altText', 'caption', 'altTextOverride', 'captionOverride', 'watermarkText'];
 
     private const CROP_COORDINATES = ['x', 'y', 'w', 'h', 'width', 'height'];
 
