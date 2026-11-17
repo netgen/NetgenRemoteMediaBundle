@@ -44,6 +44,7 @@
 * `RemoteResourceService::handleRemoteUpdate()` stores an empty alt text or caption as `null`
 * English labels of the interface use sentence case
 * Norwegian translations cover the whole interface
+* the Croatian label of the root folder is `(korijenska mapa)`
 
 ### Removed
 
