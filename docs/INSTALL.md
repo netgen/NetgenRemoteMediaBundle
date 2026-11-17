@@ -152,7 +152,7 @@ netgen_remote_media:
 Run the following from your website root folder:
 
 ```
-$ composer require netgen/remote-media-bundle:^3.0
+$ composer require netgen/remote-media-bundle:^4.0
 ```
 
 ## Activate the bundle

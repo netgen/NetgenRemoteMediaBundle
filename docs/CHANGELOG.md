@@ -12,6 +12,7 @@
 * `RemoteMediaType` constructor takes the `RemoteResourceService` as the 3rd argument and `RemoteResourceService` takes an optional logger as the 2nd argument
 * `Configuration` controller takes `VueTranslations` instead of `TranslatorInterface` as the 2nd argument
 * `@NetgenRemoteMedia/app/interactions.html.twig` takes `locations`, `upload_limit` (defaults to `1`) and `location_source`, the `variation_settings_json` parameter is removed
+* in form fields the widget posts only the `collectionPayload` input, templates which include `interactions.html.twig` with `location_id` and the 3.x `input_fields` render the resource but don't save it
 * `RemoteResourceService::handleRemoteUpdate()` (CKEditor `location/create` and `location/update`) and `RemoteMediaType` no longer delete a resource which doesn't exist on the remote anymore, the change is stored locally only, a warning with the remote ID is logged and `handleRemoteUpdate()` returns `false`
 * the frontend assets are rebuilt, run `assets:install` again
 

@@ -22,6 +22,8 @@ Upgrade from 3.1 to 4.0
     ```
 
 * The migration adds the nullable `position` column to `ngrm_remote_resource_location`. The form stores the order of a field's resources in it. Existing locations have no position.
+* Run it before you generate the migration of a `OneToOne` relation (see below) with `doctrine:migrations:diff`. Otherwise the diff also adds `position`, and `Version040000` then fails with "Duplicate column name 'position'". The other way round, the `SET l.position = 0` of the example fails if `Version040000` didn't run.
+* Pass the diff the `--filter-expression` from [Upgrade from 3.0.1 to 3.0.2](#upgrade-from-301-to-302), so it doesn't drop `ngrm_migration_versions`.
 * The `down()` method drops the column together with the stored order.
 * If the Doctrine metadata cache is stored outside of the Symfony cache directory (for example in Redis), clear it after the upgrade with `php bin/console doctrine:cache:clear-metadata`.
 
@@ -49,7 +51,7 @@ Upgrade from 3.1 to 4.0
 
 Change the relation of the entity as shown in [FORM.md](FORM.md#add-relation-to-your-entity): a `ManyToMany` relation with a unique inverse join column, `#[ORM\OrderBy(['position' => 'ASC'])]`, `addX()` and `removeX()` methods, and no setter which replaces the collection.
 
-Then move the data in a Doctrine migration of your project. Generate it with `php bin/console doctrine:migrations:diff`, then add the `INSERT` and `UPDATE` statements between the creation of the join table and the drop of the old column. Without them the existing relations are lost. Run it with `php bin/console doctrine:migrations:migrate`.
+Then move the data in a Doctrine migration of your project. Run `Version040000` first (see [Database](#database)), then generate the migration with `php bin/console doctrine:migrations:diff` and the `--filter-expression` from [Upgrade from 3.0.1 to 3.0.2](#upgrade-from-301-to-302), then add the `INSERT` and `UPDATE` statements between the creation of the join table and the drop of the old column. Without them the existing relations are lost. Run it with `php bin/console doctrine:migrations:migrate`.
 
 For an entity table `my_entity` with the column `remote_resource_location_id`, mapped as in [FORM.md](FORM.md#add-relation-to-your-entity), the whole migration is (MySQL):
 
@@ -108,7 +110,7 @@ The index and foreign key names above are the ones Doctrine generates for these 
 ### Templates
 
 * `@NetgenRemoteMedia/form/remote_media_type.html.twig` renders the `collectionPayload` field instead of the `locationId` and `source` fields.
-* `@NetgenRemoteMedia/app/interactions.html.twig` takes three new parameters: `locations` (a list of `RemoteResourceLocation` objects), `upload_limit` and `location_source`. `upload_limit` defaults to `1`, so templates which include it with `location_id` keep working with one resource. The `variation_settings_json` parameter is removed, crop settings are read from the locations.
+* `@NetgenRemoteMedia/app/interactions.html.twig` takes three new parameters: `locations` (a list of `RemoteResourceLocation` objects), `upload_limit` and `location_source`. `upload_limit` defaults to `1`. `location_id` still renders its resource, but in a form field the widget posts only the `collectionPayload` input, so a template which passes `location_id` and the 3.x `input_fields` without `collectionPayload` never saves. Pass `locations`, and `collectionPayload` in `input_fields`, like `remote_media_type.html.twig` does. The `variation_settings_json` parameter is removed, crop settings are read from the locations.
 * Both `interactions.html.twig` and `select_folder.html.twig` get their translations from the new `ngrm_vue_translations()` TWIG function. Templates which override them should do the same.
 * The `ngremotemedia.nb.yaml` translations are removed. Symfony falls back from `nb` to `no`.
 
