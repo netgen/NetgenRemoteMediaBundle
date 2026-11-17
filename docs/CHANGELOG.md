@@ -27,8 +27,9 @@
 * `validators` translation domain with the `ngrm.form.upload_limit_exceeded` message (en, hr and no)
 * `config` in the `detail` of the `ngrm-change` browser event, and `selectedImage.uploadedResources` with all resources of the field
 * the form blocks the submit while files are waiting to be uploaded or uploading, and dispatches the `ngrm-submit-blocked` browser event
-* `RemoteMediaType` logs a warning with the remote ID when a submitted resource exists neither locally nor on the remote, the resource is left out of the value as before
 * submit buttons with the `formnovalidate` or `data-ngrm-skip-submit-block` attribute are never blocked
+* translations for the texts of the folder picker (`ngrm.edit.vue.upload.folder_select.*`)
+* `RemoteMediaType` logs a warning with the remote ID when a submitted resource exists neither locally nor on the remote, the resource is left out of the value as before
 * `vuedraggable` frontend dependency
 
 ### Changed

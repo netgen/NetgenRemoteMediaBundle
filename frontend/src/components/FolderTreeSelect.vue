@@ -12,6 +12,13 @@
       :appendToBody="true"
       :zIndex="9999"
       :normalizer="normalizeNode"
+      :loadingText="treeselectTexts.loading"
+      :noChildrenText="treeselectTexts.noChildren"
+      :noOptionsText="treeselectTexts.noOptions"
+      :noResultsText="treeselectTexts.noResults"
+      :retryText="treeselectTexts.retry"
+      :retryTitle="treeselectTexts.retryTitle"
+      :clearValueText="treeselectTexts.clear"
     >
       <div slot="option-label" slot-scope="{ node }" class="folder-option">
         <span v-if="!node.raw.isCreateAction" class="folder-label">
@@ -142,6 +149,20 @@ export default {
     },
     rootLabel() {
       return this.config.translations.upload_root_folder || FOLDER_ROOT;
+    },
+    // Texts of the treeselect itself, its defaults are English.
+    treeselectTexts() {
+      const t = this.config.translations;
+
+      return {
+        loading: t.upload_folder_select_loading || 'Loading folders...',
+        noChildren: t.upload_folder_select_no_children || 'No subfolders',
+        noOptions: t.upload_folder_select_no_options || 'No folders',
+        noResults: t.upload_folder_select_no_results || 'No folders found',
+        retry: t.upload_folder_select_retry || 'Retry?',
+        retryTitle: t.upload_folder_select_retry_title || 'Click to retry',
+        clear: t.upload_folder_select_clear || 'Clear the folder',
+      };
     },
     newFolderPlaceholder() {
       return this.config.translations.upload_placeholder_new_folder || 'New folder name';

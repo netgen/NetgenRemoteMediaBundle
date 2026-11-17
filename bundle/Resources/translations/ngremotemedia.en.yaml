@@ -89,6 +89,14 @@ ngrm:
                     select: 'Select'
                     create: 'Create'
                     cancel: 'Cancel'
+                folder_select:
+                    loading: 'Loading folders...'
+                    no_children: 'No subfolders'
+                    no_options: 'No folders'
+                    no_results: 'No folders found'
+                    retry: 'Retry?'
+                    retry_title: 'Click to retry'
+                    clear: 'Clear the folder'
                 checkbox:
                     overwrite: 'Overwrite'
                 placeholder:

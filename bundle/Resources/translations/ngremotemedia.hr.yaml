@@ -89,6 +89,14 @@ ngrm:
                     select: 'Odaberi'
                     create: 'Kreiraj'
                     cancel: 'Odustani'
+                folder_select:
+                    loading: 'Učitavanje mapa...'
+                    no_children: 'Nema podmapa'
+                    no_options: 'Nema mapa'
+                    no_results: 'Nije pronađena nijedna mapa'
+                    retry: 'Pokušati ponovno?'
+                    retry_title: 'Kliknite za ponovni pokušaj'
+                    clear: 'Očisti mapu'
                 checkbox:
                     overwrite: 'Prepiši'
                 placeholder:

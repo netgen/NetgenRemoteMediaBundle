@@ -89,6 +89,14 @@ ngrm:
                     select: 'Velg'
                     create: 'Opprett'
                     cancel: 'Avbryt'
+                folder_select:
+                    loading: 'Laster inn mapper...'
+                    no_children: 'Ingen undermapper'
+                    no_options: 'Ingen mapper'
+                    no_results: 'Fant ingen mapper'
+                    retry: 'Prøve igjen?'
+                    retry_title: 'Klikk for å prøve igjen'
+                    clear: 'Tøm mappen'
                 checkbox:
                     overwrite: 'Overskriv'
                 placeholder:
