@@ -110,7 +110,7 @@ The index and foreign key names above are the ones Doctrine generates for these 
 ### Templates
 
 * `@NetgenRemoteMedia/form/remote_media_type.html.twig` renders the `collectionPayload` field instead of the `locationId` and `source` fields.
-* `@NetgenRemoteMedia/app/interactions.html.twig` takes three new parameters: `locations` (a list of `RemoteResourceLocation` objects), `upload_limit` and `location_source`. `upload_limit` defaults to `1`. `location_id` still renders its resource, but in a form field the widget posts only the `collectionPayload` input, so a template which passes `location_id` and the 3.x `input_fields` without `collectionPayload` never saves. Pass `locations`, and `collectionPayload` in `input_fields`, like `remote_media_type.html.twig` does. The `variation_settings_json` parameter is removed, crop settings are read from the locations.
+* `@NetgenRemoteMedia/app/interactions.html.twig` takes three new parameters: `locations` (a list of `RemoteResourceLocation` objects), `upload_limit` and `location_source`. `upload_limit` defaults to `1`. The `location_id` parameter is removed. Pass `locations`, and `collectionPayload` in `input_fields`, like `remote_media_type.html.twig` does. The `variation_settings_json` parameter is removed, crop settings are read from the locations.
 * Both `interactions.html.twig` and `select_folder.html.twig` get their translations from the new `ngrm_vue_translations()` TWIG function. Templates which override them should do the same.
 * The `ngremotemedia.nb.yaml` translations are removed. Symfony falls back from `nb` to `no`.
 
