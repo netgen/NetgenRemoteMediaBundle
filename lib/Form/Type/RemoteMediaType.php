@@ -237,8 +237,10 @@ final class RemoteMediaType extends AbstractType
     /**
      * Returns the `remote_media_locations` view variable and, next to it,
      * `remote_media_loaded_values`: the cloud values the widget loaded for
-     * each location, before the editor changed them. They are only known
-     * for a rejected submission, otherwise they are the stored ones.
+     * each location, before the editor changed them. After a submission they
+     * are taken from the payload, so a form shown again (eg. because another
+     * field is invalid) still sends the edited values as changes. Before one,
+     * the widget takes the stored values.
      *
      * @return array{
      *     remote_media_locations: array<int, RemoteResourceLocation>,
@@ -258,11 +260,35 @@ final class RemoteMediaType extends AbstractType
         }
 
         $data = $form->getData();
+        $locations = is_iterable($data) ? RemoteMediaCollectionTransformer::sortByPosition($data) : [];
 
         return [
-            'remote_media_locations' => is_iterable($data) ? RemoteMediaCollectionTransformer::sortByPosition($data) : [],
-            'remote_media_loaded_values' => [],
+            'remote_media_locations' => $locations,
+            'remote_media_loaded_values' => $form->isSubmitted()
+                ? self::submittedLoadedValues($form->get('collectionPayload')->getData(), $locations)
+                : [],
         ];
+    }
+
+    /**
+     * The submitted payload is matched to the locations by remote ID, as
+     * entries of missing resources are left out of the locations.
+     *
+     * @param array<int, RemoteResourceLocation> $locations
+     *
+     * @return array<int, array<string, mixed>|null>
+     */
+    private static function submittedLoadedValues(mixed $payload, array $locations): array
+    {
+        $loadedByRemoteId = [];
+        foreach (RemoteMediaCollectionEntryExtractor::fromPayloadLenient($payload) as $entry) {
+            $loadedByRemoteId[$entry['remoteId']] ??= $entry['loaded'];
+        }
+
+        return array_map(
+            static fn (RemoteResourceLocation $location): ?array => $loadedByRemoteId[$location->getRemoteResource()->getRemoteId()] ?? null,
+            $locations,
+        );
     }
 
     /**

@@ -650,6 +650,55 @@ final class RemoteMediaTypeTest extends TypeTestCase
         self::assertSame([0, 1, 2], array_map(static fn (RemoteResourceLocation $location): ?int => $location->getPosition(), $locations));
     }
 
+    public function testBuildViewOfValidFieldInRejectedFormKeepsTheLoadedValuesFromThePayload(): void
+    {
+        $location = $this->storeLocation(6, 'upload|image|6.jpg', position: 0);
+        $location->getRemoteResource()->setAltText('Stored alt');
+        $this->addResource('upload|image|7.jpg');
+        $this->addResource('upload|image|8.jpg');
+
+        $parentForm = $this->factory->createBuilder(FormType::class, ['image' => new ArrayCollection([$location]), 'gallery' => new ArrayCollection()])
+            ->add('image', RemoteMediaType::class, ['upload_limit' => 1])
+            ->add('gallery', RemoteMediaType::class, ['upload_limit' => 1])
+            ->getForm();
+
+        $loaded = ['altText' => 'Stored alt', 'caption' => '', 'tags' => []];
+
+        // The image field is valid, the gallery field is over its limit.
+        $parentForm->submit([
+            'image' => [
+                'collectionPayload' => json_encode([
+                    ['locationId' => 6, 'remoteId' => 'upload|image|6.jpg', 'altText' => 'Edited alt', 'loaded' => $loaded],
+                ]),
+            ],
+            'gallery' => [
+                'collectionPayload' => json_encode([
+                    ['remoteId' => 'upload|image|7.jpg'],
+                    ['remoteId' => 'upload|image|8.jpg'],
+                ]),
+            ],
+        ]);
+
+        self::assertFalse($parentForm->isValid());
+        self::assertTrue($parentForm->get('image')->isSynchronized());
+
+        $view = $parentForm->createView()->children['image'];
+
+        self::assertSame('Edited alt', $view->vars['remote_media_locations'][0]->getRemoteResource()->getAltText());
+        // The widget sends the edited alt text against the stored one again, so the next save still writes it.
+        self::assertSame(
+            [['altText' => 'Stored alt', 'caption' => null, 'tags' => []]],
+            $view->vars['remote_media_loaded_values'],
+        );
+    }
+
+    public function testBuildViewBeforeSubmissionHasNoLoadedValues(): void
+    {
+        $form = $this->factory->create(RemoteMediaType::class, new ArrayCollection($this->storeGallery()));
+
+        self::assertSame([], $form->createView()->vars['remote_media_loaded_values']);
+    }
+
     public function testBuildViewAfterRejectedSubmissionSkipsWhatCannotBeShown(): void
     {
         $locations = $this->storeGallery();
