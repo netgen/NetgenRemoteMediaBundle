@@ -47,6 +47,7 @@
 * English labels of the interface use sentence case
 * Norwegian translations cover the whole interface
 * the Croatian label of the root folder is `(korijenska mapa)`
+* the Cloudinary provider reads the alt text of a resource loaded from the API (eg. `loadFromRemote()`) from `alt` in the context, as it's written, it was always `null` (`alt_text` is still read for older resources)
 
 ### Removed
 

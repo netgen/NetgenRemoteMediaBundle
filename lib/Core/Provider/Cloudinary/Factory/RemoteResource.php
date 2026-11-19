@@ -113,13 +113,16 @@ final class RemoteResource implements RemoteResourceFactoryInterface
         return Folder::fromPath($data['asset_folder']);
     }
 
+    /**
+     * The API returns the context under "custom", search results have it at the top level.
+     * The alt text is stored as "alt", "alt_text" is read for resources from older versions.
+     */
     private function resolveAltText(array $data): ?string
     {
-        if (($data['context']['custom']['alt_text'] ?? null) !== null) {
-            return $data['context']['custom']['alt_text'];
-        }
-
-        return $data['context']['alt'] ?? null;
+        return $data['context']['custom']['alt']
+            ?? $data['context']['custom']['alt_text']
+            ?? $data['context']['alt']
+            ?? null;
     }
 
     private function resolveCaption(array $data): ?string

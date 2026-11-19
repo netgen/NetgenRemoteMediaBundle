@@ -154,6 +154,40 @@ final class RemoteResourceTest extends AbstractTestCase
                 ),
                 CloudinaryProvider::FOLDER_MODE_FIXED,
             ],
+            'alt text from the API, as written by updateOnRemote()' => [
+                [
+                    'public_id' => 'c87hg9xfxrd4itiim3t0',
+                    'version' => 1371995958,
+                    'format' => 'jpg',
+                    'resource_type' => 'image',
+                    'bytes' => 120253,
+                    'type' => 'upload',
+                    'secure_url' => 'https://res.cloudinary.com/testcloud/image/upload/v1371995958/c87hg9xfxrd4itiim3t0.jpg',
+                    'etag' => 'e522f43cf89aa0afd03387c37e2b6e12',
+                    'context' => [
+                        'custom' => [
+                            'alt' => 'alt text',
+                            'caption' => 'caption text',
+                        ],
+                    ],
+                ],
+                new RemoteResource(
+                    remoteId: 'upload|image|c87hg9xfxrd4itiim3t0',
+                    type: 'image',
+                    url: 'https://res.cloudinary.com/testcloud/image/upload/c87hg9xfxrd4itiim3t0',
+                    md5: 'e522f43cf89aa0afd03387c37e2b6e12',
+                    name: 'c87hg9xfxrd4itiim3t0',
+                    originalFilename: 'c87hg9xfxrd4itiim3t0.jpg',
+                    version: '1371995958',
+                    size: 120253,
+                    altText: 'alt text',
+                    caption: 'caption text',
+                    metadata: [
+                        'format' => 'jpg',
+                    ],
+                ),
+                CloudinaryProvider::FOLDER_MODE_FIXED,
+            ],
             [
                 [
                     'public_id' => 'other/c87hg9xfxrd4itiim3t0',
