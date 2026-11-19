@@ -179,7 +179,7 @@ final class RemoteMediaType extends AbstractType
             'hide_filename' => $options['hide_filename'] ?? false,
             'upload_limit' => $options['upload_limit'],
             'location_source' => $locationSource,
-            'remote_media_locations' => $this->resolveViewLocations($form, $locationSource),
+            ...$this->resolveViewLocations($form, $locationSource),
         ]);
     }
 
@@ -235,7 +235,15 @@ final class RemoteMediaType extends AbstractType
     }
 
     /**
-     * @return array<int, RemoteResourceLocation>
+     * Returns the `remote_media_locations` view variable and, next to it,
+     * `remote_media_loaded_values`: the cloud values the widget loaded for
+     * each location, before the editor changed them. They are only known
+     * for a rejected submission, otherwise they are the stored ones.
+     *
+     * @return array{
+     *     remote_media_locations: array<int, RemoteResourceLocation>,
+     *     remote_media_loaded_values: array<int, array<string, mixed>|null>,
+     * }
      */
     private function resolveViewLocations(FormInterface $form, string $locationSource): array
     {
@@ -251,18 +259,25 @@ final class RemoteMediaType extends AbstractType
 
         $data = $form->getData();
 
-        return is_iterable($data) ? RemoteMediaCollectionTransformer::sortByPosition($data) : [];
+        return [
+            'remote_media_locations' => is_iterable($data) ? RemoteMediaCollectionTransformer::sortByPosition($data) : [],
+            'remote_media_loaded_values' => [],
+        ];
     }
 
     /**
      * Builds locations out of a submitted payload for display only. They are
      * detached copies, so nothing of a rejected submission can get stored.
      *
-     * @return array<int, RemoteResourceLocation>
+     * @return array{
+     *     remote_media_locations: array<int, RemoteResourceLocation>,
+     *     remote_media_loaded_values: array<int, array<string, mixed>|null>,
+     * }
      */
     private function buildSubmittedLocations(mixed $payload, string $locationSource): array
     {
         $locations = [];
+        $loadedValues = [];
         foreach (RemoteMediaCollectionEntryExtractor::fromPayloadLenient($payload, $locationSource) as $entry) {
             $resource = $this->loadResource($entry['remoteId']);
             if (!$resource instanceof RemoteResource) {
@@ -285,9 +300,13 @@ final class RemoteMediaType extends AbstractType
                 captionOverride: $entry['captionOverride'],
                 position: count($locations),
             );
+            $loadedValues[] = $entry['loaded'];
         }
 
-        return $locations;
+        return [
+            'remote_media_locations' => $locations,
+            'remote_media_loaded_values' => $loadedValues,
+        ];
     }
 
     /**

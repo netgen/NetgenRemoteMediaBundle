@@ -139,6 +139,7 @@ final class RemoteMediaCollectionEntryExtractor
         $normalized['tags'] = self::tags($entry['tags'] ?? null);
         $normalized['cropSettings'] = self::cropSettings($entry['cropSettings'] ?? null);
         $normalized['source'] = self::stringField($entry, 'source') ?? $defaultSource;
+        $normalized['loaded'] = self::loaded($entry['loaded'] ?? null);
 
         return $normalized;
     }
@@ -199,6 +200,32 @@ final class RemoteMediaCollectionEntryExtractor
         }
 
         return $value;
+    }
+
+    /**
+     * The cloud values the widget loaded, before the editor changed anything.
+     *
+     * @return array{altText: string|null, caption: string|null, tags: array<int, string>}|null Null if the entry has none
+     */
+    private static function loaded(mixed $value): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_array($value) || ($value !== [] && array_is_list($value))) {
+            throw self::unexpectedType('loaded', 'an object', $value);
+        }
+
+        try {
+            return [
+                'altText' => self::stringField($value, 'altText'),
+                'caption' => self::stringField($value, 'caption'),
+                'tags' => self::tags($value['tags'] ?? null),
+            ];
+        } catch (TransformationFailedException) {
+            throw self::unexpectedType('loaded', 'an object with the altText, caption and tags fields', $value);
+        }
     }
 
     /**

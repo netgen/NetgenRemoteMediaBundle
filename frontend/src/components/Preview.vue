@@ -364,6 +364,7 @@ export default {
           captionOverride: resource.captionOverride || "",
           watermarkText: resource.watermarkText || "",
           tags: resource.tags || [],
+          loaded: resource.loaded,
           cropSettings: JSON.stringify(resource.variations || {}),
           source: resource.source || this.config.locationSource || "",
         }))

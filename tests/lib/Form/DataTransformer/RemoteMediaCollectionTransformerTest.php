@@ -196,6 +196,7 @@ final class RemoteMediaCollectionTransformerTest extends AbstractTestCase
                 'tags' => [],
                 'cropSettings' => '{}',
                 'source' => 'form_gallery',
+                'loaded' => null,
             ])
             ->willReturn(self::createLocation('remote-1'));
 

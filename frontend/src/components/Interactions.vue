@@ -267,6 +267,10 @@ export default {
     },
 
     normalizeResource(item) {
+      const alternateText = item.altText || item.alt_text || item.alternateText || item.alternate_text || "";
+      const caption = item.caption || "";
+      const tags = item.tags || [];
+
       return {
         uid: item.uid || nextResourceUid(),
         id: item.remoteId || item.remote_id || item.id || "",
@@ -277,12 +281,15 @@ export default {
         url: item.url || "",
         previewUrl: item.previewUrl || item.preview_url || "",
         browseUrl: item.browseUrl || item.browse_url || item.previewUrl || item.preview_url || item.url || "",
-        alternateText: item.altText || item.alt_text || item.alternateText || item.alternate_text || "",
-        caption: item.caption || "",
+        alternateText,
+        caption,
         watermarkText: item.watermarkText || "",
         altTextOverride: item.altTextOverride || "",
         captionOverride: item.captionOverride || "",
-        tags: item.tags || [],
+        tags,
+        // The cloud values as loaded, kept through later edits. The server writes
+        // only the values which differ from them, see RemoteMediaTransformer.
+        loaded: item.loaded || { altText: alternateText, caption, tags: [...tags] },
         size: item.size || 0,
         variations: item.variations || {},
         height: item.height || 0,

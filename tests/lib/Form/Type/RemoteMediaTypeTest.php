@@ -465,6 +465,87 @@ final class RemoteMediaTypeTest extends TypeTestCase
         self::assertTrue($form->getData()->isEmpty());
     }
 
+    public function testSameResourceInTwoFieldsKeepsTheCloudValuesChangedInOne(): void
+    {
+        $resource = $this->addResource('upload|image|shared.jpg');
+        $resource->setCaption('Stored caption');
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('updateOnRemote')
+            ->with($resource);
+
+        $parentForm = $this->factory->createBuilder()
+            ->add('image', RemoteMediaType::class, ['upload_limit' => 1])
+            ->add('gallery', RemoteMediaType::class)
+            ->getForm();
+
+        $loaded = ['altText' => '', 'caption' => 'Stored caption', 'tags' => []];
+
+        // The alt text is changed in the first field only, the second one posts the values it loaded.
+        $parentForm->submit([
+            'image' => [
+                'collectionPayload' => json_encode([
+                    ['remoteId' => 'upload|image|shared.jpg', 'altText' => 'New alt', 'caption' => 'Stored caption', 'loaded' => $loaded],
+                ]),
+            ],
+            'gallery' => [
+                'collectionPayload' => json_encode([
+                    ['remoteId' => 'upload|image|shared.jpg', 'altText' => '', 'caption' => 'Stored caption', 'loaded' => $loaded],
+                ]),
+            ],
+        ]);
+
+        self::assertTrue($parentForm->isValid());
+        self::assertSame('New alt', $resource->getAltText());
+        self::assertSame('Stored caption', $resource->getCaption());
+    }
+
+    public function testSameResourceInTwoFieldsKeepsTheCloudValuesChangedInEach(): void
+    {
+        $resource = $this->addResource('upload|image|shared.jpg');
+
+        $parentForm = $this->factory->createBuilder()
+            ->add('image', RemoteMediaType::class, ['upload_limit' => 1])
+            ->add('gallery', RemoteMediaType::class)
+            ->getForm();
+
+        $parentForm->submit([
+            'image' => [
+                'collectionPayload' => json_encode([
+                    ['remoteId' => 'upload|image|shared.jpg', 'altText' => 'New alt', 'loaded' => []],
+                ]),
+            ],
+            'gallery' => [
+                'collectionPayload' => json_encode([
+                    ['remoteId' => 'upload|image|shared.jpg', 'caption' => 'New caption', 'tags' => ['new'], 'loaded' => []],
+                ]),
+            ],
+        ]);
+
+        self::assertTrue($parentForm->isValid());
+        self::assertSame('New alt', $resource->getAltText());
+        self::assertSame('New caption', $resource->getCaption());
+        self::assertSame(['new'], $resource->getTags());
+    }
+
+    public function testEntryWithoutLoadedValuesWritesItsCloudValues(): void
+    {
+        $resource = $this->addResource('upload|image|shared.jpg');
+        $resource->setAltText('Stored alt');
+
+        $form = $this->factory->create(RemoteMediaType::class);
+
+        $form->submit([
+            'collectionPayload' => json_encode([
+                ['remoteId' => 'upload|image|shared.jpg', 'altText' => ''],
+            ]),
+        ]);
+
+        self::assertTrue($form->isValid());
+        self::assertNull($resource->getAltText());
+    }
+
     #[DataProvider('limitExceededMessageDataProvider')]
     public function testSubmitOverLimitIsInvalidWithTranslatedMessage(string $locale, string $expectedMessage): void
     {
@@ -522,6 +603,7 @@ final class RemoteMediaTypeTest extends TypeTestCase
                     'tags' => ['edited'],
                     'altTextOverride' => 'Edited local alt',
                     'captionOverride' => 'Edited local caption',
+                    'loaded' => ['altText' => 'Stored alt'],
                 ],
                 ['locationId' => 7, 'remoteId' => 'upload|image|7.jpg'],
             ]),
@@ -546,6 +628,12 @@ final class RemoteMediaTypeTest extends TypeTestCase
         self::assertSame(['edited'], $viewLocations[2]->getRemoteResource()->getTags());
         self::assertSame('Edited local alt', $viewLocations[2]->getAltTextOverride());
         self::assertSame('Edited local caption', $viewLocations[2]->getCaptionOverride());
+
+        // The values the widget loaded go back with it, so a resubmit still sees the edits as changes.
+        self::assertSame(
+            [null, null, ['altText' => 'Stored alt', 'caption' => null, 'tags' => []], null],
+            $view->vars['remote_media_loaded_values'],
+        );
 
         // The same payload is rendered into the hidden input.
         self::assertSame(

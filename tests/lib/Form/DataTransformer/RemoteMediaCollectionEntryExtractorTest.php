@@ -32,6 +32,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                 'tags' => ['one', '', 'two'],
                 'cropSettings' => '{"hero":{"x":1,"y":2,"w":300,"h":200}}',
                 'source' => 'own_source',
+                'loaded' => ['altText' => 'Old alt', 'caption' => '', 'tags' => ['one', '']],
             ],
             [
                 'locationId' => '',
@@ -45,6 +46,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                 'altText' => null,
                 'tags' => null,
                 'cropSettings' => null,
+                'loaded' => [],
             ],
         ]);
 
@@ -62,6 +64,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                     'tags' => ['one', 'two'],
                     'cropSettings' => '{"hero":{"x":1,"y":2,"w":300,"h":200}}',
                     'source' => 'own_source',
+                    'loaded' => ['altText' => 'Old alt', 'caption' => null, 'tags' => ['one']],
                 ],
                 [
                     'locationId' => null,
@@ -75,6 +78,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                     'tags' => [],
                     'cropSettings' => '{}',
                     'source' => 'form_gallery',
+                    'loaded' => null,
                 ],
                 [
                     'locationId' => 15,
@@ -88,6 +92,7 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
                     'tags' => [],
                     'cropSettings' => '{}',
                     'source' => 'form_gallery',
+                    'loaded' => ['altText' => null, 'caption' => null, 'tags' => []],
                 ],
             ],
             RemoteMediaCollectionEntryExtractor::fromPayload($payload, 'form_gallery'),
@@ -236,6 +241,14 @@ final class RemoteMediaCollectionEntryExtractorTest extends TestCase
             'a tag is a list' => [
                 ['remoteId' => 'r1', 'tags' => ['one', ['two']]],
                 'The "tags" field of a remote media collection entry must be a list of strings, array given',
+            ],
+            'loaded values are a list' => [
+                ['remoteId' => 'r1', 'loaded' => ['alt']],
+                'The "loaded" field of a remote media collection entry must be an object, array given',
+            ],
+            'loaded alt text is a list' => [
+                ['remoteId' => 'r1', 'loaded' => ['altText' => ['alt']]],
+                'The "loaded" field of a remote media collection entry must be an object with the altText, caption and tags fields, array given',
             ],
             'crop settings are an object' => [
                 ['remoteId' => 'r1', 'cropSettings' => ['hero' => ['x' => 1, 'y' => 2, 'w' => 3, 'h' => 4]]],

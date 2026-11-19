@@ -206,8 +206,9 @@ The widget submits the whole selection as one hidden JSON field, `collectionPayl
 ```
 
 * An entry without `locationId` creates a new location. An entry with the `locationId` of a location from the field's current value updates that location. Any other `locationId` is ignored and a new location is created.
-* Entry fields are `locationId`, `remoteId`, `type`, `altText`, `caption`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags` (a list of strings), `cropSettings` (a JSON string) and `source`. A field with the wrong type makes the form invalid.
+* Entry fields are `locationId`, `remoteId`, `type`, `altText`, `caption`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags` (a list of strings), `cropSettings` (a JSON string), `source` and `loaded` (an object). A field with the wrong type makes the form invalid.
 * `altText`, `caption` and `tags` are the values of the resource in the cloud. If they differ from the stored ones, the resource is updated in the cloud. An empty or missing `altText`, `caption`, `altTextOverride` or `captionOverride` is stored as `null`, so code which submits the field must send the current `altText`, `caption` and `tags` to keep them. Missing `tags` are read as an empty list.
+* `loaded` holds the `altText`, `caption` and `tags` the widget loaded, before the editor changed them. If it's sent, only the values which differ from it are written, the others keep the current value of the resource. That's needed when the same resource is in several fields of one form: each field submits the values, and a field the editor didn't touch would otherwise undo a change made in another one. The widget always sends it.
 * If the same `locationId` is sent twice, only the first entry is used.
 * If `collectionPayload` is not submitted at all (eg. the widget didn't load), the field keeps its current value. Only an empty list, `[]`, clears the field.
 * The form theme renders `collectionPayload` with the current value, so a form submitted without the widget doesn't change the field.

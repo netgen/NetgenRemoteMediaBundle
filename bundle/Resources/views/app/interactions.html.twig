@@ -17,6 +17,7 @@
 {% set upload_limit_for_vue = upload_limit is same as(null) ? 0 : upload_limit %}
 {% set location_source = location_source|default(null) %}
 {% set locations = locations|default([]) %}
+{% set loaded_values = loaded_values|default([]) %}
 
 {% set config = {
     'paths': {
@@ -99,7 +100,7 @@
         'height': location.remoteResource.metadata.height is defined ? location.remoteResource.metadata.height : 0,
         'width': location.remoteResource.metadata.width is defined ? location.remoteResource.metadata.width : 0,
         'source': location.source ? location.source : location_source,
-    }]) %}
+    }|merge((loaded_values[loop.index0] ?? null) ? {'loaded': loaded_values[loop.index0]} : {})]) %}
 {% endfor %}
 
 {% set first_resource = selected_resources|length > 0 ? selected_resources|first : null %}
