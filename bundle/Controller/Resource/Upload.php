@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Controller\Resource;
 
-use InvalidArgumentException;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Upload\FileStruct;
@@ -28,6 +27,7 @@ use function in_array;
 use function is_array;
 use function is_file;
 use function is_readable;
+use function is_string;
 use function preg_match;
 use function strpos;
 use function strrpos;
@@ -56,7 +56,7 @@ final class Upload extends AbstractController
     public function __invoke(Request $request): Response
     {
         if (!$request->files->has('file')) {
-            throw new InvalidArgumentException(
+            return $this->createErrorResponse(
                 $this->translator->trans(
                     'ngrm.edit.vue.upload.error.missing_file',
                     [],
@@ -68,14 +68,15 @@ final class Upload extends AbstractController
         $uploadContext = $request->request->all()['upload_context'] ?? [];
         $uploadContext = is_array($uploadContext) ? $uploadContext : [];
 
-        $folder = $request->request->get('folder') && $request->request->get('folder') !== 'null'
-            ? Folder::fromPath($request->request->get('folder'))
+        $folderPath = $request->request->get('folder');
+        $folder = is_string($folderPath) && !in_array($folderPath, ['', 'null', 'undefined', '(root)'], true)
+            ? Folder::fromPath($folderPath)
             : null;
 
         $visibility = $request->request->get('visibility', RemoteResource::VISIBILITY_PUBLIC);
 
         if (!in_array($visibility, RemoteResource::SUPPORTED_VISIBILITIES, true)) {
-            throw new InvalidArgumentException(
+            return $this->createErrorResponse(
                 $this->translator->trans(
                     'ngrm.edit.vue.upload.error.invalid_visibility',
                     [
@@ -91,7 +92,7 @@ final class Upload extends AbstractController
         $file = $request->files->get('file');
 
         if (!$file->isFile()) {
-            throw new InvalidArgumentException(
+            return $this->createErrorResponse(
                 $this->translator->trans(
                     'ngrm.edit.vue.upload.error.file_upload_failed',
                     [],
@@ -128,6 +129,15 @@ final class Upload extends AbstractController
         }
 
         return new JsonResponse($this->formatResource($resource), $httpCode);
+    }
+
+    /**
+     * The message is returned as JSON, so the interface can show it also when
+     * the kernel is not in debug mode.
+     */
+    private function createErrorResponse(string $message): JsonResponse
+    {
+        return new JsonResponse(['detail' => $message], Response::HTTP_BAD_REQUEST);
     }
 
     private function isEncryptedPdf(UploadedFile $file): bool

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Extension;
 
 use Netgen\Bundle\RemoteMediaBundle\Templating\Twig\Runtime\RemoteMediaRuntime;
+use Netgen\Bundle\RemoteMediaBundle\Translation\VueTranslations;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -100,6 +101,10 @@ final class RemoteMediaExtension extends AbstractExtension
             new TwigFunction(
                 'ngrm_folder_scoped_uploads',
                 [RemoteMediaRuntime::class, 'hasFolderScopedUploads'],
+            ),
+            new TwigFunction(
+                'ngrm_vue_translations',
+                [VueTranslations::class, 'translate'],
             ),
         ];
     }

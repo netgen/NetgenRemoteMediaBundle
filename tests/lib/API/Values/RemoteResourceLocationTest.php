@@ -223,6 +223,7 @@ final class RemoteResourceLocationTest extends AbstractTestCase
             'My new watermark',
             56453,
             'My new alt text',
+            position: 3,
         );
 
         $expected = new RemoteResourceLocation(
@@ -233,9 +234,28 @@ final class RemoteResourceLocationTest extends AbstractTestCase
             ],
             'My new watermark',
             altTextOverride: 'My new alt text',
+            position: 3,
         );
 
         self::assertRemoteResourceLocationSame($expected, $original->refresh($new));
+    }
+
+    public function testPosition(): void
+    {
+        $resource = new RemoteResource(
+            remoteId: 'test_remote_id',
+            type: 'raw',
+            url: 'https://cloudinary.com/test/upload/raw/test_remote_id',
+            md5: 'e522f43cf89aa0afd03387c37e2b6e29',
+        );
+
+        $location = new RemoteResourceLocation($resource);
+
+        self::assertNull($location->getPosition());
+        self::assertSame($location, $location->setPosition(2));
+        self::assertSame(2, $location->getPosition());
+        self::assertNull($location->setPosition(null)->getPosition());
+        self::assertSame(0, (new RemoteResourceLocation($resource, position: 0))->getPosition());
     }
 
     public function testOverridesTakePrecedenceOverResourceValues(): void

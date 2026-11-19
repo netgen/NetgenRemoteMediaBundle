@@ -207,6 +207,11 @@ abstract class AbstractTestCase extends TestCase
             $expected->getCaptionOverride(),
             $actual->getCaptionOverride(),
         );
+
+        self::assertSame(
+            $expected->getPosition(),
+            $actual->getPosition(),
+        );
     }
 
     public static function assertRemoteResourceVariationSame(RemoteResourceVariation $expected, RemoteResourceVariation $actual): void

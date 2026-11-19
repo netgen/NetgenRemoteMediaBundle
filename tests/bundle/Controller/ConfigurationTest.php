@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller;
 
 use Netgen\Bundle\RemoteMediaBundle\Controller\Configuration as ConfigurationController;
+use Netgen\Bundle\RemoteMediaBundle\Translation\VueTranslations;
 use Netgen\RemoteMedia\Core\Provider\Cloudinary\CloudinaryProvider;
 use Netgen\RemoteMedia\Core\Resolver\Variation as VariationResolver;
 use Netgen\RemoteMedia\Core\Transformation\Registry;
@@ -18,6 +19,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use function json_decode;
 
 #[CoversClass(ConfigurationController::class)]
+#[CoversClass(VueTranslations::class)]
 final class ConfigurationTest extends TestCase
 {
     #[DataProvider('folderScopedUploadsDataProvider')]
@@ -46,6 +48,13 @@ final class ConfigurationTest extends TestCase
         self::assertArrayHasKey('upload_error_existing_resource_in_folder', $data['translations']);
     }
 
+    public function testTranslationsUseTheSharedList(): void
+    {
+        $data = $this->invoke(CloudinaryProvider::FOLDER_MODE_FIXED, false);
+
+        self::assertSame(VueTranslations::MESSAGES, $data['translations']);
+    }
+
     private function invoke(string $folderMode, bool $useAssetFolderAsPublicIdPrefix): array
     {
         $translatorMock = $this->createMock(TranslatorInterface::class);
@@ -53,7 +62,7 @@ final class ConfigurationTest extends TestCase
 
         $controller = new ConfigurationController(
             $this->createMock(RouterInterface::class),
-            $translatorMock,
+            new VueTranslations($translatorMock),
             new VariationResolver(new Registry(), null, []),
             $folderMode,
             $useAssetFolderAsPublicIdPrefix,

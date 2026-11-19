@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\RemoteMediaBundle\Tests\Controller\Resource;
 
-use InvalidArgumentException;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\AbstractController;
 use Netgen\Bundle\RemoteMediaBundle\Controller\Resource\Upload as UploadController;
 use Netgen\RemoteMedia\API\Factory\FileHash as FileHashFactoryInterface;
@@ -19,6 +18,7 @@ use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\API\Values\RemoteResourceVariation;
 use Netgen\RemoteMedia\Exception\RemoteResourceExistsException;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 use function file_put_contents;
+use function json_decode;
 use function json_encode;
 use function sys_get_temp_dir;
 use function tempnam;
@@ -627,10 +628,104 @@ final class UploadTest extends TestCase
             )
             ->willReturn('Invalid visibility option "test", supported options: "public", "protected".');
 
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Invalid visibility option "test", supported options: "public", "protected".');
+        $response = $this->controller->__invoke($request);
 
-        $this->controller->__invoke($request);
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame(
+            ['detail' => 'Invalid visibility option "test", supported options: "public", "protected".'],
+            json_decode((string) $response->getContent(), true),
+        );
+    }
+
+    #[DataProvider('rootFolderSentinelDataProvider')]
+    public function testUploadNormalizesRootFolderSentinels(string $folder): void
+    {
+        $request = new Request();
+        $request->request->add([
+            'folder' => $folder,
+        ]);
+
+        $uploadedFileMock = $this->createMock(UploadedFile::class);
+
+        $uploadedFileMock
+            ->expects(self::once())
+            ->method('isFile')
+            ->willReturn(true);
+
+        $uploadedFileMock
+            ->expects(self::atLeastOnce())
+            ->method('getRealPath')
+            ->willReturn('/var/www/project/media/files/sample.pdf');
+
+        $uploadedFileMock
+            ->expects(self::exactly(2))
+            ->method('getClientOriginalName')
+            ->willReturn('sample');
+
+        $uploadedFileMock
+            ->expects(self::atLeastOnce())
+            ->method('getClientOriginalExtension')
+            ->willReturn('pdf');
+
+        $request->files->add([
+            'file' => $uploadedFileMock,
+        ]);
+
+        $this->fileHashFactoryMock
+            ->expects(self::once())
+            ->method('createHash')
+            ->with('/var/www/project/media/files/sample.pdf')
+            ->willReturn('a522f23sf81aa0afd03387c37e2b6eax');
+
+        $fileStruct = FileStruct::fromUploadedFile($uploadedFileMock);
+
+        $resourceStruct = new ResourceStruct(
+            $fileStruct,
+            'auto',
+            null,
+            'public',
+            $request->request->get('filename'),
+        );
+
+        $resource = new RemoteResource(
+            remoteId: 'upload|document|sample.pdf',
+            type: 'document',
+            url: 'https://cloudinary.com/test/upload/document/sample.pdf',
+            md5: 'a522f23sf81aa0afd03387c37e2b6eax',
+            name: 'sample.pdf',
+            size: 123,
+        );
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('upload')
+            ->with($resourceStruct)
+            ->willReturn($resource);
+
+        $response = $this->controller->__invoke($request);
+
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        self::assertSame(
+            json_encode([
+                'remoteId' => 'upload|document|sample.pdf',
+                'folder' => null,
+                'tags' => [],
+                'type' => 'document',
+                'visibility' => 'public',
+                'size' => 123,
+                'width' => null,
+                'height' => null,
+                'filename' => 'sample.pdf',
+                'originalFilename' => null,
+                'format' => null,
+                'browseUrl' => '',
+                'previewUrl' => '',
+                'url' => 'https://cloudinary.com/test/upload/document/sample.pdf',
+                'altText' => null,
+                'caption' => null,
+            ]),
+            $response->getContent(),
+        );
     }
 
     public function testUploadExistingFile(): void
@@ -786,10 +881,13 @@ final class UploadTest extends TestCase
             )
             ->willReturn('File upload failed; the file might be too big or corrupted. Check your server file upload size settings.');
 
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('File upload failed; the file might be too big or corrupted. Check your server file upload size settings.');
-
         $response = $this->controller->__invoke($request);
+
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame(
+            ['detail' => 'File upload failed; the file might be too big or corrupted. Check your server file upload size settings.'],
+            json_decode((string) $response->getContent(), true),
+        );
     }
 
     public function testUploadExistingFileName(): void
@@ -933,9 +1031,22 @@ final class UploadTest extends TestCase
             )
             ->willReturn('Missing file to upload');
 
-        self::expectException(InvalidArgumentException::class);
-        self::expectExceptionMessage('Missing file to upload');
+        $response = $this->controller->__invoke($request);
 
-        $this->controller->__invoke($request);
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertSame(
+            ['detail' => 'Missing file to upload'],
+            json_decode((string) $response->getContent(), true),
+        );
+    }
+
+    public static function rootFolderSentinelDataProvider(): iterable
+    {
+        return [
+            'empty' => [''],
+            'null string' => ['null'],
+            'undefined string' => ['undefined'],
+            'root sentinel' => ['(root)'],
+        ];
     }
 }

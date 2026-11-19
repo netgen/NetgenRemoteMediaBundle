@@ -9,6 +9,7 @@ use Netgen\Bundle\RemoteMediaBundle\Controller\Location\Update as UpdateControll
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -88,6 +89,52 @@ final class UpdateTest extends TestCase
             Response::HTTP_OK,
             $response->getStatusCode(),
         );
+    }
+
+    public function testResourceMissingOnRemoteIsKept(): void
+    {
+        $request = new Request(
+            content: json_encode([
+                'id' => '1',
+                'alternateText' => 'New alt text',
+                'caption' => 'caption',
+                'tags' => [],
+                'watermarkText' => 'Watermark',
+            ]),
+        );
+
+        $location = new RemoteResourceLocation($this->getRemoteResource(), id: 1);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('loadLocation')
+            ->with(1)
+            ->willReturn($location);
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('updateOnRemote')
+            ->willThrowException(new RemoteResourceNotFoundException('1'));
+
+        $this->providerMock
+            ->expects(self::never())
+            ->method('remove');
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('store')
+            ->with($location->getRemoteResource());
+
+        $this->providerMock
+            ->expects(self::once())
+            ->method('storeLocation')
+            ->with($location);
+
+        $response = $this->controller->__invoke($location->getId(), $request);
+
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        self::assertSame('New alt text', $location->getRemoteResource()->getAltText());
+        self::assertSame('Watermark', $location->getWatermarkText());
     }
 
     private function getRemoteResource(): RemoteResource

@@ -4,4 +4,5 @@ services:
     public: false
     arguments:
       - '@netgen_remote_media.provider'
+      - '@?logger'
 

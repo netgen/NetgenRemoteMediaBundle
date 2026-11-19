@@ -4,26 +4,59 @@ declare(strict_types=1);
 
 namespace Netgen\RemoteMedia\Form\Type;
 
+use JsonException;
 use Netgen\RemoteMedia\API\ProviderInterface;
 use Netgen\RemoteMedia\API\Values\Folder;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
+use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
+use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
+use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaCollectionEntryExtractor;
+use Netgen\RemoteMedia\Form\DataTransformer\RemoteMediaCollectionTransformer;
+use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use function array_intersect;
+use function array_map;
 use function array_replace;
+use function count;
+use function in_array;
+use function is_array;
+use function is_iterable;
 use function is_string;
+use function json_decode;
+use function json_encode;
 
+use const JSON_INVALID_UTF8_SUBSTITUTE;
+use const JSON_THROW_ON_ERROR;
+
+/**
+ * Remote media form type.
+ *
+ * The model data is always an ordered Doctrine ArrayCollection of
+ * RemoteResourceLocation objects (possibly empty), whatever the `upload_limit`
+ * option is. The limit only decides how many resources the widget lets the
+ * editor select, and how many a submission may contain.
+ *
+ * The whole selection is submitted as one JSON string, `collectionPayload`.
+ */
 final class RemoteMediaType extends AbstractType
 {
+    /**
+     * @param DataTransformerInterface<mixed, mixed> $transformer Transformer of a single RemoteResourceLocation
+     */
     public function __construct(
         private DataTransformerInterface $transformer,
         private ProviderInterface $provider,
+        private RemoteResourceService $service,
     ) {}
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -41,40 +74,67 @@ final class RemoteMediaType extends AbstractType
             'location_source' => null,
             'disable_upload' => false,
             'hide_filename' => false,
+            'upload_limit' => null,
+            // The errors (eg. over the limit) belong to this field, not to the
+            // whole form, so it's clear which field they are about.
+            'error_bubbling' => false,
         ]);
+
+        $resolver->setAllowedTypes('upload_limit', ['int', 'null']);
+        $resolver->setAllowedValues('upload_limit', static fn (?int $value): bool => $value === null || $value >= 1);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('locationId', HiddenType::class, ['required' => false])
-            ->add('remoteId', HiddenType::class)
-            ->add('type', HiddenType::class)
-            ->add('altText', HiddenType::class, ['required' => false])
-            ->add('caption', HiddenType::class, ['required' => false])
-            ->add('altTextOverride', HiddenType::class, ['required' => false])
-            ->add('captionOverride', HiddenType::class, ['required' => false])
-            ->add('watermarkText', HiddenType::class, ['required' => false])
-            ->add(
-                'tags',
-                CollectionType::class,
-                [
-                    'required' => false,
-                    'entry_type' => HiddenType::class,
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                ],
-            )
-            ->add('cropSettings', HiddenType::class)
-            ->add(
-                'source',
-                HiddenType::class,
-                [
-                    'data' => $options['location_source'] ?? 'form_' . $builder->getName(),
-                ],
-            );
+        $locationSource = self::resolveLocationSource($options, $builder->getName());
 
-        $builder->addModelTransformer($this->transformer);
+        $builder->add('collectionPayload', HiddenType::class, [
+            'required' => false,
+            // The payload of an empty field is "[]", which is not empty for
+            // Symfony. Without this, the field and every form containing it
+            // would never be empty (eg. an embedded form would always get an
+            // object created out of its empty_data).
+            'is_empty_callback' => static fn (mixed $payload): bool => self::isEmptyPayload($payload),
+        ]);
+
+        $builder->addModelTransformer(
+            new RemoteMediaCollectionTransformer($this->transformer, $options['upload_limit'], $locationSource),
+        );
+
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, static function (FormEvent $event) use ($locationSource): void {
+            $data = $event->getData() ?? [];
+            if (!is_array($data)) {
+                return;
+            }
+
+            $form = $event->getForm();
+            $payload = $data['collectionPayload'] ?? null;
+
+            if ($payload === null || $payload === '') {
+                // Nothing was submitted for the field (the widget did not load,
+                // or the client does not know about it). That must not empty
+                // the field, so the current value is submitted in its place.
+                // Only an explicit "[]" clears the field.
+                $payload = $form->getViewData()['collectionPayload'] ?? '[]';
+            } else {
+                try {
+                    $payload = json_encode(
+                        self::dropForeignLocationIds(
+                            RemoteMediaCollectionEntryExtractor::fromPayload($payload, $locationSource),
+                            $form->getData(),
+                        ),
+                        JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE,
+                    );
+                } catch (TransformationFailedException) {
+                    // Left as submitted: the model transformer rejects it,
+                    // which marks the form as invalid.
+                }
+            }
+
+            $data['collectionPayload'] = $payload;
+
+            $event->setData($data);
+        });
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options): void
@@ -100,6 +160,8 @@ final class RemoteMediaType extends AbstractType
             }
         }
 
+        $locationSource = self::resolveLocationSource($options, $form->getName());
+
         $view->vars = array_replace($view->vars, [
             'variation_group' => $options['variation_group'] ?? 'default',
             'allowed_variations' => $options['allowed_variations'] ?? [],
@@ -115,6 +177,174 @@ final class RemoteMediaType extends AbstractType
             'upload_context' => $uploadContext,
             'disable_upload' => $options['disable_upload'] ?? false,
             'hide_filename' => $options['hide_filename'] ?? false,
+            'upload_limit' => $options['upload_limit'],
+            'location_source' => $locationSource,
+            ...$this->resolveViewLocations($form, $locationSource),
         ]);
+    }
+
+    private static function isEmptyPayload(mixed $payload): bool
+    {
+        if ($payload === null || $payload === '') {
+            return true;
+        }
+
+        try {
+            return is_string($payload) && json_decode($payload, true, 512, JSON_THROW_ON_ERROR) === [];
+        } catch (JsonException) {
+            return false;
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     */
+    private static function resolveLocationSource(array $options, string $formName): string
+    {
+        return $options['location_source'] ?? 'form_' . $formName;
+    }
+
+    /**
+     * A location can only be reused by the form it already belongs to. The ID
+     * of any other location is dropped from the entry, which then gets a new
+     * location instead of taking over the one of another field or entity.
+     *
+     * @param array<int, array<string, mixed>> $entries
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private static function dropForeignLocationIds(array $entries, mixed $currentData): array
+    {
+        $ownLocationIds = [];
+        foreach (is_iterable($currentData) ? $currentData : [] as $location) {
+            if ($location instanceof RemoteResourceLocation && $location->getId() !== null) {
+                $ownLocationIds[] = $location->getId();
+            }
+        }
+
+        return array_map(
+            static function (array $entry) use ($ownLocationIds): array {
+                if (!in_array($entry['locationId'], $ownLocationIds, true)) {
+                    $entry['locationId'] = null;
+                }
+
+                return $entry;
+            },
+            $entries,
+        );
+    }
+
+    /**
+     * Returns the `remote_media_locations` view variable and, next to it,
+     * `remote_media_loaded_values`: the cloud values the widget loaded for
+     * each location, before the editor changed them. After a submission they
+     * are taken from the payload, so a form shown again (eg. because another
+     * field is invalid) still sends the edited values as changes. Before one,
+     * the widget takes the stored values.
+     *
+     * @return array{
+     *     remote_media_locations: array<int, RemoteResourceLocation>,
+     *     remote_media_loaded_values: array<int, array<string, mixed>|null>,
+     * }
+     */
+    private function resolveViewLocations(FormInterface $form, string $locationSource): array
+    {
+        if ($form->isSubmitted() && !$form->isSynchronized()) {
+            // The submission was rejected, so it never became model data. It is
+            // shown back as submitted, for the editor to keep the new order,
+            // the added resources and the crops while fixing the error.
+            return $this->buildSubmittedLocations(
+                $form->get('collectionPayload')->getData(),
+                $locationSource,
+            );
+        }
+
+        $data = $form->getData();
+        $locations = is_iterable($data) ? RemoteMediaCollectionTransformer::sortByPosition($data) : [];
+
+        return [
+            'remote_media_locations' => $locations,
+            'remote_media_loaded_values' => $form->isSubmitted()
+                ? self::submittedLoadedValues($form->get('collectionPayload')->getData(), $locations)
+                : [],
+        ];
+    }
+
+    /**
+     * The submitted payload is matched to the locations by remote ID, as
+     * entries of missing resources are left out of the locations.
+     *
+     * @param array<int, RemoteResourceLocation> $locations
+     *
+     * @return array<int, array<string, mixed>|null>
+     */
+    private static function submittedLoadedValues(mixed $payload, array $locations): array
+    {
+        $loadedByRemoteId = [];
+        foreach (RemoteMediaCollectionEntryExtractor::fromPayloadLenient($payload) as $entry) {
+            $loadedByRemoteId[$entry['remoteId']] ??= $entry['loaded'];
+        }
+
+        return array_map(
+            static fn (RemoteResourceLocation $location): ?array => $loadedByRemoteId[$location->getRemoteResource()->getRemoteId()] ?? null,
+            $locations,
+        );
+    }
+
+    /**
+     * Builds locations out of a submitted payload for display only. They are
+     * detached copies, so nothing of a rejected submission can get stored.
+     *
+     * @return array{
+     *     remote_media_locations: array<int, RemoteResourceLocation>,
+     *     remote_media_loaded_values: array<int, array<string, mixed>|null>,
+     * }
+     */
+    private function buildSubmittedLocations(mixed $payload, string $locationSource): array
+    {
+        $locations = [];
+        $loadedValues = [];
+        foreach (RemoteMediaCollectionEntryExtractor::fromPayloadLenient($payload, $locationSource) as $entry) {
+            $resource = $this->loadResource($entry['remoteId']);
+            if (!$resource instanceof RemoteResource) {
+                continue;
+            }
+
+            $resource = clone $resource;
+            $resource
+                ->setAltText($entry['altText'])
+                ->setCaption($entry['caption'])
+                ->setTags($entry['tags']);
+
+            $locations[] = new RemoteResourceLocation(
+                remoteResource: $resource,
+                source: $entry['source'],
+                cropSettings: $this->service->resolveCropSettings($entry['cropSettings']),
+                watermarkText: $entry['watermarkText'],
+                id: $entry['locationId'],
+                altTextOverride: $entry['altTextOverride'],
+                captionOverride: $entry['captionOverride'],
+                position: count($locations),
+            );
+            $loadedValues[] = $entry['loaded'];
+        }
+
+        return [
+            'remote_media_locations' => $locations,
+            'remote_media_loaded_values' => $loadedValues,
+        ];
+    }
+
+    /**
+     * Loads only from the local storage. A rejected payload is not limited,
+     * so asking the remote here could mean one API call per submitted entry.
+     */
+    private function loadResource(string $remoteId): ?RemoteResource
+    {
+        try {
+            return $this->provider->loadByRemoteId($remoteId);
+        } catch (RemoteResourceNotFoundException) {
+            return null;
+        }
     }
 }

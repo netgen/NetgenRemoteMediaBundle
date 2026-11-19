@@ -12,7 +12,19 @@ Vue.config.productionTip = false;
 Vue.use(PortalVue);
 Vue.use(vueDebounce);
 
+// The CKEditor plugin renders a widget again on every change, which throws away
+// the DOM of the previous instance. That instance is destroyed, otherwise its
+// document listeners keep the whole component tree alive.
+const destroyDetachedInstance = (key) => {
+    const instance = window[key];
+    if (instance && instance.$el && !document.documentElement.contains(instance.$el)) {
+        instance.$destroy();
+    }
+};
+
 const initInteractionsVue = (el) => {
+    destroyDetachedInstance(`ngrm_interactions_vue_${el.dataset.id}`);
+
     window[`ngrm_interactions_vue_${el.dataset.id}`] = new Vue({
         el,
         directives: {
@@ -30,6 +42,7 @@ const initInteractionsVue = (el) => {
                 },
                 translations: {},
                 inputFields: {
+                    '_collection': 'remoteMedia',
                     'locationId': 'locationId',
                     'remoteId': 'remoteId',
                     'type': 'type',
@@ -40,6 +53,7 @@ const initInteractionsVue = (el) => {
                     'tags': 'tags[]',
                     'cropSettings': 'cropSettings',
                     'source': 'source',
+                    'collectionPayload': 'collectionPayload',
                     'watermarkText': 'watermarkText',
                     'cssClass': 'cssClass',
                     'selectedVariation': 'selectedVariation',
@@ -53,13 +67,17 @@ const initInteractionsVue = (el) => {
                 uploadContext: {},
                 disableUpload: false,
                 hideFilename: false,
+                uploadLimit: 1,
+                locationSource: null,
             },
             selectedImage: {
                 id: '',
+                locationId: '',
                 name: '',
                 type: 'image',
                 format: '',
                 url: '',
+                browseUrl: '',
                 browse_url: '',
                 previewUrl: '',
                 alternateText: '',
@@ -74,6 +92,7 @@ const initInteractionsVue = (el) => {
                 width: 0,
                 selectedVariation: null,
                 cssClass: '',        
+                uploadedResources: [],
             },
         },
         components: {
@@ -83,6 +102,8 @@ const initInteractionsVue = (el) => {
 };
 
 const initSelectFolderVue = (el) => {
+    destroyDetachedInstance(`ngrm_select_folder_vue_${el.dataset.id}`);
+
     window[`ngrm_select_folder_vue_${el.dataset.id}`] = new Vue({
         el,
         directives: {
@@ -142,6 +163,8 @@ if (
   (document.readyState !== 'loading' && !document.documentElement.doScroll)
 ) {
   observer.observe(targetNode, config);
+  observerCallback();
 } else {
   observer.observe(targetNode, config);
+  document.addEventListener('DOMContentLoaded', observerCallback, { once: true });
 }

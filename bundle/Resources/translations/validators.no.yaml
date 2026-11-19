@@ -1,0 +1,3 @@
+ngrm:
+    form:
+        upload_limit_exceeded: 'For mange filer er valgt ({{ count }}). Maksimalt tillatt antall er {{ limit }}.'

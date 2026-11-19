@@ -711,6 +711,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             'my_source',
             [],
             'my watermark',
+            position: 4,
         );
 
         $token = AuthToken::fromDuration(50);
@@ -722,6 +723,7 @@ final class CloudinaryProviderTest extends AbstractTestCase
             'my_source',
             [],
             'my watermark',
+            position: 4,
         );
 
         $this->gateway

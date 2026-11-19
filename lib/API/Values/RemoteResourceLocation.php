@@ -20,6 +20,7 @@ class RemoteResourceLocation
         private ?int $id = null,
         private ?string $altTextOverride = null,
         private ?string $captionOverride = null,
+        private ?int $position = null,
     ) {
         $this->setAltTextOverride($altTextOverride);
         $this->setCaptionOverride($captionOverride);
@@ -143,6 +144,23 @@ class RemoteResourceLocation
         return $this->captionOverride ?? $this->remoteResource->getCaption();
     }
 
+    /**
+     * Zero-based position of this location in the collection it is part of.
+     *
+     * Null when the location is not part of an ordered collection, or was stored before positions existed.
+     */
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?int $position): self
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
     public function refresh(self $remoteResourceLocation): self
     {
         $this->setSource($remoteResourceLocation->getSource());
@@ -150,6 +168,7 @@ class RemoteResourceLocation
         $this->setWatermarkText($remoteResourceLocation->getWatermarkText());
         $this->setAltTextOverride($remoteResourceLocation->getAltTextOverride());
         $this->setCaptionOverride($remoteResourceLocation->getCaptionOverride());
+        $this->setPosition($remoteResourceLocation->getPosition());
 
         return $this;
     }

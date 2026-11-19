@@ -12,7 +12,9 @@ When you add a resource to your entity, this will be only a relation to objects 
 
 ## Add relation to your entity
 
-All the data needed for Remote Media to work will be stored in its own internal tables in the database, by using `Netgen\RemoteMedia\API\Values\RemoteResource` and `Netgen\RemoteMedia\API\Values\RemoteResourceLoation` entities so your entity will need to have a relation to `Netgen\RemoteMedia\API\Values\RemoteResourceLocation` entity.
+All the data needed for Remote Media to work will be stored in its own internal tables in the database, by using `Netgen\RemoteMedia\API\Values\RemoteResource` and `Netgen\RemoteMedia\API\Values\RemoteResourceLocation` entities so your entity will need to have a relation to `Netgen\RemoteMedia\API\Values\RemoteResourceLocation` entity.
+
+The form field always works with a collection of locations, also when it accepts only one resource (see [`upload_limit`](#upload_limit)). So the relation is a to-many relation, even for a single image.
 
 **Important:** Those external objects won't be persisted automatically to the database, so you have to use proper cascade configuration when adding it to your entity to allow Doctrine to properly handle persisting or removing those.
 
@@ -23,35 +25,77 @@ Example:
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 
 #[ORM\Entity]
 class MyEntity
 {
-    #[ORM\OneToOne(targetEntity: RemoteResourceLocation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    private ?RemoteResourceLocation $remoteResourceLocation = null;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    public function getRemoteResourceLocation(): ?RemoteResourceLocation
+    /**
+     * @var Collection<int, RemoteResourceLocation>
+     */
+    #[ORM\ManyToMany(targetEntity: RemoteResourceLocation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\JoinTable(name: 'my_entity_image')]
+    #[ORM\JoinColumn(name: 'my_entity_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(name: 'remote_resource_location_id', referencedColumnName: 'id', unique: true, onDelete: 'CASCADE')]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $images;
+
+    public function __construct()
     {
-        return $this->remoteResourceLocation;
+        $this->images = new ArrayCollection();
     }
 
-    public function setRemoteResourceLocation(?RemoteResourceLocation $remoteResourceLocation): void
+    public function getId(): ?int
     {
-        $this->remoteResourceLocation = $remoteResourceLocation;
-    }    
+        return $this->id;
+    }
+
+    /**
+     * @return Collection<int, RemoteResourceLocation>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(RemoteResourceLocation $image): void
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+        }
+    }
+
+    public function removeImage(RemoteResourceLocation $image): void
+    {
+        $this->images->removeElement($image);
+    }
 }
 ```
 
-The above example will make sure that, when you select a new resource in the form, Doctrine automatically create both `RemoteResource` and `RemoteResourceLocation` objects in the database and link the location to your entity. Also, if you remove the value for this attribute, it will automatically delete location from the database.
+The above example will make sure that, when you select a new resource in the form, Doctrine automatically creates both `RemoteResource` and `RemoteResourceLocation` objects in the database and links the location to your entity. When you remove a resource in the form, its location is deleted from the database. The resource itself stays.
 
-The reason why we're using `OneToOne` relation here is because the idea is that every usage of a remote resource has it's own location. Things such as cropping settings or watermark text are stored in a location, and you want to have different cropping settings for the same eg. image used on different places.
+Some details of the example matter:
+
+* The form returns a new collection on every submit. With `addImage()` and `removeImage()`, Symfony changes the collection that Doctrine already tracks, item by item. Only then does `orphanRemoval` delete the location of a removed item. A plain setter that replaces the whole collection leaves the removed location in the `ngrm_remote_resource_location` table.
+* The form stores the order on the locations, in the `position` column. `#[ORM\OrderBy(['position' => 'ASC'])]` loads them in that order. `ManyToMany` itself does not keep the order.
+* `unique: true` on the inverse join column makes sure that a location belongs to one entity only. The position is stored on the location, so a location can't be part of two ordered collections.
+* `cascade: ['persist', 'remove']` stores new locations, and deletes the locations when you delete the entity.
+
+The reason why every entity has its own locations is that every usage of a remote resource has its own location. Things such as cropping settings or watermark text are stored in a location, and you want to have different cropping settings for the same eg. image used on different places.
 
 ## Alt text and caption overrides
 
-Alt text and caption entered in the interface are stored on the resource in the cloud, so changing them updates every location which uses that resource. Each location can additionally have its own alt text and caption override (`altTextOverride` and `captionOverride` fields of the form), stored only on that location and never sent to the cloud. An empty override means that the value from the cloud is used.
+Alt text and caption entered in the interface are stored on the resource in the cloud, so changing them updates every location which uses that resource. Each location can additionally have its own alt text and caption override (`altTextOverride` and `captionOverride`), stored only on that location and never sent to the cloud. An empty override means that the value from the cloud is used.
+
+The form field and the CKEditor 5 plugin show the inputs for the cloud values and for the overrides next to each other, for every item. An emptied override input removes the override.
 
 `RemoteResourceLocation::getAltText()` and `RemoteResourceLocation::getCaption()` return the override when it's set and the value from the cloud otherwise, so use them (eg. `location.caption` in TWIG) instead of the ones on the resource when rendering a location:
 
@@ -83,10 +127,12 @@ class MyFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('remote_resource_location', RemoteMediaType::class);
+        $builder->add('images', RemoteMediaType::class);
     }
 }
 ```
+
+The field reads and writes `MyEntity::$images` and lets editors add any number of resources. Use the `upload_limit` option to limit that, see below.
 
 ### Form options
 
@@ -128,7 +174,7 @@ You can specify an array of (key, value) pairs that will be added to the file as
 
 #### `location_source`
 
-Every location has a string where you can put a descriptive info where this location will be used (eg. `product_image`). When adding resources through this form, by default it will use `form_[FORM_NAME]` so if you have eg. this code: `$builder->add('remote_resource_location' RemoteMediaType::class);`, all locations added through this form will have source `form_remote_resource_location`.
+Every location has a string where you can put a descriptive info where this location will be used (eg. `product_image`). When adding resources through this form, by default it will use `form_[FORM_NAME]` so if you have eg. this code: `$builder->add('images', RemoteMediaType::class);`, all locations added through this form will have source `form_images`.
 
 This parameter enables you to override the source text.
 
@@ -139,6 +185,34 @@ This parameter enables you to disable the upload, which means that users will be
 #### `hide_filename`
 
 This parameter enables filename hiding; instead of original filename, it will use file's MD5 hash as a public ID. Original filename will be stored in the context though and can be used, if needed.
+
+#### `upload_limit`
+
+The maximum number of resources the field accepts. It's either `null` (default, unlimited) or a positive integer.
+
+The field data is always a Doctrine `ArrayCollection` of `RemoteResourceLocation` objects, in the order chosen in the interface. That doesn't depend on the limit: with `'upload_limit' => 1` the collection has 0 or 1 items. So changing the limit later doesn't change the entity mapping or the stored data.
+
+The limit changes the interface: with `'upload_limit' => 1`, the picker selects one resource and a new upload or selection replaces the current one. The limit is also checked on the server. If a submission contains more resources than the limit, the form is invalid and shows the `ngrm.form.upload_limit_exceeded` message from the `validators` translation domain.
+
+#### How the field is submitted
+
+The widget submits the whole selection as one hidden JSON field, `collectionPayload`. It's a list of objects, one per resource, in the chosen order:
+
+```json
+[
+    {"locationId": 12, "remoteId": "upload|image|media/a.jpg", "altTextOverride": "A dog"},
+    {"remoteId": "upload|image|media/b.jpg", "cropSettings": "{\"wide\":{\"x\":0,\"y\":0,\"w\":800,\"h\":400}}"}
+]
+```
+
+* An entry without `locationId` creates a new location. An entry with the `locationId` of a location from the field's current value updates that location. Any other `locationId` is ignored and a new location is created.
+* Entry fields are `locationId`, `remoteId`, `type`, `altText`, `caption`, `altTextOverride`, `captionOverride`, `watermarkText`, `tags` (a list of strings), `cropSettings` (a JSON string), `source` and `loaded` (an object). A field with the wrong type makes the form invalid.
+* `altText`, `caption` and `tags` are the values of the resource in the cloud. If they differ from the stored ones, the resource is updated in the cloud. An empty or missing `altText`, `caption`, `altTextOverride` or `captionOverride` is stored as `null`, so code which submits the field must send the current `altText`, `caption` and `tags` to keep them. Missing `tags` are read as an empty list.
+* `loaded` holds the `altText`, `caption` and `tags` the widget loaded, before the editor changed them. If it's sent, only the values which differ from it are written, the others keep the current value of the resource. That's needed when the same resource is in several fields of one form: each field submits the values, and a field the editor didn't touch would otherwise undo a change made in another one. The widget always sends it.
+* If the same `locationId` is sent twice, only the first entry is used.
+* If `collectionPayload` is not submitted at all (eg. the widget didn't load), the field keeps its current value. Only an empty list, `[]`, clears the field.
+* The form theme renders `collectionPayload` with the current value, so a form submitted without the widget doesn't change the field.
+* After an invalid submission, the widget shows the submitted selection again, not the stored one. Only resources stored locally are shown: one picked in the media browser and not saved yet is left out.
 
 ### Example
 
@@ -158,15 +232,16 @@ class MyFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add(
-            'remote_resource_location',
+            'files',
             RemoteMediaType::class,
             [
+                'upload_limit' => 1,
                 'allowed_visibilities' => ['protected'],
-                'folder' => ['media/products/files'],
+                'folder' => 'media/products/files',
                 'upload_context' => [
                     'sylius_type' => 'product',
                     'sylius_code' => $this->getProductCode(),
-                    'sylius_form_field_name' => 'remote_resource_location',
+                    'sylius_form_field_name' => 'files',
                     'source' => 'user_upload',
                 ],
             ],
@@ -175,7 +250,7 @@ class MyFormType extends AbstractType
 }
 ```
 
-This will show only protected files in folder `media/products/files` and you will be able to upload only to this folder.
+This will show only protected files in folder `media/products/files` and you will be able to upload only to this folder. The field accepts one file, and `files` is a to-many relation as in the entity example above.
 
 ## Add CSS and JS files for the interface
 

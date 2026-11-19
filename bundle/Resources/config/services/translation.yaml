@@ -1,0 +1,7 @@
+services:
+    netgen_remote_media.translation.vue_translations:
+        class: Netgen\Bundle\RemoteMediaBundle\Translation\VueTranslations
+        arguments:
+            - "@translator"
+        tags:
+            - { name: twig.runtime }

@@ -23,8 +23,8 @@ const renderField = ({ domElement, model, editor }) => {
       [
         createElement(domElement.ownerDocument, 'interactions', {
           'field-id': fieldId,
-          ':selected-image': selectedImage,
-          ':config': config,
+          ':selected-image': 'selectedImage',
+          ':config': 'config',
         }),
       ],
     ),

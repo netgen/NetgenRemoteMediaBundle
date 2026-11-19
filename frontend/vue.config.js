@@ -40,6 +40,7 @@ if (isProd) {
 module.exports = {
   runtimeCompiler: true,
   filenameHashing: false,
+  productionSourceMap: false,
   configureWebpack: {
     entry: {
       app: './src/main.js',

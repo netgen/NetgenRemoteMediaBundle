@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace Netgen\RemoteMedia\Form\DataTransformer;
 
 use Netgen\RemoteMedia\API\ProviderInterface;
+use Netgen\RemoteMedia\API\Values\RemoteResource;
 use Netgen\RemoteMedia\API\Values\RemoteResourceLocation;
 use Netgen\RemoteMedia\Exception\RemoteResourceLocationNotFoundException;
 use Netgen\RemoteMedia\Exception\RemoteResourceNotFoundException;
 use Netgen\RemoteMedia\Service\RemoteResourceService;
 use Symfony\Component\Form\DataTransformerInterface;
+
+use function is_array;
+use function sort;
 
 final class RemoteMediaTransformer implements DataTransformerInterface
 {
@@ -41,7 +45,7 @@ final class RemoteMediaTransformer implements DataTransformerInterface
 
     public function reverseTransform($value)
     {
-        if ($value['remoteId'] === null) {
+        if (!is_array($value) || ($value['remoteId'] ?? null) === null || ($value['remoteId'] ?? '') === '') {
             return null;
         }
 
@@ -51,13 +55,17 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             try {
                 $remoteResource = $this->provider->loadFromRemote((string) $value['remoteId']);
             } catch (RemoteResourceNotFoundException $e) {
+                $this->service->logMissingResource((string) $value['remoteId']);
+
                 return null;
             }
         }
 
+        $locationId = $value['locationId'] ?? null;
+
         try {
-            $remoteResourceLocation = $value['locationId'] !== null && $value['locationId'] !== ''
-                ? $this->provider->loadLocation((int) $value['locationId'])
+            $remoteResourceLocation = $locationId !== null && $locationId !== ''
+                ? $this->provider->loadLocation((int) $locationId)
                 : new RemoteResourceLocation($remoteResource);
         } catch (RemoteResourceLocationNotFoundException $e) {
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
@@ -67,21 +75,8 @@ final class RemoteMediaTransformer implements DataTransformerInterface
             $remoteResourceLocation = new RemoteResourceLocation($remoteResource);
         }
 
-        $needsUpdateOnRemote = $this->service->needsUpdateOnRemote($remoteResource, $value);
-
-        $remoteResource->setAltText($value['altText'] ?? null);
-        $remoteResource->setCaption($value['caption'] ?? null);
-        $remoteResource->setTags($value['tags']);
-
-        if ($needsUpdateOnRemote) {
-            try {
-                $this->provider->updateOnRemote($remoteResource);
-            } catch (RemoteResourceNotFoundException $e) {
-                $this->provider->remove($remoteResource);
-
-                return null;
-            }
-        }
+        // A resource that is gone from the remote is kept, the service logs it.
+        $this->service->handleRemoteUpdate($remoteResource, $this->keepUnchangedCloudValues($remoteResource, $value));
 
         $remoteResourceLocation->setSource($value['source'] ?? null);
         $remoteResourceLocation->setWatermarkText($value['watermarkText'] ?? null);
@@ -93,5 +88,44 @@ final class RemoteMediaTransformer implements DataTransformerInterface
         );
 
         return $remoteResourceLocation;
+    }
+
+    /**
+     * The same resource can be in several fields of one form, and each of them
+     * submits its alt text, caption and tags. A value which the editor didn't
+     * change in a field is replaced with the current one of the resource, so
+     * the field doesn't undo a change made in another field.
+     *
+     * An entry without the values the widget loaded is used as it is.
+     *
+     * @param array<string, mixed> $value
+     *
+     * @return array<string, mixed>
+     */
+    private function keepUnchangedCloudValues(RemoteResource $remoteResource, array $value): array
+    {
+        $loaded = $value['loaded'] ?? null;
+        if (!is_array($loaded)) {
+            return $value;
+        }
+
+        if (($value['altText'] ?? null) === ($loaded['altText'] ?? null)) {
+            $value['altText'] = $remoteResource->getAltText();
+        }
+
+        if (($value['caption'] ?? null) === ($loaded['caption'] ?? null)) {
+            $value['caption'] = $remoteResource->getCaption();
+        }
+
+        $tags = $value['tags'] ?? [];
+        $loadedTags = $loaded['tags'] ?? [];
+        sort($tags);
+        sort($loadedTags);
+
+        if ($tags === $loadedTags) {
+            $value['tags'] = $remoteResource->getTags();
+        }
+
+        return $value;
     }
 }
