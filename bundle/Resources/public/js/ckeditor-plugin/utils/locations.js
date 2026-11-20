@@ -10,12 +10,16 @@ const deletableLocations = new WeakMap();
 /** Locations each editor created or copied, by editor */
 const ownLocations = new WeakMap();
 
+/** Locations of the stored editor data each editor loaded, by editor */
+const storedLocations = new WeakMap();
+
 const toKey = locationId => String(locationId);
 
 export const registerEditor = (editor) => {
   editors.add(editor);
   deletableLocations.set(editor, new Set());
   ownLocations.set(editor, new Set());
+  storedLocations.set(editor, new Set());
 
   editor.on('destroy', () => editors.delete(editor));
 };
@@ -32,12 +36,22 @@ export const addOwnLocation = (editor, locationId) => {
 export const isOwnLocation = (editor, locationId) => ownLocations.get(editor)?.has(toKey(locationId)) ?? false;
 
 /**
- * A location of the stored editor data, deleted once it is no longer in the editor data. Only for integrations
- * whose stored editor data is not shared (without `copyLocationsOnChange`).
+ * A location of the stored editor data. Without `copyLocationsOnChange` the stored editor data is not shared, so the
+ * editor deletes the location once it is no longer in the editor data. With it, other stored data may reference the
+ * location, so it is only reported by `getUnusedStoredLocations()`.
  */
 export const addStoredLocation = (editor, locationId) => {
+  if (editor.config.get(pluginKey).copyLocationsOnChange) {
+    storedLocations.get(editor)?.add(toKey(locationId));
+
+    return;
+  }
+
   deletableLocations.get(editor)?.add(toKey(locationId));
 };
+
+/** Editors in the given form, or all editors on the page */
+const getEditors = form => [...editors].filter(editor => form === null || form.contains(editor.sourceElement));
 
 const getReferencedLocations = () => {
   const referenced = new Set();
@@ -58,16 +72,16 @@ const getReferencedLocations = () => {
 };
 
 /**
- * Deletes the locations of the given editors (by default all editors on the page) which are no longer referenced
- * by any editor on the page. Call it when the editor data is saved: until then, removed elements can come back
- * through undo, paste or drag and drop. Requests are sent with `keepalive`, so they complete when the page is
+ * Deletes the locations of the editors in the given form (by default of all editors on the page) which are no longer
+ * referenced by any editor on the page. Call it when the editor data is saved: until then, removed elements can come
+ * back through undo, paste or drag and drop. Requests are sent with `keepalive`, so they complete when the page is
  * left right after, e.g. by the form submission.
  */
-export const deleteUnusedLocations = (editorsToClean = [...editors]) => {
+export const deleteUnusedLocations = (form = null) => {
   const referenced = getReferencedLocations();
   const requests = [];
 
-  editorsToClean.forEach((editor) => {
+  getEditors(form).forEach((editor) => {
     const locations = deletableLocations.get(editor) ?? new Set();
 
     [...locations].filter(locationId => !referenced.has(locationId)).forEach((locationId) => {
@@ -82,6 +96,27 @@ export const deleteUnusedLocations = (editorsToClean = [...editors]) => {
 };
 
 /**
+ * With `copyLocationsOnChange`: IDs of the stored locations the editors in the given form (by default all editors on
+ * the page) loaded, which are no longer referenced by any editor on the page (e.g. replaced by copies, or of removed
+ * elements). The editor never deletes them, as other stored data may reference them: integrations send them along
+ * with the saved data, so the server deletes those which nothing references anymore once the data is saved.
+ */
+export const getUnusedStoredLocations = (form = null) => {
+  const referenced = getReferencedLocations();
+  const unused = new Set();
+
+  getEditors(form).forEach((editor) => {
+    storedLocations.get(editor)?.forEach((locationId) => {
+      if (!referenced.has(locationId)) {
+        unused.add(locationId);
+      }
+    });
+  });
+
+  return [...unused];
+};
+
+/**
  * Deletes unused locations when the form containing the editor is submitted. Integrations which save the editor
  * data otherwise (e.g. with a request instead of the form submission) call `deleteUnusedLocations()` themselves.
  */
@@ -92,10 +127,8 @@ export const deleteUnusedLocationsOnSubmit = (editor) => {
   }
 
   form.addEventListener('submit', (event) => {
-    if (event.defaultPrevented) {
-      return;
+    if (!event.defaultPrevented) {
+      deleteUnusedLocations(form);
     }
-
-    deleteUnusedLocations([...editors].filter(otherEditor => form.contains(otherEditor.sourceElement)));
   });
 };

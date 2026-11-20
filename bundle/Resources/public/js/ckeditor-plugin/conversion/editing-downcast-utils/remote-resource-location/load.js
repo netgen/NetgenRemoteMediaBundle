@@ -1,4 +1,4 @@
-import { attributes, pluginKey } from '../../../constants';
+import { attributes } from '../../../constants';
 import { enqueueLocationRequest, getEndpoint, reportError, request } from '../../../utils/location-requests';
 import { addStoredLocation } from '../../../utils/locations';
 
@@ -6,13 +6,11 @@ import { addStoredLocation } from '../../../utils/locations';
  * Loads the selected image of a stored element. When loading fails the element keeps the stored location unchanged.
  *
  * Without the `copyLocationsOnChange` option, the stored location belongs to this editor data only, so it is deleted
- * once the element is no longer in the saved data. With it, the stored location is never changed nor deleted, see
- * `update.js`.
+ * once the element is no longer in the saved data. With it, the stored location is never changed nor deleted by the
+ * editor (see `update.js`), it is reported by `getUnusedStoredLocations()` once it is no longer in the editor data.
  */
 const loadLocation = ({ editor, model, locationId }) => {
-  if (!editor.config.get(pluginKey).copyLocationsOnChange) {
-    addStoredLocation(editor, locationId);
-  }
+  addStoredLocation(editor, locationId);
 
   enqueueLocationRequest(model, async () => {
     let selectedImage;
