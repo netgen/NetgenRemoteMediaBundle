@@ -1,24 +1,18 @@
 import { attributes, pluginKey } from '../../../constants';
 import { enqueueLocationRequest, getEndpoint, reportError, request } from '../../../utils/location-requests';
-
-const copy = (editor, selectedImage) => request(getEndpoint(editor, 'createLocation'), {
-  method: 'POST',
-  body: JSON.stringify({
-    ...selectedImage,
-    cropSettings: JSON.stringify(selectedImage.variations ?? {}),
-    source: editor.config.get(pluginKey).source,
-  }),
-}).then(response => response.json());
+import { addStoredLocation } from '../../../utils/locations';
 
 /**
- * Loads the selected image of a stored element.
+ * Loads the selected image of a stored element. When loading fails the element keeps the stored location unchanged.
  *
- * With the `copyLocationsOnLoad` option, the element is switched to a copy of the stored location before it can be
- * edited, so changes made in the editor never reach the stored location, which other versions, translations or copies
- * of the content may reference. When loading or copying fails the element keeps the stored location unchanged.
+ * Without the `copyLocationsOnChange` option, the stored location belongs to this editor data only, so it is deleted
+ * once the element is no longer in the saved data. With it, the stored location is never changed nor deleted, see
+ * `update.js`.
  */
 const loadLocation = ({ editor, model, locationId }) => {
-  const { copyLocationsOnLoad } = editor.config.get(pluginKey);
+  if (!editor.config.get(pluginKey).copyLocationsOnChange) {
+    addStoredLocation(editor, locationId);
+  }
 
   enqueueLocationRequest(model, async () => {
     let selectedImage;
@@ -30,17 +24,6 @@ const loadLocation = ({ editor, model, locationId }) => {
       return;
     }
 
-    let editedLocationId = locationId;
-    if (copyLocationsOnLoad) {
-      try {
-        ({ locationId: editedLocationId } = await copy(editor, selectedImage));
-      } catch (error) {
-        reportError(editor, 'ckeditor_location_copy_error', error);
-
-        return;
-      }
-    }
-
     // Values restored on upcast, unless another resource has been selected in the meantime
     const currentValues = model.getAttribute(attributes.selectedImage);
     if (currentValues.id) {
@@ -49,9 +32,8 @@ const loadLocation = ({ editor, model, locationId }) => {
 
     const variationName = currentValues.selectedVariation?.label;
 
-    // Not undoable: undo must not switch the element back to the stored location
+    // Not undoable: undo must not switch the element back to an image which isn't loaded
     editor.model.enqueueChange({ isUndoable: false }, (writer) => {
-      writer.setAttribute(attributes.locationId, editedLocationId, model);
       writer.setAttribute(
         attributes.selectedImage,
         {

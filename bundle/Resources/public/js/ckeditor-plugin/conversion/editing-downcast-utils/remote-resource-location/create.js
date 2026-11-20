@@ -1,5 +1,6 @@
 import { attributes, pluginKey } from '../../../constants';
 import { enqueueLocationRequest, getEndpoint, reportError, request } from '../../../utils/location-requests';
+import { addOwnLocation } from '../../../utils/locations';
 
 /**
  * Creates a location for the newly selected resource. When the request fails, the element goes back to the
@@ -18,6 +19,8 @@ const createLocation = ({ editor, model, selectedImage, previousImage }) => {
       }),
     });
     const { locationId } = await response.json();
+    // Deleted once it is no longer in the editor data, also when another resource has been selected in the meantime
+    addOwnLocation(editor, locationId);
 
     if (isStillSelected()) {
       editor.model.change((writer) => {

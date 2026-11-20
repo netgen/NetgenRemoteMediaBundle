@@ -3,8 +3,9 @@ import createLocation from './remote-resource-location/create';
 import updateLocation from './remote-resource-location/update';
 
 /**
- * Locations are never deleted from the editor: removed, replaced or cut elements can come back through undo or paste,
- * and the stored editor data may still reference them until it is saved.
+ * Locations are not deleted when an element is removed or its resource replaced: the element can come back through
+ * undo, paste or drag and drop. Locations which are no longer in the editor data are deleted when the data is saved,
+ * see `utils/locations.js`.
  */
 const handleRemoteResourceLocation = ({ editor, model, domElement, eventDetail: { selectedImage, inputFields } }) => {
   selectedImage.cropSettings = domElement.querySelector(`[name="${inputFields.cropSettings}"]`)?.value ?? '';

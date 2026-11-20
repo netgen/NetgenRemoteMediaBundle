@@ -1,16 +1,17 @@
 # Netgen Remote Media Bundle changelog
 
-## 3.1.1
+## 3.2.0
 
 ### Added
 
-* CKEditor 5 plugin `copyLocationsOnLoad` option, which switches every loaded element to a copy of its stored location before it can be edited, for integrations whose stored editor data is shared by versions, translations or copies (the edited data then never changes locations referenced by other stored data)
-* CKEditor 5 plugin `onError` option, called with a translated message and the error when loading, copying, creating or updating a location fails (defaults to `console.error`), with the `ngrm.edit.vue.ckeditor.*` translations
+* CKEditor 5 plugin `copyLocationsOnChange` option, for integrations whose stored editor data is shared by versions, translations or copies: stored locations are never changed nor deleted, the first change of an element creates a copy of its location with the change and switches the element to it (opening the editor without changes creates nothing)
+* CKEditor 5 plugin `onError` option, called with a translated message and the error when loading, creating or updating a location fails (defaults to `console.error`), with the `ngrm.edit.vue.ckeditor.*` translations
 * `waitForLocationRequests()` and `hasPendingLocationRequests()` exports of the CKEditor 5 plugin, to check for and wait for pending location requests before submitting editor data (an element whose location is still being created would be stored without it)
+* `deleteUnusedLocations()` export of the CKEditor 5 plugin, which deletes the locations the editors on the page created or copied (and, without `copyLocationsOnChange`, the stored locations they loaded) which no editor on the page references anymore, for integrations which save the editor data otherwise than by submitting the form containing the editor
 
 ### Changed
 
-* CKEditor 5 plugin no longer deletes locations: removing an element or replacing its resource leaves the location in the database, as the element can come back through undo, paste or drag and drop, the `deleteLocation` endpoint option is removed
+* CKEditor 5 plugin deletes locations when the editor data is saved instead of when an element is removed or its resource replaced, so an element brought back through undo, paste or drag and drop keeps its location: on submit of the form containing the editor, the locations which no editor on the page references anymore are deleted (requests are sent with `keepalive`, so they complete after the page is left)
 * CKEditor 5 plugin location requests of one element run one after another, so an update always targets the location created by the request before it
 
 ### Fixed

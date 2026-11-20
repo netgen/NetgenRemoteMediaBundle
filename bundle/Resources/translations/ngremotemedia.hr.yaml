@@ -32,7 +32,6 @@ ngrm:
                 empty: 'Nije odabrana ni jedna mapa'
             ckeditor:
                 location_load_error: 'Resurs nije moguće učitati u uređivač. Spremljeni resurs ostaje nepromijenjen.'
-                location_copy_error: 'Resurs nije moguće pripremiti za uređivanje. Spremljeni resurs ostaje nepromijenjen, odaberite ga ponovno za uređivanje.'
                 location_create_error: 'Odabrani resurs nije moguće spremiti. Odaberite ga ponovno.'
                 location_update_error: 'Promjene resursa nije moguće spremiti. Ponovite promjenu.'
             preview:

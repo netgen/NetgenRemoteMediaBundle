@@ -4,6 +4,7 @@ import NetgenRemoteMediaCommand from './command';
 import getNetgenRemoteMediaToolbarButton from './button';
 
 import setupDataCasting from './conversion';
+import { deleteUnusedLocationsOnSubmit, registerEditor } from './utils/locations';
 
 // A regular function, not an arrow function: CKEditor instantiates function plugins with `new`
 function NetgenRemoteMediaPlugin(editor) {
@@ -21,10 +22,11 @@ function NetgenRemoteMediaPlugin(editor) {
     /** Storage format of the remote media element in editor data, defaults to `formats/html.js` */
     format: null,
     /**
-     * Edit copies of stored locations instead of the stored locations, for integrations which store editor data
-     * in versions, translations or copies sharing the same locations
+     * Never change stored locations, for integrations which store editor data in versions, translations or copies
+     * sharing the same locations: the first change of an element creates a copy of its location, and the element
+     * is switched to the copy. Stored locations are then never deleted by the editor either.
      */
-    copyLocationsOnLoad: false,
+    copyLocationsOnChange: false,
     /** Called with a translated message and the error when a location request fails, defaults to `console.error` */
     onError: null,
   });
@@ -38,6 +40,10 @@ function NetgenRemoteMediaPlugin(editor) {
   });
 
   setupDataCasting(editor);
+
+  // Locations the editor created, copied or loaded are deleted when the data is saved and no longer references them
+  registerEditor(editor);
+  deleteUnusedLocationsOnSubmit(editor);
 }
 
 export default NetgenRemoteMediaPlugin;

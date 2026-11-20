@@ -32,7 +32,6 @@ ngrm:
                 empty: 'No folder selected'
             ckeditor:
                 location_load_error: 'Remote media could not be loaded in the editor. The stored media is kept unchanged.'
-                location_copy_error: 'Remote media could not be prepared for editing. The stored media is kept unchanged, select it again to edit it.'
                 location_create_error: 'Selected remote media could not be saved. Select it again.'
                 location_update_error: 'Changes to the remote media could not be saved. Make the change again.'
             preview:

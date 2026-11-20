@@ -144,7 +144,6 @@ final class Configuration
             'upload_error_existing_resource_in_folder' => $this->translator->trans('ngrm.edit.vue.upload.error.existing_resource_in_folder', [], 'ngremotemedia'),
             'upload_error_unsupported_resource_type' => $this->translator->trans('ngrm.edit.vue.upload.error.unsupported_resource_type', [], 'ngremotemedia'),
             'ckeditor_location_load_error' => $this->translator->trans('ngrm.edit.vue.ckeditor.location_load_error', [], 'ngremotemedia'),
-            'ckeditor_location_copy_error' => $this->translator->trans('ngrm.edit.vue.ckeditor.location_copy_error', [], 'ngremotemedia'),
             'ckeditor_location_create_error' => $this->translator->trans('ngrm.edit.vue.ckeditor.location_create_error', [], 'ngremotemedia'),
             'ckeditor_location_update_error' => $this->translator->trans('ngrm.edit.vue.ckeditor.location_update_error', [], 'ngremotemedia'),
         ];
