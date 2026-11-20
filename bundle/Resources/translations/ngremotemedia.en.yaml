@@ -30,6 +30,10 @@ ngrm:
             select_folder_interaction:
                 button: 'Select folder'
                 empty: 'No folder selected'
+            ckeditor:
+                location_load_error: 'Remote media could not be loaded in the editor. The stored media is kept unchanged.'
+                location_create_error: 'Selected remote media could not be saved. Select it again.'
+                location_update_error: 'Changes to the remote media could not be saved. Make the change again.'
             preview:
                 alternate_text: 'Alternate text'
                 alternate_text_info: 'Alt text is stored directly in Cloudinary on a resource so updating it here will also update it on all other locations which are using that same resource.'

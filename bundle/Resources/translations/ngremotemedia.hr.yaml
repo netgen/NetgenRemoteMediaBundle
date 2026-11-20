@@ -30,6 +30,10 @@ ngrm:
             select_folder_interaction:
                 button: 'Odaberi mapu'
                 empty: 'Nije odabrana ni jedna mapa'
+            ckeditor:
+                location_load_error: 'Resurs nije moguće učitati u uređivač. Spremljeni resurs ostaje nepromijenjen.'
+                location_create_error: 'Odabrani resurs nije moguće spremiti. Odaberite ga ponovno.'
+                location_update_error: 'Promjene resursa nije moguće spremiti. Ponovite promjenu.'
             preview:
                 alternate_text: 'Alternativni tekst'
                 alternate_text_info: 'Alternativni tekst se sprema direktno na resurs u oblaku. Ukoliko se promjeni ovdje, promjenit će se i na svim ostalim lokacijama koje koriste taj resurs.'

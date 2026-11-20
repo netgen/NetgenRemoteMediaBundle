@@ -1,6 +1,7 @@
-import { dataModel, attributes, pluginKey, defaultValue } from '../constants';
+import { dataModel, attributes, defaultValue } from '../constants';
 import getFormat from '../utils/get-format';
 import { createFieldId } from '../utils/field-id';
+import loadLocation from './editing-downcast-utils/remote-resource-location/load';
 
 /**
  * Defines the upcast conversion.
@@ -18,44 +19,22 @@ const defineUpcast = (editor) => {
       const model = writer.createElement(dataModel.name, {
         [attributes.fieldId]: fieldId || createFieldId(editor),
         [attributes.locationId]: locationId || null,
-        [attributes.selectedImage]: defaultValue.selectedImage,
+        // Stored values are kept right away, so they are not lost when the editor data is saved
+        // before the selected image is loaded, or when loading it fails
+        [attributes.selectedImage]: {
+          ...defaultValue.selectedImage,
+          cssClass: cssClass || '',
+          selectedVariation: variationName ? { label: variationName } : null,
+        },
       });
 
       if (alignment) {
         writer.setAttribute(attributes.alignment, alignment, model);
       }
 
-      if (!locationId) {
-        return model;
+      if (locationId) {
+        loadLocation({ editor, model, locationId });
       }
-
-      const getSelectedImageEndpoint = editor.config.get(pluginKey).endpoints.getSelectedImage ?? defaultValue.endpoints.getSelectedImage;
-
-      fetch(getSelectedImageEndpoint(locationId))
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to load selected image for location ${locationId}: ${response.status}`);
-          }
-
-          return response.json();
-        })
-        .then((selectedImage) => {
-          editor.model.change((writer) => {
-            writer.setAttribute(
-              attributes.selectedImage,
-              {
-                ...selectedImage,
-                cssClass,
-                selectedVariation: {
-                  label: variationName,
-                  value: selectedImage.variations?.[variationName],
-                },
-              },
-              model,
-            );
-          });
-        })
-        .catch(error => console.error(error));
 
       return model;
     },

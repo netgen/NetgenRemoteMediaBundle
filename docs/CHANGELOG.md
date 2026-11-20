@@ -1,5 +1,27 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.2.0
+
+### Added
+
+* CKEditor 5 plugin `copyLocationsOnChange` option, for integrations whose stored editor data is shared by versions, translations or copies: stored locations are never changed nor deleted, the first change of an element creates a copy of its location with the change and switches the element to it (opening the editor without changes creates nothing)
+* CKEditor 5 plugin `onError` option, called with a translated message and the error when loading, creating or updating a location fails (defaults to `console.error`), with the `ngrm.edit.vue.ckeditor.*` translations
+* `waitForLocationRequests()` and `hasPendingLocationRequests()` exports of the CKEditor 5 plugin, to check for and wait for pending location requests before submitting editor data (an element whose location is still being created would be stored without it)
+* `deleteUnusedLocations(form)` export of the CKEditor 5 plugin, which deletes the locations the editors in the form (or on the page) created or copied (and, without `copyLocationsOnChange`, the stored locations they loaded) which no editor on the page references anymore, for integrations which save the editor data otherwise than by submitting the form containing the editor
+* `getUnusedStoredLocations(form)` export of the CKEditor 5 plugin, which returns, with `copyLocationsOnChange`, the IDs of the stored locations the editors in the form (or on the page) loaded which no editor on the page references anymore (replaced by copies or of removed elements), for integrations to send along with the saved data, so the server deletes those which no other stored data references
+
+### Changed
+
+* CKEditor 5 plugin deletes locations when the editor data is saved instead of when an element is removed or its resource replaced, so an element brought back through undo, paste or drag and drop keeps its location: on submit of the form containing the editor, the locations which no editor on the page references anymore are deleted (requests are sent with `keepalive`, so they complete after the page is left)
+* CKEditor 5 plugin location requests of one element run one after another, so an update always targets the location created by the request before it
+
+### Fixed
+
+* CKEditor 5 plugin sends the configured `source` when updating a location, so the location keeps it after the first edit
+* CKEditor 5 plugin keeps the stored CSS class and variation when the editor data is saved before the selected image is loaded or when loading it fails
+* CKEditor 5 plugin no longer silently stores an element without a location when creating the location fails, the element goes back to the previously selected resource and `onError` is called
+* CKEditor 5 plugin clears the location of an element when its resource is removed in the interface, instead of keeping the previous location
+
 ## 3.1.0
 
 ### Added
