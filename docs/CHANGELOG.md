@@ -1,6 +1,6 @@
 # Netgen Remote Media Bundle changelog
 
-## 3.2.1
+## 3.3.0
 
 ### Added
 
