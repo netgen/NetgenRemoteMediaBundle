@@ -1,5 +1,11 @@
 # Netgen Remote Media Bundle changelog
 
+## 3.3.0
+
+### Added
+
+* `deleteOwnLocations(form)` export of the CKEditor 5 plugin, which deletes all locations the editors in the form (or on the page) created or copied, also those still in the editor data, unless an editor outside the form references them, for integrations to call when the editor data is discarded (e.g. a cancelled edit), as those locations were never saved
+
 ## 3.2.0
 
 ### Added

@@ -3,7 +3,7 @@ import { pluginKey } from './constants';
 import renderNgrmEditorViews from './render-views';
 import htmlFormat from './formats/html';
 import { hasPendingLocationRequests, waitForLocationRequests } from './utils/location-requests';
-import { deleteUnusedLocations, getUnusedStoredLocations } from './utils/locations';
+import { deleteOwnLocations, deleteUnusedLocations, getUnusedStoredLocations } from './utils/locations';
 
 export {
   NetgenRemoteMediaPlugin,
@@ -13,5 +13,6 @@ export {
   waitForLocationRequests,
   hasPendingLocationRequests,
   deleteUnusedLocations,
+  deleteOwnLocations,
   getUnusedStoredLocations,
 };

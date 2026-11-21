@@ -53,10 +53,11 @@ export const addStoredLocation = (editor, locationId) => {
 /** Editors in the given form, or all editors on the page */
 const getEditors = form => [...editors].filter(editor => form === null || form.contains(editor.sourceElement));
 
-const getReferencedLocations = () => {
+/** Locations referenced by the data of the given editors, by default of all editors on the page */
+const getReferencedLocations = (referencingEditors = editors) => {
   const referenced = new Set();
 
-  editors.forEach((editor) => {
+  referencingEditors.forEach((editor) => {
     editor.model.document.getRoots()
       .filter(root => root.rootName !== '$graveyard')
       .forEach((root) => {
@@ -87,6 +88,31 @@ export const deleteUnusedLocations = (form = null) => {
     [...locations].filter(locationId => !referenced.has(locationId)).forEach((locationId) => {
       locations.delete(locationId);
       ownLocations.get(editor)?.delete(locationId);
+
+      requests.push(fetch(getEndpoint(editor, 'deleteLocation')(locationId), { method: 'DELETE', keepalive: true }));
+    });
+  });
+
+  return Promise.allSettled(requests);
+};
+
+/**
+ * Deletes all locations the editors in the given form (by default all editors on the page) created or copied, also
+ * those still in the editor data, unless an editor outside the form references them. Call it when the editor data is
+ * discarded (e.g. a cancelled edit): the locations were never saved with the data, so nothing else deletes them.
+ * Requests are sent with `keepalive`, so they complete when the page is left right after.
+ */
+export const deleteOwnLocations = (form = null) => {
+  const formEditors = getEditors(form);
+  const referenced = getReferencedLocations([...editors].filter(editor => !formEditors.includes(editor)));
+  const requests = [];
+
+  formEditors.forEach((editor) => {
+    const locations = ownLocations.get(editor) ?? new Set();
+
+    [...locations].filter(locationId => !referenced.has(locationId)).forEach((locationId) => {
+      locations.delete(locationId);
+      deletableLocations.get(editor)?.delete(locationId);
 
       requests.push(fetch(getEndpoint(editor, 'deleteLocation')(locationId), { method: 'DELETE', keepalive: true }));
     });
